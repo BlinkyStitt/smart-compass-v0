@@ -588,11 +588,10 @@ void updateCompassPoints() {
     int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 255, 10);
 
     compassPoints[compassPointId][++nextCompassPoint[compassPointId]] = CHSV(peer_hue[i], 255, peer_brightness);
-  }
 
-  // TODO: sort compassPoints by value
-  for (int i = 0; i < numLEDs; i++) {
-    sortArray(compassPoints[i], maxCompassPoints, firstIsBrighter);
+    // TODO: sort every time? i feel like there is a smarter way to insert. it probably doesn't matter
+    // this sort is fast if its already sorted
+    sortArray(compassPoints[compassPointId], nextCompassPoint[compassPointId], firstIsBrighter);
   }
 }
 
@@ -607,7 +606,7 @@ void updateLightsForCompass() {
       continue;
     }
 
-    // give each peer 500ms
+    // there are one or more peers that want to shine. give each 500ms
     // TODO: instead give the closer peers (brighter compass points) more time?
     int j = map(((elapsedMs / peer_led_time) % numPeers), 0, numPeers, 0, nextCompassPoint[i]);
     leds[i] = compassPoints[i][j];
