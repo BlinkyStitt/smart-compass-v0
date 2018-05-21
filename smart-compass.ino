@@ -389,11 +389,10 @@ void setup() {
 /* Loop */
 
 elapsedMillis elapsedMs = 0;    // todo: do we care if this overflows?
+elapsedMillis gpsMs = 0;  // TODO: do we want this seperate from elapsedMs? This should wrap around at 1000ms.
 float magneticDeclination = 0.0;
 
 void loop() {
-  sensorReceive();
-
   gpsReceive();
 
   // TODO: if its our time to transmit, radioTransmit(), else wait for radioReceive()
@@ -438,9 +437,13 @@ void gpsReceive() {
 
   // set the time to match the GPS if it doesn't already match
   // we check the year just in case it is turned on right when a minute starts // TODO: check if setTime has been called instead?
+  // TODO: should we just do this every time
   if ((second() != GPS.seconds) || (year() != GPS.year)) {
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
   }
+
+  // TODO: should we only do this if there is more drift?
+  gpsMs = GPS.milliseconds;
 
   peer_gps_updated_at[my_peer_id] = now();
 
@@ -462,8 +465,12 @@ void gpsReceive() {
   Serial.print("Altitude: "); Serial.println(GPS.altitude);
   Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
 
-  // calculate magnetic declination in software. the gps chip supports it, but is configured to store log data instead of calculate it
+  // TODO: only do this when we need it?
+  // calculate magnetic declination in software. the gps chip and library support it with GPS.magvariation
+  // but the Ultimate GPS module we are using is configured to store log data instead of calculate it
+  Serial.print("GPS Mag variation: "); Serial.println(GPS.magvariation, 4);
   magneticDeclination = declinationCalculator.get_declination(GPS.latitude, GPS.longitude);  // NOTICE that this is latitude, NOT latitude_fixed
+  Serial.print("Software Mag variation: "); Serial.println(magneticDeclination, 4);
 
   // save to the SD card
   logFile = SD.open(gps_log_filename, FILE_WRITE);
@@ -476,6 +483,7 @@ void gpsReceive() {
   }
 
   Serial.print("Logging GPS data...");
+  // TODO: only log if it is has changed by more than a couple meters
 
   logFile.print(peer_gps_updated_at[my_peer_id]);
   logFile.print(",");
@@ -517,11 +525,11 @@ int deg2rad(long deg) {
 float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
 	float dlam, dphi, radius=6371000.0;
 
-	dphi = deg2rad(lat1+lat2)*0.5e-6; //average latitude in radians
+	dphi = deg2rad(lat1+lat2) * 0.5e-6; // average latitude in radians
 	float cphi = cos(dphi);
 
-	dphi = deg2rad(lat2-lat1)*1.0e-6; //differences in degrees (to radians)
-	dlam = deg2rad(lon2-lon1)*1.0e-6;
+	dphi = deg2rad(lat2-lat1) * 1.0e-6; // differences in degrees (to radians)
+	dlam = deg2rad(lon2-lon1) * 1.0e-6;
 
 	dlam *= cphi;  //correct for latitude
 
@@ -620,11 +628,93 @@ void updateLightsForCompass() {
   }
 }
 
-void updateLights() {
-  // TODO: if we don't have a gps fix or the time is not set yet, show loading spinner
+void updateLightsForHanging() {
+  // do awesome patterns
+  int msPerPattern = 1 * 60 * 1000;  // TODO: tune this/read from SD card
 
-  // TODO: updateLightsFor{Off,Compass,Patterns,Clock} depending on what the gyro says
-  updateLightsForCompass();
+  int numLightPatterns = 3;  // TODO: how should this work? this seems
+
+  // we use the actual time in ms instead of elapsedMs so that all the compasses are in near perfect sync
+  long now_ms = now() * 1000 + gpsMs % 1000;  // TODO: type?
+
+  // ms since 1970 divided into 1 minute chunks
+  //int patternId = now_ms / msPerPattern % numLightPatterns;
+
+  // since all the compasses should have the exact same time, we should be okay to use the time as a seed
+  // we don't include the ms here because there is likely some drift there
+  // divide by 10 so that we are even more likely to pick the same random number (TODO: bitshift instead?)
+  randomSeed(now() / 10);
+  int patternId = random(numLightPatterns);
+
+  switch (patternId) {
+    case 0:
+      updateLightsPattern0(now_ms);
+      break;
+    case 1:
+      updateLightsPattern1(now_ms);
+      break;
+    case 2:
+      updateLightsPattern2(now_ms);
+      break;
+  }
+}
+
+void updateLightsForLoading() {
+  // TODO: write this
+}
+
+void updateLightsPattern0(long now_ms) {
+  // TODO: write this and name it something descriptive
+}
+
+void updateLightsPattern1(long now_ms) {
+  // TODO: write this and name it something descriptive
+}
+
+void updateLightsPattern2(long now_ms) {
+  // TODO: write this and name it something descriptive
+}
+
+void fadeAll() {
+  // Dim all leds by 12.5% (but don't ever turn them off)
+  // TODO: tune this
+  for(int i = 0; i < numLEDs; i++) {
+    leds[i].fadeLightBy(.125 * 256);
+    //leds[i].fadeToBlackBy(32);
+  }
+}
+
+void disableLights() {
+  for(int i = 0; i < numLEDs; i++) {
+    leds[i] = CRGB::Black;
+  }
+}
+
+bool sensorFaceDown() {
+  // TODO: actually do something with the sensors
+  return false;
+}
+
+bool sensorHanging() {
+  // TODO: actually do something with the sensors
+  return false;
+}
+
+void updateLights() {
+  // update lights based on the sensor and GPS data
+  sensorReceive();
+
+  if (sensorFaceDown()) {
+    disableLights();
+  } else if (!GPS.fix) {
+    updateLightsForLoading();
+  } else {
+    if (sensorHanging()) {
+      updateLightsForHanging();
+    } else {
+      updateLightsForCompass();
+    }
+  }
 
   // display the colors
   FastLED.show();
