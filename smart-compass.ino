@@ -1,47 +1,273 @@
 #include <Adafruit_GPS.h>
-#include <elapsedMillis.h>
+#include <Adafruit_LSM9DS1.h>
+#include <Adafruit_Sensor.h>
+#include <Bounce2.h>
 #include <FastLED.h>
 #include <RH_RF95.h>
-#include <SoftwareSerial.h>
+#include <SD.h>
 #include <SPI.h>
+#include <TimeLib.h>
+#include <TinyPacks.h>
+#include <Wire.h>
 
-// todo: read this from sd?
-#define RF95_FREQ 915.0  // or 868
-#define RF95_POWER 23
+// TODO: the teensy SPI/SD libraries don't seem to work on the feather M0
 
-#define VBATPIN A9
+// TODO: these were from the Teensy. the feather probably needs different
+// Pins 0 and 1 are used for Serial1 (GPS)
+#define RFM95_INT          3   // already wired for us
+#define RFM95_RST          4   // already wired for us
+#define LSM9DS1_MCS        5
+#define LSM9DS1_XGCS       6
+#define RFM95_CS           8   // already wired for us
+#define VBAT_PIN           9   // already wired for us  // A7
+#define LED_DATA_PIN       10  // green wire // TODO: what pin?
+#define LED_CLOCK_PIN      11  // blue wire  // TODO: what pin?
+#define SDCARD_CS_PIN      12  // TODO: what pin?
+#define RED_LED_PIN        13
+#define SPI_MISO_PIN       22  // shared between Radio+Sensors+SD
+#define SPI_MOSI_PIN       23  // shared between Radio+Sensors+SD
+#define SPI_SCK_PIN        24  // shared between Radio+Sensors+SD
 
-/* for feather m0
-#define RFM95_CS 8
-#define RFM95_RST 4
-#define RFM95_INT 3
-*/
+#define LED_CHIPSET        APA102
+#define LED_MODE           BGR
+#define DEFAULT_BRIGHTNESS 255  // TODO: read from SD (maybe this should be on the volume knob)
+#define FRAMES_PER_SECOND  120
 
-/* Feather m0 w/wing */
-#define RFM95_RST     11   // "A"
-#define RFM95_CS      10   // "B"
-#define RFM95_INT     6    // "D"
+const int numLEDs = 16;
+CRGB leds[numLEDs];
 
-// Singleton instance of the radio driver
+const int numPeers = 4;  // TODO: this should be the max. read from the SD card instead
+int my_peer_id = 0;  // TODO: read from the SD card instead
+int my_network_id = 0;  // TODO: read from the SD card instead
+
+/* Radio */
+
+#define RF95_FREQ 915.0  // todo: read this from sd? 915.0 or 868.0MHz
+#define RF95_POWER 23    // todo: read this from sd? 5-23dBm
+
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
-// TODO: what Serial are we actually using? I think Serial1 might be connected to the
+void setupRadio() {
+  pinMode(RFM95_RST, OUTPUT);
+  digitalWrite(RFM95_RST, HIGH);
+
+  delay(100);  // give the radio time to wake up
+
+  // manual reset
+  digitalWrite(RFM95_RST, LOW);
+  delay(10);
+  digitalWrite(RFM95_RST, HIGH);
+  delay(10);
+
+  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
+  if (!rf95.init()) {
+    Serial.println("LoRa radio init failed");
+    while (1);
+  }
+  Serial.println("LoRa radio init OK!");
+
+  // TODO: read from the SD card
+  if (!rf95.setFrequency(RF95_FREQ)) {
+    Serial.println("setFrequency failed");
+    while (1);
+  }
+  Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
+
+  // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
+
+  // The default transmitter power is 13dBm, using PA_BOOST.
+  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
+  // you can set transmitter powers from 5 to 23 dBm:
+  // TODO: read from the SD card
+  rf95.setTxPower(RF95_POWER, false);
+}
+
+PackWriter writer;
+
+uint8_t radio_tx_buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
+
+long peer_gps_updated_at[numPeers];
+int peer_hues[numPeers];
+int peer_gps_latitude[numPeers];
+int peer_gps_longitude[numPeers];
+
+void radioTransmit() {
+  // even if we don't have our own peer data, we want
+  Serial.println("Transmitting..."); // Send a message to other smart compasses in the mesh
+
+  // Pack
+  // TODO: versioning? https://github.com/nanopb/nanopb ?
+  // TODO: time this. if it takes a long time, add a FastLED.delay(2) for some dithering time
+  writer.setBuffer(radio_tx_buf, RH_RF95_MAX_MESSAGE_LEN);
+  writer.openMap();
+    writer.putString("n");  // network id
+    writer.putInteger(my_network_id);  // TODO: read network id from SD card. whats a reasonable max length?
+
+    writer.putString("p");  // peer id
+    writer.putInteger(my_peer_id);  // TODO: read peer id from SD card. integer from 0-255 to map to a palette (rainbow spectrum by default)
+
+    int time_now = now();  // seconds precision is fine
+    writer.putString("t");
+    writer.putInteger(time_now);
+
+    writer.putString("g");
+    writer.openList();
+      for (int pid = 0; pid < numPeers; pid++) {
+        if (! peer_gps_latitude[pid]) {
+          // if we don't have any info for this peer, skip sending anything
+          break;
+        }
+
+        writer.openList();
+          // TODO: write peer info // TODO: do this way more efficiently
+          writer.putInteger(pid);  // TODO: read peer id from SD card
+          writer.putInteger(time_now - peer_gps_updated_at[pid]);  // seconds since gps was last updated
+          writer.putInteger(peer_hues[pid]);  // int from 0-255
+          writer.putInteger(peer_gps_latitude[pid]);
+          writer.putInteger(peer_gps_longitude[pid]);
+        writer.close();
+      }
+    writer.close();
+  writer.close();
+
+  Serial.println("Sending...");
+  // sending will wait for any previous send with waitPacketSent()
+  FastLED.delay(10);  // TODO: get rid of this delay when the above prints are gone?
+  rf95.send((uint8_t *)radio_tx_buf, writer.getOffset());
+
+  // We don't actually need to block until the transmitter is no longer transmitting since we won't transmit again for a while
+  // also, send will do its own waiting if it needs to
+  /*
+  Serial.println("Waiting for packet to complete...");
+  FastLED.delay(10);
+  rf95.waitPacketSent();  // TODO: this might get in the way. maybe right something that waits with FastLED.delay?
+  */
+}
+
+PackReader reader;
+
+uint8_t radio_rx_buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
+uint8_t radio_rx_buf_len = 0;  // this will be set when its received
+
+void radioReceive() {
+  Serial.println("Checking for reply...");
+  if (rf95.available()) {
+    // Should be a reply message for us now
+    if (rf95.recv(radio_rx_buf, &radio_rx_buf_len)) {
+      Serial.print("RSSI: ");
+      Serial.println(rf95.lastRssi(), DEC);
+
+      reader.setBuffer(radio_rx_buf, radio_rx_buf_len);
+      reader.next();
+      if(!reader.openMap()) {
+        Serial.print("Received someone else's message");
+        // TODO: do something fun with the lights?
+        return;
+      }
+
+      int tx_network_id, tx_peer_id, tx_peer_time;
+
+      Serial.print("Message:");
+      while (reader.next()) {
+        if (reader.match("n")) {
+          tx_network_id = reader.getBoolean();
+
+          Serial.print(" ");
+          Serial.print(tx_network_id);
+
+          if (tx_network_id != my_network_id) {
+            break;
+          }
+        } else if (reader.match("p")) {
+          tx_peer_id = reader.getInteger();
+
+          Serial.print(" ");
+          Serial.print(tx_peer_id);
+
+          if (tx_peer_id == my_peer_id) {
+            Serial.println("peer ID collision!");
+            break;
+          }
+        } else if (reader.match("t")) {
+          tx_peer_time = reader.getInteger();
+
+          Serial.print(" ");
+          Serial.print(tx_peer_time);
+        } else if (reader.match("g")) {
+          // TODO: parse list of gps coords
+          if (reader.openList()) {
+            while (reader.next()) {
+              if (reader.openList()) {
+                int pid = reader.getInteger();
+
+                // ignore own stats from other peers
+                if (pid != my_peer_id) {
+                  // TODO: if this data is older than our local data, ignore it
+                  // TODO: subtracting here seems backwards
+                  peer_gps_updated_at[pid] = tx_peer_time - reader.getInteger();  // seconds since gps was last updated
+
+                  peer_hues[pid] = reader.getInteger();  // int from 0-255
+
+                  peer_gps_latitude[pid] = reader.getInteger();
+                  peer_gps_longitude[pid] = reader.getInteger();
+                }
+
+                // TODO: i'm pretty sure it's fine if we close without reading the other values in the case pid == my_peer_id
+                reader.close();
+              }
+            }
+            reader.close();
+          }
+        } else {
+          Serial.print("Skipping unknown key");
+          reader.next();
+        }
+      }
+
+      reader.close();
+    } else {
+      Serial.println("Receive failed");
+    }
+  }
+}
+
+/* Sensors */
+
+sensors_event_t accel, mag, gyro, temp;
+
+Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1(LSM9DS1_XGCS, LSM9DS1_MCS);  // SPI
+
+void setupSensor() {
+  pinMode(LSM9DS1_MCS, OUTPUT);
+  pinMode(LSM9DS1_XGCS, OUTPUT);
+
+  if(!lsm.begin()) {
+    Serial.print(F("Ooops, no LSM9DS1 detected ... Check your wiring!"));
+    while(1);
+  }
+
+  // 1.) Set the accelerometer range
+  lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_2G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_4G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_8G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_16G);
+
+  // 2.) Set the magnetometer sensitivity
+  lsm.setupMag(lsm.LSM9DS1_MAGGAIN_4GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_8GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_12GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_16GAUSS);
+
+  // 3.) Setup the gyroscope
+  lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
+  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
+  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
+}
+
+/* GPS */
+
 #define gpsSerial Serial1
 Adafruit_GPS GPS(&gpsSerial);
-
-Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();  // i2c sensor  // TODO: do we have these pins available? if not hardware and software spi are available
-
-void setupSD() {
-}
-
-// Interrupt is called once a millisecond, looks for any new GPS data, and stores it. then looks for any
-SIGNAL(TIMER0_COMPA_vect) {
-  // if you want to debug, this is a good time to do it!
-  // TODO: how does this work? where does this go?
-  char c = GPS.read();
-
-  lsm.getEvent(&accel, &mag, &gyro, &temp);
-}
 
 void setupGPS() {
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
@@ -67,145 +293,102 @@ void setupGPS() {
   gpsSerial.println(PMTK_Q_RELEASE);
 }
 
-void setupRadio() {
-  // TODO: i think there is a PULLUP option here
-  pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
+/* SD */
 
-  // manual reset
-  digitalWrite(RFM95_RST, LOW);
-  delay(10);
-  digitalWrite(RFM95_RST, HIGH);
-  delay(10);
+String gps_log_filename = "";
+File logFile;
 
-  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
-  if (!rf95.setFrequency(RF95_FREQ)) {
-    Serial.println("setFrequency failed");
-    while (1);
-  }
-  // TODO: read from the SD card
-  Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
+void setupSD() {
+  pinMode(SDCARD_CS_PIN, OUTPUT);
 
-  // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
-
-  // The default transmitter power is 13dBm, using PA_BOOST.
-  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
-  // you can set transmitter powers from 5 to 23 dBm:
-  // TODO: read from the SD card
-  rf95.setTxPower(RF95_POWER, false);
-}
-
-sensors_event_t accel, mag, gyro, temp;
-
-void setupOrientation() {
-
-  if(!lsm.begin()) {
-    /* There was a problem detecting the LSM9DS1 ... check your connections */
-    Serial.print(F("Ooops, no LSM9DS1 detected ... Check your wiring!"));
+  if (!SD.begin(SDCARD_CS_PIN)) {
+    Serial.println("SD initialization failed!");
     while(1);
   }
+  Serial.println("SD initialization done.");
 
-  // 1.) Set the accelerometer range
-  lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_2G);
-  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_4G);
-  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_8G);
-  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_16G);
+  // TODO: read SD card here to configure things
+  my_peer_id = 0;  // TODO: read from SD
+  my_network_id = 0; // TODO: read from SD card
 
-  // 2.) Set the magnetometer sensitivity
-  lsm.setupMag(lsm.LSM9DS1_MAGGAIN_4GAUSS);
-  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_8GAUSS);
-  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_12GAUSS);
-  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_16GAUSS);
+  peer_hues[my_peer_id] = 0;  // TODO: read form SD card
 
-  // 3.) Setup the gyroscope
-  lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
-  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
-  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
+  gps_log_filename += my_network_id;
+  gps_log_filename += "-" +  my_peer_id;
+  gps_log_filename += ".log";
+
+  // open the file. note that only one file can be open at a time,
+  // so you have to close this one before opening another.
+  logFile = SD.open("test.txt", FILE_WRITE);
+
+  // if the file opened okay, write to it:
+  if (logFile) {
+    Serial.print("Writing to test.txt...");
+    logFile.println("testing 1, 2, 3.");
+	// close the file:
+    logFile.close();
+    Serial.println("done.");
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening test.txt");
+  }
 }
 
 void setupLights() {
   // TODO: do things with FastLED here
+  // TODO: clock select pin for FastLED to OUTPUT like we do for the SDCARD?
+  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN, LED_CLOCK_PIN, LED_MODE>(leds, numLEDs).setCorrection( TypicalSMD5050 );;
+  FastLED.setBrightness(DEFAULT_BRIGHTNESS);  // TODO: read this from the SD card
+  FastLED.clear();
+  FastLED.show();
 }
 
+/* Setup */
+
 void setup() {
+  // TODO: cut this into multiple functions
   Serial.begin(115200);
   while (!Serial) {  // TODO: remove this when done debugging otherwise it won't start without the usb plugged in
     delay(1);
   }
 
   setupSD();
+
+  // do more setup now that we have our configuration
   setupGPS();
   setupRadio();
-  setupOrientation();
+  setupSensor();
   setupLights();
 
-  /* setup interrupts */
-  // the nice thing about this code is you can have a timer0 interrupt go off
-  // every 1 millisecond, and read data from the GPS for you. that makes the
-  // loop code a heck of a lot easier!
-  // Timer0 is already used for millis() - we'll just interrupt somewhere
-  // in the middle and call the "Compare A" function above
-  // TODO: what does this mean? do we really need it done every ms?
-  OCR0A = 0xAF;
-  TIMSK0 |= _BV(OCIE0A);
-
+  Serial.println("Starting...");
 }
 
-uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
-uint8_t len = sizeof(buf);  // 251
+/* Loop */
 
 void loop() {
+  sensorReceive();
+
   gpsReceive();
 
   // TODO: if its our time to transmit, radioTransmit(), else wait for radioReceive()
 
   // TODO: check_battery and blink if low
 
-  // TODO: update_leds();  (which will check orientation)
+  // TODO: updateLEDs();  (which will check orientation)
+  updateLEDs();
 
   // using FastLED's delay allows for dithering
   FastLED.delay(10);
 }
 
-// TODO: variables for storing GPS lat/long
-
-void radioTransmit() {
-  // TODO: if no local gps data, return here
-
-  Serial.println("Transmitting..."); // Send a message to other smart compasses in the mesh
-
-  // TODO: send GPS data (max length is RH_RF95_MAX_MESSAGE_LEN = 251)
-  // TODO: what format should our message have? $NETWORK_ID $BROADCASTER_RGB_COLOR $BROADCASTER_TIME $BROADCASTER_LAT $BROADCASTER_LONG $NODE_N_RGB_COLOR $NODE_N_TIME_DIFF $NODE_N_LAT_DIFF $NODE_N_LONG_DIFF
-  char radiopacket[20] = "Hello World        ";
-  Serial.print("Sending "); Serial.println(radiopacket);
-  radiopacket[19] = 0;  // TODO: what is this for? is this how messages end?
-
-  Serial.println("Sending...");
-  FastLED.delay(10);  // TODO: get rid of this delay when the above prints are gone
-  rf95.send((uint8_t *)radiopacket, 20);
-
-  Serial.println("Waiting for packet to complete...");
-  FastLED.delay(10);
-  rf95.waitPacketSent();  // TODO: this might get in the way. maybe right something that waits with FastLED.delay?
-}
-
-void radioReceive() {
-  Serial.println("Checking for reply...");
-  if (rf95.available()) {
-    // Should be a reply message for us now
-    if (rf95.recv(buf, &len)) {
-      // TODO: check and make sure this message is actually for us
-      Serial.print("Got reply: ");
-      Serial.println((char*)buf);
-      Serial.print("RSSI: ");
-      Serial.println(rf95.lastRssi(), DEC);
-    } else {
-      Serial.println("Receive failed");
-    }
-  }
+void sensorReceive() {
+  lsm.read();
+  lsm.getEvent(&accel, &mag, &gyro, &temp);
 }
 
 void gpsReceive() {
+  char c = GPS.read();
+
   // if no new sentence is received...
   if (!GPS.newNMEAreceived()) {
     // exit
@@ -218,52 +401,96 @@ void gpsReceive() {
   // so be very wary if using OUTPUT_ALLDATA and trying to print out data
   //Serial.println(GPS.lastNMEA());   // this also sets the newNMEAreceived() flag to false
 
-  if (!GPS.parse(GPS.lastNMEA()))   // this also sets the newNMEAreceived() flag to false
+  if (!GPS.parse(GPS.lastNMEA())) {  // this also sets the newNMEAreceived() flag to false
     return;  // we can fail to parse a sentence in which case we should just wait for another
   }
 
-  // TODO: rewrite everything under here to instead update our internal state and log to SD
+  // TODO: limit the refresh rate (and rate at which we are saving to SD card) to X seconds?
 
-  // if millis() or timer wraps around, we'll just reset it
-  if (timer > millis())  timer = millis();
-
-  // approximately every 2 seconds or so, print out the current stats
-  if (millis() - timer > 2000) {
-    timer = millis(); // reset the timer
-
-    Serial.print("\nTime: ");
-    Serial.print(GPS.hour, DEC); Serial.print(':');
-    Serial.print(GPS.minute, DEC); Serial.print(':');
-    Serial.print(GPS.seconds, DEC); Serial.print('.');
-    Serial.println(GPS.milliseconds);
-    Serial.print("Date: ");
-    Serial.print(GPS.day, DEC); Serial.print('/');
-    Serial.print(GPS.month, DEC); Serial.print("/20");
-    Serial.println(GPS.year, DEC);
-    Serial.print("Fix: "); Serial.print((int)GPS.fix);
-    Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
-    if (GPS.fix) {
-      Serial.print("Location: ");
-      Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
-      Serial.print(", ");
-      Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
-
-      Serial.print("Speed (knots): "); Serial.println(GPS.speed);
-      Serial.print("Angle: "); Serial.println(GPS.angle);
-      Serial.print("Altitude: "); Serial.println(GPS.altitude);
-      Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
-    }
-
-    // TODO: save to SD card
+  if (!GPS.fix) {
+    return;
   }
+
+  int last_update = peer_gps_updated_at[my_peer_id];
+
+  // set the time to match the GPS if it doesn't already match
+  if ((second() != GPS.seconds) || (year() != GPS.year)) {
+    setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
+  }
+
+  peer_gps_updated_at[my_peer_id] = now();
+
+  peer_gps_longitude[my_peer_id] = GPS.longitude_fixed;
+  peer_gps_latitude[my_peer_id] = GPS.latitude_fixed;
+
+  // todo: use elapsedMs here instead?
+  if (peer_gps_updated_at[my_peer_id] - last_update < 2) {
+    // don't write to the SD card or Serial more than once every 2 seconds
+    return;
+  }
+
+  Serial.print("Now: "); Serial.println(peer_gps_updated_at[my_peer_id]);
+
+  Serial.print("Fix: "); Serial.print((int)GPS.fix);
+  Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
+
+  Serial.print("Location: ");
+  Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
+  Serial.print(", ");
+  Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
+
+  Serial.print("Speed (knots): "); Serial.println(GPS.speed);
+  Serial.print("Angle: "); Serial.println(GPS.angle);
+  Serial.print("Altitude: "); Serial.println(GPS.altitude);
+  Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
+
+  // save to the SD card
+  logFile = SD.open(gps_log_filename, FILE_WRITE);
+
+  // if the file opened okay, write to it:
+  if (! logFile) {
+    // if the file didn't open, print an error and abort
+    Serial.println("error opening gps log");
+    return;
+  }
+
+  Serial.print("Logging GPS data...");
+
+  logFile.print(peer_gps_updated_at[my_peer_id]);
+  logFile.print(",");
+  logFile.print(GPS.latitude, 4); logFile.print(GPS.lat);
+  logFile.print(",");
+  logFile.print(GPS.longitude, 4); logFile.println(GPS.lon);
+  logFile.print(",");
+  logFile.print(GPS.speed);
+  logFile.print(",");
+  logFile.print(GPS.angle);
+  logFile.println(";");
+
+  // TODO: do we want to log anything else?
+
+  // close the file:
+  logFile.close();
+
+  Serial.println("done.");
 }
 
 float check_battery() {
-    float measuredvbat = analogRead(VBATPIN);
+    // TODO: do something with this
+    float measuredvbat = analogRead(VBAT_PIN);
     measuredvbat *= 2;    // we divided by 2, so multiply back
     measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
     measuredvbat /= 1024; // convert to voltage
     Serial.print("VBat: " ); Serial.println(measuredvbat);
 
+    // return 0-3; dead, low, okay, full
     return measuredvbat;
+}
+
+void updateLEDs() {
+  // TODO: updateLEDs_{off,compass,patterns,clock} depending on what the gyro says
+  leds[0] = CRGB::Blue;
+
+  // display the colors
+  FastLED.show();
 }
