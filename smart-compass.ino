@@ -1,7 +1,9 @@
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
 #include <Adafruit_Sensor.h>
+#include <ArduinoSort.h>
 #include <Bounce2.h>
+#include <elapsedMillis.h>
 #include <FastLED.h>
 #include <RH_RF95.h>
 #include <SD.h>
@@ -32,6 +34,10 @@
 #define LED_MODE           BGR
 #define DEFAULT_BRIGHTNESS 255  // TODO: read from SD (maybe this should be on the volume knob)
 #define FRAMES_PER_SECOND  120
+
+// TODO: read from SD card
+const int max_peer_distance = 6000; // meters. peers this far away and further will be the minimum brightness
+const int peer_led_time = 500; // ms. time to display the peer when multiple peers are the same direction
 
 const int numLEDs = 16;
 CRGB leds[numLEDs];
@@ -87,9 +93,9 @@ PackWriter writer;
 uint8_t radio_tx_buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
 
 long peer_gps_updated_at[numPeers];
-int peer_hues[numPeers];
-int peer_gps_latitude[numPeers];
-int peer_gps_longitude[numPeers];
+int peer_hue[numPeers];  // TODO: this is only 0-255, so use byte instead?
+long peer_gps_latitude[numPeers];
+long peer_gps_longitude[numPeers];
 
 void radioTransmit() {
   // even if we don't have our own peer data, we want
@@ -113,7 +119,7 @@ void radioTransmit() {
     writer.putString("g");
     writer.openList();
       for (int pid = 0; pid < numPeers; pid++) {
-        if (! peer_gps_latitude[pid]) {
+        if (! peer_hue[pid]) {
           // if we don't have any info for this peer, skip sending anything
           break;
         }
@@ -122,7 +128,7 @@ void radioTransmit() {
           // TODO: write peer info // TODO: do this way more efficiently
           writer.putInteger(pid);  // TODO: read peer id from SD card
           writer.putInteger(time_now - peer_gps_updated_at[pid]);  // seconds since gps was last updated
-          writer.putInteger(peer_hues[pid]);  // int from 0-255
+          writer.putInteger(peer_hue[pid]);  // int from 0-255
           writer.putInteger(peer_gps_latitude[pid]);
           writer.putInteger(peer_gps_longitude[pid]);
         writer.close();
@@ -194,7 +200,6 @@ void radioReceive() {
           Serial.print(" ");
           Serial.print(tx_peer_time);
         } else if (reader.match("g")) {
-          // TODO: parse list of gps coords
           if (reader.openList()) {
             while (reader.next()) {
               if (reader.openList()) {
@@ -204,12 +209,15 @@ void radioReceive() {
                 if (pid != my_peer_id) {
                   // TODO: if this data is older than our local data, ignore it
                   // TODO: subtracting here seems backwards
-                  peer_gps_updated_at[pid] = tx_peer_time - reader.getInteger();  // seconds since gps was last updated
+                  int tx_peer_gps_updated_at = tx_peer_time - reader.getInteger();  // seconds since gps was last updated
 
-                  peer_hues[pid] = reader.getInteger();  // int from 0-255
-
-                  peer_gps_latitude[pid] = reader.getInteger();
-                  peer_gps_longitude[pid] = reader.getInteger();
+                  // if the received time is newer than our record...
+                  if (tx_peer_gps_updated_at > peer_gps_updated_at[pid]) {
+                    // update our record
+                    peer_hue[pid] = reader.getInteger();  // int from 0-255 
+                    peer_gps_latitude[pid] = reader.getInteger();
+                    peer_gps_longitude[pid] = reader.getInteger();
+                  }
                 }
 
                 // TODO: i'm pretty sure it's fine if we close without reading the other values in the case pid == my_peer_id
@@ -246,19 +254,21 @@ void setupSensor() {
     while(1);
   }
 
-  // 1.) Set the accelerometer range
+  // TODO: tune these
+
+  // Set the accelerometer range
   lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_2G);
   //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_4G);
   //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_8G);
   //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_16G);
 
-  // 2.) Set the magnetometer sensitivity
+  // Set the magnetometer sensitivity
   lsm.setupMag(lsm.LSM9DS1_MAGGAIN_4GAUSS);
   //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_8GAUSS);
   //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_12GAUSS);
   //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_16GAUSS);
 
-  // 3.) Setup the gyroscope
+  // Setup the gyroscope
   lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
   //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
   //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
@@ -270,7 +280,7 @@ void setupSensor() {
 Adafruit_GPS GPS(&gpsSerial);
 
 void setupGPS() {
-  // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
+  // 9600 NMEA is the default baud rate for Adafruit MTK GPS's
   GPS.begin(9600);
   gpsSerial.begin(9600);
 
@@ -282,15 +292,24 @@ void setupGPS() {
   // the parser doesn't care about other sentences at this time
 
   // Set the update rate
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);   // 1 Hz update rate
+  // different commands to set the update rate from once a second (1 Hz) to 10 times a second (10Hz)
+  // Note that these only control the rate at which the position is echoed, to actually speed up the
+  // position fix you must also send one of the position fix rate commands below too.
   // For the parsing code to work nicely and have time to sort thru the data, and
   // print it out we don't suggest using anything higher than 1 Hz
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ);   // Once every 10 seconds
+
+  // Position fix update rate commands.
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ);   // Once every 10 seconds
 
   // Request updates on antenna status, comment out to keep quiet
   GPS.sendCommand(PGCMD_ANTENNA);
 
   // Ask for firmware version
+  // TODO: why is this println instead of sendCommand? // TODO: how do we display the response?
   gpsSerial.println(PMTK_Q_RELEASE);
+
+  // TODO: wait until we get a GPS fix and then set the clock?
 }
 
 /* SD */
@@ -311,16 +330,17 @@ void setupSD() {
   my_peer_id = 0;  // TODO: read from SD
   my_network_id = 0; // TODO: read from SD card
 
-  peer_hues[my_peer_id] = 0;  // TODO: read form SD card
+  peer_hue[my_peer_id] = 0;  // TODO: read form SD card
 
   gps_log_filename += my_network_id;
-  gps_log_filename += "-" +  my_peer_id;
+  gps_log_filename += "-" + my_peer_id;
   gps_log_filename += ".log";
 
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
   logFile = SD.open("test.txt", FILE_WRITE);
 
+  // TODO: delete this once I've tried it out
   // if the file opened okay, write to it:
   if (logFile) {
     Serial.print("Writing to test.txt...");
@@ -334,10 +354,12 @@ void setupSD() {
   }
 }
 
+/* lights */
+
 void setupLights() {
   // TODO: do things with FastLED here
   // TODO: clock select pin for FastLED to OUTPUT like we do for the SDCARD?
-  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN, LED_CLOCK_PIN, LED_MODE>(leds, numLEDs).setCorrection( TypicalSMD5050 );;
+  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN, LED_CLOCK_PIN, LED_MODE>(leds, numLEDs).setCorrection(TypicalSMD5050);;
   FastLED.setBrightness(DEFAULT_BRIGHTNESS);  // TODO: read this from the SD card
   FastLED.clear();
   FastLED.show();
@@ -352,7 +374,7 @@ void setup() {
     delay(1);
   }
 
-  setupSD();
+  setupSD();  // do this first to get our configuration
 
   // do more setup now that we have our configuration
   setupGPS();
@@ -365,6 +387,8 @@ void setup() {
 
 /* Loop */
 
+elapsedMillis elapsedMs = 0;    // todo: do we care if this overflows?
+
 void loop() {
   sensorReceive();
 
@@ -374,8 +398,8 @@ void loop() {
 
   // TODO: check_battery and blink if low
 
-  // TODO: updateLEDs();  (which will check orientation)
-  updateLEDs();
+  // TODO: updateLights();  (which will check orientation)
+  updateLights();
 
   // using FastLED's delay allows for dithering
   FastLED.delay(10);
@@ -389,7 +413,7 @@ void sensorReceive() {
 void gpsReceive() {
   char c = GPS.read();
 
-  // if no new sentence is received...
+  // if no new sentence is received... (updates at most every 100 mHz thanks to PMTK_SET_NMEA_UPDATE_*)
   if (!GPS.newNMEAreceived()) {
     // exit
     return;
@@ -405,15 +429,12 @@ void gpsReceive() {
     return;  // we can fail to parse a sentence in which case we should just wait for another
   }
 
-  // TODO: limit the refresh rate (and rate at which we are saving to SD card) to X seconds?
-
   if (!GPS.fix) {
     return;
   }
 
-  int last_update = peer_gps_updated_at[my_peer_id];
-
   // set the time to match the GPS if it doesn't already match
+  // we check the year just in case it is turned on right when a minute starts // TODO: check if setTime has been called instead?
   if ((second() != GPS.seconds) || (year() != GPS.year)) {
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
   }
@@ -422,12 +443,6 @@ void gpsReceive() {
 
   peer_gps_longitude[my_peer_id] = GPS.longitude_fixed;
   peer_gps_latitude[my_peer_id] = GPS.latitude_fixed;
-
-  // todo: use elapsedMs here instead?
-  if (peer_gps_updated_at[my_peer_id] - last_update < 2) {
-    // don't write to the SD card or Serial more than once every 2 seconds
-    return;
-  }
 
   Serial.print("Now: "); Serial.println(peer_gps_updated_at[my_peer_id]);
 
@@ -469,10 +484,47 @@ void gpsReceive() {
 
   // TODO: do we want to log anything else?
 
+  // TODO: what happens if we lose power before closing/flushing?
+
   // close the file:
   logFile.close();
 
   Serial.println("done.");
+}
+
+// https://forum.arduino.cc/index.php?topic=98147.msg736165#msg736165
+int rad2deg(long rad) {
+  return rad * 57296 / 1000;
+}
+
+// https://forum.arduino.cc/index.php?topic=98147.msg736165#msg736165
+int deg2rad(long deg) {
+  return deg * 1000 / 57296;
+}
+
+// http://forum.arduino.cc/index.php?topic=393511.msg3232854#msg3232854
+// find the bearing and distance in meters from point 1 to 2,
+// using the equirectangular approximation
+// lat and lon are degrees*1.0e6, 10 cm precision
+// TODO: I copied this from the internet. make sure it actually works
+// TODO: what are the units of the distance?
+float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
+
+	float dlam, dphi, radius=6371000.0;
+
+	dphi = deg2rad(lat1+lat2)*0.5e-6; //average latitude in radians
+	float cphi = cos(dphi);
+
+	dphi = deg2rad(lat2-lat1)*1.0e-6; //differences in degrees (to radians)
+	dlam = deg2rad(lon2-lon1)*1.0e-6;
+
+	dlam *= cphi;  //correct for latitude
+
+	float bearing = rad2deg(atan2(dlam,dphi));
+	if(bearing<0) bearing = bearing + 360.0;
+
+	*distance = radius * sqrt(dphi * dphi + dlam*dlam);
+	return bearing;
 }
 
 float check_battery() {
@@ -487,9 +539,86 @@ float check_battery() {
     return measuredvbat;
 }
 
-void updateLEDs() {
-  // TODO: updateLEDs_{off,compass,patterns,clock} depending on what the gyro says
-  leds[0] = CRGB::Blue;
+// compare compass points
+bool firstIsBrighter(CHSV first, CHSV second) {
+  return first.value > second.value;
+}
+
+// this is not very efficient
+const int maxCompassPoints = numPeers + 1;
+CHSV compassPoints[numLEDs][maxCompassPoints];
+int nextCompassPoint[numLEDs] = {0};
+
+void updateCompassPoints() {
+  // clear past compass points
+  // TODO: this isn't very efficient since it recalculates everything every time
+  for (int i = 0; i < numLEDs; i++) {
+    nextCompassPoint[i] = 0;  // TODO: is this the right syntax?
+  }
+
+  // add North
+  compassPoints[0][++nextCompassPoint[0]] = CHSV(0, 255, 255);
+
+  for (int i = 0; i < numPeers; i++) {
+    if (! peer_hue[i]) {
+      // skip the peer if we don't have any gps data for them
+      continue;
+    }
+    if (i == my_peer_id) {
+      // don't show yourself
+      continue;
+    }
+
+    float peer_distance;  // TODO: units? I'm guessing it is meters
+    float bearing = course_to(
+      peer_gps_latitude[my_peer_id], peer_gps_longitude[my_peer_id],
+      peer_gps_latitude[i], peer_gps_longitude[i],
+      &peer_distance
+    );
+
+    int compassPointId = map(bearing, 0, 360, 0, numLEDs);
+
+    if (peer_distance < 10) {
+      // TODO: what should we do for really close peers?
+      continue;
+    }
+
+    // convert distance to brightness. the closer, the brighter //TODO: scurve instead of linear?
+    // TODO: tune this
+    int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 255, 10);
+
+    compassPoints[compassPointId][++nextCompassPoint[compassPointId]] = CHSV(peer_hue[i], 255, peer_brightness);
+  }
+
+  // TODO: sort compassPoints by value
+  for (int i = 0; i < numLEDs; i++) {
+    sortArray(compassPoints[i], maxCompassPoints, firstIsBrighter);
+  }
+}
+
+void updateLightsForCompass() {
+  updateCompassPoints();
+
+  // cycle through the colors for each light
+  for (int i = 0; i < numLEDs; i++) {
+    if (nextCompassPoint[i] == 0) {
+      // no colors on this light. turn it off
+      leds[i] = CRGB::Black;
+      continue;
+    }
+
+    // give each peer 500ms
+    // TODO: instead give the closer peers (brighter compass points) more time?
+    int j = map(((elapsedMs / peer_led_time) % numPeers), 0, numPeers, 0, nextCompassPoint[i]);
+    leds[i] = compassPoints[i][j];
+  }
+}
+
+void updateLights() {
+  // TODO: if we don't have a gps fix or the time is not set yet, show loading spinner
+
+  // TODO: updateLightsFor{Off,Compass,Patterns,Clock} depending on what the gyro says
+  updateLightsForCompass();
 
   // display the colors
   FastLED.show();
