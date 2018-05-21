@@ -2,6 +2,7 @@
 #include <Adafruit_LSM9DS1.h>
 #include <Adafruit_Sensor.h>
 #include <ArduinoSort.h>
+#include <AP_Declination.h>
 #include <Bounce2.h>
 #include <elapsedMillis.h>
 #include <FastLED.h>
@@ -40,7 +41,7 @@ const int max_peer_distance = 6000; // meters. peers this far away and further w
 const int peer_led_time = 500; // ms. time to display the peer when multiple peers are the same direction
 
 const int numLEDs = 16;
-CRGB leds[numLEDs];
+CRGB leds[numLEDs];  // led[0] = magnetic north
 
 const int numPeers = 4;  // TODO: this should be the max. read from the SD card instead
 int my_peer_id = 0;  // TODO: read from the SD card instead
@@ -388,6 +389,7 @@ void setup() {
 /* Loop */
 
 elapsedMillis elapsedMs = 0;    // todo: do we care if this overflows?
+float magneticDeclination = 0.0;
 
 void loop() {
   sensorReceive();
@@ -398,7 +400,6 @@ void loop() {
 
   // TODO: check_battery and blink if low
 
-  // TODO: updateLights();  (which will check orientation)
   updateLights();
 
   // using FastLED's delay allows for dithering
@@ -409,6 +410,8 @@ void sensorReceive() {
   lsm.read();
   lsm.getEvent(&accel, &mag, &gyro, &temp);
 }
+
+AP_Declination declinationCalculator;
 
 void gpsReceive() {
   char c = GPS.read();
@@ -458,6 +461,9 @@ void gpsReceive() {
   Serial.print("Angle: "); Serial.println(GPS.angle);
   Serial.print("Altitude: "); Serial.println(GPS.altitude);
   Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
+
+  // calculate magnetic declination in software. the gps chip supports it, but is configured to store log data instead of calculate it
+  magneticDeclination = declinationCalculator.get_declination(GPS.latitude, GPS.longitude);  // NOTICE that this is latitude, NOT latitude_fixed
 
   // save to the SD card
   logFile = SD.open(gps_log_filename, FILE_WRITE);
@@ -509,7 +515,6 @@ int deg2rad(long deg) {
 // TODO: I copied this from the internet. make sure it actually works
 // TODO: what are the units of the distance?
 float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
-
 	float dlam, dphi, radius=6371000.0;
 
 	dphi = deg2rad(lat1+lat2)*0.5e-6; //average latitude in radians
@@ -520,10 +525,12 @@ float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
 
 	dlam *= cphi;  //correct for latitude
 
-	float bearing = rad2deg(atan2(dlam,dphi));
-	if(bearing<0) bearing = bearing + 360.0;
+	float bearing = rad2deg(atan2(dlam,dphi)) + magneticDeclination;
+	if (bearing < 0) bearing = bearing + 360.0;
 
-	*distance = radius * sqrt(dphi * dphi + dlam*dlam);
+  // offset bearing for true north -> magnetic north
+
+	*distance = radius * sqrt(dphi * dphi + dlam * dlam);
 	return bearing;
 }
 
@@ -570,13 +577,13 @@ void updateCompassPoints() {
     }
 
     float peer_distance;  // TODO: units? I'm guessing it is meters
-    float bearing = course_to(
+    float magneticBearing = course_to(
       peer_gps_latitude[my_peer_id], peer_gps_longitude[my_peer_id],
       peer_gps_latitude[i], peer_gps_longitude[i],
       &peer_distance
     );
 
-    int compassPointId = map(bearing, 0, 360, 0, numLEDs);
+    int compassPointId = map(magneticBearing, 0, 360, 0, numLEDs);
 
     if (peer_distance < 10) {
       // TODO: what should we do for really close peers?
