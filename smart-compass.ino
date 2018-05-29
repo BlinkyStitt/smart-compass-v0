@@ -1,3 +1,5 @@
+// TODO: use addmod8
+
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
 #include <Adafruit_Sensor.h>
@@ -13,32 +15,28 @@
 #include <TinyPacks.h>
 #include <Wire.h>
 
-// TODO: the teensy SPI/SD libraries don't seem to work on the feather M0
-
-// TODO: these were from the Teensy. the feather probably needs different
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT          3   // already wired for us
 #define RFM95_RST          4   // already wired for us
-#define LSM9DS1_MCS        5
-#define LSM9DS1_XGCS       6
+#define LED_DATA_PIN       5   // orange
 #define RFM95_CS           8   // already wired for us
 #define VBAT_PIN           9   // already wired for us  // A7
-#define LED_DATA_PIN       10  // green wire // TODO: what pin?
-#define LED_CLOCK_PIN      11  // blue wire  // TODO: what pin?
-#define SDCARD_CS_PIN      12  // TODO: what pin?
-#define RED_LED_PIN        13
+#define SDCARD_CS_PIN      10
+#define LSM9DS1_CSAG       11
+#define LSM9DS1_CSM        12
+#define RED_LED_PIN        13  // already wired for us
 #define SPI_MISO_PIN       22  // shared between Radio+Sensors+SD
 #define SPI_MOSI_PIN       23  // shared between Radio+Sensors+SD
 #define SPI_SCK_PIN        24  // shared between Radio+Sensors+SD
 
-#define LED_CHIPSET        APA102
-#define LED_MODE           BGR
-#define DEFAULT_BRIGHTNESS 255  // TODO: read from SD (maybe this should be on the volume knob)
-#define FRAMES_PER_SECOND  120
+#define LED_CHIPSET        NEOPIXEL
+#define DEFAULT_BRIGHTNESS 100  // TODO: read from SD (maybe this should be on the volume knob)
+#define FRAMES_PER_SECOND  30  // TODO: bump this to 120
 
 // TODO: read from SD card
 const int max_peer_distance = 6000; // meters. peers this far away and further will be the minimum brightness
 const int peer_led_time = 500; // ms. time to display the peer when multiple peers are the same direction
+const int msPerPattern = 1 * 60 * 1000; // 1 minute  // TODO: tune this/read from SD card
 
 const int numLEDs = 16;
 CRGB leds[numLEDs];  // led[0] = magnetic north
@@ -215,7 +213,7 @@ void radioReceive() {
                   // if the received time is newer than our record...
                   if (tx_peer_gps_updated_at > peer_gps_updated_at[pid]) {
                     // update our record
-                    peer_hue[pid] = reader.getInteger();  // int from 0-255 
+                    peer_hue[pid] = reader.getInteger();  // int from 0-255
                     peer_gps_latitude[pid] = reader.getInteger();
                     peer_gps_longitude[pid] = reader.getInteger();
                   }
@@ -244,11 +242,13 @@ void radioReceive() {
 
 sensors_event_t accel, mag, gyro, temp;
 
-Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1(LSM9DS1_XGCS, LSM9DS1_MCS);  // SPI
+Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();  // i2c
+// TODO: spi is lower power, but more wires
+//Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1(LSM9DS1_XGCS, LSM9DS1_MCS);  // SPI
 
 void setupSensor() {
-  pinMode(LSM9DS1_MCS, OUTPUT);
-  pinMode(LSM9DS1_XGCS, OUTPUT);
+//  pinMode(LSM9DS1_MCS, OUTPUT);
+//  pinMode(LSM9DS1_XGCS, OUTPUT);
 
   if(!lsm.begin()) {
     Serial.print(F("Ooops, no LSM9DS1 detected ... Check your wiring!"));
@@ -273,6 +273,8 @@ void setupSensor() {
   lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
   //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
   //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
+
+  Serial.println("lsm setup!");
 }
 
 /* GPS */
@@ -358,12 +360,17 @@ void setupSD() {
 /* lights */
 
 void setupLights() {
+  Serial.println("Setting up lights...");
+
   // TODO: do things with FastLED here
   // TODO: clock select pin for FastLED to OUTPUT like we do for the SDCARD?
-  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN, LED_CLOCK_PIN, LED_MODE>(leds, numLEDs).setCorrection(TypicalSMD5050);;
+  // TODO: FastLED.setMaxPowerInVoltsAndMilliamps( VOLTS, MAX_MA);
+  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN>(leds, numLEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(DEFAULT_BRIGHTNESS);  // TODO: read this from the SD card
   FastLED.clear();
   FastLED.show();
+
+  Serial.println("done");
 }
 
 /* Setup */
@@ -375,13 +382,21 @@ void setup() {
     delay(1);
   }
 
+  /*
+  // TODO: enable once it is connected
   setupSD();  // do this first to get our configuration
+  */
 
   // do more setup now that we have our configuration
   setupGPS();
   setupRadio();
-  setupSensor();
-  setupLights();
+
+  // TODO: enable once it is connected
+  //setupSensor();
+
+  //setupLights();
+
+  // TODO: set gHue? to myPeerHue?
 
   Serial.println("Starting...");
 }
@@ -392,17 +407,25 @@ elapsedMillis elapsedMs = 0;    // todo: do we care if this overflows?
 elapsedMillis gpsMs = 0;  // TODO: do we want this seperate from elapsedMs? This should wrap around at 1000ms.
 float magneticDeclination = 0.0;
 
+uint8_t gHue = 0; // rotating "base color" used by some patterns
+
 void loop() {
+  // only do this every 10 seconds
+  //EVERY_N_SECONDS( 10 ) { gpsReceive(); }  // TODO: this fastled helper doesn't work for us. maybe if we passed variables
   gpsReceive();
 
   // TODO: if its our time to transmit, radioTransmit(), else wait for radioReceive()
 
   // TODO: check_battery and blink if low
 
-  updateLights();
+  // TODO: uncomment this once the lights are hooked up
+  //updateLights();
 
   // using FastLED's delay allows for dithering
-  FastLED.delay(10);
+  FastLED.delay(1000/FRAMES_PER_SECOND);
+
+  // do some periodic updates
+  EVERY_N_MILLISECONDS( 10 ) { gHue--; } // slowly cycle the "base color" through the rainbow
 }
 
 void sensorReceive() {
@@ -456,8 +479,10 @@ void gpsReceive() {
   Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
 
   Serial.print("Location: ");
+  // TODO: find the docs for the format of this. i think it's ddmm.mmmm
   Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
   Serial.print(", ");
+  // TODO: find the docs for the format of this. i think it's dddmm.mmmm
   Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
 
   Serial.print("Speed (knots): "); Serial.println(GPS.speed);
@@ -469,9 +494,11 @@ void gpsReceive() {
   // calculate magnetic declination in software. the gps chip and library support it with GPS.magvariation
   // but the Ultimate GPS module we are using is configured to store log data instead of calculate it
   Serial.print("GPS Mag variation: "); Serial.println(GPS.magvariation, 4);
-  magneticDeclination = declinationCalculator.get_declination(GPS.latitude, GPS.longitude);  // NOTICE that this is latitude, NOT latitude_fixed
+  magneticDeclination = declinationCalculator.get_declination(GPS.latitude / 100.0, GPS.longitude / 100.0);  // NOTICE that this is latitude, NOT latitude_fixed
   Serial.print("Software Mag variation: "); Serial.println(magneticDeclination, 4);
 
+  /*
+  // TODO: uncomment this once the SD card is setup
   // save to the SD card
   logFile = SD.open(gps_log_filename, FILE_WRITE);
 
@@ -502,8 +529,9 @@ void gpsReceive() {
 
   // close the file:
   logFile.close();
+  */
 
-  Serial.println("done.");
+  Serial.println("done.\n");
 }
 
 // https://forum.arduino.cc/index.php?topic=98147.msg736165#msg736165
@@ -571,8 +599,21 @@ void updateCompassPoints() {
     nextCompassPoint[i] = 0;  // TODO: is this the right syntax?
   }
 
-  // add North
-  compassPoints[0][++nextCompassPoint[0]] = CHSV(0, 255, 255);
+  // add north
+  compassPoints[0][nextCompassPoint[0]] = CHSV(0, 255, 255);
+  nextCompassPoint[0]++;
+
+  // add west (TODO: remove this when done debugging)
+  compassPoints[4][nextCompassPoint[4]] = CHSV(64, 255, 255);
+  nextCompassPoint[4]++;
+
+  // add south (TODO: remove this when done debugging)
+  compassPoints[8][nextCompassPoint[8]] = CHSV(128, 255, 255);
+  nextCompassPoint[8]++;
+
+  // add east (TODO: remove this when done debugging)
+  compassPoints[12][nextCompassPoint[12]] = CHSV(192, 255, 255);
+  nextCompassPoint[12]++;
 
   for (int i = 0; i < numPeers; i++) {
     if (! peer_hue[i]) {
@@ -591,7 +632,8 @@ void updateCompassPoints() {
       &peer_distance
     );
 
-    int compassPointId = map(magneticBearing, 0, 360, 0, numLEDs);
+    // TODO: double check that this is looping the correct way around the LED circle
+    int compassPointId = map(magneticBearing, 0, 360, numLEDs, 0);
 
     if (peer_distance < 10) {
       // TODO: what should we do for really close peers?
@@ -602,12 +644,18 @@ void updateCompassPoints() {
     // TODO: tune this
     int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 255, 10);
 
-    compassPoints[compassPointId][++nextCompassPoint[compassPointId]] = CHSV(peer_hue[i], 255, peer_brightness);
-
-    // TODO: sort every time? i feel like there is a smarter way to insert. it probably doesn't matter
-    // this sort is fast if its already sorted
-    sortArray(compassPoints[compassPointId], nextCompassPoint[compassPointId], firstIsBrighter);
+    compassPoints[compassPointId][nextCompassPoint[compassPointId]] = CHSV(peer_hue[i], 255, peer_brightness);
+    nextCompassPoint[compassPointId]++;
   }
+
+  /*
+  // TODO: this is broken
+  for (int i = 0; i < numLEDs; i++) {
+    // TODO: sort every time? i feel like there is a smarter way to insert. it probably doesn't matter
+    // TODO: i think this is broken
+    sortArray(compassPoints[i], nextCompassPoint[i], firstIsBrighter);
+  }
+  */
 }
 
 void updateLightsForCompass() {
@@ -618,33 +666,32 @@ void updateLightsForCompass() {
     if (nextCompassPoint[i] == 0) {
       // no colors on this light. turn it off
       leds[i] = CRGB::Black;
+      //Serial.print("No color for light #"); Serial.println(i);
       continue;
-    }
+    } else {
+      int j = 0;
+      if (nextCompassPoint[i] > 1) {
+        // there are one or more colors that want to shine on this one light. give each 500ms
+        // TODO: instead give the closer peers (brighter compass points) more time?
+        j = map(((elapsedMs / peer_led_time) % numPeers), 0, numPeers, 0, nextCompassPoint[i]);
+      }
 
-    // there are one or more peers that want to shine. give each 500ms
-    // TODO: instead give the closer peers (brighter compass points) more time?
-    int j = map(((elapsedMs / peer_led_time) % numPeers), 0, numPeers, 0, nextCompassPoint[i]);
-    leds[i] = compassPoints[i][j];
+      //Serial.print("Displaying 1 of "); Serial.print(nextCompassPoint[i]); Serial.print(" colors for light #"); Serial.println(i);
+
+      leds[i] = compassPoints[i][j];
+    }
   }
 }
 
 void updateLightsForHanging() {
   // do awesome patterns
-  int msPerPattern = 1 * 60 * 1000;  // TODO: tune this/read from SD card
-
   int numLightPatterns = 3;  // TODO: how should this work? this seems
 
   // we use the actual time in ms instead of elapsedMs so that all the compasses are in near perfect sync
   long now_ms = now() * 1000 + gpsMs % 1000;  // TODO: type?
 
   // ms since 1970 divided into 1 minute chunks
-  //int patternId = now_ms / msPerPattern % numLightPatterns;
-
-  // since all the compasses should have the exact same time, we should be okay to use the time as a seed
-  // we don't include the ms here because there is likely some drift there
-  // divide by 10 so that we are even more likely to pick the same random number (TODO: bitshift instead?)
-  randomSeed(now() / 10);
-  int patternId = random(numLightPatterns);
+  int patternId = now_ms / msPerPattern % numLightPatterns;
 
   switch (patternId) {
     case 0:
@@ -659,8 +706,9 @@ void updateLightsForHanging() {
   }
 }
 
+/* non-blocking lights are a lot harder than lights using delay! good luck! */
 void updateLightsForLoading() {
-  // TODO: write this
+  // TODO: write this. spin lights and fadeAll
 }
 
 void updateLightsPattern0(long now_ms) {
@@ -701,8 +749,11 @@ bool sensorHanging() {
 }
 
 void updateLights() {
-  // update lights based on the sensor and GPS data
   sensorReceive();
+
+  /*
+  // TODO: uncomment this once the sensor is hooked up
+  // update lights based on the sensor and GPS data
 
   if (sensorFaceDown()) {
     disableLights();
@@ -715,6 +766,35 @@ void updateLights() {
       updateLightsForCompass();
     }
   }
+  */
+  updateLightsForCompass();
+
+  // debugging sensors
+  Serial.print("mag:  ");
+    Serial.print(mag.magnetic.x); Serial.print("x ");
+    Serial.print(mag.magnetic.y); Serial.print("y ");
+    Serial.print(mag.magnetic.z); Serial.println("z ");
+
+  Serial.print("gyro: ");
+    Serial.print(gyro.gyro.x); Serial.print("x ");
+    Serial.print(gyro.gyro.y); Serial.print("y ");
+    Serial.print(gyro.gyro.z); Serial.println("z ");
+
+  /*
+  // TODO: this keep reading negative numbers...
+  Serial.print("temp: "); Serial.println(temp.temperature);
+  */
+
+  // debugging lights
+  for (int i = 0; i < numLEDs; i++) {
+    if (leds[i]) {
+      // TODO: better logging
+      Serial.print("X");
+    } else {
+      Serial.print("O");
+    }
+  }
+  Serial.println();
 
   // display the colors
   FastLED.show();
