@@ -12,8 +12,12 @@
 #include <SD.h>
 #include <SPI.h>
 #include <TimeLib.h>
-#include <TinyPacks.h>
+#include <TinyPacks.h>  // TODO: replace TinyPacks with nanopb
 #include <Wire.h>
+
+#include <pb_decode.h>
+#include <pb_encode.h>
+#include "smart_compass.pb.h"
 
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT          3   // already wired for us
@@ -111,19 +115,24 @@ void radioTransmit() {
   // Pack
   // TODO: versioning? https://github.com/nanopb/nanopb ?
   // TODO: time this. if it takes a long time, add a FastLED.delay(2) for some dithering time
+  Serial.print("Message: n=");
   writer.setBuffer(radio_tx_buf, RH_RF95_MAX_MESSAGE_LEN);
   writer.openMap();
     writer.putString("n");  // network id
     writer.putInteger(my_network_id);  // TODO: read network id from SD card. whats a reasonable max length?
+    Serial.print(my_network_id);
 
     writer.putString("p");  // peer id
     writer.putInteger(my_peer_id);  // TODO: read peer id from SD card. integer from 0-255 to map to a palette (rainbow spectrum by default)
+    Serial.print(" p="); Serial.print(my_peer_id);
 
     int time_now = now();  // seconds precision is fine but maybe we should send millis to get a better sync
     writer.putString("t");
     writer.putInteger(time_now);
+    Serial.print(" t="); Serial.print(time_now);
 
     writer.putString("g");
+    Serial.print(" g={");
     writer.openList();
       for (int pid = 0; pid < numPeers; pid++) {
         if (! peer_hue[pid]) {
@@ -132,6 +141,10 @@ void radioTransmit() {
         }
 
         packed_peers++;
+
+        Serial.print(" ");
+        Serial.print(pid);
+        Serial.print(" ");
 
         writer.openList();
           // TODO: write peer info // TODO: do this way more efficiently
@@ -143,12 +156,15 @@ void radioTransmit() {
         writer.close();
       }
     writer.close();
+    Serial.print("}");
   writer.close();
+
+  Serial.print(" EOM... ");
 
   if (packed_peers) {
     // sending will wait for any previous send with waitPacketSent()
     rf95.send((uint8_t *)radio_tx_buf, writer.getOffset());
-    Serial.println("done.");
+    Serial.println("sent.");
   } else {
     Serial.println("No peer info to send.");
   }
@@ -175,10 +191,12 @@ void radioReceive() {
       Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
 
+      // TODO: this isn't working. every message fails to open the map
       reader.setBuffer(radio_rx_buf, radio_rx_buf_len);
       reader.next();
       if(!reader.openMap()) {
-        Serial.println("Received someone else's message");
+        Serial.print("Received someone else's message: ");
+        Serial.println(reader.getType());
         // TODO: do something fun with the lights?
         return;
       }
@@ -469,9 +487,6 @@ void tcDisable()
 void setup() {
   // TODO: cut this into multiple functions
   Serial.begin(115200);
-  while (!Serial) {  // TODO: remove this when done debugging otherwise it won't start without the usb plugged in
-    delay(1);
-  }
 
   /*
   // TODO: enable once it is connected
@@ -479,10 +494,10 @@ void setup() {
   */
 
   // TODO: read SD card here to configure things
-  my_peer_id = 0;  // TODO: read from SD
+  my_peer_id = 1;  // TODO: read from SD
   my_network_id = 0; // TODO: read from SD card
 
-  peer_hue[my_peer_id] = 255;  // TODO: read form SD card
+  peer_hue[my_peer_id] = 128;  // TODO: read form SD card
 
   // do more setup now that we have our configuration
   setupGPS();

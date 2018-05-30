@@ -1,1 +1,4 @@
 59.79 x 77.8 mm
+
+
+../libraries/nanopb-0.3.9.1-macosx-x86/generator-bin/protoc --nanopb_out=. smart_compass.pb
