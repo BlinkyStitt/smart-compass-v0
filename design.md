@@ -1,5 +1,9 @@
 # Wireless mesh smart compass
 
+Forked Libraries:
+- Adafruit_GPS from https://github.com/WyseNynja/Adafruit_GPS
+- AP_Declination from https://github.com/WyseNynja/ardupilot
+
 Each node has:
 - sd card
 - 9-DOF Accel/Magnetometer/Gyro+Temp
