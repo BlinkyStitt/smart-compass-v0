@@ -11,8 +11,8 @@
 #include <RH_RF95.h>
 #include <SD.h>
 #include <SPI.h>
+// TODO: fork TimeLib to include ms
 #include <TimeLib.h>
-#include <TinyPacks.h>  // TODO: replace TinyPacks with nanopb
 #include <Wire.h>
 
 #include <pb_decode.h>
@@ -35,25 +35,27 @@
 
 #define LED_CHIPSET        NEOPIXEL
 #define DEFAULT_BRIGHTNESS 100  // TODO: read from SD (maybe this should be on the volume knob)
-#define FRAMES_PER_SECOND  1  // TODO: bump this to 120
+#define FRAMES_PER_SECOND  120  // TODO: bump this to 120
 
 // TODO: read from SD card
-const int seconds_to_transmit = 10;  // TODO: tune this
-const int max_peer_distance = 6000; // meters. peers this far away and further will be the minimum brightness
+const int seconds_to_transmit = 4;  // TODO: tune this
+const int max_peer_distance = 5000; // meters. peers this far away and further will be the minimum brightness
 const int peer_led_time = 500; // ms. time to display the peer when multiple peers are the same direction
 const int msPerPattern = 1 * 60 * 1000; // 1 minute  // TODO: tune this/read from SD card
 
 const int numLEDs = 16;
 CRGB leds[numLEDs];  // led[0] = magnetic north
 
-const int numPeers = 4;  // TODO: this should be the max. read from the SD card instead
-int my_peer_id = 0;  // TODO: read from the SD card instead
-int my_network_id = 0;  // TODO: read from the SD card instead
+const int numPeers = 8;  // TODO: this should be the max. read from the SD card instead
+
+SmartCompassMessage compass_messages[numPeers] = { SmartCompassMessage_init_default };
+
+int my_network_id, my_peer_id, my_hue, my_saturation;
 
 /* Radio */
 
 #define RF95_FREQ 915.0  // todo: read this from sd? 915.0 or 868.0MHz
-#define RF95_POWER 23    // todo: read this from sd? 5-23dBm
+#define RF95_POWER 20    // todo: read this from sd? 5-23dBm
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
@@ -92,14 +94,7 @@ void setupRadio() {
   rf95.setTxPower(RF95_POWER, false);
 }
 
-PackWriter writer;
-
-uint8_t radio_tx_buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
-
-long peer_gps_updated_at[numPeers];
-int peer_hue[numPeers];  // TODO: this is only 0-255, so use byte instead?
-long peer_gps_latitude[numPeers];
-long peer_gps_longitude[numPeers];
+uint8_t data[] = "Hello World!";
 
 void radioTransmit() {
   if (timeStatus() == timeNotSet) {
@@ -108,164 +103,130 @@ void radioTransmit() {
   }
 
   // TODO: should we transmit peer data even if we don't have local time set? maybe set time from a peer?
-  Serial.print("My time to transmit ("); Serial.print(now()); Serial.print(")... ");
+  Serial.print("My time to transmit ("); Serial.print(now()); Serial.println(")... ");
 
-  int packed_peers = 0;
+  // TODO: what if this is really slow? we should transmit 1 peer per loop so that we run updateLights/Sensors/etc.
+  for (int pid = 0; pid < numPeers; pid++) {
+    if (! compass_messages[pid].hue) {
+      // if we don't have any info for this peer, skip sending anything
+      // TODO: this blocks us from being able to use pure red
+      continue;
+    }
 
-  // Pack
-  // TODO: versioning? https://github.com/nanopb/nanopb ?
-  // TODO: time this. if it takes a long time, add a FastLED.delay(2) for some dithering time
-  Serial.print("Message: n=");
-  writer.setBuffer(radio_tx_buf, RH_RF95_MAX_MESSAGE_LEN);
-  writer.openMap();
-    writer.putString("n");  // network id
-    writer.putInteger(my_network_id);  // TODO: read network id from SD card. whats a reasonable max length?
-    Serial.print(my_network_id);
+    Serial.print("Message: ");
 
-    writer.putString("p");  // peer id
-    writer.putInteger(my_peer_id);  // TODO: read peer id from SD card. integer from 0-255 to map to a palette (rainbow spectrum by default)
-    Serial.print(" p="); Serial.print(my_peer_id);
+    Serial.print("n="); Serial.print(compass_messages[pid].network_id);
 
-    int time_now = now();  // seconds precision is fine but maybe we should send millis to get a better sync
-    writer.putString("t");
-    writer.putInteger(time_now);
-    Serial.print(" t="); Serial.print(time_now);
+    Serial.print(" txp="); Serial.print(compass_messages[pid].tx_peer_id);
 
-    writer.putString("g");
-    Serial.print(" g={");
-    writer.openList();
-      for (int pid = 0; pid < numPeers; pid++) {
-        if (! peer_hue[pid]) {
-          // if we don't have any info for this peer, skip sending anything
-          continue;
-        }
+    Serial.print(" p="); Serial.print(compass_messages[pid].peer_id);
 
-        packed_peers++;
+    long time_now = now();  // seconds precision is fine but maybe we should send millis to get a better sync
 
-        Serial.print(" ");
-        Serial.print(pid);
-        Serial.print(" ");
+    Serial.print(" now="); Serial.print(time_now);
 
-        writer.openList();
-          // TODO: write peer info // TODO: do this way more efficiently
-          writer.putInteger(pid);  // TODO: read peer id from SD card
-          writer.putInteger(time_now - peer_gps_updated_at[pid]);  // seconds since gps was last updated
-          writer.putInteger(peer_hue[pid]);  // int from 0-255
-          writer.putInteger(peer_gps_latitude[pid]);
-          writer.putInteger(peer_gps_longitude[pid]);
-        writer.close();
-      }
-    writer.close();
-    Serial.print("}");
-  writer.close();
+    Serial.print(" t="); Serial.print(compass_messages[pid].last_updated_at);
 
-  Serial.print(" EOM... ");
+    Serial.print(" lat="); Serial.print(compass_messages[pid].latitude);
 
-  if (packed_peers) {
-    // sending will wait for any previous send with waitPacketSent()
-    rf95.send((uint8_t *)radio_tx_buf, writer.getOffset());
-    Serial.println("sent.");
-  } else {
-    Serial.println("No peer info to send.");
+    Serial.print(" lon="); Serial.print(compass_messages[pid].longitude);
+
+    Serial.print(" EOM... ");
+
+    // TODO: this should be static
+    // i had seperate buffers for tx and for rx, but that doesn't seem necessary
+    uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
+
+    /* Create a stream that will write to our buffer. */
+    pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
+
+    if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
+      Serial.println("ERROR ENCODING!");
+      return;
+    }
+
+    // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs
+    Serial.print("sending... ");
+//    rf95.send(data, sizeof(data));
+    rf95.send((uint8_t *)radio_buf, stream.bytes_written);
+    while (rf95.mode() == RH_RF95_MODE_TX) {
+      FastLED.delay(1);
+    }
+    Serial.println("done.");
+
+    Serial.print("Sent packed message: ");
+//    Serial.println((char*)data);
+    Serial.println((char*)radio_buf);
   }
-
-  // We don't actually need to block until the transmitter is no longer transmitting since we won't transmit again for a while
-  // also, send will do its own waiting if it needs to
-  /*
-  Serial.println("Waiting for packet to complete...");
-  FastLED.delay(10);
-  rf95.waitPacketSent();  // TODO: this might get in the way. maybe right something that waits with FastLED.delay?
-  */
 }
-
-PackReader reader;
-
-uint8_t radio_rx_buf[RH_RF95_MAX_MESSAGE_LEN];  // keep this off the stack
-uint8_t radio_rx_buf_len = 0;  // this will be set when its received
 
 void radioReceive() {
   // Serial.println("Checking for reply...");
   if (rf95.available()) {
+
+    // TODO: this should be static
+    // i had seperate buffers for tx and for rx, but that doesn't seem necessary
+    uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
+    uint8_t radio_buf_len = sizeof(radio_buf);  // TODO: protobuf uses size_t, but radio uses uint8_t
+
     // Should be a reply message for us now
-    if (rf95.recv(radio_rx_buf, &radio_rx_buf_len)) {
+    if (rf95.recv(radio_buf, &radio_buf_len)) {
       Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
 
-      // TODO: this isn't working. every message fails to open the map
-      reader.setBuffer(radio_rx_buf, radio_rx_buf_len);
-      reader.next();
-      if(!reader.openMap()) {
-        Serial.print("Received someone else's message: ");
-        Serial.println(reader.getType());
-        // TODO: do something fun with the lights?
+      Serial.print("Received packed message: ");
+      Serial.println((char*)radio_buf);
+      FastLED.delay(10);  // TODO: remove this
+
+      /* Allocate space for the decoded message. */
+      SmartCompassMessage message = SmartCompassMessage_init_default;
+
+      pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
+      if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
+        Serial.print("Decoding failed: "); Serial.println(PB_GET_ERROR(&stream));
         return;
       }
 
-      int tx_network_id, tx_peer_id, tx_peer_time;
-
-      Serial.print("Message:");
-      while (reader.next()) {
-        if (reader.match("n")) {
-          tx_network_id = reader.getBoolean();
-
-          Serial.print(" "); Serial.print(tx_network_id);
-
-          if (tx_network_id != my_network_id) {
-            break;
-          }
-        } else if (reader.match("p")) {
-          tx_peer_id = reader.getInteger();
-
-          Serial.print(" "); Serial.print(tx_peer_id);
-
-          if (tx_peer_id == my_peer_id) {
-            Serial.println("peer ID collision!");
-            break;
-          }
-        } else if (reader.match("t")) {
-          tx_peer_time = reader.getInteger();
-
-          Serial.print(" "); Serial.print(tx_peer_time);
-        } else if (reader.match("g")) {
-          if (reader.openList()) {
-            while (reader.next()) {
-              if (reader.openList()) {
-                int pid = reader.getInteger();
-
-                // ignore own stats from other peers
-                if (pid != my_peer_id) {
-                  // TODO: if this data is older than our local data, ignore it
-                  // TODO: subtracting here seems backwards
-                  int tx_peer_gps_updated_at = tx_peer_time - reader.getInteger();  // seconds since gps was last updated
-
-                  // if the received time is newer than our record...
-                  if (tx_peer_gps_updated_at > peer_gps_updated_at[pid]) {
-                    // update our record
-                    peer_hue[pid] = reader.getInteger();  // int from 0-255
-                    peer_gps_latitude[pid] = reader.getInteger();
-                    peer_gps_longitude[pid] = reader.getInteger();
-                  }
-                }
-
-                // TODO: i'm pretty sure it's fine if we close without reading the other values in the case pid == my_peer_id
-                reader.close();
-              }
-            }
-            reader.close();
-          }
-        } else {
-          Serial.print(" UNK");
-          reader.next();
-        }
+      if (message.network_id != my_network_id) {
+        Serial.print("Message is for another network: "); Serial.println(message.network_id);
+        return;
       }
 
-      reader.close();
-      Serial.println(" EOM");
+      if (message.tx_peer_id == my_peer_id) {
+        Serial.print("ERROR! Peer id collision! "); Serial.println(my_peer_id);
+        return;
+      }
 
+      if (message.peer_id == my_peer_id) {
+        Serial.println("Ignoring stats about myself.");
+        return;
+      }
+
+      if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
+        Serial.println("Ignoring old message.");
+        return;
+      }
+
+      compass_messages[message.peer_id].last_updated_at = message.last_updated_at;
+      compass_messages[message.peer_id].hue = message.hue;
+      compass_messages[message.peer_id].saturation = message.saturation;
+      compass_messages[message.peer_id].latitude = message.latitude;
+      compass_messages[message.peer_id].longitude = message.longitude;
+
+      Serial.print("Message for peer #"); Serial.print(message.peer_id);
+      Serial.print(" from #"); Serial.print(message.tx_peer_id);
+      Serial.print(": t="); Serial.print(message.tx_time);
+      Serial.print(" h="); Serial.print(message.hue);
+      Serial.print(" s="); Serial.print(message.saturation);
+      Serial.print(" lat="); Serial.print(message.latitude);
+      Serial.print(" lon="); Serial.println(message.longitude);
+
+      // TODO: move the rest of this from TinyPack to protobuf
+      /*
       if (timeStatus() != timeSet) {
-        // TODO: set time
+        // TODO: set time from peer's time (use ms)
       }
-
+      */
     } else {
       Serial.println("Receive failed");
     }
@@ -317,6 +278,8 @@ void setupSensor() {
 Adafruit_GPS GPS(&gpsSerial);
 
 void setupGPS() {
+  Serial.print("Setting up GPS...");
+
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's
   GPS.begin(9600);
   gpsSerial.begin(9600);
@@ -347,6 +310,8 @@ void setupGPS() {
   gpsSerial.println(PMTK_Q_RELEASE);
 
   // TODO: wait until we get a GPS fix and then set the clock?
+
+  Serial.println("done.");
 }
 
 /* SD */
@@ -355,6 +320,8 @@ String gps_log_filename = "";
 File logFile;
 
 void setupSD() {
+  Serial.print("Setting up SD...");
+
   pinMode(SDCARD_CS_PIN, OUTPUT);
 
   if (!SD.begin(SDCARD_CS_PIN)) {
@@ -383,12 +350,14 @@ void setupSD() {
     // if the file didn't open, print an error:
     Serial.println("error opening test.txt");
   }
+
+  Serial.println("done.");
 }
 
 /* lights */
 
 void setupLights() {
-  Serial.println("Setting up lights...");
+  Serial.print("Setting up lights...");
 
   // TODO: do things with FastLED here
   // TODO: clock select pin for FastLED to OUTPUT like we do for the SDCARD?
@@ -403,8 +372,7 @@ void setupLights() {
 
 /* interrupts - https://gist.github.com/nonsintetic/ad13e70f164801325f5f552f84306d6f */
 
-uint32_t sampleRate = 50; //sample rate of the sine wave in Hertz, how many times per second the TC5_Handler() function gets called per second basically
-
+uint32_t sampleRate = 50; // how many times per second the TC5_Handler() function gets called per second basically
 
 //this function gets called by the interrupt at <sampleRate>Hertz
 void TC5_Handler (void) {
@@ -424,8 +392,7 @@ void TC5_Handler (void) {
 //Configures the TC to generate output events at the sample frequency.
 //Configures the TC in Frequency Generation mode, with an event output once
 //each time the audio sample frequency period expires.
- void tcConfigure(int sampleRate)
-{
+void tcConfigure(int sampleRate) {
  // Enable GCLK for TCC2 and TC5 (timer counter input clock)
  GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCM_TC4_TC5)) ;
  while (GCLK->STATUS.bit.SYNCBUSY);
@@ -455,29 +422,25 @@ void TC5_Handler (void) {
 
 //Function that is used to check if TC5 is done syncing
 //returns true when it is done syncing
-bool tcIsSyncing()
-{
+bool tcIsSyncing() {
   return TC5->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY;
 }
 
 //This function enables TC5 and waits for it to be ready
-void tcStartCounter()
-{
+void tcStartCounter() {
   TC5->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE; //set the CTRLA register
   while (tcIsSyncing()); //wait until snyc'd
 }
 
 //Reset TC5
-void tcReset()
-{
+void tcReset() {
   TC5->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
   while (tcIsSyncing());
   while (TC5->COUNT16.CTRLA.bit.SWRST);
 }
 
 //disable TC5
-void tcDisable()
-{
+void tcDisable() {
   TC5->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
   while (tcIsSyncing());
 }
@@ -488,16 +451,38 @@ void setup() {
   // TODO: cut this into multiple functions
   Serial.begin(115200);
 
+  delay(1000);
+
+  Serial.println("Setting up...");
   /*
   // TODO: enable once it is connected
   setupSD();  // do this first to get our configuration
   */
 
-  // TODO: read SD card here to configure things
-  my_peer_id = 1;  // TODO: read from SD
-  my_network_id = 0; // TODO: read from SD card
+  randomSeed(analogRead(5));
 
-  peer_hue[my_peer_id] = 128;  // TODO: read form SD card
+  // TODO: read SD card here to configure things
+  my_network_id = 0;
+  my_peer_id = random(1, numPeers);  // TODO: don't use 0 since it seems to be the default when we have trouble parsing
+  my_hue = 128;
+  my_saturation = 50;
+
+  Serial.print("My peer id: "); Serial.println(my_peer_id);
+
+  // initialize compass messages
+  for (int i = 0; i < numPeers; i++) {
+    Serial.print("Setting up peer compass message "); Serial.println(i);
+    // TODO: use protobuf defaults?
+    compass_messages[i].network_id = my_network_id;
+    compass_messages[i].tx_peer_id = my_peer_id;
+    compass_messages[i].peer_id = i;
+
+    // hue, latitude, longitude are set for remote peers when a message for this peer is received
+    // latitude, longitude for my_peer_id are set when GPS data is received
+  }
+
+  compass_messages[my_peer_id].hue = my_hue;
+  compass_messages[my_peer_id].saturation = my_saturation;
 
   // do more setup now that we have our configuration
   setupGPS();
@@ -527,8 +512,8 @@ uint8_t gHue = 0; // rotating "base color" used by some patterns
 bool should_transmit = true;
 
 void loop() {
-  // TODO: uncomment this once the lights are hooked up
-  //updateLights();
+  // TODO: uncomment when this is hooked up (especially sensors since that seems to block)
+  // updateLights();
 
   // TODO: only do this every 10 seconds
   // TODO: fastled EVERY_N_SECONDS helper doesn't work for us. maybe if we passed variables
@@ -537,10 +522,7 @@ void loop() {
   // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
   // TODO: this uses the radio way more than necessary. change this
   int time_slot_id = now() / seconds_to_transmit % numPeers;
-//  Serial.print("Now: "); Serial.println(now());
-//  Serial.print("Time slot id: "); Serial.println(time_slot_id);
   if (time_slot_id == my_peer_id) {  // TODO: AND if we haven't already transmitted for this time slot!
-//    Serial.print("Should transmit: "); Serial.println(should_transmit);
     if (should_transmit) {
       radioTransmit();
       should_transmit = false;
@@ -608,12 +590,11 @@ void gpsReceive() {
   // TODO: should we only do this if there is more drift?
   gpsMs = GPS.milliseconds;
 
-  peer_gps_updated_at[my_peer_id] = now();
+  compass_messages[my_peer_id].last_updated_at = now();
+  compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
+  compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
-  // TODO: I don't think GPS.*_fixed has sign for S/W. either modify upstream or multiple by -1 here
-  peer_gps_longitude[my_peer_id] = GPS.longitude_fixed;
-  peer_gps_latitude[my_peer_id] = GPS.latitude_fixed;
-
+  // TODO: do we really need to do this every time? how expensive is this?
   // calculate magnetic declination in software. the gps chip and library support it with GPS.magvariation
   // but the Ultimate GPS module we are using is configured to store log data instead of calculate it
   magneticDeclination = declinationCalculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
@@ -770,8 +751,8 @@ void updateCompassPoints() {
   nextCompassPoint[12]++;
 
   for (int i = 0; i < numPeers; i++) {
-    if (! peer_hue[i]) {
-      // skip the peer if we don't have any gps data for them
+    if (! compass_messages[i].saturation) {
+      // skip the peer if we don't have any color data for them
       continue;
     }
     if (i == my_peer_id) {
@@ -781,25 +762,25 @@ void updateCompassPoints() {
 
     float peer_distance;  // meters
     float magneticBearing = course_to(
-      peer_gps_latitude[my_peer_id], peer_gps_longitude[my_peer_id],
-      peer_gps_latitude[i], peer_gps_longitude[i],
+      compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
+      compass_messages[i].latitude, compass_messages[i].longitude,
       &peer_distance
     );
-
-    // TODO: double check that this is looping the correct way around the LED circle
-    // 0 -> 360 should go clockwise, but it looks like the lights are wired counter-clockwise
-    int compassPointId = map(magneticBearing, 0, 360, numLEDs, 0);
 
     if (peer_distance < 10) {
       // TODO: what should we do for really close peers?
       continue;
     }
 
+    // TODO: double check that this is looping the correct way around the LED circle
+    // 0 -> 360 should go clockwise, but it looks like the lights are wired counter-clockwise
+    int compassPointId = map(magneticBearing, 0, 360, numLEDs, 0);
+
     // convert distance to brightness. the closer, the brighter //TODO: scurve instead of linear?
     // TODO: tune this
     int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 10, 255);
 
-    compassPoints[compassPointId][nextCompassPoint[compassPointId]] = CHSV(peer_hue[i], 255, peer_brightness);
+    compassPoints[compassPointId][nextCompassPoint[compassPointId]] = CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
     nextCompassPoint[compassPointId]++;
   }
 
@@ -876,8 +857,7 @@ void sinelon() {
 // This function draws rainbows with an ever-changing,
 // widely-varying set of parameters.
 // https://gist.github.com/kriegsman/964de772d64c502760e5
-void pride()
-{
+void pride() {
   static uint16_t sPseudotime = 0;
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
@@ -978,8 +958,7 @@ void updateLights() {
 //   to maintain a stable frame rate.
 // Thanks to flashing disco strobe example at https://gist.github.com/kriegsman
 // TODO: how does static work? i think we should use this pattern for our other functions
-static void delayToSyncFrameRate(uint8_t framesPerSecond)
-{
+static void delayToSyncFrameRate(uint8_t framesPerSecond) {
   static uint32_t msprev = 0;
 
   uint32_t mscur = millis();
