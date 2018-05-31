@@ -897,7 +897,6 @@ void pride() {
   }
 }
 
-
 /* non-blocking lights are a lot harder than lights using delay! good luck! */
 void updateLightsForLoading() {
   // TODO: what pattern? sinelon is boring
@@ -964,7 +963,7 @@ static void delayToSyncFrameRate(uint8_t framesPerSecond) {
   uint32_t mscur = millis();
   uint16_t msdelta = mscur - msprev;
   uint16_t mstargetdelta = 1000 / framesPerSecond;
-  if( msdelta < mstargetdelta) {
+  if (msdelta < mstargetdelta) {
     // using FastLED's delay allows for dithering
     FastLED.delay(mstargetdelta - msdelta);
   }
