@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-/* TODO: int32 is bigger than we need for most of these */
+// int32 is bigger than we need for most of these, but they are all stored as varints
 
 message SmartCompassMessage {
   int32 network_id = 1;

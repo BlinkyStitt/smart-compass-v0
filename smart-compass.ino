@@ -38,7 +38,7 @@
 #define FRAMES_PER_SECOND  120  // TODO: bump this to 120
 
 // TODO: read from SD card
-const int seconds_to_transmit = 4;  // TODO: tune this
+const int broadcast_time_ms = 250;  // TODO: tune this
 const int max_peer_distance = 5000; // meters. peers this far away and further will be the minimum brightness
 const int peer_led_time = 500; // ms. time to display the peer when multiple peers are the same direction
 const int msPerPattern = 1 * 60 * 1000; // 1 minute  // TODO: tune this/read from SD card
@@ -96,7 +96,7 @@ void setupRadio() {
 
 uint8_t data[] = "Hello World!";
 
-void radioTransmit() {
+void radioTransmit(int pid) {
   if (timeStatus() == timeNotSet) {
     Serial.println("Time not set! Skipping transmission.");
     return;
@@ -106,68 +106,69 @@ void radioTransmit() {
   Serial.print("My time to transmit ("); Serial.print(now()); Serial.println(")... ");
 
   // TODO: what if this is really slow? we should transmit 1 peer per loop so that we run updateLights/Sensors/etc.
-  for (int pid = 0; pid < numPeers; pid++) {
-    if (! compass_messages[pid].hue) {
-      // if we don't have any info for this peer, skip sending anything
-      // TODO: this blocks us from being able to use pure red
-      continue;
-    }
-
-    Serial.print("Message: ");
-
-    Serial.print("n="); Serial.print(compass_messages[pid].network_id);
-
-    Serial.print(" txp="); Serial.print(compass_messages[pid].tx_peer_id);
-
-    Serial.print(" p="); Serial.print(compass_messages[pid].peer_id);
-
-    long time_now = now();  // seconds precision is fine but maybe we should send millis to get a better sync
-
-    Serial.print(" now="); Serial.print(time_now);
-
-    Serial.print(" t="); Serial.print(compass_messages[pid].last_updated_at);
-
-    Serial.print(" lat="); Serial.print(compass_messages[pid].latitude);
-
-    Serial.print(" lon="); Serial.print(compass_messages[pid].longitude);
-
-    Serial.print(" EOM... ");
-
-    // TODO: this should be static
-    // i had seperate buffers for tx and for rx, but that doesn't seem necessary
-    uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
-
-    /* Create a stream that will write to our buffer. */
-    pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
-
-    if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
-      Serial.println("ERROR ENCODING!");
-      return;
-    }
-
-    // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs
-    Serial.print("sending... ");
-//    rf95.send(data, sizeof(data));
-    rf95.send((uint8_t *)radio_buf, stream.bytes_written);
-    while (rf95.mode() == RH_RF95_MODE_TX) {
-      FastLED.delay(1);
-    }
-    Serial.println("done.");
-
-    Serial.print("Sent packed message: ");
-//    Serial.println((char*)data);
-    Serial.println((char*)radio_buf);
+  if (! compass_messages[pid].hue) {
+    // if we don't have any info for this peer, skip sending anything
+    // TODO: this blocks us from being able to use pure red
+    Serial.print("No peer data to transmit for "); Serial.println(pid);
+    return;
   }
+
+  Serial.print("Message: ");
+
+  Serial.print("n="); Serial.print(compass_messages[pid].network_id);
+
+  Serial.print(" txp="); Serial.print(compass_messages[pid].tx_peer_id);
+
+  Serial.print(" p="); Serial.print(compass_messages[pid].peer_id);
+
+  long time_now = now_millis();  // seconds precision is fine but maybe we should send millis to get a better sync
+  compass_messages[pid].tx_time = time_now;
+
+  Serial.print(" now="); Serial.print(time_now);
+
+  Serial.print(" t="); Serial.print(compass_messages[pid].last_updated_at);
+
+  Serial.print(" lat="); Serial.print(compass_messages[pid].latitude);
+
+  Serial.print(" lon="); Serial.print(compass_messages[pid].longitude);
+
+  Serial.print(" EOM... ");
+
+  // TODO: this should be static or global
+  // i had seperate buffers for tx and for rx, but that doesn't seem necessary
+  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
+
+  // TODO: I think this should be static or global
+  /* Create a stream that will write to our buffer. */
+  pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
+
+  if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
+    Serial.println("ERROR ENCODING!");
+    return;
+  }
+
+  // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs
+  Serial.print("sending... ");
+  rf95.send((uint8_t *)radio_buf, stream.bytes_written);
+  while (rf95.mode() == RH_RF95_MODE_TX) {
+    FastLED.delay(1);
+  }
+  Serial.println("done.");
+
+//  Serial.print("Sent packed message: ");
+//  Serial.println((char*)radio_buf);
 }
 
 void radioReceive() {
+  // i had seperate buffers for tx and for rx, but that doesn't seem necessary
+  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
+  static uint8_t radio_buf_len;
+  static SmartCompassMessage message = SmartCompassMessage_init_default;
+
   // Serial.println("Checking for reply...");
   if (rf95.available()) {
-
-    // TODO: this should be static
-    // i had seperate buffers for tx and for rx, but that doesn't seem necessary
-    uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];  // TODO: keep this off the stack
-    uint8_t radio_buf_len = sizeof(radio_buf);  // TODO: protobuf uses size_t, but radio uses uint8_t
+    //radio_buf_len = sizeof(radio_buf);  // TODO: protobuf uses size_t, but radio uses uint8_t
+    radio_buf_len = RH_RF95_MAX_MESSAGE_LEN;  // reset this to max length otherwise it won't receive the full message!
 
     // Should be a reply message for us now
     if (rf95.recv(radio_buf, &radio_buf_len)) {
@@ -177,9 +178,6 @@ void radioReceive() {
       Serial.print("Received packed message: ");
       Serial.println((char*)radio_buf);
       FastLED.delay(10);  // TODO: remove this
-
-      /* Allocate space for the decoded message. */
-      SmartCompassMessage message = SmartCompassMessage_init_default;
 
       pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
       if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
@@ -509,9 +507,12 @@ elapsedMillis gpsMs = 0;  // TODO: do we want this seperate from elapsedMs? This
 float magneticDeclination = 0.0;
 
 uint8_t gHue = 0; // rotating "base color" used by some patterns
-bool should_transmit = true;
+bool should_transmit[numPeers] = {true};
 
 void loop() {
+  static int time_segments = numPeers * numPeers;  // each peer needs enough time to broadcast every other peer
+  static int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
+
   // TODO: uncomment when this is hooked up (especially sensors since that seems to block)
   // updateLights();
 
@@ -521,16 +522,24 @@ void loop() {
 
   // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
   // TODO: this uses the radio way more than necessary. change this
-  int time_slot_id = now() / seconds_to_transmit % numPeers;
-  if (time_slot_id == my_peer_id) {  // TODO: AND if we haven't already transmitted for this time slot!
-    if (should_transmit) {
-      radioTransmit();
-      should_transmit = false;
+
+  time_segment_id = now_millis() / broadcast_time_ms % time_segments;
+
+  broadcasting_peer_id = time_segment_id / numPeers;
+
+  broadcasted_peer_id = time_segment_id % numPeers;
+
+  if (broadcasting_peer_id == my_peer_id) {  // TODO: AND if we haven't already transmitted for this time slot!
+    if (should_transmit[broadcasted_peer_id]) {
+      radioTransmit(broadcasted_peer_id);
+      should_transmit[broadcasted_peer_id] = false;
     } else {
       // TODO: it's our time to transmit, but we already did. what should we do?
     }
   } else {
-    should_transmit = true;
+    for (int i = 0; i < numPeers; i++) {
+      should_transmit[i] = true;
+    }
     radioReceive();
   }
 
@@ -555,9 +564,9 @@ void sensorReceive() {
     Serial.print(gyro.gyro.z); Serial.println("z");
 }
 
-AP_Declination declinationCalculator;
-
 void gpsReceive() {
+  static AP_Declination declinationCalculator;
+
   // if no new sentence is received... (updates at most every 100 mHz thanks to PMTK_SET_NMEA_UPDATE_*)
   if (!GPS.newNMEAreceived()) {
     // exit
@@ -706,15 +715,15 @@ float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
 }
 
 float check_battery() {
-    // TODO: do something with this
-    float measuredvbat = analogRead(VBAT_PIN);
-    measuredvbat *= 2;    // we divided by 2, so multiply back
-    measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
-    measuredvbat /= 1024; // convert to voltage
-    Serial.print("VBat: " ); Serial.println(measuredvbat);
+  // TODO: do something with this
+  float measuredvbat = analogRead(VBAT_PIN);
+  measuredvbat *= 2;    // we divided by 2, so multiply back
+  measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
+  measuredvbat /= 1024; // convert to voltage
+  Serial.print("VBat: " ); Serial.println(measuredvbat);
 
-    // return 0-3; dead, low, okay, full
-    return measuredvbat;
+  // return 0-3; dead, low, okay, full
+  return measuredvbat;
 }
 
 // compare compass points
@@ -722,7 +731,6 @@ bool firstIsBrighter(CHSV first, CHSV second) {
   return first.value > second.value;
 }
 
-// this is not very efficient
 const int maxCompassPoints = numPeers + 1;
 CHSV compassPoints[numLEDs][maxCompassPoints];
 int nextCompassPoint[numLEDs] = {0};
