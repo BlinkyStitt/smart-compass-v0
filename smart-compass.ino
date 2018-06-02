@@ -35,10 +35,10 @@
 
 #define LED_CHIPSET NEOPIXEL
 #define DEFAULT_BRIGHTNESS 100 // TODO: read from SD (maybe this should be on the volume knob)
-#define FRAMES_PER_SECOND 120  // TODO: bump this to 120
+#define FRAMES_PER_SECOND 30  // TODO: bump this to 120
 
 // TODO: read from SD card
-const int broadcast_time_ms = 250;      // TODO: tune this
+const int broadcast_time_ms = 250;  // TODO: 1 second is way too long. that ends up being
 const int max_peer_distance = 5000;     // meters. peers this far away and further will be the minimum brightness
 const int peer_led_time = 500;          // ms. time to display the peer when multiple peers are the same direction
 const int msPerPattern = 1 * 60 * 1000; // 1 minute  // TODO: tune this/read from SD card
@@ -46,7 +46,7 @@ const int msPerPattern = 1 * 60 * 1000; // 1 minute  // TODO: tune this/read fro
 const int numLEDs = 16;
 CRGB leds[numLEDs]; // led[0] = magnetic north
 
-const int numPeers = 6; // TODO: this should be the max. read from the SD card instead
+const int numPeers = 4; // TODO: this should be the max. read from the SD card instead
 
 SmartCompassMessage compass_messages[numPeers] = {SmartCompassMessage_init_default};
 
@@ -60,6 +60,8 @@ int my_network_id, my_peer_id, my_hue, my_saturation;
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setupRadio() {
+  Serial.print("Setting up Radio... ");
+
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
@@ -73,20 +75,19 @@ void setupRadio() {
 
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
   if (!rf95.init()) {
-    Serial.println("LoRa radio init failed");
+    Serial.println("failed! Cannot proceed!");
     while (1)
       ;
   }
-  Serial.println("LoRa radio init OK!");
 
   // TODO: read frequency the SD card
   if (!rf95.setFrequency(RF95_FREQ)) {
-    Serial.println("setFrequency failed");
+    Serial.println("setFrequency failed! Cannot proceed!");
     while (1)
       ;
   }
-  Serial.print("Set Freq to: ");
-  Serial.println(RF95_FREQ);
+  Serial.print("Freq: ");
+  Serial.print(RF95_FREQ);
 
   // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 
@@ -95,6 +96,8 @@ void setupRadio() {
   // powers from 5 to 23 dBm:
   // TODO: read power from the SD card
   rf95.setTxPower(RF95_POWER, false);
+
+  Serial.println(" done.");
 }
 
 void radioTransmit(int pid) {
@@ -130,8 +133,7 @@ void radioTransmit(int pid) {
   Serial.print(" p=");
   Serial.print(compass_messages[pid].peer_id);
 
-  long time_now = now_millis(); // seconds precision is fine but maybe we
-                                // should send millis to get a better sync
+  unsigned long time_now = now_millis();
   compass_messages[pid].tx_time = time_now;
 
   Serial.print(" now=");
@@ -146,7 +148,7 @@ void radioTransmit(int pid) {
   Serial.print(" lon=");
   Serial.print(compass_messages[pid].longitude);
 
-  Serial.print(" EOM... ");
+  Serial.print(" EOM. ");
 
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
@@ -255,11 +257,12 @@ sensors_event_t accel, mag, gyro, temp;
 Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1(LSM9DS1_CSAG, LSM9DS1_CSM); // SPI
 
 void setupSensor() {
-  Serial.print("Setting up Sensors...");
+  Serial.print("Setting up sensors...");
 
   pinMode(LSM9DS1_CSAG, OUTPUT);
   pinMode(LSM9DS1_CSM, OUTPUT);
 
+  // TODO: if lsm is broken, always display the compass?
   if (!lsm.begin()) {
     Serial.print(F("Oops, no LSM9DS1 detected... Check your wiring!"));
     while (1)
@@ -285,7 +288,7 @@ void setupSensor() {
   // lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
   // lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
 
-  Serial.println("lsm setup!");
+  Serial.println("done.");
 }
 
 /* GPS */
@@ -294,7 +297,7 @@ void setupSensor() {
 Adafruit_GPS GPS(&gpsSerial);
 
 void setupGPS() {
-  Serial.print("Setting up GPS...");
+  Serial.print("Setting up GPS... ");
 
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's
   GPS.begin(9600);
@@ -315,18 +318,20 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
 
   // Position fix update rate commands.
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
-  GPS.sendCommand(PGCMD_ANTENNA);
+  //GPS.sendCommand(PGCMD_ANTENNA);
 
   // Ask for firmware version
   // TODO: why is this println instead of sendCommand?
   // TODO: how do we display the response?
-  gpsSerial.println(PMTK_Q_RELEASE);
+  //gpsSerial.println(PMTK_Q_RELEASE);
 
   // TODO: wait until we get a GPS fix and then set the clock?
 
@@ -339,16 +344,17 @@ String gps_log_filename = "";
 File logFile;
 
 void setupSD() {
-  Serial.print("Setting up SD...");
+  Serial.print("Setting up SD... ");
 
   pinMode(SDCARD_CS_PIN, OUTPUT);
 
   if (!SD.begin(SDCARD_CS_PIN)) {
-    Serial.println("SD initialization failed!");
+    Serial.println("failed! Cannot proceed!");
     while (1)
       ;
   }
-  Serial.println("SD initialization done.");
+
+  Serial.println("done.");
 
   gps_log_filename += my_network_id;
   gps_log_filename += "-" + my_peer_id;
@@ -376,7 +382,9 @@ void setupSD() {
 /* lights */
 
 void setupLights() {
-  Serial.print("Setting up lights...");
+  Serial.print("Setting up lights... ");
+
+  pinMode(LED_DATA_PIN, OUTPUT);
 
   // TODO: FastLED.setMaxPowerInVoltsAndMilliamps( VOLTS, MAX_MA);
 
@@ -385,7 +393,7 @@ void setupLights() {
   FastLED.clear();
   FastLED.show();
 
-  Serial.println("done");
+  Serial.println("done.");
 }
 
 /* interrupts - https://gist.github.com/nonsintetic/ad13e70f164801325f5f552f84306d6f */
@@ -478,17 +486,13 @@ void setup() {
   delay(1000);
 
   Serial.println("Setting up...");
-  /*
-  // TODO: enable once it is connected
-  setupSD();  // do this first to get our configuration
-  */
-
   randomSeed(analogRead(5));
+
+  // setupSD();  // do this first to get our configuration
 
   // TODO: read SD card here to configure things
   my_network_id = 0;
-  my_peer_id = random(1, numPeers); // TODO: don't use 0 since it seems to be
-                                    // the default when we have trouble parsing
+  my_peer_id = random(1, numPeers); // TODO: don't use 0 since it seems to be the default when we have trouble parsing
   my_hue = 128;
   my_saturation = 50;
 
@@ -497,9 +501,6 @@ void setup() {
 
   // initialize compass messages
   for (int i = 0; i < numPeers; i++) {
-    Serial.print("Setting up peer compass message ");
-    Serial.println(i);
-    // TODO: use protobuf defaults?
     compass_messages[i].network_id = my_network_id;
     compass_messages[i].tx_peer_id = my_peer_id;
     compass_messages[i].peer_id = i;
@@ -517,9 +518,9 @@ void setup() {
   setupRadio();
 
   // TODO: enable once it is connected
-  // setupSensor();
+  setupSensor();
 
-  // setupLights();
+  setupLights();
 
   // TODO: set gHue? to myPeerHue?
 
@@ -540,54 +541,65 @@ uint8_t gHue = 0; // rotating "base color" used by some patterns
 bool should_transmit[numPeers] = {true};
 
 void loop() {
-  static int time_segments = numPeers * numPeers; // each peer needs enough time to broadcast every other peer
-  static int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
+  // TODO: numPeers * numPeers can get pretty big! maybe
+  static unsigned int time_segments = numPeers * numPeers; // each peer needs enough time to broadcast every other peer
+  static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
 
-  // TODO: uncomment when this is hooked up (especially sensors since that seems to block) updateLights();
+  updateLights();
 
   // TODO: only do this every 10 seconds
   // TODO: fastled EVERY_N_SECONDS helper doesn't work for us. maybe if we passed variables
   gpsReceive();
 
-  // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
-  // TODO: should there be downtime when no one is transmitting or receiving?
-  time_segment_id = now_millis() / broadcast_time_ms % time_segments;
-
-  broadcasting_peer_id = time_segment_id / numPeers;
-  broadcasted_peer_id = time_segment_id % numPeers;
-
-  if (broadcasting_peer_id == my_peer_id) {
-    if (should_transmit[broadcasted_peer_id]) {
-      radioTransmit(broadcasted_peer_id);
-      should_transmit[broadcasted_peer_id] = false;
-    } else {
-      // TODO: it's our time to transmit, but we already did. what should we do?
-    }
-  } else {
-    for (int i = 0; i < numPeers; i++) {
-      should_transmit[i] = true;
-    }
+  if (timeStatus() == timeNotSet) {
     radioReceive();
+  } else {
+    // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
+    // TODO: should there be downtime when no one is transmitting or receiving?
+
+    time_segment_id = (now_millis() / broadcast_time_ms) % time_segments;
+    broadcasting_peer_id = time_segment_id / numPeers;
+    broadcasted_peer_id = time_segment_id % numPeers;
+
+    /*
+    Serial.print("broadcasting_peer_id / broadcasted_peer_id: ");
+    Serial.print(broadcasting_peer_id);
+    Serial.print(" / ");
+    Serial.println(broadcasted_peer_id);
+    */
+
+    if (broadcasting_peer_id == my_peer_id) {
+      if (should_transmit[broadcasted_peer_id]) {
+        radioTransmit(broadcasted_peer_id);
+        should_transmit[broadcasted_peer_id] = false;
+      } else {
+        // TODO: it's our time to transmit, but we already did. what should we do?
+      }
+    } else {
+      for (int i = 0; i < numPeers; i++) {
+        should_transmit[i] = true;
+      }
+      radioReceive();
+    }
   }
 
-  delayToSyncFrameRate(FRAMES_PER_SECOND);
-
-  // cycle the "base color" through the rainbow every 3 frames
-  EVERY_N_MILLISECONDS(3 * 1000 / FRAMES_PER_SECOND) { gHue++; }
+  // TODO: don't do this. this delays too long. and gets in the way of the radio tx/rx
+  //delayToSyncFrameRate(FRAMES_PER_SECOND);
+  FastLED.delay(10);  // don't sleep too long or you get in the way of radios
 }
 
 void sensorReceive() {
   lsm.read();
   lsm.getEvent(&accel, &mag, &gyro, &temp);
 
+  // TODO: this is giving a value between 12-13
   /*
-  // TODO: this keep reading negative numbers...
   Serial.print("temp: ");
-  Serial.println(temp.temperature);
+  Serial.print(temp.temperature);
   */
 
   // debugging sensors
-  Serial.print("mag:  ");
+  Serial.print("mag: ");
   Serial.print(mag.magnetic.x);
   Serial.print("x ");
   Serial.print(mag.magnetic.y);
@@ -643,7 +655,7 @@ void gpsReceive() {
   // TODO: should we only do this if there is more drift?
   gpsMs = GPS.milliseconds;
 
-  compass_messages[my_peer_id].last_updated_at = now();
+  compass_messages[my_peer_id].last_updated_at = now_millis();
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
@@ -663,12 +675,14 @@ void gpsReceive() {
   Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
   Serial.print(", ");
   Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
+  */
 
-  Serial.print("Location 2: ");
+  Serial.print("Location: ");
   Serial.print(GPS.latitudeDegrees, 4);
   Serial.print(", ");
   Serial.println(GPS.longitudeDegrees, 4);
 
+  /*
   Serial.print("Location 3: ");
   Serial.print(GPS.latitude_fixed);
   Serial.print(", ");
@@ -869,13 +883,14 @@ void updateLightsForCompass() {
   }
 }
 
-long now_millis() {
+unsigned long now_millis() {
   if (timeStatus() != timeSet) {
     return millis();
   }
 
   // TODO: include some sort of offset to make sure this is in sync with remote peers
-  return now() * 1000 + gpsMs % 1000;
+  // TODO: this wraps around, but I think thats fine because it will wrap the same for everyone
+  return now() * 1000 + (gpsMs % 1000);
 }
 
 void updateLightsForHanging() {
@@ -897,8 +912,7 @@ void updateLightsForHanging() {
 // https://gist.github.com/kriegsman
 void sinelon() {
   // a colored dot sweeping back and forth, with fading trails
-  // TODO: sync these with now_millis()
-  fadeToBlackBy(leds, numLEDs, 20);
+  fadeToBlackBy(leds, numLEDs, 28);
   int pos = beatsin16(13, 0, numLEDs);
   leds[pos] += CHSV(gHue, 255, 192);
 }
@@ -962,53 +976,42 @@ bool sensorHanging() {
 }
 
 void updateLights() {
-  sensorReceive();
+  // update the led array every frame
+  EVERY_N_MILLISECONDS(1000 / FRAMES_PER_SECOND) {
+    sensorReceive();
 
-  // TODO: check_battery and do something if it is low. maybe decrease overall brightness in a loop to make it blink
-  // slowly
+    // TODO: check_battery and do something if it is low. maybe decrease overall brightness in a loop to make it blink
+    // slowly
 
-  // TODO: uncomment this once the sensor is hooked up update lights based on the sensor and GPS data
+    // TODO: uncomment this once the sensor is hooked up update lights based on the sensor and GPS data
 
-  if (sensorFaceDown()) {
-    FastLED.clear();
-  } else if (!GPS.fix) {
-    updateLightsForLoading();
-  } else {
-    if (sensorHanging()) {
-      updateLightsForHanging();
+    if (sensorFaceDown()) {
+      FastLED.clear();
+    } else if (!GPS.fix) {
+      updateLightsForLoading();
     } else {
-      updateLightsForCompass();
+      if (sensorHanging()) {
+        updateLightsForHanging();
+      } else {
+        updateLightsForCompass();
+      }
     }
-  }
 
-  // debugging lights
-  for (int i = 0; i < numLEDs; i++) {
-    if (leds[i]) {
-      // TODO: better logging
-      Serial.print("X");
-    } else {
-      Serial.print("O");
+    // debugging lights
+    for (int i = 0; i < numLEDs; i++) {
+      if (leds[i]) {
+        // TODO: better logging
+        Serial.print("X");
+      } else {
+        Serial.print("O");
+      }
     }
-  }
-  Serial.println();
+    Serial.println();
 
-  // display the colors
-  FastLED.show();
-}
-
-// delayToSyncFrameRate - delay how many milliseconds are needed to maintain a stable frame rate.
-// Thanks to flashing disco strobe example at https://gist.github.com/kriegsman
-// TODO: how does static work? i think we should use this pattern for our other functions
-static void delayToSyncFrameRate(uint8_t framesPerSecond) {
-  static uint32_t msprev = 0;
-
-  uint32_t mscur = millis();
-  uint16_t msdelta = mscur - msprev;
-  uint16_t mstargetdelta = 1000 / framesPerSecond;
-  if (msdelta < mstargetdelta) {
-    // using FastLED's delay allows for dithering
-    FastLED.delay(mstargetdelta - msdelta);
+    // display the colors
+    FastLED.show();
   }
 
-  msprev = mscur;
+  // cycle the "base color" through the rainbow every 3 frames
+  EVERY_N_MILLISECONDS(3 * 1000 / FRAMES_PER_SECOND) { gHue++; }
 }
