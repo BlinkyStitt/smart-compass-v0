@@ -1,5 +1,11 @@
 /* light patterns */
 
+void flashlight() {
+  for (int i = 0; i < num_LEDs; i += 4) {
+    leds[i] = CRGB::White;
+  }
+}
+
 // https://gist.github.com/kriegsman
 void sinelon() {
   // a colored dot sweeping back and forth, with fading trails

@@ -62,8 +62,12 @@ void updateLightsForHanging() {
 
 // non-blocking lights are a lot harder than lights using delay! good luck!
 void updateLightsForLoading() {
-  // TODO: what pattern? sinelon is boring
+  // TODO: what pattern? just loop instead of sinelon?
   sinelon();
+}
+
+void updateLightsForClock() {
+  // TODO: turn the time into a watch face. use hour() and minute() and seconds()
 }
 
 void updateLights() {
@@ -88,21 +92,26 @@ void updateLights() {
     }
 
     if (sensorFaceDown()) {
-      FastLED.clear();
-    } else if (!GPS.fix) {
-      updateLightsForLoading();
-    } else {
-      if (sensorHanging()) {
-        updateLightsForHanging();
-      } else {
+      flashlight();
+    } else if (sensorHanging()) {
+      // pretty patterns
+      updateLightsForHanging();
+    } else (sensorLevel()) {
+      // show the compass if possible
+      if (GPS.fix) {
         updateLightsForCompass();
+      } else {
+        updateLightsForLoading();
       }
+    } else {
+      // show the time
+      updateLightsForClock();
     }
 
     // debugging lights
     for (int i = 0; i < num_LEDs; i++) {
       if (leds[i]) {
-        // TODO: better logging
+        // TODO: better logging?
         Serial.print("X");
       } else {
         Serial.print("O");
