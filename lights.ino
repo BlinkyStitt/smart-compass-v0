@@ -55,7 +55,7 @@ void updateLightsForHanging() {
   // TODO: more patterns
   switch (pattern_id) {
   case 0:
-    pride();
+    sinelon(); // TODO: pride doesn't look very good with only 16 lights
     break;
   }
 }
@@ -68,6 +68,34 @@ void updateLightsForLoading() {
 
 void updateLightsForClock() {
   // TODO: turn the time into a watch face. use hour() and minute() and seconds()
+  int hour_id, minute_id, second_id;
+
+  // note that the lights are wired counter-clockwise!
+  // TODO: timezone from lat/long? at least read it from the SD card
+  int timezone_adjusted_hour = hour() - 8;
+  if (timezone_adjusted_hour < 0) {
+    timezone_adjusted_hour += 12;
+  } else {
+    timezone_adjusted_hour %= 12;
+  }
+
+  hour_id = map(timezone_adjusted_hour, 0, 12, 16, 0);
+  minute_id = map(minute(), 0, 60, 16, 0);
+  second_id = map(second(), 0, 60, 16, 0);
+
+  // TODO: I'm not sure what color the noon marker should be. and i'm not sure i like how i'm handling overlapping
+  for (int i = 0; i < num_LEDs; i++) {
+    if (i == second_id) {
+      leds[i] = CRGB::Red;
+    } else if (i == minute_id) {
+      leds[i] = CRGB::Yellow;
+    } else if (i == hour_id) {
+      leds[i] = CRGB::Blue;
+    } else {
+      // TODO: dim quickly instead?
+      leds[i] = CRGB::Black;
+    }
+  }
 }
 
 void updateLights() {
@@ -110,6 +138,7 @@ void updateLights() {
       break;
     case ORIENTED_USB_DOWN:
       // show the time
+      // TODO: usb up is showing this, too
       updateLightsForClock();
       break;
     }

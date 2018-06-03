@@ -153,7 +153,7 @@ static Orientation checkOrientation() {
   if ( (absY > absX) && (absY > absZ)) {
     // base orientation on Y
     if (y > 0) {
-      currentOrientation = ORIENTED_USB_UP;
+      return ORIENTED_USB_UP;
     }
     return  ORIENTED_USB_DOWN;
   }
