@@ -139,7 +139,11 @@ void updateLights() {
     case ORIENTED_USB_DOWN:
       // show the time
       // TODO: usb up is showing this, too
-      updateLightsForClock();
+      if (timeStatus() == timeSet) {
+        updateLightsForClock();
+      } else {
+        updateLightsForLoading();
+      }
       break;
     }
 
