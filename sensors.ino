@@ -48,6 +48,7 @@ void sensorReceive() {
   Serial.print(temp.temperature);
   */
 
+  /*
   // debugging sensors
   Serial.print("mag: ");
   Serial.print(mag.magnetic.x);
@@ -63,6 +64,7 @@ void sensorReceive() {
   Serial.print("y ");
   Serial.print(gyro.gyro.z);
   Serial.println("z");
+  */
 }
 
 bool sensorFaceDown() {
@@ -73,4 +75,9 @@ bool sensorFaceDown() {
 bool sensorHanging() {
   // TODO: actually do something with the sensors
   return false;
+}
+
+bool sensorLevel() {
+  // TODO: actually do something with the sensors
+  return true;
 }

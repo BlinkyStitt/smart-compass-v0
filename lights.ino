@@ -96,7 +96,7 @@ void updateLights() {
     } else if (sensorHanging()) {
       // pretty patterns
       updateLightsForHanging();
-    } else (sensorLevel()) {
+    } else if (sensorLevel()) {
       // show the compass if possible
       if (GPS.fix) {
         updateLightsForCompass();

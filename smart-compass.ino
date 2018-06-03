@@ -75,7 +75,7 @@ File gpsLogFile;
 bool should_transmit[max_peers] = {true};
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(19200);
 
   delay(1000);
 
@@ -83,9 +83,11 @@ void setup() {
   randomSeed(analogRead(6));
 
   // configuration depends on SD card so do it first
+  /*
   setupSD();
 
   setupConfig();
+  */
 
   // do more setup now that we have our configuration
   setupGPS();

@@ -21,7 +21,7 @@ void setupRadio() {
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
   // CRC on
   if (!rf95.init()) {
-    Serial.println("failed! Cannot proceed!");
+    Serial.println("failed! Cannot proceed without Radio!");
     while (1)
       ;
   }

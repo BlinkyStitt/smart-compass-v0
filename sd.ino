@@ -6,7 +6,7 @@ void setupSD() {
   pinMode(SDCARD_CS_PIN, OUTPUT);
 
   if (!SD.begin(SDCARD_CS_PIN)) {
-    Serial.println("failed! Cannot proceed!");
+    Serial.println("failed! Cannot proceed without SD!");
     while (1)
       ;
   }
