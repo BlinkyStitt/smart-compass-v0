@@ -10,11 +10,11 @@
 #include <FastLED.h>
 #include <IniFile.h>
 #include <RH_RF95.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
 #include <SD.h>
 #include <SPI.h>
 #include <elapsedMillis.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 // TODO: fork TimeLib to include ms
 #include <TimeLib.h>
 #include <Wire.h>
