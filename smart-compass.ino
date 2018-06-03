@@ -1,5 +1,6 @@
 // TODO: use addmod8
 
+// TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
@@ -9,6 +10,8 @@
 #include <FastLED.h>
 #include <IniFile.h>
 #include <RH_RF95.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 #include <SD.h>
 #include <SPI.h>
 #include <elapsedMillis.h>
@@ -16,9 +19,7 @@
 #include <TimeLib.h>
 #include <Wire.h>
 
-#include "smart_compass.pb.h"
-#include <pb_decode.h>
-#include <pb_encode.h>
+#include "smart-compass.pb.h"
 
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
