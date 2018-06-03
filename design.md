@@ -1,8 +1,17 @@
 # Wireless mesh smart compass
 
-Forked Libraries:
+Libraries:
 - Adafruit_GPS from https://github.com/WyseNynja/Adafruit_GPS
 - AP_Declination from https://github.com/WyseNynja/ardupilot
+- Adafruit_LSM9DS1
+- Adafruit_Sensor
+- elapsedMillis
+- FastLED
+- nanopb-0.3.9.1
+- RadioHead
+- SD
+- SPI
+- Time
 
 Each node has:
 - sd card
