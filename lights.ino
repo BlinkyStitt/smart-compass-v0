@@ -71,10 +71,21 @@ void updateLights() {
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
     sensorReceive();
 
-    // TODO: check_battery and do something if it is low. maybe decrease overall brightness in a loop to make it blink
-    // slowly
-
-    // TODO: uncomment this once the sensor is hooked up update lights based on the sensor and GPS data
+    // TODO: do something based on battery level. maybe decrease overall brightness in a loop to make it blink slowly
+    switch (checkBattery()) {
+    case 0:
+      // battery critical!
+      break;
+    case 1:
+      // battery low
+      break;
+    case 2:
+      // battery ok
+      break;
+    case 3:
+      // battery fully charged
+      break;
+    }
 
     if (sensorFaceDown()) {
       FastLED.clear();
