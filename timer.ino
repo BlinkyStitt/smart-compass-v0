@@ -9,6 +9,8 @@ void TC5_Handler(void) {
   // check GPS for data. do this here so that a slow framerate doesn't slow reading from GPS
   char c = GPS.read();
 
+  // sensorReceive();
+
   // END OF YOUR CODE
   TC5->COUNT16.INTFLAG.bit.MC0 = 1; // don't change this, it's part of the timer code
 }

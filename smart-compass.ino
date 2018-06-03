@@ -69,13 +69,18 @@ Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
 String gps_log_filename = ""; // this is filled in during setupSD
-File gpsLogFile;
+File gps_log_file;
 
 // keep us from transmitting to often
 bool should_transmit[max_peers] = {true};
 
+// TODO: this will probably change when I move from the breadboard to the PCB. give them better names (portrait, landscape?)
+enum Orientation: byte {
+   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
+};
+
 void setup() {
-  Serial.begin(19200);
+  Serial.begin(115200);
 
   delay(1000);
 
@@ -83,11 +88,9 @@ void setup() {
   randomSeed(analogRead(6));
 
   // configuration depends on SD card so do it first
-  /*
   setupSD();
 
   setupConfig();
-  */
 
   // do more setup now that we have our configuration
   setupGPS();
@@ -96,7 +99,7 @@ void setup() {
   setupLights();
 
   // configure the timer to run at <sampleRate>Hertz
-  tcConfigure(50);
+  tcConfigure(100);
   tcStartCounter();
 
   Serial.println("Starting...");

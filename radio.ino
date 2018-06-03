@@ -58,7 +58,7 @@ void radioTransmit(int pid) {
   if (!compass_messages[pid].hue) {
     // if we don't have any info for this peer, skip sending anything
     // TODO: this blocks us from being able to use pure red
-    Serial.print("No peer data to transmit for ");
+    Serial.print("No peer data to transmit for #");
     Serial.println(pid);
     return;
   }
