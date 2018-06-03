@@ -18,13 +18,13 @@ void setupRadio() {
   digitalWrite(RFM95_RST, HIGH);
   delay(10);
 
-  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
+  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
+  // CRC on
   if (!rf95.init()) {
     Serial.println("failed! Cannot proceed!");
     while (1)
       ;
   }
-  // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 
   // we could read this from the SD card, but I think 868 requires a license
   if (!rf95.setFrequency(RADIO_FREQ)) {
@@ -94,8 +94,8 @@ void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   // Create a stream that will write to our buffer
-  // TODO: I think this should be static or global
   pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
+  // TODO: max size (SmartCompassMessage_size) is only 64 bytes. we could combine 3 of them into one packet
 
   if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
     Serial.println("ERROR ENCODING!");
@@ -180,10 +180,9 @@ void radioReceive() {
       Serial.print(" lon=");
       Serial.println(message.longitude);
 
-      // TODO: move the rest of this from TinyPack to protobuf
       /*
       if (timeStatus() != timeSet) {
-        // TODO: set time from peer's time (use ms)
+        // TODO: set time from peer's time? except they use an overflowed ms count
       }
       */
     } else {
