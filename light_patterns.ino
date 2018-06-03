@@ -1,15 +1,20 @@
 /* light patterns */
 
 void flashlight() {
-  for (int i = 0; i < num_LEDs; i += 4) {
-    leds[i] = CRGB::White;
+  for (int i = 0; i < num_LEDs; i++) {
+    if (i % flashlight_density == 0) {
+      leds[i] = CRGB::White;
+    } else {
+      // smoothly transition from other patterns
+      leds[i].fadeToBlackBy(90);
+    }
   }
 }
 
 // https://gist.github.com/kriegsman
 void sinelon() {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy(leds, num_LEDs, 28);
+  fadeToBlackBy(leds, num_LEDs, 64);
   int pos = beatsin16(13, 0, num_LEDs);
   leds[pos] += CHSV(g_hue, 255, 192);
 }

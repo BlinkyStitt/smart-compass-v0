@@ -199,6 +199,24 @@ void setupConfig() {
     Serial.println(radio_power);
   }
 
+  Serial.print("time_zone_offset: ");
+  if (false && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
+    Serial.println(buffer);
+  } else {
+    Serial.print("(default) ");
+    time_zone_offset = -7;
+    Serial.println(time_zone_offset);
+  }
+
+  Serial.print("flashlight_density: ");
+  if (false && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
+    Serial.println(buffer);
+  } else {
+    Serial.print("(default) ");
+    flashlight_density = 2;
+    Serial.println(flashlight_density);
+  }
+
   // initialize compass messages
   for (int i = 0; i < num_peers; i++) {
     compass_messages[i].network_id = my_network_id;

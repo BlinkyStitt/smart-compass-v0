@@ -49,21 +49,22 @@ void updateCompassPoints() {
     next_compass_point[i] = 0; // TODO: is this the right syntax?
   }
 
+  // compass points go COUNTER-clockwise to match LEDs!
   // add north
   compass_points[0][next_compass_point[0]] = CHSV(0, 255, 255);
   next_compass_point[0]++;
 
-  // add west (TODO: remove this when done debugging)
-  compass_points[4][next_compass_point[4]] = CHSV(64, 255, 255);
-  next_compass_point[4]++;
+  // add east (TODO: remove this when done debugging)
+  compass_points[12][next_compass_point[12]] = CHSV(64, 255, 255);
+  next_compass_point[12]++;
 
   // add south (TODO: remove this when done debugging)
   compass_points[8][next_compass_point[8]] = CHSV(128, 255, 255);
   next_compass_point[8]++;
 
-  // add east (TODO: remove this when done debugging)
-  compass_points[12][next_compass_point[12]] = CHSV(192, 255, 255);
-  next_compass_point[12]++;
+  // add west (TODO: remove this when done debugging)
+  compass_points[4][next_compass_point[4]] = CHSV(192, 255, 255);
+  next_compass_point[4]++;
 
   for (int i = 0; i < num_peers; i++) {
     if (!compass_messages[i].saturation) {
@@ -85,11 +86,12 @@ void updateCompassPoints() {
     }
 
     // TODO: double check that this is looping the correct way around the LED
-    // circle 0 -> 360 should go clockwise, but it looks like the lights are wired counter-clockwise
-    int compass_point_id = map(magnetic_bearing, 0, 360, num_LEDs, 0);
+    // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
+    // TODO: i don't think mod is needed here
+    int compass_point_id = map(magnetic_bearing, 0, 360, num_LEDs, 0) % num_LEDs;
 
     // convert distance to brightness. the closer, the brighter
-    // TODO: scurve instead of linear?
+    // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 10, 255);
 

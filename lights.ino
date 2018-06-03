@@ -5,6 +5,8 @@ void setupLights() {
 
   pinMode(LED_DATA_PIN, OUTPUT);
 
+  // TODO: seed fastled random?
+
   // https://learn.adafruit.com/adafruit-feather-m0-basic-proto/power-management
   // While you can get 500mA from it, you can't do it continuously from 5V as it will overheat the regulator.
   FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500);
@@ -22,12 +24,7 @@ void updateLightsForCompass() {
 
   // cycle through the colors for each light
   for (int i = 0; i < num_LEDs; i++) {
-    if (next_compass_point[i] == 0) {
-      // no colors on this light. turn it off
-      leds[i] = CRGB::Black;
-      // Serial.print("No color for light #"); Serial.println(i);
-      continue;
-    } else {
+    if (next_compass_point[i] > 0) {
       int j = 0;
       if (next_compass_point[i] > 1) {
         // there are one or more colors that want to shine on this one light. give each 500ms
@@ -41,6 +38,8 @@ void updateLightsForCompass() {
 
       leds[i] = compass_points[i][j];
     }
+    // everything starts at least a little dimmed
+    leds[i].fadeToBlackBy(90);
   }
 }
 
@@ -67,53 +66,82 @@ void updateLightsForLoading() {
 }
 
 void updateLightsForClock() {
-  // TODO: turn the time into a watch face. use hour() and minute() and seconds()
-  int hour_id, minute_id, second_id;
+  // turn the time into a watch face with just an hour hand
 
-  // note that the lights are wired counter-clockwise!
-  // TODO: timezone from lat/long? at least read it from the SD card
-  int timezone_adjusted_hour = hour() - 8;
-  if (timezone_adjusted_hour < 0) {
-    timezone_adjusted_hour += 12;
-  } else {
-    timezone_adjusted_hour %= 12;
+  // TODO: do we care about gpsMs? we only have 16 lights of output
+  int adjusted_seconds = second();  // + (gpsMs % 1000) / 1000;
+
+  int adjusted_minute = minute() + adjusted_seconds / 60.0;
+
+  // we include the minutes here in case of fractional timezones. we will likely drop the minute
+  int adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
+
+  if (adjusted_hour < 0) {
+    adjusted_hour += 12;
+  } else if (adjusted_hour >= 12) {
+    adjusted_hour -= 12;
   }
 
-  hour_id = map(timezone_adjusted_hour, 0, 12, 16, 0);
-  minute_id = map(minute(), 0, 60, 16, 0);
-  second_id = map(second(), 0, 60, 16, 0);
+  Serial.print("time: ");
+  Serial.print(adjusted_hour);
+  Serial.print(":");
+  Serial.print(adjusted_minute);
+  Serial.print(":");
+  Serial.println(adjusted_seconds);
 
-  // TODO: I'm not sure what color the noon marker should be. and i'm not sure i like how i'm handling overlapping
+  // TODO: make sure this loops the right way once it is wired.
+  // TODO: why do I need % 16?
+  int hour_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
+  int minute_id = map(adjusted_minute, 0, 60, 16, 0) % 16;
+  int second_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
+
+  Serial.print("{hour,minute,second}_id: ");
+  Serial.print(hour_id);
+  Serial.print(" ");
+  Serial.print(minute_id);
+  Serial.print(" ");
+  Serial.println(second_id);
+
+  // TODO: I'm not sure what color the noon marker should be or if we even need one
+  // TODO: what colors should the leds be?
+  // TODO: i'm not sure i like how i'm handling overlapping
+  // TODO: blink instead of full brightness? at least use HSV to lower the brightness
   for (int i = 0; i < num_LEDs; i++) {
     if (i == second_id) {
-      leds[i] = CRGB::Red;
+      leds[i] = CRGB::Blue;
     } else if (i == minute_id) {
       leds[i] = CRGB::Yellow;
     } else if (i == hour_id) {
-      leds[i] = CRGB::Blue;
-    } else {
-      // TODO: dim quickly instead?
-      leds[i] = CRGB::Black;
+      leds[i] = CRGB::Red;
     }
+    // everything starts at least a little dimmed
+    // lights that aren't part of the current time will quickly fade to black
+    // this makes for a smooth transition from other patterns
+    leds[i].fadeToBlackBy(90);
   }
 }
 
 void updateLights() {
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    // TODO: do something based on battery level. maybe decrease overall brightness in a loop to make it blink slowly
+    // decrease overall brightness if battery is low
     switch (checkBattery()) {
     case 0:
       // battery critical!
+      // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
+      FastLED.setBrightness(default_brightness * .5);
       break;
     case 1:
       // battery low
+      FastLED.setBrightness(default_brightness * .75);
       break;
     case 2:
       // battery ok
+      FastLED.setBrightness(default_brightness * .90);
       break;
     case 3:
       // battery fully charged
+      FastLED.setBrightness(default_brightness);
       break;
     }
 
