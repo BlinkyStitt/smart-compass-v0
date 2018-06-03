@@ -58,8 +58,11 @@ SmartCompassMessage compass_messages[max_peers] = {SmartCompassMessage_init_defa
 int my_network_id, my_peer_id, my_hue, my_saturation, num_peers;
 
 // these are set by config or fallback to defaults
-int broadcast_time_ms, default_brightness, frames_per_second, max_peer_distance, ms_per_light_pattern, peer_led_ms,
-    radio_power;
+// TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
+int broadcast_time_ms, default_brightness, flashlight_density, frames_per_second, max_peer_distance, ms_per_light_pattern,
+  peer_led_ms, radio_power;
+
+int time_zone_offset;
 
 // offset between true and magnetic north
 float magnetic_declination = 0.0;
@@ -76,7 +79,7 @@ bool should_transmit[max_peers] = {true};
 
 // TODO: this will probably change when I move from the breadboard to the PCB. give them better names (portrait, landscape?)
 enum Orientation: byte {
-   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
+  ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
 };
 
 void setup() {
