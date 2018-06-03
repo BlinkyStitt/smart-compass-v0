@@ -24,11 +24,11 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
 
   // Position fix update rate commands.
-  // GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
   GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
@@ -127,33 +127,33 @@ void gpsReceive() {
   */
 
   // save to the SD card
-  gpsLogFile = SD.open(gps_log_filename, FILE_WRITE);
+  gps_log_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
-  if (!gpsLogFile) {
+  if (!gps_log_file) {
     // if the file didn't open, print an error and abort
-    Serial.println("error opening gps log");
+    // Serial.println("error opening gps log");
     return;
   }
 
   Serial.print("Logging GPS data...");
   // TODO: only log if it is has changed by more than a couple meters
 
-  gpsLogFile.print(compass_messages[my_peer_id].last_updated_at);
-  gpsLogFile.print(",");
-  gpsLogFile.print(GPS.latitudeDegrees, 4);
-  gpsLogFile.print(",");
-  gpsLogFile.print(GPS.longitudeDegrees, 4);
-  gpsLogFile.print(",");
-  gpsLogFile.print(GPS.speed);
-  gpsLogFile.print(",");
-  gpsLogFile.print(GPS.angle);
-  gpsLogFile.println(";");
+  gps_log_file.print(compass_messages[my_peer_id].last_updated_at);
+  gps_log_file.print(",");
+  gps_log_file.print(GPS.latitudeDegrees, 4);
+  gps_log_file.print(",");
+  gps_log_file.print(GPS.longitudeDegrees, 4);
+  gps_log_file.print(",");
+  gps_log_file.print(GPS.speed);
+  gps_log_file.print(",");
+  gps_log_file.print(GPS.angle);
+  gps_log_file.println(";");
 
   // TODO: do we want to log anything else?
 
   // TODO: what happens if we lose power before closing/flushing?
 
   // close the file:
-  gpsLogFile.close();
+  gps_log_file.close();
 }

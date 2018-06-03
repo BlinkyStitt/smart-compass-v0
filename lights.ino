@@ -73,8 +73,6 @@ void updateLightsForClock() {
 void updateLights() {
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    sensorReceive();
-
     // TODO: do something based on battery level. maybe decrease overall brightness in a loop to make it blink slowly
     switch (checkBattery()) {
     case 0:
@@ -91,21 +89,29 @@ void updateLights() {
       break;
     }
 
-    if (sensorFaceDown()) {
-      flashlight();
-    } else if (sensorHanging()) {
-      // pretty patterns
-      updateLightsForHanging();
-    } else if (sensorLevel()) {
+    switch (checkOrientation()) {
+    case ORIENTED_UP:
       // show the compass if possible
       if (GPS.fix) {
         updateLightsForCompass();
       } else {
         updateLightsForLoading();
       }
-    } else {
+      break;
+    case ORIENTED_DOWN:
+      flashlight();
+      break;
+    case ORIENTED_USB_UP:
+    case ORIENTED_SPI_UP:
+    case ORIENTED_SPI_DOWN:
+      // pretty patterns
+      // TODO: different things for the different SPI tilts? maybe use that to toggle what the compass shows? need some sort of debounce
+      updateLightsForHanging();
+      break;
+    case ORIENTED_USB_DOWN:
       // show the time
       updateLightsForClock();
+      break;
     }
 
     // debugging lights

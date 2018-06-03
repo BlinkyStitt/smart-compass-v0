@@ -50,13 +50,18 @@ void setupConfig() {
   const char *filename = "/config.ini";
 
   IniFile ini(filename);
+
   if (!ini.open()) {
-    Serial.print(filename);
+    // TODO: block here once the sd card is actually wired up
+    /*
     Serial.println(" does not exist. Cannot proceed!");
     while (1)
       ;
+    */
   }
 
+  /*
+  // TODO: block here once the sd card is actually wired up
   // Check the file is valid. This can be used to warn if any lines are longer than the buffer.
   if (!ini.validate(buffer, buffer_len)) {
     Serial.print(ini.getFilename());
@@ -65,7 +70,9 @@ void setupConfig() {
     while (1)
       ;
   }
+  */
 
+  /*
   // load required args
   if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
     Serial.print("num_peers: ");
@@ -116,10 +123,16 @@ void setupConfig() {
     while (1)
       ;
   }
+  */
+  num_peers = 4;
+  my_network_id = 1;
+  my_peer_id = 1;
+  my_hue = 140;
+  my_saturation = 110;
 
   // load args that have defaults
   Serial.print("broadcast_time_ms: ");
-  if (ini.getValue("global", "broadcast_time_ms", buffer, buffer_len, broadcast_time_ms)) {
+  if (false && ini.getValue("global", "broadcast_time_ms", buffer, buffer_len, broadcast_time_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -129,16 +142,16 @@ void setupConfig() {
   }
 
   Serial.print("default_brightness: ");
-  if (ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
+  if (false && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
-    default_brightness = 100;
+    default_brightness = 60;
     Serial.println(default_brightness);
   }
 
   Serial.print("frames_per_second: ");
-  if (ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
+  if (false && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -148,7 +161,7 @@ void setupConfig() {
 
   // TODO: rename this. peers at this distance or further are the dimmest
   Serial.print("max_peer_distance: ");
-  if (ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
+  if (false && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -157,7 +170,7 @@ void setupConfig() {
   }
 
   Serial.print("ms_per_light_pattern: ");
-  if (ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
+  if (false && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -167,7 +180,7 @@ void setupConfig() {
 
   Serial.print("peer_led_ms: ");
   // time to display the peer when multiple peers are the same direction
-  if (ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
+  if (false && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -178,12 +191,12 @@ void setupConfig() {
   Serial.print("radio_power: ");
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
+  if (false && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
     radio_power = 13;
-    Serial.println(peer_led_ms);
+    Serial.println(radio_power);
   }
 
   // initialize compass messages
@@ -198,6 +211,10 @@ void setupConfig() {
 
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
+
+  gps_log_filename += my_network_id;
+  gps_log_filename += "-" + my_peer_id;
+  gps_log_filename += ".log";
 
   // everyone will be in sync on the patterns, but their color will be diffferent
   // TODO: except that would only be true if they get plugged in at the exact same time. maybe sync this over the radio?
