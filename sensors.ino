@@ -22,11 +22,10 @@ void setupSensor() {
   pinMode(LSM9DS1_CSAG, OUTPUT);
   pinMode(LSM9DS1_CSM, OUTPUT);
 
-  // TODO: if lsm is broken, always display the compass?
   if (!lsm.begin()) {
-    Serial.print(F("Oops, no LSM9DS1 detected... Check your wiring!"));
-    while (1)
-      ;
+    // TODO: what does 'F' do?
+    Serial.println(F("Oops, no LSM9DS1 detected... Check your wiring!"));
+    return;
   }
 
   // TODO: allow setting these on the SD card?
@@ -50,6 +49,8 @@ void setupSensor() {
 
   // TODO: is this enough? if we need it faster than this, move sensorReceive to timer.ino
 //  orientation_filter.begin(100);
+
+  sensor_setup = true;
 
   Serial.println("done.");
 }
@@ -128,7 +129,9 @@ void sensorReceive() {
 }
 
 static Orientation checkOrientation() {
-  static Orientation currentOrientation;
+  if (!sensor_setup) {
+    return ORIENTED_UP;
+  }
 
   sensorReceive();
 

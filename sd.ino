@@ -12,9 +12,11 @@ void setupSD() {
     while (1)
       ;
     */
-    Serial.println("failed! Using debug defaults!");
+    Serial.println("failed! No SD!");
     return;
   }
+
+  sd_setup = true;
 
   Serial.println("done.");
 }
