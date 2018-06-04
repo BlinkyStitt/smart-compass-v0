@@ -132,7 +132,7 @@ void setupConfig() {
 
   // load args that have defaults
   Serial.print("broadcast_time_ms: ");
-  if (false && ini.getValue("global", "broadcast_time_ms", buffer, buffer_len, broadcast_time_ms)) {
+  if (sd_setup && ini.getValue("global", "broadcast_time_ms", buffer, buffer_len, broadcast_time_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -142,7 +142,7 @@ void setupConfig() {
   }
 
   Serial.print("default_brightness: ");
-  if (false && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
+  if (sd_setup && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -151,7 +151,7 @@ void setupConfig() {
   }
 
   Serial.print("frames_per_second: ");
-  if (false && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
+  if (sd_setup && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -161,7 +161,7 @@ void setupConfig() {
 
   // TODO: rename this. peers at this distance or further are the dimmest
   Serial.print("max_peer_distance: ");
-  if (false && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
+  if (sd_setup && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -170,7 +170,7 @@ void setupConfig() {
   }
 
   Serial.print("ms_per_light_pattern: ");
-  if (false && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
+  if (sd_setup && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -180,7 +180,7 @@ void setupConfig() {
 
   Serial.print("peer_led_ms: ");
   // time to display the peer when multiple peers are the same direction
-  if (false && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
+  if (sd_setup && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -191,7 +191,7 @@ void setupConfig() {
   Serial.print("radio_power: ");
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (false && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
+  if (sd_setup && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -200,7 +200,7 @@ void setupConfig() {
   }
 
   Serial.print("time_zone_offset: ");
-  if (false && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
+  if (sd_setup && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -209,7 +209,7 @@ void setupConfig() {
   }
 
   Serial.print("flashlight_density: ");
-  if (false && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
+  if (sd_setup && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
