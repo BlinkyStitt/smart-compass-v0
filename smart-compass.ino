@@ -114,14 +114,15 @@ void loop() {
   static unsigned int time_segments = num_peers * num_peers;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
 
-  updateLights();
-
-  // TODO: only do this every 10 seconds
-  // TODO: fastled EVERY_N_SECONDS helper doesn't work for us. maybe if we passed variables
   gpsReceive();
 
+  updateLights();
+
+  // TODO: fastled EVERY_N_SECONDS helper doesn't work for us. maybe if we passed variables
+
   if (timeStatus() == timeNotSet) {
-    radioReceive();
+    // TODO: set time from peer?
+    //radioReceive();
   } else {
     // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
     // TODO: should there be downtime when no one is transmitting or receiving?
@@ -138,7 +139,7 @@ void loop() {
         // it's our time to transmit, but we already did
       }
     } else {
-      // reset should transmit to true
+      // reset should_transmit to true
       for (int i = 0; i < num_peers; i++) {
         should_transmit[i] = true;
       }
