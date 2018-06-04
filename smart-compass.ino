@@ -82,8 +82,12 @@ enum Orientation: byte {
   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
 };
 
+bool sensor_setup, sd_setup = false;
+
 void setup() {
   Serial.begin(115200);
+
+  // TODO: wait for serial while debugging?
 
   delay(1000);
 
