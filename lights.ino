@@ -29,7 +29,7 @@ void updateLightsForCompass() {
       if (next_compass_point[i] > 1) {
         // there are one or more colors that want to shine on this one light. give each 500ms
         // TODO: instead give the closer peers (brighter compass points) more time?
-        // TODO: use a static variable for this and increment it every 500ms instead?
+        // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
         j = map(((millis() / peer_led_ms) % num_peers), 0, num_peers, 0, next_compass_point[i]);
       }
 
@@ -38,7 +38,7 @@ void updateLightsForCompass() {
 
       leds[i] = compass_points[i][j];
     }
-    // everything starts at least a little dimmed
+    // everything starts at least a little dimmed. lights from other patterns will quickly fade to black
     leds[i].fadeToBlackBy(90);
   }
 }
@@ -47,14 +47,13 @@ void updateLightsForHanging() {
   // do awesome patterns
   static int num_light_patterns = 1; // TODO: how should this work? this seems fragile. make a list of functions instead
 
-  // we use the actual time in ms instead of elapsed_ms so that all the compasses are in near perfect sync
-  // ms since 1970 divided into 1 minute chunks
-  int pattern_id = (nowMillis() / ms_per_light_pattern) % num_light_patterns;
+  // TODO: use gps time (synced with peers) to have the same light pattern as them
+  int pattern_id = (millis() / ms_per_light_pattern) % num_light_patterns;
 
   // TODO: more patterns
   switch (pattern_id) {
   case 0:
-    sinelon(); // TODO: pride doesn't look very good with only 16 lights
+    pride(); // TODO: pride doesn't look very good with only 16 lights
     break;
   }
 }
@@ -62,7 +61,7 @@ void updateLightsForHanging() {
 // non-blocking lights are a lot harder than lights using delay! good luck!
 void updateLightsForLoading() {
   // TODO: what pattern? just loop instead of sinelon?
-  sinelon();
+  circle();
 }
 
 void updateLightsForClock() {
@@ -73,7 +72,7 @@ void updateLightsForClock() {
 
   int adjusted_minute = minute() + adjusted_seconds / 60.0;
 
-  // we include the minutes here in case of fractional timezones. we will likely drop the minute
+  // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
   int adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
 
   if (adjusted_hour < 0) {
@@ -90,28 +89,69 @@ void updateLightsForClock() {
   Serial.println(adjusted_seconds);
 
   // TODO: make sure this loops the right way once it is wired.
-  // TODO: why do I need % 16?
-  int hour_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
-  int minute_id = map(adjusted_minute, 0, 60, 16, 0) % 16;
-  int second_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
+  //int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
+  int hour_led_id;
+  switch (adjusted_hour) {
+  case 0:
+    hour_led_id = 0;
+    break;
+  case 1:
+    hour_led_id = 15;
+    break;
+  case 2:
+    hour_led_id = 13;
+    break;
+  case 3:
+    hour_led_id = 12;
+    break;
+  case 4:
+    hour_led_id = 11;
+    break;
+  case 5:
+    hour_led_id = 9;
+    break;
+  case 6:
+    hour_led_id = 8;
+    break;
+  case 7:
+    hour_led_id = 7;
+    break;
+  case 8:
+    hour_led_id = 5;
+    break;
+  case 9:
+    hour_led_id = 4;
+    break;
+  case 10:
+    hour_led_id = 3;
+    break;
+  case 11:
+    hour_led_id = 1;
+    break;
+  }
 
-  Serial.print("{hour,minute,second}_id: ");
-  Serial.print(hour_id);
+  int minute_led_id = map(adjusted_minute, 0, 60, 16, 0) % 16;
+  int second_led_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
+
+  /*
+  Serial.print("led_ids hour ,minute, second: ");
+  Serial.print(hour_led_id);
   Serial.print(" ");
-  Serial.print(minute_id);
+  Serial.print(minute_led_id);
   Serial.print(" ");
-  Serial.println(second_id);
+  Serial.println(second_led_id);
+  */
 
   // TODO: I'm not sure what color the noon marker should be or if we even need one
   // TODO: what colors should the leds be?
   // TODO: i'm not sure i like how i'm handling overlapping
-  // TODO: blink instead of full brightness? at least use HSV to lower the brightness
+  // TODO: blink instead of full brightness?
   for (int i = 0; i < num_LEDs; i++) {
-    if (i == second_id) {
+    if (i == second_led_id) {
       leds[i] = CRGB::Blue;
-    } else if (i == minute_id) {
+    } else if (i == minute_led_id) {
       leds[i] = CRGB::Yellow;
-    } else if (i == hour_id) {
+    } else if (i == hour_led_id) {
       leds[i] = CRGB::Red;
     }
     // everything starts at least a little dimmed

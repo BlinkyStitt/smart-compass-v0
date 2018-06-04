@@ -63,6 +63,8 @@ void radioTransmit(int pid) {
     return;
   }
 
+  // TODO: what to do if the message is really old?
+
   Serial.print("Message: ");
 
   Serial.print("n=");
@@ -74,7 +76,7 @@ void radioTransmit(int pid) {
   Serial.print(" p=");
   Serial.print(compass_messages[pid].peer_id);
 
-  unsigned long time_now = nowMillis();
+  unsigned long time_now = now();
   compass_messages[pid].tx_time = time_now;
 
   Serial.print(" now=");
@@ -106,7 +108,7 @@ void radioTransmit(int pid) {
   Serial.print("sending... ");
   rf95.send((uint8_t *)radio_buf, stream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
-    FastLED.delay(1);
+    FastLED.delay(2);
   }
   Serial.println("done.");
 

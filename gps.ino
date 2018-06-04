@@ -44,8 +44,15 @@ void setupGPS() {
   Serial.println("done.");
 }
 
+long last_gps_update = 0;
+
 void gpsReceive() {
   static AP_Declination declination_calculator;
+
+  // limit updates to at most every 3 seconds
+  if (last_gps_update and (millis() - last_gps_update < 3000)) {
+    return;
+  }
 
   // if no new sentence is received... (updates at most every 100 mHz thanks to PMTK_SET_NMEA_UPDATE_*)
   if (!GPS.newNMEAreceived()) {
@@ -66,8 +73,10 @@ void gpsReceive() {
   }
 
   if (!GPS.fix) {
+    // TODO: clear my compass_message?
     return;
   }
+  last_gps_update = millis();
 
   // TODO: do we have time before GPS.fix?
   // set the time to match the GPS if it isn't set or has drifted
@@ -82,9 +91,10 @@ void gpsReceive() {
   }
 
   // TODO: should we only do this if there is more drift?
+  // TODO: this bounces around wildly. figure out some way to sync multiple clocks from a GPS fix and radio
   gps_ms = GPS.milliseconds;
 
-  compass_messages[my_peer_id].last_updated_at = nowMillis();
+  compass_messages[my_peer_id].last_updated_at = now();  // TODO: seconds or milliseconds?
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 

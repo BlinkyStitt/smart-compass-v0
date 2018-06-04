@@ -39,6 +39,8 @@ float course_to(long lat1, long lon1, long lat2, long lon2, float *distance) {
 bool firstIsBrighter(CHSV first, CHSV second) { return first.value > second.value; }
 
 const int max_compass_points = max_peers + 1;
+
+// compass points go COUNTER-clockwise to match LEDs!
 CHSV compass_points[num_LEDs][max_compass_points];
 int next_compass_point[num_LEDs] = {0};
 
@@ -78,10 +80,11 @@ void updateCompassPoints() {
 
     float peer_distance; // meters
     float magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
-                                       compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
+                                       compass_messages[i].latitude, compass_messages[i].longitude,
+                                       &peer_distance);
 
     if (peer_distance < 10) {
-      // TODO: what should we do for really close peers?
+      // TODO: what should we do for really close peers? don't just hide them
       continue;
     }
 
@@ -93,7 +96,7 @@ void updateCompassPoints() {
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
-    int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 10, 255);
+    int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 30, 255);
 
     compass_points[compass_point_id][next_compass_point[compass_point_id]] =
         CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);

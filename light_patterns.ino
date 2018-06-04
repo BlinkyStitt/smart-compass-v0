@@ -19,6 +19,21 @@ void sinelon() {
   leds[pos] += CHSV(g_hue, 255, 192);
 }
 
+// TODO: circle with multiple colors
+void circle() {
+  int ms_per_led = 3 * 1000 / frames_per_second;  // 3 frames
+  int pos = (millis() / ms_per_led) % num_LEDs;  // TODO: use now_millis so we stay in sync with others?
+
+  fadeToBlackBy(leds, num_LEDs, 64);
+
+  leds[pos] += CHSV(g_hue, 255, 192);
+
+  pos++;
+  if (pos >= num_LEDs) {
+    pos -= num_LEDs;
+  }
+}
+
 // This function draws rainbows with an ever-changing, widely-varying set of parameters.
 // https://gist.github.com/kriegsman/964de772d64c502760e5
 void pride() {
@@ -35,7 +50,7 @@ void pride() {
   uint16_t hue16 = sHue16; // g_hue * 256;
   uint16_t hueinc16 = beatsin88(113, 1, 3000);
 
-  uint16_t ms = nowMillis();
+  uint16_t ms = millis();  // TODO: use now_millis so we stay in sync with others?
   uint16_t deltams = ms - sLastMillis;
   sLastMillis = ms;
   sPseudotime += deltams * msmultiplier;

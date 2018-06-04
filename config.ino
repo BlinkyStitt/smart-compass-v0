@@ -204,7 +204,7 @@ void setupConfig() {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
-    time_zone_offset = -7;
+    time_zone_offset = -8;
     Serial.println(time_zone_offset);
   }
 
