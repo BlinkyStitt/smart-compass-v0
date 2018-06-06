@@ -56,6 +56,7 @@ void updateCompassPoints() {
   compass_points[0][next_compass_point[0]] = CHSV(0, 255, 255);
   next_compass_point[0]++;
 
+  /*
   // add east (TODO: remove this when done debugging)
   compass_points[12][next_compass_point[12]] = CHSV(64, 255, 255);
   next_compass_point[12]++;
@@ -67,6 +68,7 @@ void updateCompassPoints() {
   // add west (TODO: remove this when done debugging)
   compass_points[4][next_compass_point[4]] = CHSV(192, 255, 255);
   next_compass_point[4]++;
+  */
 
   for (int i = 0; i < num_peers; i++) {
     if (!compass_messages[i].saturation) {
@@ -90,13 +92,14 @@ void updateCompassPoints() {
 
     // TODO: double check that this is looping the correct way around the LED
     // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
-    // TODO: i don't think mod is needed here
-    int compass_point_id = map(magnetic_bearing, 0, 360, num_LEDs, 0) % num_LEDs;
+    int compass_point_id = map(magnetic_bearing, 0, 360, 0, num_LEDs) % num_LEDs;
 
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 30, 255);
+
+    // TODO: if peer data is old, blink or something
 
     compass_points[compass_point_id][next_compass_point[compass_point_id]] =
         CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
@@ -106,9 +109,7 @@ void updateCompassPoints() {
   /*
   // TODO: this is broken
   for (int i = 0; i < num_LEDs; i++) {
-    // TODO: sort every time? i feel like there is a smarter way to insert. it
-  probably doesn't matter
-    // TODO: i think this is broken
+    // TODO: sort every time? i feel like there is a smarter way to insert. it probably doesn't matter
     sortArray(compass_points[i], next_compass_point[i], firstIsBrighter);
   }
   */

@@ -59,7 +59,7 @@ int my_network_id, my_peer_id, my_hue, my_saturation, num_peers;
 
 // these are set by config or fallback to defaults
 // TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
-int broadcast_time_ms, default_brightness, flashlight_density, frames_per_second, max_peer_distance, ms_per_light_pattern,
+int broadcast_time_ms, default_brightness, flashlight_density, frames_per_second, gps_update_s, max_peer_distance, ms_per_light_pattern,
   peer_led_ms, radio_power;
 
 int time_zone_offset;
@@ -74,8 +74,8 @@ Adafruit_GPS GPS(&gpsSerial);
 String gps_log_filename = ""; // this is filled in during setupSD
 File gps_log_file;
 
-// keep us from transmitting to often
-bool should_transmit[max_peers] = {true};
+// keep us from transmitting too often
+long last_transmitted[max_peers] = {0};
 
 // TODO: this will probably change when I move from the breadboard to the PCB. give them better names (portrait, landscape?)
 enum Orientation: byte {
@@ -136,22 +136,14 @@ void loop() {
     broadcasted_peer_id = time_segment_id % num_peers;
 
     if (broadcasting_peer_id == my_peer_id) {
-      if (should_transmit[broadcasted_peer_id]) {
-        radioTransmit(broadcasted_peer_id);
-        should_transmit[broadcasted_peer_id] = false;
-      } else {
-        // it's our time to transmit, but we already did
-      }
+      radioTransmit(broadcasted_peer_id);  // this will noop if we have transmitted recently
     } else {
-      // reset should_transmit to true
-      for (int i = 0; i < num_peers; i++) {
-        should_transmit[i] = true;
-      }
+      // TODO: have known down time so we can sleep longer?
       radioReceive();
     }
   }
 
-  // delay to handle dithering
   // don't sleep too long or you get in the way of radios. keep this less < framerate
+  //delayToDither(10);
   FastLED.delay(10);
 }
