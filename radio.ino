@@ -41,6 +41,8 @@ void setupRadio() {
   Serial.println(" done.");
 }
 
+//long wait_for_congestion = 0;
+
 void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
@@ -51,7 +53,9 @@ void radioTransmit(int pid) {
 
   unsigned long time_now = now();
 
-  // TODO: put this on the SD card
+  // TODO: put this 2 second wait on the SD card. maybe tie it to update interval?
+  // TODO: what if time_now/wait_for_congestion wraps?
+  //if ((time_now - last_transmitted[pid] < 2) or (time_now < wait_for_congestion)) {
   if (time_now - last_transmitted[pid] < 2) {
     // we already transmitted for this peer recently. skip it
     return;
@@ -63,10 +67,19 @@ void radioTransmit(int pid) {
   Serial.print(time_now);
   Serial.println(")... ");
 
-  // TODO: aloha protocol. recv before transmitting and delay a random amount
+  /*
+  // TODO: this is causing it to hang. does my module not have this?
+  // http://www.airspayce.com/mikem/arduino/RadioHead/classRHGenericDriver.html#ac577b932ba8b042b8170b24d513635c7
+  if (rf95.isChannelActive()) {
+    Serial.println("Channel is active. Delaying transmission");
+    // TODO: exponential backoff? how long? FastLED's random?
+    // TODO: how long should we wait? the upstream method waits 100-1000ms
+    wait_for_congestion = time_now + random(100, 500);
+    return;
+  }
+  */
 
   if (rf95.available()) {
-    // uh oh! someone else sent some data right around our time to transmit!
     Serial.println("Missed a peer message! Parsing before transmitting.");
     radioReceive();
     // TODO: do something with the lights? could be cool to add a circle in my_hue to whatever pattern is currently playing

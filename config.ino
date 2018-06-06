@@ -137,7 +137,7 @@ void setupConfig() {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
-    update_interval_s = 4;  // was 31 // TODO: tune this. i picked a prime number to maybe reduce interference
+    update_interval_s = 31;  // was 31 // TODO: tune this. i picked a prime number to maybe reduce interference
     // peers will be updated at most broadcast_time_ms * num_peers * num_peers
     Serial.println(broadcast_time_ms);
   }
