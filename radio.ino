@@ -36,64 +36,76 @@ void setupRadio() {
   Serial.print(RADIO_FREQ);
 
   // The default transmitter power is 13dBm, using PA_BOOST.
-  rf95.setTxPower(radio_power, false);
+  rf95.setTxPower(constrain(radio_power, 5, 23), false);
 
   Serial.println(" done.");
 }
 
 void radioTransmit(int pid) {
+  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
+
   if (timeStatus() == timeNotSet) {
     Serial.println("Time not set! Skipping transmission.");
+    return;
+  }
+
+  unsigned long time_now = now();
+
+  // TODO: put this on the SD card
+  if (time_now - last_transmitted[pid] < 2) {
+    // we already transmitted for this peer recently. skip it
     return;
   }
 
   // TODO: should we transmit peer data even if we don't have local time set?
   // maybe set time from a peer?
   Serial.print("My time to transmit (");
-  Serial.print(now());
+  Serial.print(time_now);
   Serial.println(")... ");
 
-  // TODO: what if this is really slow? we should transmit 1 peer per loop so
-  // that we run updateLights/Sensors/etc.
+  // TODO: aloha protocol. recv before transmitting and delay a random amount
+
+  if (rf95.available()) {
+    // uh oh! someone else sent some data right around our time to transmit!
+    Serial.println("Missed a peer message! Parsing before transmitting.");
+    radioReceive();
+    // TODO: do something with the lights? could be cool to add a circle in my_hue to whatever pattern is currently playing
+    return;  // we will try broadcasting next loop
+  }
+
   if (!compass_messages[pid].hue) {
     // if we don't have any info for this peer, skip sending anything
+
+    // don't bother retrying
+    last_transmitted[pid] = time_now;
+
     // TODO: this blocks us from being able to use pure red
     Serial.print("No peer data to transmit for #");
     Serial.println(pid);
+
     return;
   }
 
   // TODO: what to do if the message is really old?
-
-  Serial.print("Message: ");
-
-  Serial.print("n=");
-  Serial.print(compass_messages[pid].network_id);
-
-  Serial.print(" txp=");
-  Serial.print(compass_messages[pid].tx_peer_id);
-
-  Serial.print(" p=");
-  Serial.print(compass_messages[pid].peer_id);
-
-  unsigned long time_now = now();
   compass_messages[pid].tx_time = time_now;
 
+  // DEBUGGING
+  Serial.print("Message: ");
+  Serial.print("n=");
+  Serial.print(compass_messages[pid].network_id);
+  Serial.print(" txp=");
+  Serial.print(compass_messages[pid].tx_peer_id);
+  Serial.print(" p=");
+  Serial.print(compass_messages[pid].peer_id);
   Serial.print(" now=");
   Serial.print(time_now);
-
   Serial.print(" t=");
   Serial.print(compass_messages[pid].last_updated_at);
-
   Serial.print(" lat=");
   Serial.print(compass_messages[pid].latitude);
-
   Serial.print(" lon=");
   Serial.print(compass_messages[pid].longitude);
-
   Serial.print(" EOM. ");
-
-  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   // Create a stream that will write to our buffer
   pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
@@ -104,16 +116,21 @@ void radioTransmit(int pid) {
     return;
   }
 
-  // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs
+  // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast (TODO: time it)
   Serial.print("sending... ");
   rf95.send((uint8_t *)radio_buf, stream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
   }
-  Serial.println("done.");
 
-  // Serial.print("Sent packed message: ");
-  // Serial.println((char*)radio_buf);
+  // put the radio to sleep to save power
+  // TODO: this takes a finite amount of time to wake. not sure how long tho...
+  rf95.sleep();
+
+  last_transmitted[pid] = time_now;
+
+  Serial.println("done.");
+  return;
 }
 
 void radioReceive() {
@@ -153,6 +170,7 @@ void radioReceive() {
 
       if (message.peer_id == my_peer_id) {
         Serial.println("Ignoring stats about myself.");
+        // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
         return;
       }
 

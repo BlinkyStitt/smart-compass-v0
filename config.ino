@@ -131,15 +131,18 @@ void setupConfig() {
   my_saturation = 110;
 
   // load args that have defaults
-  Serial.print("broadcast_time_ms: ");
-  if (sd_setup && ini.getValue("global", "broadcast_time_ms", buffer, buffer_len, broadcast_time_ms)) {
+  Serial.print("update_interval_s: ");  // TODO: rename to radio_tx_interval_s?
+  int update_interval_s;
+  if (sd_setup && ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
-    broadcast_time_ms = 250; // TODO: tune this.
+    update_interval_s = 4;  // was 31 // TODO: tune this. i picked a prime number to maybe reduce interference
     // peers will be updated at most broadcast_time_ms * num_peers * num_peers
     Serial.println(broadcast_time_ms);
   }
+
+  // TODO: gps_interval_s?
 
   Serial.print("default_brightness: ");
   if (sd_setup && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
@@ -216,6 +219,12 @@ void setupConfig() {
     flashlight_density = 2;
     Serial.println(flashlight_density);
   }
+
+  // i'm not sure how important a prime really is here, but it sounds cool
+  broadcast_time_ms = nextPrime(update_interval_s * 1000 / num_peers / num_peers - 6);
+
+  Serial.print("broadcast_time_ms:");
+  Serial.println(broadcast_time_ms);
 
   // initialize compass messages
   for (int i = 0; i < num_peers; i++) {

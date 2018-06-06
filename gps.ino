@@ -95,8 +95,15 @@ void gpsReceive() {
   gps_ms = GPS.milliseconds;
 
   compass_messages[my_peer_id].last_updated_at = now();  // TODO: seconds or milliseconds?
+
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
+
+  /*
+  // hard code salesforce tower while debugging
+  compass_messages[my_peer_id].latitude = 37789900;
+  compass_messages[my_peer_id].longitude = -122396900;
+  */
 
   // TODO: do we really need to do this every time? how expensive is this?
   // calculate magnetic declination in software. the gps chip and library

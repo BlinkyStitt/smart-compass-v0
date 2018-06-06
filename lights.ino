@@ -216,6 +216,19 @@ void updateLights() {
     }
 
     // debugging lights
+    int gps_ms_wrapped = gps_ms % 1000;
+
+    if (gps_ms_wrapped < 100) {
+      Serial.print(" ");
+
+      if (gps_ms_wrapped < 10) {
+        Serial.print(" ");
+      }
+    }
+
+    Serial.print(gps_ms_wrapped);
+
+    Serial.print(": ");
     for (int i = 0; i < num_LEDs; i++) {
       if (leds[i]) {
         // TODO: better logging?
