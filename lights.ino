@@ -3,8 +3,6 @@
 void setupLights() {
   Serial.print("Setting up lights... ");
 
-  pinMode(LED_DATA_PIN, OUTPUT);
-
   // TODO: seed fastled random?
 
   // https://learn.adafruit.com/adafruit-feather-m0-basic-proto/power-management

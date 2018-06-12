@@ -19,9 +19,6 @@ float mag_field_strength = 42.73F;
 void setupSensor() {
   Serial.print("Setting up sensors...");
 
-  pinMode(LSM9DS1_CSAG, OUTPUT);
-  pinMode(LSM9DS1_CSM, OUTPUT);
-
   if (!lsm.begin()) {
     // TODO: what does 'F' do?
     Serial.println(F("Oops, no LSM9DS1 detected... Check your wiring!"));

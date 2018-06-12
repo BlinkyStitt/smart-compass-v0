@@ -42,16 +42,17 @@ void printErrorMessage(uint8_t e, bool eol = true) {
 }
 
 void setupConfig() {
+  const size_t buffer_len = 80;
+  char buffer[buffer_len];
+  const char *filename = "/config.ini";
+
+  // create this even if sd isn't setup so that the if/else below is simpler
+  IniFile ini(filename);
+
   if (!sd_setup) {
     Serial.println("SD not setup. Skipping dynamic config!");
   } else {
-    const size_t buffer_len = 80;
-    char buffer[buffer_len];
-    const char *filename = "/config.ini";
-
     Serial.println("Loading config... ");
-
-    IniFile ini(filename);
 
     if (!ini.open()) {
       // TODO: default to just pretty lights since we don't have a network id or home locations
@@ -212,7 +213,8 @@ void setupConfig() {
   }
 
   // i'm not sure how important a prime really is here, but it sounds cool
-  broadcast_time_ms = nextPrime(update_interval_s * 1000 / num_peers / num_peers - 6);
+  //broadcast_time_ms = nextPrime(update_interval_s * 1000 / num_peers / num_peers - 6);
+  broadcast_time_ms = update_interval_s * 1000 / num_peers / num_peers;
 
   Serial.print("broadcast_time_ms:");
   Serial.println(broadcast_time_ms);

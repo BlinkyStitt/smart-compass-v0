@@ -84,6 +84,37 @@ enum Orientation: byte {
 
 bool sd_setup, sensor_setup = false;
 
+void setupPins() {
+  // TODO: do we want this high?
+  pinMode(RFM95_RST, OUTPUT);
+  digitalWrite(RFM95_RST, HIGH);
+
+  pinMode(LED_DATA_PIN, OUTPUT);
+
+  // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
+  // The RFM95 has a pulldown on this pin, so the radio
+  // is technically always selected unless you set the pin low.
+  // this will cause other SPI devices to fail to function as
+  // expected because CS (active-low) will be selected for
+  // the RFM95 at the same time.
+  pinMode(RFM95_CS, OUTPUT);
+  digitalWrite(RFM95_CS, HIGH);
+
+  // TODO: configure VBAT_PIN?
+  pinMode(SDCARD_CS_PIN, OUTPUT);
+
+  pinMode(LSM9DS1_CSAG, OUTPUT);
+  pinMode(LSM9DS1_CSM, OUTPUT);
+
+  pinMode(RED_LED_PIN, OUTPUT);
+
+  // TODO: configure SPI pins?
+
+  delay(100); // give everything time to wake up
+
+  SPI.begin();
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -92,13 +123,11 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
 
-  // setup SPI
-  SPI.setMISO(SPI_MISO_PIN);
-  SPI.setMOSI(SPI_MOSI_PIN);
-  SPI.setSCK(SPI_SCK_PIN);
-  SPI.begin(); // should this be here?
-
   Serial.println("Setting up...");
+
+  // Configure pins BEFORE trying to do anything
+  setupPins();
+
   randomSeed(analogRead(6));
 
   // configuration depends on SD card so do it first
