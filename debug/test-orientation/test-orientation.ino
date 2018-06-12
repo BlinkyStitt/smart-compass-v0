@@ -66,7 +66,14 @@ void setup() {
     delay(1);
   }
 
+  Serial.println("Setting up...");
+
+  // make sure radio doesn't get in the way
+  digitalWrite(RFM95_CS, HIGH);
+
   setupSensor();
+
+  Serial.println("Starting...");
 }
 
 /* Loop */
@@ -74,17 +81,6 @@ void setup() {
 String lastOrientation, currentOrientation;
 
 void loop() {
-  /*
-    // TODO: rename these
-    The orientations of the board:
-    0: flat, processor facing up
-    1: flat, processor facing down
-    2: portrait, digital pins up (now USB connector up)
-    3: portrait, analog pins up (now USB connector down)
-    4: landscape, USB connector up (now SPI pins up)
-    5: landscape, USB connector down (now SPI pins down)
-  */
-
   sensorReceive();
 
   // read accelerometer:
@@ -107,16 +103,16 @@ void loop() {
   } else if ( (absY > absX) && (absY > absZ)) {
     // base orientation on Y
     if (y > 0) {
-      currentOrientation = "usb up";
-    } else {
       currentOrientation = "usb down";
+    } else {
+      currentOrientation = "usb up";
     }
   } else {
     // base orientation on X
     if (x < 0) {
-      currentOrientation = "spi up";
+      currentOrientation = "upside-down portrait";
     } else {
-      currentOrientation = "spi down";
+      currentOrientation = "portrait";
     }
   }
 
@@ -126,4 +122,6 @@ void loop() {
     Serial.println(currentOrientation);
     lastOrientation = currentOrientation;
   }
+
+  delay(50);
 }
