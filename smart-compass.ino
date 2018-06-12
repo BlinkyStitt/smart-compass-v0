@@ -27,9 +27,9 @@
 #define LED_DATA_PIN 5
 #define RFM95_CS 8 // already wired for us
 #define VBAT_PIN 9 // already wired for us  // A7
-#define SDCARD_CS_PIN 10
-#define LSM9DS1_CSAG 11
-#define LSM9DS1_CSM 12
+#define SDCARD_CS_PIN 10  // TODO: moved to a different pin for cleaner traces
+#define LSM9DS1_CSAG 11  // TODO: moved to a different pin for cleaner traces
+#define LSM9DS1_CSM 12  // TODO: moved to a different pin for cleaner traces
 #define RED_LED_PIN 13  // already wired for us
 #define SPI_MISO_PIN 22 // shared between Radio+Sensors+SD
 #define SPI_MOSI_PIN 23 // shared between Radio+Sensors+SD
@@ -82,7 +82,7 @@ enum Orientation: byte {
   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
 };
 
-bool sensor_setup, sd_setup = false;
+bool sd_setup, sensor_setup = false;
 
 void setup() {
   Serial.begin(115200);
