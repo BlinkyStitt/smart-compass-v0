@@ -1,16 +1,12 @@
 /* Radio */
 
+// TODO: there are lots more frequencies than this. pick a good one
 #define RADIO_FREQ 915.0
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setupRadio() {
   Serial.print("Setting up Radio... ");
-
-  pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
-
-  delay(100); // give the radio time to wake up
 
   // manual reset
   digitalWrite(RFM95_RST, LOW);

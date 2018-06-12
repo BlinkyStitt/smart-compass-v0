@@ -153,7 +153,7 @@ void gpsReceive() {
     return;
   }
 
-  Serial.print("Logging GPS data...");
+  // Serial.println("Logging GPS data...");
   // TODO: only log if it is has changed by more than a couple meters
 
   gps_log_file.print(compass_messages[my_peer_id].last_updated_at);
