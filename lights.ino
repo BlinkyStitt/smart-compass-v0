@@ -3,6 +3,9 @@
 void setupLights() {
   Serial.print("Setting up lights... ");
 
+  pinMode(LED_DATA_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
+
   // TODO: seed fastled random?
 
   // https://learn.adafruit.com/adafruit-feather-m0-basic-proto/power-management
@@ -195,14 +198,14 @@ void updateLights() {
     case ORIENTED_DOWN:
       flashlight();
       break;
+    case ORIENTED_USB_DOWN:
     case ORIENTED_USB_UP:
-    case ORIENTED_SPI_UP:
-    case ORIENTED_SPI_DOWN:
+    case ORIENTED_PORTRAIT:
       // pretty patterns
-      // TODO: different things for the different SPI tilts? maybe use that to toggle what the compass shows? need some sort of debounce
+      // TODO: different things for the different USB tilts? maybe use that to toggle what the compass shows? need some sort of debounce
       updateLightsForHanging();
       break;
-    case ORIENTED_USB_DOWN:
+    case ORIENTED_PORTRAIT_UPSIDE_DOWN:
       // show the time
       // TODO: usb up is showing this, too
       if (timeStatus() == timeSet) {

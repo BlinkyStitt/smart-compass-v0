@@ -47,6 +47,8 @@ void setupGPS() {
 void gpsReceive() {
   static AP_Declination declination_calculator;
   static long last_gps_update = 0;
+  static int last_latitude = 0;
+  static int last_longitude = 0;
 
   // limit updates to at most every 3 seconds
   if (last_gps_update and (millis() - last_gps_update < 3000)) {
@@ -122,10 +124,11 @@ void gpsReceive() {
   Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
   */
 
+  // TODO: do we have 5 decimals of precision? was 4
   Serial.print("Location: ");
-  Serial.print(GPS.latitudeDegrees, 4);
+  Serial.print(GPS.latitudeDegrees, 5);
   Serial.print(", ");
-  Serial.println(GPS.longitudeDegrees, 4);
+  Serial.println(GPS.longitudeDegrees, 5);
 
   /*
   Serial.print("Location 3: ");
@@ -142,6 +145,14 @@ void gpsReceive() {
   4);
   */
 
+  if (last_latitude == GPS.latitude_fixed && last_longitude == GPS.longitude_fixed) {
+    // don't bother saving if the points haven't changed
+    return;
+  }
+
+  last_latitude = GPS.latitude_fixed;
+  last_longitude = GPS.longitude_fixed;
+
   // save to the SD card
   gps_log_file = SD.open(gps_log_filename, FILE_WRITE);
 
@@ -153,14 +164,17 @@ void gpsReceive() {
     return;
   }
 
-  // Serial.println("Logging GPS data...");
+  // todo:
+
+  Serial.print("Logging GPS data: ");
+  Serial.println(gps_log_filename);
   // TODO: only log if it is has changed by more than a couple meters
 
   gps_log_file.print(compass_messages[my_peer_id].last_updated_at);
   gps_log_file.print(",");
-  gps_log_file.print(GPS.latitudeDegrees, 4);
+  gps_log_file.print(GPS.latitudeDegrees, 5);
   gps_log_file.print(",");
-  gps_log_file.print(GPS.longitudeDegrees, 4);
+  gps_log_file.print(GPS.longitudeDegrees, 5);
   gps_log_file.print(",");
   gps_log_file.print(GPS.speed);
   gps_log_file.print(",");
