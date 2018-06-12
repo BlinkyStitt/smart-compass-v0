@@ -42,37 +42,35 @@ void printErrorMessage(uint8_t e, bool eol = true) {
 }
 
 void setupConfig() {
+  if (!sd_setup) {
+    Serial.println("SD not setup. Skipping config!");
+    return;
+  }
+
   const size_t buffer_len = 80;
   char buffer[buffer_len];
+  const char *filename = "/config.ini";
 
   Serial.println("Loading config... ");
-
-  const char *filename = "/config.ini";
 
   IniFile ini(filename);
 
   if (!ini.open()) {
-    // TODO: block here once the sd card is actually wired up
-    /*
+    // TODO: default to just pretty lights since we don't have a network id or home locations
     Serial.println(" does not exist. Cannot proceed!");
     while (1)
       ;
-    */
   }
 
-  /*
-  // TODO: block here once the sd card is actually wired up
-  // Check the file is valid. This can be used to warn if any lines are longer than the buffer.
   if (!ini.validate(buffer, buffer_len)) {
+    // TODO: default to just pretty lights since we don't have a network id or home locations
     Serial.print(ini.getFilename());
     Serial.print(" not valid. Cannot proceed!");
     printErrorMessage(ini.getError());
     while (1)
       ;
   }
-  */
 
-  /*
   // load required args
   if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
     Serial.print("num_peers: ");
@@ -123,17 +121,11 @@ void setupConfig() {
     while (1)
       ;
   }
-  */
-  num_peers = 4;
-  my_network_id = 1;
-  my_peer_id = 1;
-  my_hue = 140;
-  my_saturation = 110;
 
   // load args that have defaults
   Serial.print("update_interval_s: ");  // TODO: rename to radio_tx_interval_s?
   int update_interval_s;
-  if (sd_setup && ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
+  if (ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -145,7 +137,7 @@ void setupConfig() {
   // TODO: gps_interval_s?
 
   Serial.print("default_brightness: ");
-  if (sd_setup && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
+  if (ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -154,7 +146,7 @@ void setupConfig() {
   }
 
   Serial.print("frames_per_second: ");
-  if (sd_setup && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
+  if (ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -164,7 +156,7 @@ void setupConfig() {
 
   // TODO: rename this. peers at this distance or further are the dimmest
   Serial.print("max_peer_distance: ");
-  if (sd_setup && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
+  if (ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -173,7 +165,7 @@ void setupConfig() {
   }
 
   Serial.print("ms_per_light_pattern: ");
-  if (sd_setup && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
+  if (ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -183,7 +175,7 @@ void setupConfig() {
 
   Serial.print("peer_led_ms: ");
   // time to display the peer when multiple peers are the same direction
-  if (sd_setup && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
+  if (ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -194,7 +186,7 @@ void setupConfig() {
   Serial.print("radio_power: ");
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (sd_setup && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
+  if (ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -203,7 +195,7 @@ void setupConfig() {
   }
 
   Serial.print("time_zone_offset: ");
-  if (sd_setup && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
+  if (ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -212,7 +204,7 @@ void setupConfig() {
   }
 
   Serial.print("flashlight_density: ");
-  if (sd_setup && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
+  if (ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -239,6 +231,7 @@ void setupConfig() {
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
 
+  gps_log_filename += "gps-";
   gps_log_filename += my_network_id;
   gps_log_filename += "-" + my_peer_id;
   gps_log_filename += ".log";
