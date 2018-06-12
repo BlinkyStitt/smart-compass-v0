@@ -49,6 +49,8 @@ void setupConfig() {
   // create this even if sd isn't setup so that the if/else below is simpler
   IniFile ini(filename);
 
+  int update_interval_s;
+
   if (!sd_setup) {
     Serial.println("SD not setup. Skipping dynamic config!");
   } else {
@@ -82,7 +84,7 @@ void setupConfig() {
     }
 
     if (ini.getValue("global", "my_network_id", buffer, buffer_len, my_network_id)) {
-      Serial.print("network_id: ");
+      Serial.print("my_network_id: ");
       Serial.println(buffer);
     } else {
       Serial.print("Could not read 'my_network_id' from section 'global', error was ");
@@ -92,7 +94,7 @@ void setupConfig() {
     }
 
     if (ini.getValue("global", "my_peer_id", buffer, buffer_len, my_peer_id)) {
-      Serial.print("peer_id: ");
+      Serial.print("my_peer_id: ");
       Serial.println(buffer);
     } else {
       Serial.print("Could not read 'my_peer_id' from section 'global', error was ");
@@ -120,35 +122,36 @@ void setupConfig() {
       while (1)
         ;
     }
+
+    // load args that have defaults
+    // TODO: gps_interval_s?
+    ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s);
+    ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness);
+    ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second);
+    ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance);
+    ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern);
+    ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms);
+    ini.getValue("global", "radio_power", buffer, buffer_len, radio_power);
+    ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset);
+    ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density);
   }
 
-  // load args that have defaults
-  Serial.print("update_interval_s: ");  // TODO: rename to radio_tx_interval_s?
-  int update_interval_s;
-  if (sd_setup && ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
-    Serial.println(buffer);
-  } else {
+  Serial.print("update_interval_s: ");
+  if (! update_interval_s) {
     Serial.print("(default) ");
-    update_interval_s = 31;  // was 31 // TODO: tune this. i picked a prime number to maybe reduce interference
-    // peers will be updated at most broadcast_time_ms * num_peers * num_peers
-    Serial.println(broadcast_time_ms);
+    update_interval_s = 31;
+    Serial.println(update_interval_s);
   }
-
-  // TODO: gps_interval_s?
 
   Serial.print("default_brightness: ");
-  if (sd_setup && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
-    Serial.println(buffer);
-  } else {
+  if (! default_brightness) {
     Serial.print("(default) ");
-    default_brightness = 60;
+    default_brightness = 60;  // TODO: increase this when done debugging
     Serial.println(default_brightness);
   }
 
   Serial.print("frames_per_second: ");
-  if (sd_setup && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
-    Serial.println(buffer);
-  } else {
+  if (! frames_per_second) {
     Serial.print("(default) ");
     frames_per_second = 30;
     Serial.println(frames_per_second);
@@ -156,67 +159,59 @@ void setupConfig() {
 
   // TODO: rename this. peers at this distance or further are the dimmest
   Serial.print("max_peer_distance: ");
-  if (sd_setup && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
-    Serial.println(buffer);
-  } else {
+  if (! max_peer_distance) {
     Serial.print("(default) ");
     max_peer_distance = 5000;
     Serial.println(max_peer_distance);
   }
 
   Serial.print("ms_per_light_pattern: ");
-  if (sd_setup && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
-    Serial.println(buffer);
-  } else {
+  if (! ms_per_light_pattern) {
     Serial.print("(default) ");
     ms_per_light_pattern = 10 * 60 * 1000;
-    Serial.println(ms_per_light_pattern);
   }
+  Serial.println(ms_per_light_pattern);
 
   Serial.print("peer_led_ms: ");
   // time to display the peer when multiple peers are the same direction
-  if (sd_setup && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
-    Serial.println(buffer);
-  } else {
+  if (! peer_led_ms) {
     Serial.print("(default) ");
     peer_led_ms = 500;
-    Serial.println(peer_led_ms);
   }
+  Serial.println(peer_led_ms);
 
   Serial.print("radio_power: ");
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (sd_setup && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
-    Serial.println(buffer);
-  } else {
+  if (! radio_power) {
     Serial.print("(default) ");
     radio_power = 13;
-    Serial.println(radio_power);
   }
+  Serial.println(radio_power);
 
   Serial.print("time_zone_offset: ");
-  if (sd_setup && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
-    Serial.println(buffer);
+  if (time_zone_offset) {
+    ;
   } else {
     Serial.print("(default) ");
     time_zone_offset = -8;
-    Serial.println(time_zone_offset);
   }
+  Serial.println(time_zone_offset);
 
   Serial.print("flashlight_density: ");
-  if (sd_setup && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
-    Serial.println(buffer);
+  if (flashlight_density) {
+    Serial.println(flashlight_density);
   } else {
     Serial.print("(default) ");
     flashlight_density = 2;
     Serial.println(flashlight_density);
   }
 
-  // i'm not sure how important a prime really is here, but it sounds cool
+  // TODO: i'm not sure how important a prime really is here (or if this works consistently), but it sounds cool
   //broadcast_time_ms = nextPrime(update_interval_s * 1000 / num_peers / num_peers - 6);
+  // TODO: I think this math is overflowing or something
   broadcast_time_ms = update_interval_s * 1000 / num_peers / num_peers;
-
-  Serial.print("broadcast_time_ms:");
+  Serial.print("broadcast_time_ms: ");
   Serial.println(broadcast_time_ms);
 
   // initialize compass messages
@@ -232,10 +227,18 @@ void setupConfig() {
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
 
-  gps_log_filename += "gps-";
-  gps_log_filename += my_network_id;
-  gps_log_filename += "-" + my_peer_id;
-  gps_log_filename += ".log";
+  // TODO: there has to be a better way to concatenate ints into strings
+  gps_log_filename = my_network_id;
+  if (! my_peer_id) {
+    gps_log_filename = gps_log_filename + "-0.log";
+  } else {
+    gps_log_filename = gps_log_filename + "-";
+    gps_log_filename = gps_log_filename + my_peer_id;
+    gps_log_filename = gps_log_filename + ".log";
+  }
+
+  Serial.print("gps_log_filename: ");
+  Serial.println(gps_log_filename);
 
   // everyone will be in sync on the patterns, but their color will be diffferent
   // TODO: except that would only be true if they get plugged in at the exact same time. maybe sync this over the radio?

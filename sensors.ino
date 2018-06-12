@@ -142,7 +142,7 @@ static Orientation checkOrientation() {
   int absY = abs(y);
   int absZ = abs(z);
 
-  if ( (absZ > absX) && (absZ > absY)) {
+  if ((absZ > absX) && (absZ > absY)) {
     // base orientation on Z
     if (z > 0) {
       return ORIENTED_UP;
@@ -150,18 +150,18 @@ static Orientation checkOrientation() {
     return ORIENTED_DOWN;
   }
 
-  if ( (absY > absX) && (absY > absZ)) {
+  if ((absY > absX) && (absY > absZ)) {
     // base orientation on Y
     if (y > 0) {
-      return ORIENTED_USB_UP;
+      return ORIENTED_USB_DOWN;
     }
-    return  ORIENTED_USB_DOWN;
+    return ORIENTED_USB_UP;
   }
 
   // base orientation on X
   if (x < 0) {
-    return ORIENTED_SPI_UP;
+    return ORIENTED_PORTRAIT_UPSIDE_DOWN;
   }
 
-  return ORIENTED_SPI_DOWN;
+  return ORIENTED_PORTRAIT;
 }

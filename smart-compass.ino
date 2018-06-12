@@ -79,34 +79,24 @@ long last_transmitted[max_peers] = {0};
 
 // TODO: this will probably change when I move from the breadboard to the PCB. give them better names (portrait, landscape?)
 enum Orientation: byte {
-  ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_SPI_UP, ORIENTED_SPI_DOWN
+  ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_PORTRAIT_UPSIDE_DOWN, ORIENTED_PORTRAIT
 };
 
 bool sd_setup, sensor_setup = false;
 
-void setupPins() {
-  // TODO: do we want this high?
-  pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
-
-  pinMode(LED_DATA_PIN, OUTPUT);
-
+void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
   // The RFM95 has a pulldown on this pin, so the radio
   // is technically always selected unless you set the pin low.
   // this will cause other SPI devices to fail to function as
   // expected because CS (active-low) will be selected for
   // the RFM95 at the same time.
-  pinMode(RFM95_CS, OUTPUT);
   digitalWrite(RFM95_CS, HIGH);
 
-  // TODO: configure VBAT_PIN?
-  pinMode(SDCARD_CS_PIN, OUTPUT);
+  digitalWrite(SDCARD_CS_PIN, HIGH);
 
-  pinMode(LSM9DS1_CSAG, OUTPUT);
-  pinMode(LSM9DS1_CSM, OUTPUT);
-
-  pinMode(RED_LED_PIN, OUTPUT);
+  digitalWrite(LSM9DS1_CSM, HIGH);
+  digitalWrite(LSM9DS1_CSAG, HIGH);
 
   // TODO: configure SPI pins?
 
@@ -125,8 +115,8 @@ void setup() {
 
   Serial.println("Setting up...");
 
-  // Configure pins BEFORE trying to do anything
-  setupPins();
+  // Configure SPI pins for everything BEFORE trying to do anything with them individually
+  setupSPI();
 
   randomSeed(analogRead(6));
 
