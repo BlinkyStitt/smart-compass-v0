@@ -44,10 +44,9 @@ void setupGPS() {
   Serial.println("done.");
 }
 
-long last_gps_update = 0;
-
 void gpsReceive() {
   static AP_Declination declination_calculator;
+  static long last_gps_update = 0;
 
   // limit updates to at most every 3 seconds
   if (last_gps_update and (millis() - last_gps_update < 3000)) {
@@ -149,7 +148,8 @@ void gpsReceive() {
   // if the file opened okay, write to it:
   if (!gps_log_file) {
     // if the file didn't open, print an error and abort
-    // Serial.println("error opening gps log");
+    Serial.print("error opening gps log: ");
+    Serial.println(gps_log_filename);
     return;
   }
 

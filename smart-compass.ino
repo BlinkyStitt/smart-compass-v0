@@ -87,9 +87,16 @@ bool sensor_setup, sd_setup = false;
 void setup() {
   Serial.begin(115200);
 
-  // TODO: wait for serial while debugging?
+  //delay(1000);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
 
-  delay(1000);
+  // setup SPI
+  SPI.setMISO(SPI_MISO_PIN);
+  SPI.setMOSI(SPI_MOSI_PIN);
+  SPI.setSCK(SPI_SCK_PIN);
+  SPI.begin(); // should this be here?
 
   Serial.println("Setting up...");
   randomSeed(analogRead(6));
