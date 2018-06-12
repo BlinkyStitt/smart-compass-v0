@@ -43,89 +43,88 @@ void printErrorMessage(uint8_t e, bool eol = true) {
 
 void setupConfig() {
   if (!sd_setup) {
-    Serial.println("SD not setup. Skipping config!");
-    return;
-  }
-
-  const size_t buffer_len = 80;
-  char buffer[buffer_len];
-  const char *filename = "/config.ini";
-
-  Serial.println("Loading config... ");
-
-  IniFile ini(filename);
-
-  if (!ini.open()) {
-    // TODO: default to just pretty lights since we don't have a network id or home locations
-    Serial.println(" does not exist. Cannot proceed!");
-    while (1)
-      ;
-  }
-
-  if (!ini.validate(buffer, buffer_len)) {
-    // TODO: default to just pretty lights since we don't have a network id or home locations
-    Serial.print(ini.getFilename());
-    Serial.print(" not valid. Cannot proceed!");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
-  }
-
-  // load required args
-  if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
-    Serial.print("num_peers: ");
-    Serial.println(buffer);
+    Serial.println("SD not setup. Skipping dynamic config!");
   } else {
-    Serial.print("Could not read 'num_peers' from section 'global', error was ");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
-  }
+    const size_t buffer_len = 80;
+    char buffer[buffer_len];
+    const char *filename = "/config.ini";
 
-  if (ini.getValue("global", "my_network_id", buffer, buffer_len, my_network_id)) {
-    Serial.print("network_id: ");
-    Serial.println(buffer);
-  } else {
-    Serial.print("Could not read 'my_network_id' from section 'global', error was ");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
-  }
+    Serial.println("Loading config... ");
 
-  if (ini.getValue("global", "my_peer_id", buffer, buffer_len, my_peer_id)) {
-    Serial.print("peer_id: ");
-    Serial.println(buffer);
-  } else {
-    Serial.print("Could not read 'my_peer_id' from section 'global', error was ");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
-  }
+    IniFile ini(filename);
 
-  if (ini.getValue("global", "my_hue", buffer, buffer_len, my_hue)) {
-    Serial.print("my_hue: ");
-    Serial.println(buffer);
-  } else {
-    Serial.print("Could not read 'my_hue' from section 'global', error was ");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
-  }
+    if (!ini.open()) {
+      // TODO: default to just pretty lights since we don't have a network id or home locations
+      Serial.println(" does not exist. Cannot proceed!");
+      while (1)
+        ;
+    }
 
-  if (ini.getValue("global", "my_saturation", buffer, buffer_len, my_saturation)) {
-    Serial.print("my_saturation: ");
-    Serial.println(buffer);
-  } else {
-    Serial.print("Could not read 'my_saturation' from section 'global', error was ");
-    printErrorMessage(ini.getError());
-    while (1)
-      ;
+    if (!ini.validate(buffer, buffer_len)) {
+      // TODO: default to just pretty lights since we don't have a network id or home locations
+      Serial.print(ini.getFilename());
+      Serial.print(" not valid. Cannot proceed!");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
+
+    // load required args
+    if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
+      Serial.print("num_peers: ");
+      Serial.println(buffer);
+    } else {
+      Serial.print("Could not read 'num_peers' from section 'global', error was ");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
+
+    if (ini.getValue("global", "my_network_id", buffer, buffer_len, my_network_id)) {
+      Serial.print("network_id: ");
+      Serial.println(buffer);
+    } else {
+      Serial.print("Could not read 'my_network_id' from section 'global', error was ");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
+
+    if (ini.getValue("global", "my_peer_id", buffer, buffer_len, my_peer_id)) {
+      Serial.print("peer_id: ");
+      Serial.println(buffer);
+    } else {
+      Serial.print("Could not read 'my_peer_id' from section 'global', error was ");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
+
+    if (ini.getValue("global", "my_hue", buffer, buffer_len, my_hue)) {
+      Serial.print("my_hue: ");
+      Serial.println(buffer);
+    } else {
+      Serial.print("Could not read 'my_hue' from section 'global', error was ");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
+
+    if (ini.getValue("global", "my_saturation", buffer, buffer_len, my_saturation)) {
+      Serial.print("my_saturation: ");
+      Serial.println(buffer);
+    } else {
+      Serial.print("Could not read 'my_saturation' from section 'global', error was ");
+      printErrorMessage(ini.getError());
+      while (1)
+        ;
+    }
   }
 
   // load args that have defaults
   Serial.print("update_interval_s: ");  // TODO: rename to radio_tx_interval_s?
   int update_interval_s;
-  if (ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
+  if (sd_setup && ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -137,7 +136,7 @@ void setupConfig() {
   // TODO: gps_interval_s?
 
   Serial.print("default_brightness: ");
-  if (ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
+  if (sd_setup && ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -146,7 +145,7 @@ void setupConfig() {
   }
 
   Serial.print("frames_per_second: ");
-  if (ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
+  if (sd_setup && ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -156,7 +155,7 @@ void setupConfig() {
 
   // TODO: rename this. peers at this distance or further are the dimmest
   Serial.print("max_peer_distance: ");
-  if (ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
+  if (sd_setup && ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -165,7 +164,7 @@ void setupConfig() {
   }
 
   Serial.print("ms_per_light_pattern: ");
-  if (ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
+  if (sd_setup && ini.getValue("global", "ms_per_light_pattern", buffer, buffer_len, ms_per_light_pattern)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -175,7 +174,7 @@ void setupConfig() {
 
   Serial.print("peer_led_ms: ");
   // time to display the peer when multiple peers are the same direction
-  if (ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
+  if (sd_setup && ini.getValue("global", "peer_led_ms", buffer, buffer_len, peer_led_ms)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -186,7 +185,7 @@ void setupConfig() {
   Serial.print("radio_power: ");
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
+  if (sd_setup && ini.getValue("global", "radio_power", buffer, buffer_len, radio_power)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -195,7 +194,7 @@ void setupConfig() {
   }
 
   Serial.print("time_zone_offset: ");
-  if (ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
+  if (sd_setup && ini.getValue("global", "time_zone_offset", buffer, buffer_len, time_zone_offset)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
@@ -204,7 +203,7 @@ void setupConfig() {
   }
 
   Serial.print("flashlight_density: ");
-  if (ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
+  if (sd_setup && ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density)) {
     Serial.println(buffer);
   } else {
     Serial.print("(default) ");
