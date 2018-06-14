@@ -163,6 +163,9 @@ void updateLightsForClock() {
   }
 }
 
+byte last_orientation = ORIENTED_PORTRAIT;
+byte current_orientation;
+
 void updateLights() {
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
@@ -183,7 +186,8 @@ void updateLights() {
       break;
     }
 
-    switch (checkOrientation()) {
+    current_orientation = getOrientation();
+    switch (current_orientation) {
     case ORIENTED_UP:
       // show the compass if possible
       if (GPS.fix) {
@@ -196,7 +200,11 @@ void updateLights() {
       flashlight();
       break;
     case ORIENTED_USB_DOWN:
+      // TODO: config for bathroom
+      //break;
     case ORIENTED_USB_UP:
+      // TODO: config for home
+      //break;
     case ORIENTED_PORTRAIT:
       // pretty patterns
       // TODO: different things for the different USB tilts? maybe use that to toggle what the compass shows? need some sort of debounce
@@ -212,6 +220,8 @@ void updateLights() {
       }
       break;
     }
+
+    last_orientation = current_orientation;
 
     #ifdef DEBUG
       // debugging lights
