@@ -7,8 +7,8 @@ int checkBattery() {
   measuredvbat /= 1024; // convert to voltage
 
   /*
-  Serial.print("VBat: ");
-  Serial.println(measuredvbat);
+  DEBUG_PRINT("VBat: ");
+  DEBUG_PRINTLN(measuredvbat);
   */
 
   // return 0-3; dead, low, okay, full

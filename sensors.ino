@@ -21,7 +21,7 @@ void setupSensor() {
 
   if (!lsm.begin()) {
     // TODO: what does 'F' do?
-    Serial.println(F("Oops, no LSM9DS1 detected... Check your wiring!"));
+    DEBUG_PRINTLN(F("Oops, no LSM9DS1 detected... Check your wiring!"));
     return;
   }
 
@@ -49,7 +49,7 @@ void setupSensor() {
 
   sensor_setup = true;
 
-  Serial.println("done.");
+  DEBUG_PRINTLN("done.");
 }
 
 void sensorReceive() {
@@ -90,7 +90,7 @@ void sensorReceive() {
   Serial.print(" ");
   Serial.print(pitch);
   Serial.print(" ");
-  Serial.println(roll);
+  DEBUG_PRINTLN(roll);
   */
 
   // TODO: this is giving a value between 12-13. supposedly this is for the chip to use and not really an environ sensor
@@ -121,7 +121,7 @@ void sensorReceive() {
   Serial.print(gy);
   Serial.print("y ");
   Serial.print(gz);
-  Serial.println("z");
+  DEBUG_PRINTLN("z");
   */
 }
 

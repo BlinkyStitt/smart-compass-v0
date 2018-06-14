@@ -22,14 +22,14 @@ void setupRadio() {
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
   // CRC on
   if (!rf95.init()) {
-    Serial.println("failed! Cannot proceed without Radio!");
+    DEBUG_PRINTLN("failed! Cannot proceed without Radio!");
     while (1)
       ;
   }
 
   // we could read this from the SD card, but I think 868 requires a license
   if (!rf95.setFrequency(RADIO_FREQ)) {
-    Serial.println("setFrequency failed! Cannot proceed!");
+    DEBUG_PRINTLN("setFrequency failed! Cannot proceed!");
     while (1)
       ;
   }
@@ -39,7 +39,7 @@ void setupRadio() {
   // The default transmitter power is 13dBm, using PA_BOOST.
   rf95.setTxPower(constrain(radio_power, 5, 23), false);
 
-  Serial.println(" done.");
+  DEBUG_PRINTLN(" done.");
 }
 
 //long wait_for_congestion = 0;
@@ -48,7 +48,7 @@ void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   if (timeStatus() == timeNotSet) {
-    Serial.println("Time not set! Skipping transmission.");
+    DEBUG_PRINTLN("Time not set! Skipping transmission.");
     return;
   }
 
@@ -66,13 +66,13 @@ void radioTransmit(int pid) {
   // maybe set time from a peer?
   Serial.print("My time to transmit (");
   Serial.print(time_now);
-  Serial.println(")... ");
+  DEBUG_PRINTLN(")... ");
 
   /*
   // TODO: this is causing it to hang. does my module not have this?
   // http://www.airspayce.com/mikem/arduino/RadioHead/classRHGenericDriver.html#ac577b932ba8b042b8170b24d513635c7
   if (rf95.isChannelActive()) {
-    Serial.println("Channel is active. Delaying transmission");
+    DEBUG_PRINTLN("Channel is active. Delaying transmission");
     // TODO: exponential backoff? how long? FastLED's random?
     // TODO: how long should we wait? the upstream method waits 100-1000ms
     wait_for_congestion = time_now + random(100, 500);
@@ -81,7 +81,7 @@ void radioTransmit(int pid) {
   */
 
   if (rf95.available()) {
-    Serial.println("Missed a peer message! Parsing before transmitting.");
+    DEBUG_PRINTLN("Missed a peer message! Parsing before transmitting.");
     radioReceive();
     // TODO: do something with the lights? could be cool to add a circle in my_hue to whatever pattern is currently playing
     return;  // we will try broadcasting next loop
@@ -95,7 +95,7 @@ void radioTransmit(int pid) {
 
     // TODO: this blocks us from being able to use pure red
     Serial.print("No peer data to transmit for #");
-    Serial.println(pid);
+    DEBUG_PRINTLN(pid);
 
     return;
   }
@@ -129,7 +129,7 @@ void radioTransmit(int pid) {
   // TODO: max size (SmartCompassMessage_size) is only 64 bytes. we could combine 3 of them into one packet
 
   if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
-    Serial.println("ERROR ENCODING!");
+    DEBUG_PRINTLN("ERROR ENCODING!");
     return;
   }
 
@@ -146,7 +146,7 @@ void radioTransmit(int pid) {
 
   last_transmitted[pid] = time_now;
 
-  Serial.println("done.");
+  DEBUG_PRINTLN("done.");
   return;
 }
 
@@ -156,7 +156,7 @@ void radioReceive() {
   static uint8_t radio_buf_len;
   static SmartCompassMessage message = SmartCompassMessage_init_default;
 
-  // Serial.println("Checking for reply...");
+  // DEBUG_PRINTLN("Checking for reply...");
   if (rf95.available()) {
     // radio_buf_len = sizeof(radio_buf);  // TODO: protobuf uses size_t, but radio uses uint8_t
     radio_buf_len = RH_RF95_MAX_MESSAGE_LEN; // reset this to max length otherwise it won't receive the full message!
@@ -164,35 +164,35 @@ void radioReceive() {
     // Should be a reply message for us now
     if (rf95.recv(radio_buf, &radio_buf_len)) {
       Serial.print("RSSI: ");
-      Serial.println(rf95.lastRssi(), DEC);
+      DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
 
       pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
       if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
         Serial.print("Decoding failed: ");
-        Serial.println(PB_GET_ERROR(&stream));
+        DEBUG_PRINTLN(PB_GET_ERROR(&stream));
         return;
       }
 
       if (message.network_id != my_network_id) {
         Serial.print("Message is for another network: ");
-        Serial.println(message.network_id);
+        DEBUG_PRINTLN(message.network_id);
         return;
       }
 
       if (message.tx_peer_id == my_peer_id) {
         Serial.print("ERROR! Peer id collision! ");
-        Serial.println(my_peer_id);
+        DEBUG_PRINTLN(my_peer_id);
         return;
       }
 
       if (message.peer_id == my_peer_id) {
-        Serial.println("Ignoring stats about myself.");
+        DEBUG_PRINTLN("Ignoring stats about myself.");
         // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
         return;
       }
 
       if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
-        Serial.println("Ignoring old message.");
+        DEBUG_PRINTLN("Ignoring old message.");
         return;
       }
 
@@ -216,7 +216,7 @@ void radioReceive() {
       } else {
         Serial.print("Leaving network_ms alone! ");
       }
-      Serial.println(network_ms);
+      DEBUG_PRINTLN(network_ms);
 
       // TODO: do we care about saving tx times? we will change them when we re-broadcast
       //compass_messages[message.peer_id].tx_time = message.tx_time;
@@ -243,9 +243,9 @@ void radioReceive() {
       Serial.print(" lat=");
       Serial.print(message.latitude);
       Serial.print(" lon=");
-      Serial.println(message.longitude);
+      DEBUG_PRINTLN(message.longitude);
     } else {
-      Serial.println("Receive failed");
+      DEBUG_PRINTLN("Receive failed");
     }
   }
 }
