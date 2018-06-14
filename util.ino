@@ -42,22 +42,3 @@ static void delayToDither(uint8_t ms_target_delay) {
 
   ms_prev = ms_cur;
 }
-
-// Thanks to DanRoad at https://www.reddit.com/r/arduino/comments/4vbzi0/i_made_a_prime_number_generator_using_an/d5zlsoa/
-// https://gist.github.com/anonymous/bf0495a592e7e923e74ef3374acad103#file-best-ino
-long nextPrime(long p) {
-  while (!isPrime(++p)) continue;
-  return p;
-}
-
-// TODO: i've had this get stuck
-bool isPrime(long p) {
-  if ( (p < 2) || (p % 2 == 0 && p != 2) || (p % 3 == 0 && p != 3) ) return false;
-
-  for (long k = 6; (k-1)*(k-1) <= p; k += 6) {
-    if (p % (k+1) == 0 || p % (k-1) == 0) return false;
-  }
-
-  return true;
-}
-// END https://gist.github.com/anonymous/bf0495a592e7e923e74ef3374acad103#file-best-ino

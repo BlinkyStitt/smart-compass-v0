@@ -62,7 +62,7 @@ int my_network_id, my_peer_id, my_hue, my_saturation, num_peers;
 
 // these are set by config or fallback to defaults
 // TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
-int broadcast_time_ms, default_brightness, flashlight_density, frames_per_second, gps_update_s, max_peer_distance, ms_per_light_pattern,
+int broadcast_time_s, default_brightness, flashlight_density, frames_per_second, gps_update_s, max_peer_distance, ms_per_light_pattern,
   peer_led_ms, radio_power;
 
 int time_zone_offset;
@@ -163,7 +163,8 @@ void loop() {
     // TODO: should there be downtime when no one is transmitting or receiving?
 
     // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure it matters
-    time_segment_id = (now() * 1000 / broadcast_time_ms) % time_segments;
+    // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
+    time_segment_id = (now() / broadcast_time_s) % time_segments;
     broadcasting_peer_id = time_segment_id / num_peers;
     broadcasted_peer_id = time_segment_id % num_peers;
 

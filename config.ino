@@ -49,8 +49,6 @@ void setupConfig() {
   // create this even if sd isn't setup so that the if/else below is simpler
   IniFile ini(filename);
 
-  int update_interval_s;
-
   if (!sd_setup) {
     Serial.println("SD not setup. Skipping dynamic config!");
   } else {
@@ -125,7 +123,7 @@ void setupConfig() {
 
     // load args that have defaults
     // TODO: gps_interval_s?
-    ini.getValue("global", "update_interval_s", buffer, buffer_len, update_interval_s);
+    ini.getValue("global", "broadcast_time_s", buffer, buffer_len, broadcast_time_s);
     ini.getValue("global", "default_brightness", buffer, buffer_len, default_brightness);
     ini.getValue("global", "frames_per_second", buffer, buffer_len, frames_per_second);
     ini.getValue("global", "max_peer_distance", buffer, buffer_len, max_peer_distance);
@@ -136,11 +134,11 @@ void setupConfig() {
     ini.getValue("global", "flashlight_density", buffer, buffer_len, flashlight_density);
   }
 
-  Serial.print("update_interval_s: ");
-  if (! update_interval_s) {
+  Serial.print("broadcast_time_s: ");
+  if (! broadcast_time_s) {
     Serial.print("(default) ");
-    update_interval_s = 31;  // TODO: figure out the minimum
-    Serial.println(update_interval_s);
+    broadcast_time_s = 2;
+    Serial.println(broadcast_time_s);
   }
 
   Serial.print("default_brightness: ");
@@ -206,13 +204,6 @@ void setupConfig() {
     flashlight_density = 2;
     Serial.println(flashlight_density);
   }
-
-  // TODO: i'm not sure how important a prime really is here (or if this works consistently), but it sounds cool
-  //broadcast_time_ms = nextPrime(update_interval_s * 1000 / num_peers / num_peers - 6);
-  // TODO: I think this math is overflowing or something
-  broadcast_time_ms = update_interval_s * 1000 / num_peers / num_peers;
-  Serial.print("broadcast_time_ms: ");
-  Serial.println(broadcast_time_ms);
 
   // initialize compass messages
   for (int i = 0; i < num_peers; i++) {
