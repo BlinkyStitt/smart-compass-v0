@@ -1,14 +1,14 @@
 /* SD */
 
 void setupSD() {
-  Serial.print("Setting up SD... ");
+  DEBUG_PRINT("Setting up SD... ");
 
   if (!SD.begin(SDCARD_CS_PIN)) {
-    Serial.println("failed! No SD!");
+    DEBUG_PRINTLN("failed! No SD!");
     return;
   }
 
   sd_setup = true;
 
-  Serial.println("done.");
+  DEBUG_PRINTLN("done.");
 }

@@ -1,5 +1,4 @@
 // TODO: use addmod8
-#define DEBUG 1
 
 #include "debug.h"
 
@@ -86,7 +85,7 @@ enum Orientation: byte {
   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_PORTRAIT_UPSIDE_DOWN, ORIENTED_PORTRAIT
 };
 
-bool sd_setup, sensor_setup = false;
+bool config_setup, sd_setup, sensor_setup = false;
 
 elapsedMillis network_ms = 0;
 

@@ -1,7 +1,7 @@
 /* GPS */
 
 void setupGPS() {
-  Serial.print("Setting up GPS... ");
+  DEBUG_PRINT("Setting up GPS... ");
 
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's
   GPS.begin(9600);
@@ -39,7 +39,7 @@ void setupGPS() {
 
   // TODO: wait until we get a GPS fix and then set the clock?
 
-  Serial.println("done.");
+  DEBUG_PRINTLN("done.");
 }
 
 void gpsReceive() {
@@ -63,7 +63,7 @@ void gpsReceive() {
   // a tricky thing here is if we print the NMEA sentence, or data
   // we end up not listening and catching other sentences!
   // so be very wary if using OUTPUT_ALLDATA and trying to print out data
-  // Serial.println(GPS.lastNMEA());   // this also sets the newNMEAreceived()
+  // DEBUG_PRINTLN(GPS.lastNMEA());   // this also sets the newNMEAreceived()
   // flag to false
 
   if (!GPS.parse(GPS.lastNMEA())) { // this also sets the newNMEAreceived() flag to false
@@ -82,14 +82,14 @@ void gpsReceive() {
   // TODO: include GPS.milliseconds
   // TODO: should we just do this every time? how expensive is this?
   if ((second() - GPS.seconds > 2) || (timeStatus() == timeNotSet)) {
-    Serial.print(second());
-    Serial.print(" vs ");
-    Serial.print(GPS.seconds);
+    DEBUG_PRINT(second());
+    DEBUG_PRINT(" vs ");
+    DEBUG_PRINT(GPS.seconds);
 
     // TODO: fork TimeLib to include GPS.milliseconds in setTime
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
-    Serial.print("; Now: ");
-    Serial.println(now());
+    DEBUG_PRINT("; Now: ");
+    DEBUG_PRINTLN(now());
   }
 
   compass_messages[my_peer_id].last_updated_at = now();  // TODO: seconds or milliseconds?
@@ -110,35 +110,35 @@ void gpsReceive() {
   magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
 
   /*
-  Serial.print("Fix: "); Serial.print((int)GPS.fix);
-  Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
+  DEBUG_PRINT("Fix: "); DEBUG_PRINT((int)GPS.fix);
+  DEBUG_PRINT(" quality: "); DEBUG_PRINTLN((int)GPS.fixquality);
 
-  Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
+  DEBUG_PRINT("Satellites: "); DEBUG_PRINTLN((int)GPS.satellites);
 
-  Serial.print("Location 1: ");
-  Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
-  Serial.print(", ");
-  Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
+  DEBUG_PRINT("Location 1: ");
+  DEBUG_PRINT(GPS.latitude, 4); DEBUG_PRINT(GPS.lat);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINT(GPS.longitude, 4); DEBUG_PRINTLN(GPS.lon);
   */
 
   // TODO: do we have 5 decimals of precision? was 4
-  Serial.print("Location: ");
-  Serial.print(GPS.latitudeDegrees, 5);
-  Serial.print(", ");
-  Serial.println(GPS.longitudeDegrees, 5);
+  DEBUG_PRINT("Location: ");
+  DEBUG_PRINT2(GPS.latitudeDegrees, 5);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
 
   /*
-  Serial.print("Location 3: ");
-  Serial.print(GPS.latitude_fixed);
-  Serial.print(", ");
-  Serial.println(GPS.longitude_fixed);
+  DEBUG_PRINT("Location 3: ");
+  DEBUG_PRINT(GPS.latitude_fixed);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINTLN(GPS.longitude_fixed);
 
-  Serial.print("Speed (knots): "); Serial.println(GPS.speed);
-  Serial.print("Angle: "); Serial.println(GPS.angle);
-  Serial.print("Altitude: "); Serial.println(GPS.altitude);
+  DEBUG_PRINT("Speed (knots): "); DEBUG_PRINTLN(GPS.speed);
+  DEBUG_PRINT("Angle: "); DEBUG_PRINTLN(GPS.angle);
+  DEBUG_PRINT("Altitude: "); DEBUG_PRINTLN(GPS.altitude);
 
-  //Serial.print("GPS Mag variation: "); Serial.println(GPS.magvariation, 4);
-  Serial.print("Software Mag variation: "); Serial.println(magnetic_declination,
+  //DEBUG_PRINT("GPS Mag variation: "); DEBUG_PRINTLN(GPS.magvariation, 4);
+  DEBUG_PRINT("Software Mag variation: "); DEBUG_PRINTLN(magnetic_declination,
   4);
   */
 
@@ -159,15 +159,15 @@ void gpsReceive() {
   // if the file opened okay, write to it:
   if (!gps_log_file) {
     // if the file didn't open, print an error and abort
-    Serial.print("error opening gps log: ");
-    Serial.println(gps_log_filename);
+    DEBUG_PRINT("error opening gps log: ");
+    DEBUG_PRINTLN(gps_log_filename);
     return;
   }
 
   // todo:
 
-  Serial.print("Logging GPS data: ");
-  Serial.println(gps_log_filename);
+  DEBUG_PRINT("Logging GPS data: ");
+  DEBUG_PRINTLN(gps_log_filename);
   // TODO: only log if it is has changed by more than a couple meters
 
   gps_log_file.print(compass_messages[my_peer_id].last_updated_at);

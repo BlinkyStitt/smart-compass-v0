@@ -1,7 +1,7 @@
 /* lights */
 
 void setupLights() {
-  Serial.print("Setting up lights... ");
+  DEBUG_PRINT("Setting up lights... ");
 
   pinMode(LED_DATA_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
@@ -17,7 +17,7 @@ void setupLights() {
   FastLED.clear();
   FastLED.show();
 
-  Serial.println("done.");
+  DEBUG_PRINTLN("done.");
 }
 
 void updateLightsForCompass() {
@@ -35,8 +35,8 @@ void updateLightsForCompass() {
         j = map(((millis() / peer_led_ms) % num_peers), 0, num_peers, 0, next_compass_point[i]);
       }
 
-      // Serial.print("Displaying 1 of "); Serial.print(next_compass_point[i]);
-      // Serial.print(" colors for light #"); Serial.println(i);
+      // DEBUG_PRINT("Displaying 1 of "); DEBUG_PRINT(next_compass_point[i]);
+      // DEBUG_PRINT(" colors for light #"); DEBUG_PRINTLN(i);
 
       leds[i] = compass_points[i][j];
     }
@@ -83,12 +83,12 @@ void updateLightsForClock() {
     adjusted_hour -= 12;
   }
 
-  Serial.print("time: ");
-  Serial.print(adjusted_hour);
-  Serial.print(":");
-  Serial.print(adjusted_minute);
-  Serial.print(":");
-  Serial.println(adjusted_seconds);
+  DEBUG_PRINT("time: ");
+  DEBUG_PRINT(adjusted_hour);
+  DEBUG_PRINT(":");
+  DEBUG_PRINT(adjusted_minute);
+  DEBUG_PRINT(":");
+  DEBUG_PRINTLN(adjusted_seconds);
 
   // TODO: make sure this loops the right way once it is wired.
   //int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
@@ -136,12 +136,12 @@ void updateLightsForClock() {
   int second_led_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
 
   /*
-  Serial.print("led_ids hour ,minute, second: ");
-  Serial.print(hour_led_id);
-  Serial.print(" ");
-  Serial.print(minute_led_id);
-  Serial.print(" ");
-  Serial.println(second_led_id);
+  DEBUG_PRINT("led_ids hour ,minute, second: ");
+  DEBUG_PRINT(hour_led_id);
+  DEBUG_PRINT(" ");
+  DEBUG_PRINT(minute_led_id);
+  DEBUG_PRINT(" ");
+  DEBUG_PRINTLN(second_led_id);
   */
 
   // TODO: I'm not sure what color the noon marker should be or if we even need one
@@ -221,36 +221,34 @@ void updateLights() {
       // debugging lights
       int network_ms_wrapped = network_ms % 10000;
       if (network_ms_wrapped < 1000) {
-        Serial.print(" ");
+        DEBUG_PRINT(" ");
 
         if (network_ms_wrapped < 100) {
-          Serial.print(" ");
+          DEBUG_PRINT(" ");
 
           if (network_ms_wrapped < 10) {
-            Serial.print(" ");
+            DEBUG_PRINT(" ");
           }
         }
       }
-      Serial.print(network_ms_wrapped);
+      DEBUG_PRINT(network_ms_wrapped);
 
-      Serial.print(": ");
+      DEBUG_PRINT(": ");
       for (int i = 0; i < num_LEDs; i++) {
         if (leds[i]) {
           // TODO: better logging?
-          Serial.print("X");
+          DEBUG_PRINT("X");
         } else {
-          Serial.print("O");
+          DEBUG_PRINT("O");
         }
       }
-      Serial.println();
+      DEBUG_PRINTLN();
     #endif
 
     // display the colors
     FastLED.show();
-  }
 
-  // set g_hue based on GPS-accurate time
-  g_hue = network_ms / (3 * 1000 / frames_per_second);
-  // cycle the "base color" through the rainbow every 3 frames
-  // EVERY_N_MILLISECONDS(3 * 1000 / frames_per_second) { g_hue++; }
+    // set g_hue based on shared timer
+    g_hue = network_ms / (3 * 1000 / frames_per_second);
+  }
 }
