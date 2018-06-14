@@ -1,7 +1,5 @@
 /* GPS */
 
-elapsedMillis gps_ms = 0; // TODO: do we want this seperate from elapsed_ms? This should wrap around at 1000ms.
-
 void setupGPS() {
   Serial.print("Setting up GPS... ");
 
@@ -81,19 +79,18 @@ void gpsReceive() {
 
   // TODO: do we have time before GPS.fix?
   // set the time to match the GPS if it isn't set or has drifted
-  // TODO: should we just do this every time
+  // TODO: include GPS.milliseconds
+  // TODO: should we just do this every time? how expensive is this?
   if ((second() - GPS.seconds > 2) || (timeStatus() == timeNotSet)) {
     Serial.print(second());
     Serial.print(" vs ");
     Serial.print(GPS.seconds);
+
+    // TODO: fork TimeLib to include GPS.milliseconds in setTime
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
     Serial.print("; Now: ");
     Serial.println(now());
   }
-
-  // TODO: should we only do this if there is more drift?
-  // TODO: this bounces around wildly. figure out some way to sync multiple clocks from a GPS fix and radio
-  gps_ms = GPS.milliseconds;
 
   compass_messages[my_peer_id].last_updated_at = now();  // TODO: seconds or milliseconds?
 
@@ -145,15 +142,18 @@ void gpsReceive() {
   4);
   */
 
-  if (last_latitude == GPS.latitude_fixed && last_longitude == GPS.longitude_fixed) {
+  // compare lat/long with less precision so we don't log all the time
+  // TODO: how much precision are we losing? 10m?
+  int cur_latitude = GPS.latitude_fixed / 100;
+  int cur_longitude = GPS.longitude_fixed / 100;
+  if (last_latitude == cur_latitude && last_longitude == cur_longitude) {
     // don't bother saving if the points haven't changed
     return;
   }
+  last_latitude = cur_latitude;
+  last_longitude = cur_longitude;
 
-  last_latitude = GPS.latitude_fixed;
-  last_longitude = GPS.longitude_fixed;
-
-  // save to the SD card
+  // open the SD card
   gps_log_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:

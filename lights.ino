@@ -31,6 +31,7 @@ void updateLightsForCompass() {
         // there are one or more colors that want to shine on this one light. give each 500ms
         // TODO: instead give the closer peers (brighter compass points) more time?
         // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
+        // TODO: use nowMillis() here?
         j = map(((millis() / peer_led_ms) % num_peers), 0, num_peers, 0, next_compass_point[i]);
       }
 
@@ -216,34 +217,40 @@ void updateLights() {
       break;
     }
 
-    // debugging lights
-    int gps_ms_wrapped = gps_ms % 1000;
-
-    if (gps_ms_wrapped < 100) {
-      Serial.print(" ");
-
-      if (gps_ms_wrapped < 10) {
+    #ifdef DEBUG
+      // debugging lights
+      int network_ms_wrapped = network_ms % 10000;
+      if (network_ms_wrapped < 1000) {
         Serial.print(" ");
-      }
-    }
 
-    Serial.print(gps_ms_wrapped);
+        if (network_ms_wrapped < 100) {
+          Serial.print(" ");
 
-    Serial.print(": ");
-    for (int i = 0; i < num_LEDs; i++) {
-      if (leds[i]) {
-        // TODO: better logging?
-        Serial.print("X");
-      } else {
-        Serial.print("O");
+          if (network_ms_wrapped < 10) {
+            Serial.print(" ");
+          }
+        }
       }
-    }
-    Serial.println();
+      Serial.print(network_ms_wrapped);
+
+      Serial.print(": ");
+      for (int i = 0; i < num_LEDs; i++) {
+        if (leds[i]) {
+          // TODO: better logging?
+          Serial.print("X");
+        } else {
+          Serial.print("O");
+        }
+      }
+      Serial.println();
+    #endif
 
     // display the colors
     FastLED.show();
   }
 
+  // set g_hue based on GPS-accurate time
+  g_hue = network_ms / (3 * 1000 / frames_per_second);
   // cycle the "base color" through the rainbow every 3 frames
-  EVERY_N_MILLISECONDS(3 * 1000 / frames_per_second) { g_hue++; }
+  // EVERY_N_MILLISECONDS(3 * 1000 / frames_per_second) { g_hue++; }
 }
