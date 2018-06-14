@@ -7,7 +7,7 @@ void TC5_Handler(void) {
   // YOUR CODE HERE
 
   // check GPS for data. do this here so that a slow framerate doesn't slow reading from GPS
-  char c = GPS.read();
+  GPS.read();
 
   // sensorReceive();
 

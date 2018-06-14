@@ -81,7 +81,7 @@ void radioTransmit(int pid) {
   */
 
   if (rf95.available()) {
-    DEBUG_PRINTLN("Missed a peer message! Parsing before transmitting.");
+    DEBUG_PRINTLN(F("Missed a peer message! Parsing before transmitting."));
     radioReceive();
     // TODO: do something with the lights? could be cool to add a circle in my_hue to whatever pattern is currently playing
     return;  // we will try broadcasting next loop
@@ -94,7 +94,7 @@ void radioTransmit(int pid) {
     last_transmitted[pid] = time_now;
 
     // TODO: this blocks us from being able to use pure red
-    DEBUG_PRINT("No peer data to transmit for #");
+    DEBUG_PRINT(F("No peer data to transmit for #"));
     DEBUG_PRINTLN(pid);
 
     return;
@@ -208,12 +208,12 @@ void radioReceive() {
       */
 
       if (message.peer_id < my_peer_id) {
-        DEBUG_PRINT("Updating network_ms! ");
+        DEBUG_PRINT(F("Updating network_ms! "));
         DEBUG_PRINT(network_ms);
-        DEBUG_PRINT(" -> ");
+        DEBUG_PRINT(F(" -> "));
         network_ms = message.tx_ms + 74;  // TODO: tune this offset. probably save it as a global
       } else {
-        DEBUG_PRINT("Leaving network_ms alone! ");
+        DEBUG_PRINT(F("Leaving network_ms alone! "));
       }
       DEBUG_PRINTLN(network_ms);
 

@@ -80,9 +80,12 @@ File gps_log_file;
 // keep us from transmitting too often
 long last_transmitted[max_peers] = {0};
 
-// TODO: this will probably change when I move from the breadboard to the PCB. give them better names (portrait, landscape?)
 enum Orientation: byte {
   ORIENTED_UP, ORIENTED_DOWN, ORIENTED_USB_UP, ORIENTED_USB_DOWN, ORIENTED_PORTRAIT_UPSIDE_DOWN, ORIENTED_PORTRAIT
+};
+
+enum BatteryStatus: byte {
+  BATTERY_DEAD, BATTERY_LOW, BATTERY_OK, BATTERY_FULL
 };
 
 bool config_setup, sd_setup, sensor_setup = false;

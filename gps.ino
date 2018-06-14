@@ -1,7 +1,7 @@
 /* GPS */
 
 void setupGPS() {
-  DEBUG_PRINT("Setting up GPS... ");
+  DEBUG_PRINT(F("Setting up GPS... "));
 
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's
   GPS.begin(9600);
@@ -39,7 +39,7 @@ void setupGPS() {
 
   // TODO: wait until we get a GPS fix and then set the clock?
 
-  DEBUG_PRINTLN("done.");
+  DEBUG_PRINTLN(F("done."));
 }
 
 void gpsReceive() {
@@ -83,12 +83,12 @@ void gpsReceive() {
   // TODO: should we just do this every time? how expensive is this?
   if ((second() - GPS.seconds > 2) || (timeStatus() == timeNotSet)) {
     DEBUG_PRINT(second());
-    DEBUG_PRINT(" vs ");
+    DEBUG_PRINT(F(" vs "));
     DEBUG_PRINT(GPS.seconds);
 
     // TODO: fork TimeLib to include GPS.milliseconds in setTime
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
-    DEBUG_PRINT("; Now: ");
+    DEBUG_PRINT(F("; Now: "));
     DEBUG_PRINTLN(now());
   }
 
@@ -122,9 +122,9 @@ void gpsReceive() {
   */
 
   // TODO: do we have 5 decimals of precision? was 4
-  DEBUG_PRINT("Location: ");
+  DEBUG_PRINT(F("Location: "));
   DEBUG_PRINT2(GPS.latitudeDegrees, 5);
-  DEBUG_PRINT(", ");
+  DEBUG_PRINT(F(", "));
   DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
 
   /*
@@ -159,16 +159,13 @@ void gpsReceive() {
   // if the file opened okay, write to it:
   if (!gps_log_file) {
     // if the file didn't open, print an error and abort
-    DEBUG_PRINT("error opening gps log: ");
+    DEBUG_PRINT(F("error opening gps log: "));
     DEBUG_PRINTLN(gps_log_filename);
     return;
   }
 
-  // todo:
-
-  DEBUG_PRINT("Logging GPS data: ");
+  DEBUG_PRINT(F("Logging GPS data: "));
   DEBUG_PRINTLN(gps_log_filename);
-  // TODO: only log if it is has changed by more than a couple meters
 
   gps_log_file.print(compass_messages[my_peer_id].last_updated_at);
   gps_log_file.print(",");
@@ -182,8 +179,6 @@ void gpsReceive() {
   gps_log_file.println(";");
 
   // TODO: do we want to log anything else?
-
-  // TODO: what happens if we lose power before closing/flushing?
 
   // close the file:
   gps_log_file.close();

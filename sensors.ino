@@ -17,7 +17,7 @@ float mag_field_strength = 42.73F;
 */
 
 void setupSensor() {
-  Serial.print("Setting up sensors...");
+  Serial.print(F("Setting up sensors..."));
 
   if (!lsm.begin()) {
     // TODO: what does 'F' do?
