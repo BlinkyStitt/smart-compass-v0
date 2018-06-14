@@ -1,12 +1,12 @@
 /* Radio */
 
-// TODO: there are lots more frequencies than this. pick a good one
+// TODO: there are lots more frequencies than this. pick a good one from the sd card and use constrain()
 #define RADIO_FREQ 915.0
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setupRadio() {
-  Serial.print("Setting up Radio... ");
+  DEBUG_PRINT(F("Setting up Radio... "));
 
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
@@ -22,24 +22,24 @@ void setupRadio() {
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
   // CRC on
   if (!rf95.init()) {
-    DEBUG_PRINTLN("failed! Cannot proceed without Radio!");
+    DEBUG_PRINTLN(F("failed! Cannot proceed without Radio!"));
     while (1)
       ;
   }
 
   // we could read this from the SD card, but I think 868 requires a license
   if (!rf95.setFrequency(RADIO_FREQ)) {
-    DEBUG_PRINTLN("setFrequency failed! Cannot proceed!");
+    DEBUG_PRINTLN(F("setFrequency failed! Cannot proceed!"));
     while (1)
       ;
   }
-  Serial.print("Freq: ");
-  Serial.print(RADIO_FREQ);
+  DEBUG_PRINT(F("Freq: "));
+  DEBUG_PRINT(RADIO_FREQ);
 
   // The default transmitter power is 13dBm, using PA_BOOST.
   rf95.setTxPower(constrain(radio_power, 5, 23), false);
 
-  DEBUG_PRINTLN(" done.");
+  DEBUG_PRINTLN(F(" done."));
 }
 
 //long wait_for_congestion = 0;
@@ -48,7 +48,7 @@ void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   if (timeStatus() == timeNotSet) {
-    DEBUG_PRINTLN("Time not set! Skipping transmission.");
+    DEBUG_PRINTLN(F("Time not set! Skipping transmission."));
     return;
   }
 
@@ -64,9 +64,9 @@ void radioTransmit(int pid) {
 
   // TODO: should we transmit peer data even if we don't have local time set?
   // maybe set time from a peer?
-  Serial.print("My time to transmit (");
-  Serial.print(time_now);
-  DEBUG_PRINTLN(")... ");
+  DEBUG_PRINT(F("My time to transmit ("));
+  DEBUG_PRINT(time_now);
+  DEBUG_PRINTLN(F(")... "));
 
   /*
   // TODO: this is causing it to hang. does my module not have this?
@@ -94,7 +94,7 @@ void radioTransmit(int pid) {
     last_transmitted[pid] = time_now;
 
     // TODO: this blocks us from being able to use pure red
-    Serial.print("No peer data to transmit for #");
+    DEBUG_PRINT("No peer data to transmit for #");
     DEBUG_PRINTLN(pid);
 
     return;
@@ -105,36 +105,35 @@ void radioTransmit(int pid) {
   compass_messages[pid].tx_ms = network_ms;
 
   // DEBUGGING
-  Serial.print("Message: ");
-  Serial.print("n=");
-  Serial.print(compass_messages[pid].network_id);
-  Serial.print(" txp=");
-  Serial.print(compass_messages[pid].tx_peer_id);
-  Serial.print(" p=");
-  Serial.print(compass_messages[pid].peer_id);
-  Serial.print(" now=");
-  Serial.print(compass_messages[pid].tx_time);
-  Serial.print(" ms=");
-  Serial.print(compass_messages[pid].tx_ms);
-  Serial.print(" t=");
-  Serial.print(compass_messages[pid].last_updated_at);
-  Serial.print(" lat=");
-  Serial.print(compass_messages[pid].latitude);
-  Serial.print(" lon=");
-  Serial.print(compass_messages[pid].longitude);
-  Serial.print(" EOM. ");
+  DEBUG_PRINT(F("Message: n="));
+  DEBUG_PRINT(compass_messages[pid].network_id);
+  DEBUG_PRINT(F(" txp="));
+  DEBUG_PRINT(compass_messages[pid].tx_peer_id);
+  DEBUG_PRINT(F(" p="));
+  DEBUG_PRINT(compass_messages[pid].peer_id);
+  DEBUG_PRINT(F(" now="));
+  DEBUG_PRINT(compass_messages[pid].tx_time);
+  DEBUG_PRINT(F(" ms="));
+  DEBUG_PRINT(compass_messages[pid].tx_ms);
+  DEBUG_PRINT(F(" t="));
+  DEBUG_PRINT(compass_messages[pid].last_updated_at);
+  DEBUG_PRINT(F(" lat="));
+  DEBUG_PRINT(compass_messages[pid].latitude);
+  DEBUG_PRINT(F(" lon="));
+  DEBUG_PRINT(compass_messages[pid].longitude);
+  DEBUG_PRINT(F(" EOM. "));
 
   // Create a stream that will write to our buffer
   pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
   // TODO: max size (SmartCompassMessage_size) is only 64 bytes. we could combine 3 of them into one packet
 
   if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
-    DEBUG_PRINTLN("ERROR ENCODING!");
+    DEBUG_PRINTLN(F("ERROR ENCODING!"));
     return;
   }
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast (TODO: time it)
-  Serial.print("sending... ");
+  DEBUG_PRINT(F("sending... "));
   rf95.send((uint8_t *)radio_buf, stream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
@@ -146,7 +145,7 @@ void radioTransmit(int pid) {
 
   last_transmitted[pid] = time_now;
 
-  DEBUG_PRINTLN("done.");
+  DEBUG_PRINTLN(F("done."));
   return;
 }
 
@@ -163,36 +162,36 @@ void radioReceive() {
 
     // Should be a reply message for us now
     if (rf95.recv(radio_buf, &radio_buf_len)) {
-      Serial.print("RSSI: ");
+      DEBUG_PRINT(F("RSSI: "));
       DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
 
       pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
       if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
-        Serial.print("Decoding failed: ");
+        DEBUG_PRINT(F("Decoding failed: "));
         DEBUG_PRINTLN(PB_GET_ERROR(&stream));
         return;
       }
 
       if (message.network_id != my_network_id) {
-        Serial.print("Message is for another network: ");
+        DEBUG_PRINT(F("Message is for another network: "));
         DEBUG_PRINTLN(message.network_id);
         return;
       }
 
       if (message.tx_peer_id == my_peer_id) {
-        Serial.print("ERROR! Peer id collision! ");
+        DEBUG_PRINT(F("ERROR! Peer id collision! "));
         DEBUG_PRINTLN(my_peer_id);
         return;
       }
 
       if (message.peer_id == my_peer_id) {
-        DEBUG_PRINTLN("Ignoring stats about myself.");
+        DEBUG_PRINTLN(F("Ignoring stats about myself."));
         // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
         return;
       }
 
       if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
-        DEBUG_PRINTLN("Ignoring old message.");
+        DEBUG_PRINTLN(F("Ignoring old message."));
         return;
       }
 
@@ -209,12 +208,12 @@ void radioReceive() {
       */
 
       if (message.peer_id < my_peer_id) {
-        Serial.print("Updating network_ms! ");
-        Serial.print(network_ms);
-        Serial.print(" -> ");
+        DEBUG_PRINT("Updating network_ms! ");
+        DEBUG_PRINT(network_ms);
+        DEBUG_PRINT(" -> ");
         network_ms = message.tx_ms + 74;  // TODO: tune this offset. probably save it as a global
       } else {
-        Serial.print("Leaving network_ms alone! ");
+        DEBUG_PRINT("Leaving network_ms alone! ");
       }
       DEBUG_PRINTLN(network_ms);
 
@@ -228,24 +227,24 @@ void radioReceive() {
       compass_messages[message.peer_id].latitude = message.latitude;
       compass_messages[message.peer_id].longitude = message.longitude;
 
-      Serial.print("Message for peer #");
-      Serial.print(message.peer_id);
-      Serial.print(" from #");
-      Serial.print(message.tx_peer_id);
-      Serial.print(": t=");
-      Serial.print(message.tx_time);
-      Serial.print(" ms=");
-      Serial.print(message.tx_ms);
-      Serial.print(" h=");
-      Serial.print(message.hue);
-      Serial.print(" s=");
-      Serial.print(message.saturation);
-      Serial.print(" lat=");
-      Serial.print(message.latitude);
-      Serial.print(" lon=");
+      DEBUG_PRINT(F("Message for peer #"));
+      DEBUG_PRINT(message.peer_id);
+      DEBUG_PRINT(F(" from #"));
+      DEBUG_PRINT(message.tx_peer_id);
+      DEBUG_PRINT(F(": t="));
+      DEBUG_PRINT(message.tx_time);
+      DEBUG_PRINT(F(" ms="));
+      DEBUG_PRINT(message.tx_ms);
+      DEBUG_PRINT(F(" h="));
+      DEBUG_PRINT(message.hue);
+      DEBUG_PRINT(F(" s="));
+      DEBUG_PRINT(message.saturation);
+      DEBUG_PRINT(F(" lat="));
+      DEBUG_PRINT(message.latitude);
+      DEBUG_PRINT(F(" lon="));
       DEBUG_PRINTLN(message.longitude);
     } else {
-      DEBUG_PRINTLN("Receive failed");
+      DEBUG_PRINTLN(F("Receive failed"));
     }
   }
 }

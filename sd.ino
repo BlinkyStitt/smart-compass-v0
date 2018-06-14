@@ -1,14 +1,14 @@
 /* SD */
 
 void setupSD() {
-  DEBUG_PRINT("Setting up SD... ");
+  DEBUG_PRINT(F("Setting up SD... "));
 
   if (!SD.begin(SDCARD_CS_PIN)) {
-    DEBUG_PRINTLN("failed! No SD!");
+    DEBUG_PRINTLN(F("failed! No SD!"));
     return;
   }
 
   sd_setup = true;
 
-  DEBUG_PRINTLN("done.");
+  DEBUG_PRINTLN(F("done."));
 }

@@ -133,9 +133,12 @@ void setup() {
   setupConfig();
 
   // do more setup now that we have our configuration
-  setupGPS();
-  setupRadio();
-  setupSensor();
+  if (config_setup) {
+    setupGPS();
+    setupRadio();
+    setupSensor();
+  }
+
   setupLights();
 
   // configure the timer to run at <sampleRate>Hertz
@@ -151,28 +154,32 @@ void loop() {
   static unsigned int time_segments = num_peers * num_peers;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
 
-  gpsReceive();
+  if (config_setup) {
+    gpsReceive();
 
-  updateLights();
+    updateLights();
 
-  if (timeStatus() == timeNotSet) {
-    radioReceive();
-  } else {
-    // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
-    // TODO: should there be downtime when no one is transmitting or receiving?
-
-    // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure it matters
-    // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
-    time_segment_id = (now() / broadcast_time_s) % time_segments;
-    broadcasting_peer_id = time_segment_id / num_peers;
-    broadcasted_peer_id = time_segment_id % num_peers;
-
-    if (broadcasting_peer_id == my_peer_id) {
-      radioTransmit(broadcasted_peer_id);  // this will noop if we have transmitted recently
-    } else {
-      // TODO: have known down time so we can sleep longer?
+    if (timeStatus() == timeNotSet) {
       radioReceive();
+    } else {
+      // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
+      // TODO: should there be downtime when no one is transmitting or receiving?
+
+      // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure it matters
+      // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
+      time_segment_id = (now() / broadcast_time_s) % time_segments;
+      broadcasting_peer_id = time_segment_id / num_peers;
+      broadcasted_peer_id = time_segment_id % num_peers;
+
+      if (broadcasting_peer_id == my_peer_id) {
+        radioTransmit(broadcasted_peer_id);  // this will noop if we have transmitted recently
+      } else {
+        // TODO: have known down time so we can sleep longer?
+        radioReceive();
+      }
     }
+  } else {
+    updateLights();
   }
 
   // don't sleep too long or you get in the way of radios. keep this less < framerate
