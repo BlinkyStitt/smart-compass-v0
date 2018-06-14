@@ -1,3 +1,5 @@
+// TODO: actually use these
+
 #ifdef DEBUG
  #define DEBUG_PRINT(x)      Serial.print(x)
  #define DEBUG_PRINT(x, y)   Serial.print(x, y)

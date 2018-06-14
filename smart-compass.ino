@@ -74,7 +74,8 @@ float magnetic_declination = 0.0;
 Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
-const char gps_log_filename[] = "gps.log"; // TODO: fill in during setupConfig
+//const char gps_log_filename = "gps.log"; // TODO: fill in during setupConfig
+String gps_log_filename = ""; // TODO: everyone says not to use String, but it seems fine
 File gps_log_file;
 
 // keep us from transmitting too often
@@ -87,7 +88,7 @@ enum Orientation: byte {
 
 bool sd_setup, sensor_setup = false;
 
-elapsedMillis network_ms = 0; // todo: do we care if this overflows?
+elapsedMillis network_ms = 0;
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
@@ -111,12 +112,14 @@ void setupSPI() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  #ifdef DEBUG
+    Serial.begin(115200);
 
-  //delay(1000);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
+    delay(1000);
+    while (!Serial) {
+      ; // wait for serial port to connect. Needed for native USB
+    }
+  #endif
 
   Serial.println("Setting up...");
 
@@ -153,16 +156,14 @@ void loop() {
 
   updateLights();
 
-  // TODO: fastled EVERY_N_SECONDS helper doesn't work for us. maybe if we passed variables
-
   if (timeStatus() == timeNotSet) {
-    // TODO: set time from peer?
-    //radioReceive();
+    radioReceive();
   } else {
     // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
     // TODO: should there be downtime when no one is transmitting or receiving?
 
-    time_segment_id = (nowMillis() / broadcast_time_ms) % time_segments;
+    // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure it matters
+    time_segment_id = (now() * 1000 / broadcast_time_ms) % time_segments;
     broadcasting_peer_id = time_segment_id / num_peers;
     broadcasted_peer_id = time_segment_id % num_peers;
 

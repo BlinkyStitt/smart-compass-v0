@@ -41,7 +41,7 @@ void pride() {
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
 
-  // TODO: figure out what all these numbers do
+  // TODO: figure out what all these numbers do and make it look good on two concentric rings
   uint8_t sat8 = beatsin88(87, 220, 250);
   uint8_t brightdepth = beatsin88(341, 96, 224);
   uint16_t brightnessthetainc16 = beatsin88(203, (25 * 256), (40 * 256));
@@ -50,7 +50,7 @@ void pride() {
   uint16_t hue16 = sHue16; // g_hue * 256;
   uint16_t hueinc16 = beatsin88(113, 1, 3000);
 
-  uint16_t ms = millis();  // TODO: use now_millis so we stay in sync with others?
+  uint16_t ms = network_ms;  // this should keep everyone's lights looking the same
   uint16_t deltams = ms - sLastMillis;
   sLastMillis = ms;
   sPseudotime += deltams * msmultiplier;

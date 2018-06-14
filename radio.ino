@@ -87,7 +87,7 @@ void radioTransmit(int pid) {
     return;  // we will try broadcasting next loop
   }
 
-  if (!compass_messages[pid].hue) {
+  if (!compass_messages[pid].hue or (pid == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
 
     // don't bother retrying
@@ -102,6 +102,7 @@ void radioTransmit(int pid) {
 
   // TODO: what to do if the message is really old?
   compass_messages[pid].tx_time = time_now;
+  compass_messages[pid].tx_ms = network_ms;
 
   // DEBUGGING
   Serial.print("Message: ");
@@ -112,7 +113,9 @@ void radioTransmit(int pid) {
   Serial.print(" p=");
   Serial.print(compass_messages[pid].peer_id);
   Serial.print(" now=");
-  Serial.print(time_now);
+  Serial.print(compass_messages[pid].tx_time);
+  Serial.print(" ms=");
+  Serial.print(compass_messages[pid].tx_ms);
   Serial.print(" t=");
   Serial.print(compass_messages[pid].last_updated_at);
   Serial.print(" lat=");
@@ -193,6 +196,32 @@ void radioReceive() {
         return;
       }
 
+      // TODO: make this work. somehow time got set to way in the future
+      /*
+      // sync to the lowest peer id's time
+      // TODO: only do this if there is drift?
+      // TODO: make sure this works well for all cases
+      //if (message.peer_id < my_peer_id) {
+      if (timeStatus() == timeNotSet) {
+        setTime(0, 0, 0, 0, 0, 0);
+        adjustTime(message.tx_time);
+      }
+      */
+
+      if (message.peer_id < my_peer_id) {
+        Serial.print("Updating network_ms! ");
+        Serial.print(network_ms);
+        Serial.print(" -> ");
+        network_ms = message.tx_ms + 74;  // TODO: tune this offset. probably save it as a global
+      } else {
+        Serial.print("Leaving network_ms alone! ");
+      }
+      Serial.println(network_ms);
+
+      // TODO: do we care about saving tx times? we will change them when we re-broadcast
+      //compass_messages[message.peer_id].tx_time = message.tx_time;
+      //compass_messages[message.peer_id].tx_ms = message.tx_ms;
+
       compass_messages[message.peer_id].last_updated_at = message.last_updated_at;
       compass_messages[message.peer_id].hue = message.hue;
       compass_messages[message.peer_id].saturation = message.saturation;
@@ -205,6 +234,8 @@ void radioReceive() {
       Serial.print(message.tx_peer_id);
       Serial.print(": t=");
       Serial.print(message.tx_time);
+      Serial.print(" ms=");
+      Serial.print(message.tx_ms);
       Serial.print(" h=");
       Serial.print(message.hue);
       Serial.print(" s=");
@@ -213,12 +244,6 @@ void radioReceive() {
       Serial.print(message.latitude);
       Serial.print(" lon=");
       Serial.println(message.longitude);
-
-      /*
-      if (timeStatus() != timeSet) {
-        // TODO: set time from peer's time? except they use an overflowed ms count
-      }
-      */
     } else {
       Serial.println("Receive failed");
     }

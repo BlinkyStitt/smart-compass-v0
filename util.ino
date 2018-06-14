@@ -43,17 +43,6 @@ static void delayToDither(uint8_t ms_target_delay) {
   ms_prev = ms_cur;
 }
 
-unsigned long nowMillis() {
-  if (timeStatus() != timeSet) {
-    return millis();
-  }
-
-  // TODO: include some sort of offset to make sure this is in sync with remote peers
-  // TODO: this wraps around, but I think that's fine because it will wrap the same for everyone
-  // TODO: there is a LOT of jitter here
-  return now() * 1000 + (gps_ms % 1000);
-}
-
 // Thanks to DanRoad at https://www.reddit.com/r/arduino/comments/4vbzi0/i_made_a_prime_number_generator_using_an/d5zlsoa/
 // https://gist.github.com/anonymous/bf0495a592e7e923e74ef3374acad103#file-best-ino
 long nextPrime(long p) {
@@ -61,6 +50,7 @@ long nextPrime(long p) {
   return p;
 }
 
+// TODO: i've had this get stuck
 bool isPrime(long p) {
   if ( (p < 2) || (p % 2 == 0 && p != 2) || (p % 3 == 0 && p != 3) ) return false;
 
