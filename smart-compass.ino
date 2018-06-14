@@ -1,4 +1,7 @@
 // TODO: use addmod8
+#define DEBUG 1
+
+#include "debug.h"
 
 // TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
@@ -71,7 +74,7 @@ float magnetic_declination = 0.0;
 Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
-String gps_log_filename = ""; // this is filled in during setupSD
+const char gps_log_filename[] = "gps.log"; // TODO: fill in during setupConfig
 File gps_log_file;
 
 // keep us from transmitting too often
@@ -83,6 +86,8 @@ enum Orientation: byte {
 };
 
 bool sd_setup, sensor_setup = false;
+
+elapsedMillis network_ms = 0; // todo: do we care if this overflows?
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222

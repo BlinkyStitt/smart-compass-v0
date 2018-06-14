@@ -1,12 +1,5 @@
-59.79 x 77.8 mm
-
-
-../libraries/nanopb-0.3.9.1-macosx-x86/generator-bin/protoc --nanopb_out=. --proto_path=../libraries/nanopb-0.3.9.1-macosx-x86/generator/proto --proto_path=. smart_compass.proto
-
-../libraries/nanopb-0.3.9.1-macosx-x86/generator-bin/protoc --nanopb_out=. smart_compass.proto
+../libraries/nanopb-0.3.9.1-macosx-x86/generator-bin/protoc --nanopb_out=. smart-compass.proto
 
 make sure SmartCompassMessage_size < RH_RF95_MAX_MESSAGE_LEN
 
 try freertos if i start having timing issues
-
-add -, +, D to neopixel holes

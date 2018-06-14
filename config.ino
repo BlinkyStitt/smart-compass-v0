@@ -228,6 +228,7 @@ void setupConfig() {
   compass_messages[my_peer_id].saturation = my_saturation;
 
   // TODO: there has to be a better way to concatenate ints into strings
+  /*
   gps_log_filename = my_network_id;
   if (! my_peer_id) {
     gps_log_filename = gps_log_filename + "-0.log";
@@ -236,6 +237,7 @@ void setupConfig() {
     gps_log_filename = gps_log_filename + my_peer_id;
     gps_log_filename = gps_log_filename + ".log";
   }
+  */
 
   Serial.print("gps_log_filename: ");
   Serial.println(gps_log_filename);
