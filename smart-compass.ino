@@ -123,7 +123,7 @@ void setup() {
     }
   #endif
 
-  Serial.println("Setting up...");
+  DEBUG_PRINTLN("Setting up...");
 
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();
@@ -148,7 +148,7 @@ void setup() {
   tcConfigure(100);
   tcStartCounter();
 
-  Serial.println("Starting...");
+  DEBUG_PRINTLN("Starting...");
 }
 
 void loop() {

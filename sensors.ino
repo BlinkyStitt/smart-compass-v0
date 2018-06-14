@@ -17,7 +17,7 @@ float mag_field_strength = 42.73F;
 */
 
 void setupSensor() {
-  Serial.print(F("Setting up sensors..."));
+  DEBUG_PRINT(F("Setting up sensors..."));
 
   if (!lsm.begin()) {
     // TODO: what does 'F' do?
@@ -85,47 +85,47 @@ void sensorReceive() {
   float roll = orientation_filter.getRoll();
   float pitch = orientation_filter.getPitch();
   float heading = orientation_filter.getYaw();
-  Serial.print("Orientation: ");
-  Serial.print(heading);
-  Serial.print(" ");
-  Serial.print(pitch);
-  Serial.print(" ");
+  DEBUG_PRINT("Orientation: ");
+  DEBUG_PRINT(heading);
+  DEBUG_PRINT(" ");
+  DEBUG_PRINT(pitch);
+  DEBUG_PRINT(" ");
   DEBUG_PRINTLN(roll);
   */
 
   // TODO: this is giving a value between 12-13. supposedly this is for the chip to use and not really an environ sensor
   /*
-  Serial.print("temp: ");
-  Serial.print(temp.temperature);
+  DEBUG_PRINT("temp: ");
+  DEBUG_PRINT(temp.temperature);
   */
 
   /*
   // debugging sensors
-  Serial.print("accel (m/s^2): ");
-  Serial.print(accel.acceleration.x);
-  Serial.print("x ");
-  Serial.print(accel.acceleration.y);
-  Serial.print("y ");
-  Serial.print(accel.acceleration.z);
-  Serial.print("z ");
-  Serial.print("; mag (gauss): ");
-  Serial.print(mx);
-  Serial.print("x ");
-  Serial.print(my);
-  Serial.print("y ");
-  Serial.print(mz);
-  Serial.print("z ");
-  Serial.print("; gyro (dps): ");
-  Serial.print(gx);
-  Serial.print("x ");
-  Serial.print(gy);
-  Serial.print("y ");
-  Serial.print(gz);
+  DEBUG_PRINT("accel (m/s^2): ");
+  DEBUG_PRINT(accel.acceleration.x);
+  DEBUG_PRINT("x ");
+  DEBUG_PRINT(accel.acceleration.y);
+  DEBUG_PRINT("y ");
+  DEBUG_PRINT(accel.acceleration.z);
+  DEBUG_PRINT("z ");
+  DEBUG_PRINT("; mag (gauss): ");
+  DEBUG_PRINT(mx);
+  DEBUG_PRINT("x ");
+  DEBUG_PRINT(my);
+  DEBUG_PRINT("y ");
+  DEBUG_PRINT(mz);
+  DEBUG_PRINT("z ");
+  DEBUG_PRINT("; gyro (dps): ");
+  DEBUG_PRINT(gx);
+  DEBUG_PRINT("x ");
+  DEBUG_PRINT(gy);
+  DEBUG_PRINT("y ");
+  DEBUG_PRINT(gz);
   DEBUG_PRINTLN("z");
   */
 }
 
-static Orientation checkOrientation() {
+static Orientation getOrientation() {
   if (!sensor_setup) {
     return ORIENTED_UP;
   }
