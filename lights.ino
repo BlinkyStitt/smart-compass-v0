@@ -168,21 +168,17 @@ void updateLights() {
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
     // decrease overall brightness if battery is low
     switch (checkBattery()) {
-    case 0:
-      // battery critical!
+    case BATTERY_DEAD:
       // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
       FastLED.setBrightness(default_brightness * .5);
       break;
-    case 1:
-      // battery low
+    case BATTERY_LOW:
       FastLED.setBrightness(default_brightness * .75);
       break;
-    case 2:
-      // battery ok
+    case BATTERY_OK:
       FastLED.setBrightness(default_brightness * .90);
       break;
-    case 3:
-      // battery fully charged
+    case BATTERY_FULL:
       FastLED.setBrightness(default_brightness);
       break;
     }
@@ -221,25 +217,25 @@ void updateLights() {
       // debugging lights
       int network_ms_wrapped = network_ms % 10000;
       if (network_ms_wrapped < 1000) {
-        DEBUG_PRINT(" ");
+        DEBUG_PRINT(F(" "));
 
         if (network_ms_wrapped < 100) {
-          DEBUG_PRINT(" ");
+          DEBUG_PRINT(F(" "));
 
           if (network_ms_wrapped < 10) {
-            DEBUG_PRINT(" ");
+            DEBUG_PRINT(F(" "));
           }
         }
       }
       DEBUG_PRINT(network_ms_wrapped);
 
-      DEBUG_PRINT(": ");
+      DEBUG_PRINT(F(": "));
       for (int i = 0; i < num_LEDs; i++) {
         if (leds[i]) {
           // TODO: better logging?
-          DEBUG_PRINT("X");
+          DEBUG_PRINT(F("X"));
         } else {
-          DEBUG_PRINT("O");
+          DEBUG_PRINT(F("O"));
         }
       }
       DEBUG_PRINTLN();
