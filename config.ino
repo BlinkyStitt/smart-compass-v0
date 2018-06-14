@@ -3,38 +3,38 @@
 #ifdef DEBUG
   // from https://github.com/stevemarple/IniFile/blob/master/examples/IniFileExample/IniFileExample.ino
   void printErrorMessage(uint8_t e, bool eol = true) {
-    DEBUG_PRINT("Config Error: ");
+    DEBUG_PRINT(F("Config Error: "));
 
     switch (e) {
     case IniFile::errorNoError:
-      DEBUG_PRINT("no error");
+      DEBUG_PRINT(F("no error"));
       break;
     case IniFile::errorFileNotFound:
-      DEBUG_PRINT("file not found");
+      DEBUG_PRINT(F("file not found"));
       break;
     case IniFile::errorFileNotOpen:
-      DEBUG_PRINT("file not open");
+      DEBUG_PRINT(F("file not open"));
       break;
     case IniFile::errorBufferTooSmall:
-      DEBUG_PRINT("buffer too small");
+      DEBUG_PRINT(F("buffer too small"));
       break;
     case IniFile::errorSeekError:
-      DEBUG_PRINT("seek error");
+      DEBUG_PRINT(F("seek error"));
       break;
     case IniFile::errorSectionNotFound:
-      DEBUG_PRINT("section not found");
+      DEBUG_PRINT(F("section not found"));
       break;
     case IniFile::errorKeyNotFound:
-      DEBUG_PRINT("key not found");
+      DEBUG_PRINT(F("key not found"));
       break;
     case IniFile::errorEndOfFile:
-      DEBUG_PRINT("end of file");
+      DEBUG_PRINT(F("end of file"));
       break;
     case IniFile::errorUnknownError:
-      DEBUG_PRINT("unknown error");
+      DEBUG_PRINT(F("unknown error"));
       break;
     default:
-      DEBUG_PRINT("unknown error value");
+      DEBUG_PRINT(F("unknown error value"));
       break;
     }
     if (eol) {
@@ -48,46 +48,46 @@
 bool loadRequired(IniFile ini, char* buffer, size_t buffer_len) {
   // load required args
   if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
-    DEBUG_PRINT("num_peers: ");
+    DEBUG_PRINT(F("num_peers: "));
     DEBUG_PRINTLN(buffer);
   } else {
-    DEBUG_PRINT("Could not read 'num_peers' from section 'global', error was ");
+    DEBUG_PRINT(F("Could not read 'num_peers' from section 'global', error was "));
     printErrorMessage(ini.getError());
     return false;
   }
 
   if (ini.getValue("global", "my_network_id", buffer, buffer_len, my_network_id)) {
-    DEBUG_PRINT("my_network_id: ");
+    DEBUG_PRINT(F("my_network_id: "));
     DEBUG_PRINTLN(buffer);
   } else {
-    DEBUG_PRINT("Could not read 'my_network_id' from section 'global', error was ");
+    DEBUG_PRINT(F("Could not read 'my_network_id' from section 'global', error was "));
     printErrorMessage(ini.getError());
     return false;
   }
 
   if (ini.getValue("global", "my_peer_id", buffer, buffer_len, my_peer_id)) {
-    DEBUG_PRINT("my_peer_id: ");
+    DEBUG_PRINT(F("my_peer_id: "));
     DEBUG_PRINTLN(buffer);
   } else {
-    DEBUG_PRINT("Could not read 'my_peer_id' from section 'global', error was ");
+    DEBUG_PRINT(F("Could not read 'my_peer_id' from section 'global', error was "));
     printErrorMessage(ini.getError());
     return false;
   }
 
   if (ini.getValue("global", "my_hue", buffer, buffer_len, my_hue)) {
-    DEBUG_PRINT("my_hue: ");
+    DEBUG_PRINT(F("my_hue: "));
     DEBUG_PRINTLN(buffer);
   } else {
-    DEBUG_PRINT("Could not read 'my_hue' from section 'global', error was ");
+    DEBUG_PRINT(F("Could not read 'my_hue' from section 'global', error was "));
     printErrorMessage(ini.getError());
     return false;
   }
 
   if (ini.getValue("global", "my_saturation", buffer, buffer_len, my_saturation)) {
-    DEBUG_PRINT("my_saturation: ");
+    DEBUG_PRINT(F("my_saturation: "));
     DEBUG_PRINTLN(buffer);
   } else {
-    DEBUG_PRINT("Could not read 'my_saturation' from section 'global', error was ");
+    DEBUG_PRINT(F("Could not read 'my_saturation' from section 'global', error was "));
     printErrorMessage(ini.getError());
     return false;
   }
@@ -119,17 +119,17 @@ void setupConfig() {
   IniFile ini(filename);
 
   if (!sd_setup) {
-    DEBUG_PRINTLN("SD not setup. Skipping dynamic config!");
+    DEBUG_PRINTLN(F("SD not setup. Skipping dynamic config!"));
   } else {
-    DEBUG_PRINTLN("Loading config... ");
+    DEBUG_PRINTLN(F("Loading config... "));
 
     if (!ini.open()) {
-      DEBUG_PRINTLN(" does not exist. Cannot proceed with config!");
+      DEBUG_PRINTLN(F(" does not exist. Cannot proceed with config!"));
     } else {
       if (!ini.validate(buffer, buffer_len)) {
         // TODO: default to just pretty lights since we don't have a network id or home locations
         DEBUG_PRINT(ini.getFilename());
-        DEBUG_PRINT(" not valid. Cannot proceed with config!");
+        DEBUG_PRINT(F(" not valid. Cannot proceed with config!"));
         printErrorMessage(ini.getError());
       } else {
         if (loadRequired(ini, buffer, buffer_len)) {
@@ -141,76 +141,71 @@ void setupConfig() {
     }
   }
 
-  DEBUG_PRINT("broadcast_time_s: ");
+  DEBUG_PRINT(F("broadcast_time_s: "));
   if (! broadcast_time_s) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     broadcast_time_s = 2;
-    DEBUG_PRINTLN(broadcast_time_s);
   }
+  DEBUG_PRINTLN(broadcast_time_s);
 
-  DEBUG_PRINT("default_brightness: ");
+  DEBUG_PRINT(F("default_brightness: "));
   if (! default_brightness) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     default_brightness = 60;  // TODO: increase this when done debugging
-    DEBUG_PRINTLN(default_brightness);
   }
+  DEBUG_PRINTLN(default_brightness);
 
-  DEBUG_PRINT("frames_per_second: ");
+  DEBUG_PRINT(F("frames_per_second: "));
   if (! frames_per_second) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     frames_per_second = 30;
-    DEBUG_PRINTLN(frames_per_second);
   }
+  DEBUG_PRINTLN(frames_per_second);
 
-  // TODO: rename this. peers at this distance or further are the dimmest
-  DEBUG_PRINT("max_peer_distance: ");
+  DEBUG_PRINT(F("max_peer_distance: "));
   if (! max_peer_distance) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     max_peer_distance = 5000;
-    DEBUG_PRINTLN(max_peer_distance);
   }
+  DEBUG_PRINTLN(max_peer_distance);
 
-  DEBUG_PRINT("ms_per_light_pattern: ");
+  DEBUG_PRINT(F("ms_per_light_pattern: "));
   if (! ms_per_light_pattern) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     ms_per_light_pattern = 10 * 60 * 1000;
   }
   DEBUG_PRINTLN(ms_per_light_pattern);
 
-  DEBUG_PRINT("peer_led_ms: ");
+  DEBUG_PRINT(F("peer_led_ms: "));
   // time to display the peer when multiple peers are the same direction
   if (! peer_led_ms) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     peer_led_ms = 500;
   }
   DEBUG_PRINTLN(peer_led_ms);
 
-  DEBUG_PRINT("radio_power: ");
+  DEBUG_PRINT(F("radio_power: "));
   // 5-23 dBm
   // TODO: whats the difference in power?
   if (! radio_power) {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     radio_power = 13;
   }
   DEBUG_PRINTLN(radio_power);
 
-  DEBUG_PRINT("time_zone_offset: ");
-  if (time_zone_offset) {
-    ;
-  } else {
-    DEBUG_PRINT("(default) ");
+  DEBUG_PRINT(F("time_zone_offset: "));
+  if (!time_zone_offset) {
+    DEBUG_PRINT(F("(default) "));
     time_zone_offset = -8;
   }
   DEBUG_PRINTLN(time_zone_offset);
 
-  DEBUG_PRINT("flashlight_density: ");
+  DEBUG_PRINT(F("flashlight_density: "));
   if (flashlight_density) {
-    DEBUG_PRINTLN(flashlight_density);
-  } else {
-    DEBUG_PRINT("(default) ");
+    DEBUG_PRINT(F("(default) "));
     flashlight_density = 2;
-    DEBUG_PRINTLN(flashlight_density);
   }
+  DEBUG_PRINTLN(flashlight_density);
 
   // initialize compass messages
   for (int i = 0; i < num_peers; i++) {
@@ -235,6 +230,6 @@ void setupConfig() {
     gps_log_filename = gps_log_filename + ".log";
   }
 
-  DEBUG_PRINT("gps_log_filename: ");
+  DEBUG_PRINT(F("gps_log_filename: "));
   DEBUG_PRINTLN(gps_log_filename);
 }
