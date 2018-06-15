@@ -138,6 +138,8 @@ void setupConfig() {
           config_setup = true;
         }
       }
+
+      ini.close();
     }
   }
 
@@ -232,4 +234,13 @@ void setupConfig() {
 
   DEBUG_PRINT(F("gps_log_filename: "));
   DEBUG_PRINTLN(gps_log_filename);
+
+  setupSecurity();
 }
+
+void setupSecurity() {
+  // TODO: open security.key and store in my_network_key
+
+  // TODO: hash my_network_key and store in my_network_id
+}
+

@@ -44,7 +44,7 @@ const int max_compass_points = max_peers + 1;
 CHSV compass_points[num_LEDs][max_compass_points];
 int next_compass_point[num_LEDs] = {0};
 
-void updateCompassPoints() {
+void updateCompassPoints(CompassMode compass_mode) {
   // clear past compass points
   // TODO: this isn't very efficient since it recalculates everything every time
   for (int i = 0; i < num_LEDs; i++) {
@@ -70,6 +70,7 @@ void updateCompassPoints() {
   next_compass_point[4]++;
   */
 
+  // TODO: if compass_mode == COMPASS_FRIENDS and all the other options
   for (int i = 0; i < num_peers; i++) {
     if (!compass_messages[i].saturation) {
       // skip the peer if we don't have any color data for them
@@ -113,4 +114,12 @@ void updateCompassPoints() {
     sortArray(compass_points[i], next_compass_point[i], firstIsBrighter);
   }
   */
+}
+
+void updateBathroomPin() {
+  // TODO: write this
+}
+
+void updateHomePin() {
+  // TODO: write this
 }
