@@ -21,6 +21,9 @@
 #include <TimeLib.h>
 #include <Wire.h>
 
+// it isn't legal for us to encrypt on amateur radio, but we need some sort of security so we sign our messages
+#include <BLAKE2s.h>
+
 #include "smart-compass.pb.h"
 
 // Pins 0 and 1 are used for Serial1 (GPS)
@@ -66,6 +69,9 @@ int broadcast_time_s, default_brightness, flashlight_density, frames_per_second,
 
 int time_zone_offset;
 
+// TODO: was char
+uint8_t my_network_key[64];  // TODO: read this from the SD card
+
 // offset between true and magnetic north
 float magnetic_declination = 0.0;
 
@@ -73,8 +79,7 @@ float magnetic_declination = 0.0;
 Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
-//const char gps_log_filename = "gps.log"; // TODO: fill in during setupConfig
-String gps_log_filename = ""; // TODO: everyone says not to use String, but it seems fine
+String gps_log_filename = ""; // TODO: everyone says not to use String, but it seems fine and is way simpler
 File gps_log_file;
 
 // keep us from transmitting too often
@@ -91,6 +96,10 @@ enum BatteryStatus: byte {
 bool config_setup, sd_setup, sensor_setup = false;
 
 elapsedMillis network_ms = 0;
+
+enum CompassMode: byte {
+  COMPASS_BATHROOM, COMPASS_FRIENDS, COMPASS_HOME
+};
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222

@@ -30,7 +30,7 @@ void circle() {
 
   pos++;
   if (pos >= num_LEDs) {
-    pos -= num_LEDs;
+    pos = 0;
   }
 }
 

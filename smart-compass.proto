@@ -1,17 +1,21 @@
 syntax = "proto3";
 
+import "nanopb.proto";
+
 // int32 is bigger than we need for most of these, but they are all stored as varints
 
 message SmartCompassMessage {
-  uint32 network_id = 1;
-  uint32 tx_peer_id = 2;
-  uint32 tx_time = 3;
-  uint32 tx_ms = 4;
+    uint32 network_id = 1;
+    bytes keyed_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+    uint32 tx_peer_id = 3;
 
-  uint32 peer_id = 5;
-  uint32 last_updated_at = 6;
-  uint32 hue = 7;
-  uint32 saturation = 8;
-  int32 latitude = 9;
-  int32 longitude = 10;
+    uint32 tx_time = 4;
+    uint32 tx_ms = 5;
+
+    uint32 peer_id = 6;
+    uint32 last_updated_at = 7;
+    uint32 hue = 8;
+    uint32 saturation = 9;
+    int32 latitude = 10;
+    int32 longitude = 11;
 }

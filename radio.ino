@@ -3,7 +3,13 @@
 // TODO: there are lots more frequencies than this. pick a good one from the sd card and use constrain()
 #define RADIO_FREQ 915.0
 
+// TODO: read hash size from SD card? constrain from to 16-32
+// TODO: make sure to update the protobuf, too!
+#define HASH_SIZE 16
+
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
+
+BLAKE2s blake2s;
 
 void setupRadio() {
   DEBUG_PRINT(F("Setting up Radio... "));
@@ -42,7 +48,24 @@ void setupRadio() {
   DEBUG_PRINTLN(F(" done."));
 }
 
-//long wait_for_congestion = 0;
+void signSmartCompassMessage(SmartCompassMessage message, uint8_t* hash) {
+  // TODO: time this
+  blake2s.reset(my_network_key, sizeof(my_network_key), HASH_SIZE);
+
+  // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
+  blake2s.update((uint8_t *)message.network_id, sizeof((uint8_t *)message.network_id));
+  blake2s.update((uint8_t *)message.tx_peer_id, sizeof((uint8_t *)message.tx_peer_id));
+  blake2s.update((uint8_t *)message.tx_time, sizeof((uint8_t *)message.tx_time));
+  blake2s.update((uint8_t *)message.tx_ms, sizeof((uint8_t *)message.tx_ms));
+  blake2s.update((uint8_t *)message.peer_id, sizeof((uint8_t *)message.peer_id));
+  blake2s.update((uint8_t *)message.last_updated_at, sizeof((uint8_t *)message.last_updated_at));
+  blake2s.update((uint8_t *)message.hue, sizeof((uint8_t *)message.hue));
+  blake2s.update((uint8_t *)message.saturation, sizeof((uint8_t *)message.saturation));
+  blake2s.update((uint8_t *)message.latitude, sizeof((uint8_t *)message.latitude));
+  blake2s.update((uint8_t *)message.longitude, sizeof((uint8_t *)message.longitude));
+
+  blake2s.finalize(hash, HASH_SIZE);
+}
 
 void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
@@ -54,9 +77,8 @@ void radioTransmit(int pid) {
 
   unsigned long time_now = now();
 
-  // TODO: put this 2 second wait on the SD card. maybe tie it to update interval?
-  // TODO: what if time_now/wait_for_congestion wraps?
-  //if ((time_now - last_transmitted[pid] < 2) or (time_now < wait_for_congestion)) {
+  // TODO: tie this 2 second limit to update interval
+  // TODO: what if time_now wraps?
   if (time_now - last_transmitted[pid] < 2) {
     // we already transmitted for this peer recently. skip it
     return;
@@ -104,6 +126,9 @@ void radioTransmit(int pid) {
   compass_messages[pid].tx_time = time_now;
   compass_messages[pid].tx_ms = network_ms;
 
+  // TODO: hopefully this is fast! if its slow, add an updateLights before and after it?
+  signSmartCompassMessage(compass_messages[pid], compass_messages[pid].keyed_hash);
+
   // DEBUGGING
   DEBUG_PRINT(F("Message: n="));
   DEBUG_PRINT(compass_messages[pid].network_id);
@@ -121,20 +146,20 @@ void radioTransmit(int pid) {
   DEBUG_PRINT(compass_messages[pid].latitude);
   DEBUG_PRINT(F(" lon="));
   DEBUG_PRINT(compass_messages[pid].longitude);
+  // TODO: print keyed_hash?
   DEBUG_PRINT(F(" EOM. "));
 
   // Create a stream that will write to our buffer
-  pb_ostream_t stream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
-  // TODO: max size (SmartCompassMessage_size) is only 64 bytes. we could combine 3 of them into one packet
+  pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  if (!pb_encode(&stream, SmartCompassMessage_fields, &compass_messages[pid])) {
+  if (!pb_encode(&ostream, SmartCompassMessage_fields, &compass_messages[pid])) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
     return;
   }
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast (TODO: time it)
   DEBUG_PRINT(F("sending... "));
-  rf95.send((uint8_t *)radio_buf, stream.bytes_written);
+  rf95.send(radio_buf, ostream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
   }
@@ -153,11 +178,10 @@ void radioReceive() {
   // i had separate buffers for tx and for rx, but that doesn't seem necessary
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN]; // TODO: keep this off the stack
   static uint8_t radio_buf_len;
+  static uint8_t received_hash[HASH_SIZE]; // TODO: this is wrong. its received as 1 32 byte number
   static SmartCompassMessage message = SmartCompassMessage_init_default;
 
-  // DEBUG_PRINTLN("Checking for reply...");
   if (rf95.available()) {
-    // radio_buf_len = sizeof(radio_buf);  // TODO: protobuf uses size_t, but radio uses uint8_t
     radio_buf_len = RH_RF95_MAX_MESSAGE_LEN; // reset this to max length otherwise it won't receive the full message!
 
     // Should be a reply message for us now
@@ -175,6 +199,15 @@ void radioReceive() {
       if (message.network_id != my_network_id) {
         DEBUG_PRINT(F("Message is for another network: "));
         DEBUG_PRINTLN(message.network_id);
+        // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
+        return;
+      }
+
+      // TODO: this is wrong
+      signSmartCompassMessage(message, received_hash);
+      if (received_hash != message.keyed_hash) {
+        DEBUG_PRINT(F("Message hash an invalid hash! "));
+        // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
         return;
       }
 

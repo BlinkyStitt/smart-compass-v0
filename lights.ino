@@ -20,8 +20,14 @@ void setupLights() {
   DEBUG_PRINTLN("done.");
 }
 
-void updateLightsForCompass() {
-  updateCompassPoints();
+void updateLightsForCompass(CompassMode compass_mode) {
+  // show the compass if we know our own GPS location
+  if (!GPS.fix) {
+    updateLightsForLoading();
+    return;
+  }
+
+  updateCompassPoints(compass_mode);
 
   // cycle through the colors for each light
   for (int i = 0; i < num_LEDs; i++) {
@@ -66,110 +72,67 @@ void updateLightsForLoading() {
   circle();
 }
 
-void updateLightsForClock() {
-  // turn the time into a watch face with just an hour hand
+void updateLightsForConfiguring(CompassMode compass_mode, CompassMode configure_mode, Orientation last_orientation, Orientation current_orientation) {
+  static elapsedMillis configure_ms = 0;
 
-  // TODO: do we care about gpsMs? we only have 16 lights of output
-  int adjusted_seconds = second();  // + (gpsMs % 1000) / 1000;
+  CompassMode next_compass_mode = compass_mode;  // this will change to configure_mode after configure_ms reaches a threshold
 
-  int adjusted_minute = minute() + adjusted_seconds / 60.0;
+  // TODO: finish writing this
+  return;
 
-  // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
-  int adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
-
-  if (adjusted_hour < 0) {
-    adjusted_hour += 12;
-  } else if (adjusted_hour >= 12) {
-    adjusted_hour -= 12;
+  if (!GPS.fix) {
+    updateLightsForLoading();
+    return;
   }
 
-  DEBUG_PRINT("time: ");
-  DEBUG_PRINT(adjusted_hour);
-  DEBUG_PRINT(":");
-  DEBUG_PRINT(adjusted_minute);
-  DEBUG_PRINT(":");
-  DEBUG_PRINTLN(adjusted_seconds);
-
-  // TODO: make sure this loops the right way once it is wired.
-  //int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
-  int hour_led_id;
-  switch (adjusted_hour) {
-  case 0:
-    hour_led_id = 0;
-    break;
-  case 1:
-    hour_led_id = 15;
-    break;
-  case 2:
-    hour_led_id = 13;
-    break;
-  case 3:
-    hour_led_id = 12;
-    break;
-  case 4:
-    hour_led_id = 11;
-    break;
-  case 5:
-    hour_led_id = 9;
-    break;
-  case 6:
-    hour_led_id = 8;
-    break;
-  case 7:
-    hour_led_id = 7;
-    break;
-  case 8:
-    hour_led_id = 5;
-    break;
-  case 9:
-    hour_led_id = 4;
-    break;
-  case 10:
-    hour_led_id = 3;
-    break;
-  case 11:
-    hour_led_id = 1;
-    break;
+  if (last_orientation != current_orientation) {
+    // reset the timer if the orientation just changed
+    configure_ms = 0;
   }
 
-  int minute_led_id = map(adjusted_minute, 0, 60, 16, 0) % 16;
-  int second_led_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
+  if (compass_mode == configure_mode) {
+    // TODO: update lights. fill up the circle using configure_ms over 5 seconds
+  } else {
+    // TODO: drain lights?
+  }
 
-  /*
-  DEBUG_PRINT("led_ids hour ,minute, second: ");
-  DEBUG_PRINT(hour_led_id);
-  DEBUG_PRINT(" ");
-  DEBUG_PRINT(minute_led_id);
-  DEBUG_PRINT(" ");
-  DEBUG_PRINTLN(second_led_id);
-  */
+  if (configure_ms > 5000 + 100) {
+    // TODO: add glitter to show that its done
 
-  // TODO: I'm not sure what color the noon marker should be or if we even need one
-  // TODO: what colors should the leds be?
-  // TODO: i'm not sure i like how i'm handling overlapping
-  // TODO: blink instead of full brightness?
-  for (int i = 0; i < num_LEDs; i++) {
-    if (i == second_led_id) {
-      leds[i] = CRGB::Blue;
-    } else if (i == minute_led_id) {
-      leds[i] = CRGB::Yellow;
-    } else if (i == hour_led_id) {
-      leds[i] = CRGB::Red;
+    // TODO: having this overlapping with long or short hold is kinda weird. buttons would probably be better
+    if (compass_mode == configure_mode) {
+      // if we are already configured for this mode and they've held it for 5 seconds, change mode to default
+      next_compass_mode = COMPASS_FRIENDS;
+    } else {
+      // if the current compass mode does not match the mode we are configuring, change to that mode
+      next_compass_mode = configure_mode;
     }
-    // everything starts at least a little dimmed
-    // lights that aren't part of the current time will quickly fade to black
-    // this makes for a smooth transition from other patterns
-    leds[i].fadeToBlackBy(90);
+
+    if (configure_ms > 10000 + 100) {
+      // TODO: add a different glitter effect to show we are saving/deleting a pin
+      switch(configure_mode) {
+      case COMPASS_BATHROOM:
+        updateBathroomPin();
+        break;
+      case COMPASS_HOME:
+        updateHomePin();
+        break;
+      }
+    }
   }
+
+  return;
 }
 
-byte last_orientation = ORIENTED_PORTRAIT;
-byte current_orientation;
-
 void updateLights() {
-  // update the led array every frame
-  EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    // decrease overall brightness if battery is low
+  static Orientation last_orientation = ORIENTED_PORTRAIT;
+  static Orientation current_orientation;
+  static CompassMode compass_mode = COMPASS_FRIENDS;
+  static CompassMode next_compass_mode = COMPASS_FRIENDS;
+
+  // decrease overall brightness if battery is low
+  // TODO: how often should we do this?
+  EVERY_N_SECONDS(120) {
     switch (checkBattery()) {
     case BATTERY_DEAD:
       // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
@@ -185,26 +148,25 @@ void updateLights() {
       FastLED.setBrightness(default_brightness);
       break;
     }
+  }
 
+  // update the led array every frame
+  EVERY_N_MILLISECONDS(1000 / frames_per_second) {
     current_orientation = getOrientation();
     switch (current_orientation) {
     case ORIENTED_UP:
-      // show the compass if possible
-      if (GPS.fix) {
-        updateLightsForCompass();
-      } else {
-        updateLightsForLoading();
-      }
+      compass_mode = next_compass_mode;  // TODO: is this right?
+      updateLightsForCompass(compass_mode);
       break;
     case ORIENTED_DOWN:
       flashlight();
       break;
     case ORIENTED_USB_DOWN:
-      // TODO: config for bathroom
-      //break;
+      updateLightsForConfiguring(compass_mode, COMPASS_BATHROOM, last_orientation, current_orientation);
+      break;
     case ORIENTED_USB_UP:
-      // TODO: config for home
-      //break;
+      updateLightsForConfiguring(compass_mode, COMPASS_HOME, last_orientation, current_orientation);
+      break;
     case ORIENTED_PORTRAIT:
       // pretty patterns
       // TODO: different things for the different USB tilts? maybe use that to toggle what the compass shows? need some sort of debounce
