@@ -9,8 +9,6 @@
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
-BLAKE2s blake2s;
-
 void setupRadio() {
   DEBUG_PRINT(F("Setting up Radio... "));
 

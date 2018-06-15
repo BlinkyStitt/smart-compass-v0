@@ -70,7 +70,11 @@ int broadcast_time_s, default_brightness, flashlight_density, frames_per_second,
 int time_zone_offset;
 
 // TODO: was char
-uint8_t my_network_key[64];  // TODO: read this from the SD card
+#define MAX_KEY_SIZE 64
+uint8_t my_network_key[MAX_KEY_SIZE];  // TODO: read this from the SD card
+
+// it is not legal to encrypt in the US, but we can sign and hash for security
+BLAKE2s blake2s;
 
 // offset between true and magnetic north
 float magnetic_declination = 0.0;
@@ -80,7 +84,7 @@ Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
 String gps_log_filename = ""; // TODO: everyone says not to use String, but it seems fine and is way simpler
-File gps_log_file;
+File my_file;
 
 // keep us from transmitting too often
 long last_transmitted[max_peers] = {0};
