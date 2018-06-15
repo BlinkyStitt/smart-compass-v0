@@ -225,11 +225,11 @@ void setupConfig() {
   // TODO: there has to be a better way to concatenate ints into strings
   gps_log_filename = my_network_id;
   if (! my_peer_id) {
-    gps_log_filename = gps_log_filename + "-0.log";
+    gps_log_filename = gps_log_filename + F("-0.log");
   } else {
-    gps_log_filename = gps_log_filename + "-";
+    gps_log_filename = gps_log_filename + F("-");
     gps_log_filename = gps_log_filename + my_peer_id;
-    gps_log_filename = gps_log_filename + ".log";
+    gps_log_filename = gps_log_filename + F(".log");
   }
 
   DEBUG_PRINT(F("gps_log_filename: "));
@@ -238,9 +238,36 @@ void setupConfig() {
   setupSecurity();
 }
 
+void networkIdFromKey(uint8_t* network_key, uint8_t* network_id) {
+  blake2s.reset(sizeof(network_id));
+
+  blake2s.update(network_key, sizeof(network_key));
+
+  blake2s.finalize(network_id, sizeof(network_id));
+}
+
 void setupSecurity() {
   // TODO: open security.key and store in my_network_key
 
-  // TODO: hash my_network_key and store in my_network_id
+  my_file = SD.open(F("security.key"));
+
+  DEBUG_PRINT(F("Opening security.key... "));
+  if (!my_file) {
+    // if the file didn't open, print an error:
+    DEBUG_PRINTLN(F("failed!"));
+    return;
+  }
+  DEBUG_PRINTLN(F("open."));
+
+  my_file.read(my_network_key, sizeof(my_network_key));
+
+  // close the file:
+  my_file.close();
+
+  // this will override whatever they set
+  // TODO: not sure about the types here..
+  networkIdFromKey(my_network_key, (uint8_t*) my_network_id);
+  DEBUG_PRINT(F("key-based my_network_id: "));
+  DEBUG_PRINTLN(my_network_id);
 }
 
