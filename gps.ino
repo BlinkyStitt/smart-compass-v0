@@ -144,6 +144,7 @@ void gpsReceive() {
 
   // compare lat/long with less precision so we don't log all the time
   // TODO: how much precision are we losing? 10m?
+  // TODO: I'm still getting some duplicates
   int cur_latitude = GPS.latitude_fixed / 100;
   int cur_longitude = GPS.longitude_fixed / 100;
   if (last_latitude == cur_latitude && last_longitude == cur_longitude) {

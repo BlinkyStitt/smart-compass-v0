@@ -5,8 +5,9 @@ import "nanopb.proto";
 // int32 is bigger than we need for most of these, but they are all stored as varints
 
 message SmartCompassMessage {
-    uint32 network_id = 1;      // TODO: what type should we use?
-    bytes keyed_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+    bytes network_hash = 1 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+    bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+
     uint32 tx_peer_id = 3;
 
     uint32 tx_time = 4;

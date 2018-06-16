@@ -56,15 +56,6 @@ bool loadRequired(IniFile ini, char* buffer, size_t buffer_len) {
     return false;
   }
 
-  if (ini.getValue("global", "my_network_id", buffer, buffer_len, my_network_id)) {
-    DEBUG_PRINT(F("my_network_id: "));
-    DEBUG_PRINTLN(buffer);
-  } else {
-    DEBUG_PRINT(F("Could not read 'my_network_id' from section 'global', error was "));
-    printErrorMessage(ini.getError());
-    return false;
-  }
-
   if (ini.getValue("global", "my_peer_id", buffer, buffer_len, my_peer_id)) {
     DEBUG_PRINT(F("my_peer_id: "));
     DEBUG_PRINTLN(buffer);
@@ -209,9 +200,16 @@ void setupConfig() {
   }
   DEBUG_PRINTLN(flashlight_density);
 
+  // setup security sets my_network_hash
+  if (!setupSecurity()) {
+    config_setup = false;
+    return;
+  }
+
   // initialize compass messages
   for (int i = 0; i < num_peers; i++) {
-    compass_messages[i].network_id = my_network_id;
+    memcpy(compass_messages[i].network_hash, my_network_hash, NETWORK_HASH_SIZE);
+
     compass_messages[i].tx_peer_id = my_peer_id;
     compass_messages[i].peer_id = i;
 
@@ -222,8 +220,10 @@ void setupConfig() {
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
 
-  // TODO: there has to be a better way to concatenate ints into strings
-  gps_log_filename = my_network_id;
+  /*
+  // TODO: i want to include a hash of the network_key and the my_peer_id here, but strings in C are a pain
+  // TODO: and filenames on FAT are only 8.3
+  gps_log_filename = my_network_hash...;
   if (! my_peer_id) {
     gps_log_filename = gps_log_filename + F("-0.log");
   } else {
@@ -231,43 +231,70 @@ void setupConfig() {
     gps_log_filename = gps_log_filename + my_peer_id;
     gps_log_filename = gps_log_filename + F(".log");
   }
+  */
+  gps_log_filename = "gps.log";
 
   DEBUG_PRINT(F("gps_log_filename: "));
   DEBUG_PRINTLN(gps_log_filename);
-
-  setupSecurity();
 }
 
-void networkIdFromKey(uint8_t* network_key, uint8_t* network_id) {
-  blake2s.reset(sizeof(network_id));
+void networkIdFromKey(uint8_t* network_key, uint8_t* network_hash) {
+  DEBUG_PRINTLN(F("Generating network id from key..."));
 
-  blake2s.update(network_key, sizeof(network_key));
+  //blake2s.reset(sizeof(network_hash));
+  blake2s.reset(NETWORK_HASH_SIZE);
 
-  blake2s.finalize(network_id, sizeof(network_id));
+  //blake2s.update(network_key, sizeof(network_key));
+  blake2s.update(network_key, NETWORK_KEY_SIZE);
+
+  //blake2s.finalize(network_hash, sizeof(network_hash));
+  blake2s.finalize(network_hash, NETWORK_HASH_SIZE);
 }
 
-void setupSecurity() {
+bool setupSecurity() {
   // TODO: open security.key and store in my_network_key
 
   my_file = SD.open(F("security.key"));
 
   DEBUG_PRINT(F("Opening security.key... "));
   if (!my_file) {
-    // if the file didn't open, print an error:
+    // if the file didn't open, print an error and fail:
     DEBUG_PRINTLN(F("failed!"));
-    return;
+    return false;
   }
   DEBUG_PRINTLN(F("open."));
 
-  my_file.read(my_network_key, sizeof(my_network_key));
+  // read the key into a variable
+  my_file.read(my_network_key, NETWORK_KEY_SIZE);
+
+  DEBUG_PRINTLN("my_network_key set!");
+
+  // TODO: remove this when done debugging!
+  DEBUG_PRINT(F("my_network_key: "));
+  DEBUG_PRINT2(my_network_key[0], HEX);
+  for (int i = 1; i < NETWORK_KEY_SIZE; i++) {
+    DEBUG_PRINT(F("-"));
+    DEBUG_PRINT2(my_network_key[i], HEX);
+  }
+  DEBUG_PRINTLN();
+  // TODO: END remove this when done debugging!
+
 
   // close the file:
   my_file.close();
 
-  // this will override whatever they set
-  // TODO: not sure about the types here..
-  networkIdFromKey(my_network_key, (uint8_t*) my_network_id);
-  DEBUG_PRINT(F("key-based my_network_id: "));
-  DEBUG_PRINTLN(my_network_id);
+  // hash the key for use as the network id
+  networkIdFromKey(my_network_key, my_network_hash);
+
+  // TODO: this is wrong. only the first few bytes are being set despite having a full length key
+  DEBUG_PRINT(F("key-based my_network_hash: "));
+  DEBUG_PRINT2(my_network_hash[0], HEX);
+  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+    DEBUG_PRINT(F("-"));
+    DEBUG_PRINT2(my_network_hash[i], HEX);
+  }
+  DEBUG_PRINTLN();
+
+  return true;
 }
 

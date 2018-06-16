@@ -3,10 +3,6 @@
 // TODO: there are lots more frequencies than this. pick a good one from the sd card and use constrain()
 #define RADIO_FREQ 915.0
 
-// TODO: read hash size from SD card? constrain from to 16-32
-// TODO: make sure to update the protobuf, too!
-#define HASH_SIZE 16
-
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setupRadio() {
@@ -47,23 +43,99 @@ void setupRadio() {
 }
 
 void signSmartCompassMessage(SmartCompassMessage message, uint8_t* hash) {
-  // TODO: time this
-  blake2s.reset(my_network_key, sizeof(my_network_key), HASH_SIZE);
+  unsigned long start;
+  unsigned long elapsed;
+  start = micros();
+
+  // TODO: print the message here?
+
+  DEBUG_PRINT(F("resetting... "));
+  blake2s.reset((void *)my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
-  blake2s.update((uint8_t *)message.network_id, sizeof((uint8_t *)message.network_id));
-  blake2s.update((uint8_t *)message.tx_peer_id, sizeof((uint8_t *)message.tx_peer_id));
-  blake2s.update((uint8_t *)message.tx_time, sizeof((uint8_t *)message.tx_time));
-  blake2s.update((uint8_t *)message.tx_ms, sizeof((uint8_t *)message.tx_ms));
-  blake2s.update((uint8_t *)message.peer_id, sizeof((uint8_t *)message.peer_id));
-  blake2s.update((uint8_t *)message.last_updated_at, sizeof((uint8_t *)message.last_updated_at));
-  blake2s.update((uint8_t *)message.hue, sizeof((uint8_t *)message.hue));
-  blake2s.update((uint8_t *)message.saturation, sizeof((uint8_t *)message.saturation));
-  blake2s.update((uint8_t *)message.latitude, sizeof((uint8_t *)message.latitude));
-  blake2s.update((uint8_t *)message.longitude, sizeof((uint8_t *)message.longitude));
+  DEBUG_PRINT(F("updating... "));
+  blake2s.update((void *)message.network_hash, sizeof(message.network_hash));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.tx_peer_id, sizeof(message.tx_peer_id));
+  DEBUG_PRINT(F("."));
 
-  blake2s.finalize(hash, HASH_SIZE);
+  /*
+  // TODO: something is wrong about this. it crashed here
+  blake2s.update((void *)message.tx_time, sizeof(message.tx_time));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.tx_ms, sizeof(message.tx_ms));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.peer_id, sizeof(message.peer_id));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.last_updated_at, sizeof(message.last_updated_at));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.hue, sizeof(message.hue));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.saturation, sizeof(message.saturation));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.latitude, sizeof(message.latitude));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.longitude, sizeof(message.longitude));
+  DEBUG_PRINT(F(". "));
+  */
+
+  DEBUG_PRINT(F("finalizing... "));
+  blake2s.finalize(hash, NETWORK_HASH_SIZE);
+
+  DEBUG_PRINT(F("done. "));
+
+  elapsed = micros() - start;
+
+  DEBUG_PRINT(elapsed / 1000.0);
+  DEBUG_PRINT(F("us per op, "));
+  DEBUG_PRINT((1000.0 * 1000000.0) / elapsed);
+  DEBUG_PRINTLN(F(" ops per second"));
 }
+
+#ifdef DEBUG
+  void printCompassMessage(SmartCompassMessage message, bool print_hash = false, bool eol = false) {
+    DEBUG_PRINT(F("Message: n="));
+
+    DEBUG_PRINT2(message.network_hash[0], HEX);
+    for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+      DEBUG_PRINT(F("-"));
+      DEBUG_PRINT2(message.network_hash[i], HEX);
+    }
+
+    if (print_hash) {
+      DEBUG_PRINT(F(" h="));
+      DEBUG_PRINT2(message.message_hash[0], HEX);
+      for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+        DEBUG_PRINT(F("-"));
+        DEBUG_PRINT2(message.message_hash[i], HEX);
+      }
+    }
+
+    DEBUG_PRINT(F(" txp="));
+    DEBUG_PRINT(message.tx_peer_id);
+    DEBUG_PRINT(F(" p="));
+    DEBUG_PRINT(message.peer_id);
+    DEBUG_PRINT(F(" now="));
+    DEBUG_PRINT(message.tx_time);
+    DEBUG_PRINT(F(" ms="));
+    DEBUG_PRINT(message.tx_ms);
+    DEBUG_PRINT(F(" t="));
+    DEBUG_PRINT(message.last_updated_at);
+    DEBUG_PRINT(F(" lat="));
+    DEBUG_PRINT(message.latitude);
+    DEBUG_PRINT(F(" lon="));
+    DEBUG_PRINT(message.longitude);
+    // TODO: print keyed_hash?
+    DEBUG_PRINT(F(" EOM. "));
+
+    if (eol) {
+      DEBUG_PRINTLN();
+    }
+  }
+#else
+  void printCompassMessage(SmartCompassMessage message) {}
+#endif
+
 
 void radioTransmit(int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
@@ -124,28 +196,12 @@ void radioTransmit(int pid) {
   compass_messages[pid].tx_time = time_now;
   compass_messages[pid].tx_ms = network_ms;
 
-  // TODO: hopefully this is fast! if its slow, add an updateLights before and after it?
-  signSmartCompassMessage(compass_messages[pid], compass_messages[pid].keyed_hash);
+  printCompassMessage(compass_messages[pid], false, false);
 
-  // DEBUGGING
-  DEBUG_PRINT(F("Message: n="));
-  DEBUG_PRINT(compass_messages[pid].network_id);
-  DEBUG_PRINT(F(" txp="));
-  DEBUG_PRINT(compass_messages[pid].tx_peer_id);
-  DEBUG_PRINT(F(" p="));
-  DEBUG_PRINT(compass_messages[pid].peer_id);
-  DEBUG_PRINT(F(" now="));
-  DEBUG_PRINT(compass_messages[pid].tx_time);
-  DEBUG_PRINT(F(" ms="));
-  DEBUG_PRINT(compass_messages[pid].tx_ms);
-  DEBUG_PRINT(F(" t="));
-  DEBUG_PRINT(compass_messages[pid].last_updated_at);
-  DEBUG_PRINT(F(" lat="));
-  DEBUG_PRINT(compass_messages[pid].latitude);
-  DEBUG_PRINT(F(" lon="));
-  DEBUG_PRINT(compass_messages[pid].longitude);
-  // TODO: print keyed_hash?
-  DEBUG_PRINT(F(" EOM. "));
+  // TODO: hopefully this is fast! if its slow, add an updateLights before and after it?
+  signSmartCompassMessage(compass_messages[pid], compass_messages[pid].message_hash);
+
+  // TODO: print the hash
 
   // Create a stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
@@ -176,7 +232,7 @@ void radioReceive() {
   // i had separate buffers for tx and for rx, but that doesn't seem necessary
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN]; // TODO: keep this off the stack
   static uint8_t radio_buf_len;
-  static uint8_t received_hash[HASH_SIZE]; // TODO: this is wrong. its received as 1 32 byte number
+  static uint8_t calculated_hash[NETWORK_HASH_SIZE]; // TODO: this is wrong. its received as 1 32 byte number
   static SmartCompassMessage message = SmartCompassMessage_init_default;
 
   if (rf95.available()) {
@@ -194,20 +250,22 @@ void radioReceive() {
         return;
       }
 
-      if (message.network_id != my_network_id) {
-        DEBUG_PRINT(F("Message is for another network: "));
-        DEBUG_PRINTLN(message.network_id);
+      if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
+        DEBUG_PRINTLN(F("Message is for another network."));
         // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
         return;
       }
 
-      // TODO: this is wrong
-      signSmartCompassMessage(message, received_hash);
-      if (received_hash != message.keyed_hash) {
+      // TODO: i know its "safest" to verify sigs early, but why verify sigs on messages about self?
+      signSmartCompassMessage(message, calculated_hash);
+      if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
         DEBUG_PRINT(F("Message hash an invalid hash! "));
         // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
         return;
       }
+
+      // TODO: add another arg for printing the hash
+      printCompassMessage(message, true, true);
 
       if (message.tx_peer_id == my_peer_id) {
         DEBUG_PRINT(F("ERROR! Peer id collision! "));
@@ -258,22 +316,7 @@ void radioReceive() {
       compass_messages[message.peer_id].latitude = message.latitude;
       compass_messages[message.peer_id].longitude = message.longitude;
 
-      DEBUG_PRINT(F("Message for peer #"));
-      DEBUG_PRINT(message.peer_id);
-      DEBUG_PRINT(F(" from #"));
-      DEBUG_PRINT(message.tx_peer_id);
-      DEBUG_PRINT(F(": t="));
-      DEBUG_PRINT(message.tx_time);
-      DEBUG_PRINT(F(" ms="));
-      DEBUG_PRINT(message.tx_ms);
-      DEBUG_PRINT(F(" h="));
-      DEBUG_PRINT(message.hue);
-      DEBUG_PRINT(F(" s="));
-      DEBUG_PRINT(message.saturation);
-      DEBUG_PRINT(F(" lat="));
-      DEBUG_PRINT(message.latitude);
-      DEBUG_PRINT(F(" lon="));
-      DEBUG_PRINTLN(message.longitude);
+      // TODO: print message.network_hash?
     } else {
       DEBUG_PRINTLN(F("Receive failed"));
     }
