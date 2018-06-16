@@ -1,5 +1,7 @@
 // TODO: use addmod8
 
+#define DEBUG
+
 #include "debug.h"
 
 // TODO: how is clang-format deciding to order these? they aren't alphabetical
@@ -7,8 +9,6 @@
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
 #include <Adafruit_Sensor.h>
-#include <ArduinoSort.h>
-#include <Bounce2.h>
 #include <FastLED.h>
 #include <IniFile.h>
 #include <RH_RF95.h>
@@ -59,8 +59,11 @@ const int max_peers = 4;
 // setup messages for all possible peers
 SmartCompassMessage compass_messages[max_peers] = {SmartCompassMessage_init_default};
 
+#define NETWORK_KEY_SIZE 16
+
 // these are set by config
-int my_network_id, my_peer_id, my_hue, my_saturation, num_peers;
+int my_peer_id, my_hue, my_saturation, num_peers;
+uint8_t my_network_key[NETWORK_KEY_SIZE];
 
 // these are set by config or fallback to defaults
 // TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
@@ -69,12 +72,11 @@ int broadcast_time_s, default_brightness, flashlight_density, frames_per_second,
 
 int time_zone_offset;
 
-// TODO: was char
-#define MAX_KEY_SIZE 64
-uint8_t my_network_key[MAX_KEY_SIZE];  // TODO: read this from the SD card
-
 // it is not legal to encrypt in the US, but we can sign and hash for security
+// TODO: make sure to update the protobuf, too!
+#define NETWORK_HASH_SIZE 16
 BLAKE2s blake2s;
+uint8_t my_network_hash[NETWORK_HASH_SIZE]; // TODO: union type to access as hex?
 
 // offset between true and magnetic north
 float magnetic_declination = 0.0;
@@ -161,7 +163,28 @@ void setup() {
   tcConfigure(100);
   tcStartCounter();
 
-  DEBUG_PRINTLN("Starting...");
+  // open the SD card
+  my_file = SD.open(gps_log_filename, FILE_WRITE);
+
+  // if the file opened okay, write to it:
+  if (!my_file) {
+    // if the file didn't open, print an error and abort
+    DEBUG_PRINT(F("error opening gps log: "));
+    DEBUG_PRINTLN(gps_log_filename);
+  } else {
+    DEBUG_PRINT(F("Logging start: "));
+    DEBUG_PRINTLN(gps_log_filename);
+
+    // add a blank line each time we start
+    my_file.println("");
+
+    // TODO: do we want to log anything else?
+
+    // close the file:
+    my_file.close();
+  }
+
+  DEBUG_PRINTLN(F("Starting..."));
 }
 
 void loop() {
