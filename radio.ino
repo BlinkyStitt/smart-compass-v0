@@ -43,21 +43,23 @@ void setupRadio() {
 }
 
 void signSmartCompassMessage(SmartCompassMessage message, uint8_t* hash) {
+  /*
   unsigned long start;
   unsigned long elapsed;
   start = micros();
+  */
 
   // TODO: print the message here?
 
-  DEBUG_PRINT(F("resetting... "));
+  //DEBUG_PRINT(F("resetting... "));
   blake2s.reset((void *)my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
-  DEBUG_PRINT(F("updating... "));
+  //DEBUG_PRINT(F("updating... "));
   blake2s.update((void *)message.network_hash, sizeof(message.network_hash));
-  DEBUG_PRINT(F("."));
+  //DEBUG_PRINT(F("."));
   blake2s.update((void *)message.tx_peer_id, sizeof(message.tx_peer_id));
-  DEBUG_PRINT(F("."));
+  //DEBUG_PRINT(F("."));
 
   /*
   // TODO: something is wrong about this. it crashed here
@@ -79,17 +81,27 @@ void signSmartCompassMessage(SmartCompassMessage message, uint8_t* hash) {
   DEBUG_PRINT(F(". "));
   */
 
-  DEBUG_PRINT(F("finalizing... "));
+  //DEBUG_PRINT(F("finalizing... "));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
 
-  DEBUG_PRINT(F("done. "));
+  //DEBUG_PRINT(F("done. "));
 
+  /*
   elapsed = micros() - start;
 
   DEBUG_PRINT(elapsed / 1000.0);
   DEBUG_PRINT(F("us per op, "));
   DEBUG_PRINT((1000.0 * 1000000.0) / elapsed);
   DEBUG_PRINTLN(F(" ops per second"));
+  */
+
+  DEBUG_PRINT(F("Hash: "));
+  DEBUG_PRINT2(hash[0], HEX);
+  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+    DEBUG_PRINT(F("-"));
+    DEBUG_PRINT2(hash[i], HEX);
+  }
+  DEBUG_PRINTLN();
 }
 
 #ifdef DEBUG
@@ -196,7 +208,7 @@ void radioTransmit(int pid) {
   compass_messages[pid].tx_time = time_now;
   compass_messages[pid].tx_ms = network_ms;
 
-  printCompassMessage(compass_messages[pid], false, false);
+  printCompassMessage(compass_messages[pid], false, true);
 
   // TODO: hopefully this is fast! if its slow, add an updateLights before and after it?
   signSmartCompassMessage(compass_messages[pid], compass_messages[pid].message_hash);
