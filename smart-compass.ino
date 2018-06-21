@@ -1,8 +1,7 @@
 // TODO: use addmod8
 
 #define DEBUG
-
-#include "debug.h"
+#include "bs_debug.h"
 
 // TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
