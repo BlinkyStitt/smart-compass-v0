@@ -38,73 +38,84 @@ float course_to(long lat1, long lon1, long lat2, long lon2, float *distance) {
 // compare compass points
 bool firstIsBrighter(CHSV first, CHSV second) { return first.value > second.value; }
 
-const int max_compass_points = max_peers + 1;
-
-// compass points go COUNTER-clockwise to match LEDs!
-CHSV compass_points[num_LEDs][max_compass_points];
-int next_compass_point[num_LEDs] = {0};
+// TODO: CHSV nearby_points[]
 
 void updateCompassPoints(CompassMode compass_mode) {
   // clear past compass points
   // TODO: this isn't very efficient since it recalculates everything every time
-  for (int i = 0; i < num_LEDs; i++) {
-    next_compass_point[i] = 0; // TODO: is this the right syntax?
+  for (int i = 0; i < inner_ring_size; i++) {
+    next_inner_compass_point[i] = 0;
+  }
+  for (int i = 0; i < outer_ring_size; i++) {
+    next_outer_compass_point[i] = 0;
   }
 
   // compass points go COUNTER-clockwise to match LEDs!
-  // add north
-  compass_points[0][next_compass_point[0]] = CHSV(0, 255, 255);
-  next_compass_point[0]++;
+  // add north to inner ring
+  inner_compass_points[0][next_inner_compass_point[0]] = CHSV(0, 255, 255);
+  next_inner_compass_point[0]++;
 
-  /*
-  // add east (TODO: remove this when done debugging)
-  compass_points[12][next_compass_point[12]] = CHSV(64, 255, 255);
-  next_compass_point[12]++;
+  // add north to outer ring
+  outer_compass_points[0][next_outer_compass_point[0]] = CHSV(0, 255, 255);
+  next_outer_compass_point[0]++;
 
-  // add south (TODO: remove this when done debugging)
-  compass_points[8][next_compass_point[8]] = CHSV(128, 255, 255);
-  next_compass_point[8]++;
+  // add points for
+  switch (compass_mode) {
+  case COMPASS_FRIENDS:
+    addCompassPointsForFriends();
+    break;
+  case COMPASS_PLACES:
+    addCompassPointsForPlaces();
+    break;
+  }
+}
 
-  // add west (TODO: remove this when done debugging)
-  compass_points[4][next_compass_point[4]] = CHSV(192, 255, 255);
-  next_compass_point[4]++;
-  */
+void addCompassPointsForFriends() {
+  float peer_distance; // meters
+  float magnetic_bearing;  // degrees
+  int compass_point_id = 0, peer_brightness = 0;
 
-  // TODO: if compass_mode == COMPASS_FRIENDS and all the other options
   for (int i = 0; i < num_peers; i++) {
     if (!compass_messages[i].saturation) {
       // skip the peer if we don't have any color data for them
       continue;
     }
     if (i == my_peer_id) {
-      // don't show yourself
+      // don't show yourself (or maybe just show it on the status bar so you can see your own color?
       continue;
     }
 
-    float peer_distance; // meters
-    float magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
-                                       compass_messages[i].latitude, compass_messages[i].longitude,
-                                       &peer_distance);
-
-    if (peer_distance < 10) {
-      // TODO: what should we do for really close peers? don't just hide them
-      continue;
-    }
-
-    // TODO: double check that this is looping the correct way around the LED
-    // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
-    int compass_point_id = map(magnetic_bearing, 0, 360, 0, num_LEDs) % num_LEDs;
+    magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
+                                 compass_messages[i].latitude, compass_messages[i].longitude,
+                                 &peer_distance);
 
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
-    int peer_brightness = map(min(max_peer_distance, peer_distance), 0, max_peer_distance, 30, 255);
-
     // TODO: if peer data is old, blink or something
+    peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 30, 255);
 
-    compass_points[compass_point_id][next_compass_point[compass_point_id]] =
-        CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
-    next_compass_point[compass_point_id]++;
+    // TODO: double check that this is looping the correct way around the LED
+    // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
+    if (peer_distance <= min_peer_distance) {
+      // TODO: what should we do for really close peers? don't just hide them. add to a 8 led strip bar
+    } else if (peer_distance <= max_peer_distance / 2) {
+      // inner ring
+      compass_point_id = map(magnetic_bearing, 0, 360, 0, inner_ring_size) % inner_ring_size;
+
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]] =
+          CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
+
+      next_inner_compass_point[compass_point_id]++;
+    } else {
+      // outer ring
+      compass_point_id = map(magnetic_bearing, 0, 360, 0, outer_ring_size) % outer_ring_size;
+
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]] =
+          CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
+
+      next_outer_compass_point[compass_point_id]++;
+    }
   }
 
   /*
@@ -116,10 +127,16 @@ void updateCompassPoints(CompassMode compass_mode) {
   */
 }
 
-void updateBathroomPin() {
+void addCompassPointsForPlaces() {
   // TODO: write this
+  // TODO: always show at least 1 light per color. if there are more than, show the closest X
 }
 
-void updateHomePin() {
+void setPin(int pin_id, CHSV color, long latitude, long longitude) {
   // TODO: write this
+  if (pin_id < 0) {
+    DEBUG_PRINTLN("ERROR saving pin with invalid ID");
+  }
+
+  // TODO: search for a nearby pin. if it doesn't exist, increment num_pins
 }

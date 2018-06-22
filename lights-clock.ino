@@ -1,3 +1,5 @@
+// TODO: change this to work on 2 light rings
+
 void updateLightsForClock() {
   // turn the time into a watch face with just an hour hand
 
