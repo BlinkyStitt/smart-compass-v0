@@ -165,9 +165,12 @@ void radioTransmit(const int pid) {
   if (time_now - last_transmitted[pid] < 2) {
     // we already transmitted for this peer recently. don't broadcast it again
 
-    // TODO: transmit queued messages now instead of returning
     if (queued_messages == 0) {
       // if we don't have any queued messages (currently only pin updates), then we are done here
+
+      // put the radio to sleep to save power
+      // TODO: this takes a finite amount of time to wake. not sure how long tho...
+      rf95.sleep();
       return;
     } else {
       // we have queued messages to transmit
@@ -216,10 +219,6 @@ void radioTransmit(const int pid) {
     FastLED.delay(2);
   }
 
-  // put the radio to sleep to save power
-  // TODO: this takes a finite amount of time to wake. not sure how long tho...
-  rf95.sleep();
-
   last_transmitted[pid] = time_now;
 
   DEBUG_PRINTLN(F("done."));
@@ -228,6 +227,7 @@ void radioTransmit(const int pid) {
 
 // returns the number of bytes written to the buffer
 int encodeCompassMessage(uint8_t* buffer, SmartCompassMessage compass_message, unsigned long time_now) {
+  // TODO: checking hue like this means no-one can pick true red as their hue.
   if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
     // if the peer is ourselves, don't broadcast unless we have a GPS fix (otherwise we would send 0, 0
@@ -235,14 +235,11 @@ int encodeCompassMessage(uint8_t* buffer, SmartCompassMessage compass_message, u
     // don't retry
     last_transmitted[compass_message.peer_id] = time_now;
 
-    // TODO: this blocks us from being able to use pure red
     DEBUG_PRINT(F("No peer data to transmit for #"));
     DEBUG_PRINTLN(compass_message.peer_id);
 
     return 0;
   }
-
-  // TODO: abort if the message is really old?
 
   DEBUG_PRINT(F("Encoding compass message for #"));
   DEBUG_PRINT(compass_message.peer_id);
@@ -268,15 +265,16 @@ int encodeCompassMessage(uint8_t* buffer, SmartCompassMessage compass_message, u
 
 // returns the number of bytes written to the buffer
 int encodeQueuedMessage(uint8_t* buffer, unsigned long time_now) {
+  // TODO: write this
   DEBUG_PRINTLN("encodeQueuedMessage NOT YET IMPLEMENTED!");
   return 0;
 }
 
 void radioReceive() {
   // i had separate buffers for tx and for rx, but that doesn't seem necessary
-  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN]; // TODO: keep this off the stack
+  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
   static uint8_t radio_buf_len;
-  static uint8_t calculated_hash[NETWORK_HASH_SIZE]; // TODO: this is wrong. its received as 1 32 byte number
+  static uint8_t calculated_hash[NETWORK_HASH_SIZE];
   static SmartCompassMessage message = SmartCompassMessage_init_default;
 
   if (!rf95.available()) {
@@ -310,7 +308,6 @@ void radioReceive() {
     return;
   }
 
-  // TODO: i know its "safest" to verify sigs early, but why verify sigs on messages about self?
   signSmartCompassMessage(message, calculated_hash);
   if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINT(F("Message hash an invalid hash! "));
@@ -318,7 +315,6 @@ void radioReceive() {
     return;
   }
 
-  // TODO: add another arg for printing the hash
   printCompassMessage(message, true, true);
 
   if (message.tx_peer_id == my_peer_id) {
@@ -329,7 +325,7 @@ void radioReceive() {
 
   if (message.peer_id == my_peer_id) {
     DEBUG_PRINTLN(F("Ignoring stats about myself."));
-    // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
+    // TODO: instead of ignoring, track how old my info is on all peers. if it is old, maybe there was some interference
     return;
   }
 
@@ -338,9 +334,9 @@ void radioReceive() {
     return;
   }
 
-  // TODO: make this work. somehow time got set to way in the future
   /*
   // sync to the lowest peer id's time
+  // TODO: make this work. somehow time got set to way in the future
   // TODO: only do this if there is drift?
   // TODO: make sure this works well for all cases
   //if (message.peer_id < my_peer_id) {
@@ -350,6 +346,7 @@ void radioReceive() {
   }
   */
 
+  // TODO: simply accepting the lower peer's time seems like it could have issues, but how much would that really matter?
   if (message.peer_id < my_peer_id) {
     DEBUG_PRINT(F("Updating network_ms! "));
     DEBUG_PRINT(network_ms);
@@ -369,8 +366,6 @@ void radioReceive() {
   compass_messages[message.peer_id].saturation = message.saturation;
   compass_messages[message.peer_id].latitude = message.latitude;
   compass_messages[message.peer_id].longitude = message.longitude;
-
-  // TODO: print message.network_hash?
 }
 
 void queueBroadcastPin(const int pin_id) {
