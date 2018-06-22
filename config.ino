@@ -196,7 +196,7 @@ void setupConfig() {
   DEBUG_PRINT(F("flashlight_density: "));
   if (flashlight_density) {
     DEBUG_PRINT(F("(default) "));
-    flashlight_density = 2;
+    flashlight_density = 4;
   }
   DEBUG_PRINTLN(flashlight_density);
 
