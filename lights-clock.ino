@@ -10,7 +10,6 @@ void updateLightsForClock() {
 
   // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
   int adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
-
   if (adjusted_hour < 0) {
     adjusted_hour += 12;
   } else if (adjusted_hour >= 12) {
@@ -24,50 +23,53 @@ void updateLightsForClock() {
   DEBUG_PRINT(":");
   DEBUG_PRINTLN(adjusted_seconds);
 
-  // TODO: make sure this loops the right way once it is wired.
+  // TODO: is there a formula for this?
   //int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
-  int hour_led_id;
+  int hour_led_id = inner_ring_start;
   switch (adjusted_hour) {
   case 0:
-    hour_led_id = 0;
+    hour_led_id += 0;
     break;
   case 1:
-    hour_led_id = 15;
+    hour_led_id += 15;
     break;
   case 2:
-    hour_led_id = 13;
+    hour_led_id += 13;
     break;
   case 3:
-    hour_led_id = 12;
+    hour_led_id += 12;
     break;
   case 4:
-    hour_led_id = 11;
+    hour_led_id += 11;
     break;
   case 5:
-    hour_led_id = 9;
+    hour_led_id += 9;
     break;
   case 6:
-    hour_led_id = 8;
+    hour_led_id += 8;
     break;
   case 7:
-    hour_led_id = 7;
+    hour_led_id += 7;
     break;
   case 8:
-    hour_led_id = 5;
+    hour_led_id += 5;
     break;
   case 9:
-    hour_led_id = 4;
+    hour_led_id += 4;
     break;
   case 10:
-    hour_led_id = 3;
+    hour_led_id += 3;
     break;
   case 11:
-    hour_led_id = 1;
+    hour_led_id += 1;
     break;
   }
 
-  int minute_led_id = map(adjusted_minute, 0, 60, 16, 0) % 16;
-  int second_led_id = map(adjusted_seconds, 0, 60, 16, 0) % 16;
+  int inner_minute_led_id = map(adjusted_minute, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
+  int outer_minute_led_id = map(adjusted_minute, 0, 60, outer_ring_size, 0) % outer_ring_size + outer_ring_start;
+
+  int inner_second_led_id = map(adjusted_seconds, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
+  int outer_second_led_id = map(adjusted_seconds, 0, 60, outer_ring_size, 0) % outer_ring_size + outer_ring_start;
 
   /*
   DEBUG_PRINT("led_ids hour ,minute, second: ");
@@ -83,17 +85,19 @@ void updateLightsForClock() {
   // TODO: i'm not sure i like how i'm handling overlapping
   // TODO: blink instead of full brightness?
   // TODO: add a second, larger ring
-  for (int i = 0; i < num_LEDs; i++) {
-    if (i == second_led_id) {
-      leds[i] = CRGB::Blue;
-    } else if (i == minute_led_id) {
-      leds[i] = CRGB::Yellow;
-    } else if (i == hour_led_id) {
-      leds[i] = CRGB::Red;
-    }
-    // everything starts at least a little dimmed
-    // lights that aren't part of the current time will quickly fade to black
-    // this makes for a smooth transition from other patterns
-    leds[i].fadeToBlackBy(90);
-  }
+
+  // fade all lights
+  fadeToBlackBy(leds, num_LEDs, 90);
+
+  // set minute first so second passes over it
+  leds[inner_minute_led_id] = CRGB::Blue;
+  leds[outer_minute_led_id] = CRGB::Blue;
+
+  // set second
+  leds[inner_second_led_id] = CRGB::Green;
+  leds[outer_second_led_id] = CRGB::Green;
+
+  // set hour last so it is always on top
+  // hour is only on the inner ring
+  leds[hour_led_id] = CRGB::Red;
 }
