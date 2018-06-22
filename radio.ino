@@ -149,7 +149,7 @@ void signSmartCompassMessage(SmartCompassMessage message, uint8_t* hash) {
 #endif
 
 
-void radioTransmit(int pid) {
+void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   if (timeStatus() == timeNotSet) {
@@ -161,19 +161,26 @@ void radioTransmit(int pid) {
 
   // TODO: tie this 2 second limit to update interval
   // TODO: what if time_now wraps?
+  bool tx_compass_message = true;  // if this is false, we transmit a pin id instead. i don't love this pattern
   if (time_now - last_transmitted[pid] < 2) {
-    // we already transmitted for this peer recently. skip it
-    return;
+    // we already transmitted for this peer recently. don't broadcast it again
+
+    // TODO: transmit queued messages now instead of returning
+    if (queued_messages == 0) {
+      // if we don't have any queued messages (currently only pin updates), then we are done here
+      return;
+    } else {
+      // we have queued messages to transmit
+      tx_compass_message = false;
+    }
   }
 
-  // TODO: should we transmit peer data even if we don't have local time set?
-  // maybe set time from a peer?
   DEBUG_PRINT(F("My time to transmit ("));
   DEBUG_PRINT(time_now);
   DEBUG_PRINTLN(F(")... "));
 
   /*
-  // TODO: this is causing it to hang. does my module not have this?
+  // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
   // http://www.airspayce.com/mikem/arduino/RadioHead/classRHGenericDriver.html#ac577b932ba8b042b8170b24d513635c7
   if (rf95.isChannelActive()) {
     DEBUG_PRINTLN("Channel is active. Delaying transmission");
@@ -190,42 +197,21 @@ void radioTransmit(int pid) {
     // TODO: do something with the lights? could be cool to add a circle in my_hue to whatever pattern is currently playing
     return;  // we will try broadcasting next loop
   }
-
-  if (!compass_messages[pid].hue or (pid == my_peer_id and !GPS.fix)) {
-    // if we don't have any info for this peer, skip sending anything
-
-    // don't bother retrying
-    last_transmitted[pid] = time_now;
-
-    // TODO: this blocks us from being able to use pure red
-    DEBUG_PRINT(F("No peer data to transmit for #"));
-    DEBUG_PRINTLN(pid);
-
-    return;
+  
+  int bytes_encoded = 0;
+  if (tx_compass_message) {
+    bytes_encoded = encodeCompassMessage(radio_buf, compass_messages[pid], time_now);
+  } else {
+    bytes_encoded = encodeQueuedMessage(radio_buf, time_now);
   }
 
-  // TODO: what to do if the message is really old?
-  compass_messages[pid].tx_time = time_now;
-  compass_messages[pid].tx_ms = network_ms;
-
-  printCompassMessage(compass_messages[pid], false, true);
-
-  // TODO: hopefully this is fast! if its slow, add an updateLights before and after it?
-  signSmartCompassMessage(compass_messages[pid], compass_messages[pid].message_hash);
-
-  // TODO: print the hash
-
-  // Create a stream that will write to our buffer
-  pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
-
-  if (!pb_encode(&ostream, SmartCompassMessage_fields, &compass_messages[pid])) {
-    DEBUG_PRINTLN(F("ERROR ENCODING!"));
+  if (!bytes_encoded) {
     return;
   }
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast (TODO: time it)
   DEBUG_PRINT(F("sending... "));
-  rf95.send(radio_buf, ostream.bytes_written);
+  rf95.send(radio_buf, bytes_encoded);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
   }
@@ -240,6 +226,52 @@ void radioTransmit(int pid) {
   return;
 }
 
+// returns the number of bytes written to the buffer
+int encodeCompassMessage(uint8_t* buffer, SmartCompassMessage compass_message, unsigned long time_now) {
+  if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
+    // if we don't have any info for this peer, skip sending anything
+    // if the peer is ourselves, don't broadcast unless we have a GPS fix (otherwise we would send 0, 0
+
+    // don't retry
+    last_transmitted[compass_message.peer_id] = time_now;
+
+    // TODO: this blocks us from being able to use pure red
+    DEBUG_PRINT(F("No peer data to transmit for #"));
+    DEBUG_PRINTLN(compass_message.peer_id);
+
+    return 0;
+  }
+
+  // TODO: abort if the message is really old?
+
+  DEBUG_PRINT(F("Encoding compass message for #"));
+  DEBUG_PRINT(compass_message.peer_id);
+  DEBUG_PRINT(F("... "));
+
+  compass_message.tx_time = time_now;
+  compass_message.tx_ms = network_ms;
+
+  printCompassMessage(compass_message, false, true);
+  signSmartCompassMessage(compass_message, compass_message.message_hash);
+
+  // Create a protobuf stream that will write to our buffer
+  pb_ostream_t ostream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+
+  if (!pb_encode(&ostream, SmartCompassMessage_fields, &compass_message)) {
+    DEBUG_PRINTLN(F("ERROR ENCODING!"));
+    return 0;
+  }
+
+  DEBUG_PRINTLN(F("done."));
+  return ostream.bytes_written;
+}
+
+// returns the number of bytes written to the buffer
+int encodeQueuedMessage(uint8_t* buffer, unsigned long time_now) {
+  DEBUG_PRINTLN("encodeQueuedMessage NOT YET IMPLEMENTED!");
+  return 0;
+}
+
 void radioReceive() {
   // i had separate buffers for tx and for rx, but that doesn't seem necessary
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN]; // TODO: keep this off the stack
@@ -247,90 +279,104 @@ void radioReceive() {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE]; // TODO: this is wrong. its received as 1 32 byte number
   static SmartCompassMessage message = SmartCompassMessage_init_default;
 
-  if (rf95.available()) {
-    radio_buf_len = RH_RF95_MAX_MESSAGE_LEN; // reset this to max length otherwise it won't receive the full message!
-
-    // Should be a reply message for us now
-    if (rf95.recv(radio_buf, &radio_buf_len)) {
-      DEBUG_PRINT(F("RSSI: "));
-      DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
-
-      pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
-      if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
-        DEBUG_PRINT(F("Decoding failed: "));
-        DEBUG_PRINTLN(PB_GET_ERROR(&stream));
-        return;
-      }
-
-      if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
-        DEBUG_PRINTLN(F("Message is for another network."));
-        // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
-        return;
-      }
-
-      // TODO: i know its "safest" to verify sigs early, but why verify sigs on messages about self?
-      signSmartCompassMessage(message, calculated_hash);
-      if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
-        DEBUG_PRINT(F("Message hash an invalid hash! "));
-        // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
-        return;
-      }
-
-      // TODO: add another arg for printing the hash
-      printCompassMessage(message, true, true);
-
-      if (message.tx_peer_id == my_peer_id) {
-        DEBUG_PRINT(F("ERROR! Peer id collision! "));
-        DEBUG_PRINTLN(my_peer_id);
-        return;
-      }
-
-      if (message.peer_id == my_peer_id) {
-        DEBUG_PRINTLN(F("Ignoring stats about myself."));
-        // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
-        return;
-      }
-
-      if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
-        DEBUG_PRINTLN(F("Ignoring old message."));
-        return;
-      }
-
-      // TODO: make this work. somehow time got set to way in the future
-      /*
-      // sync to the lowest peer id's time
-      // TODO: only do this if there is drift?
-      // TODO: make sure this works well for all cases
-      //if (message.peer_id < my_peer_id) {
-      if (timeStatus() == timeNotSet) {
-        setTime(0, 0, 0, 0, 0, 0);
-        adjustTime(message.tx_time);
-      }
-      */
-
-      if (message.peer_id < my_peer_id) {
-        DEBUG_PRINT(F("Updating network_ms! "));
-        DEBUG_PRINT(network_ms);
-        DEBUG_PRINT(F(" -> "));
-        network_ms = message.tx_ms + 74;  // TODO: tune this offset. probably save it as a global
-      } else {
-        DEBUG_PRINT(F("Leaving network_ms alone! "));
-      }
-      DEBUG_PRINTLN(network_ms);
-
-      // TODO: do we care about saving tx times? we will change them when we re-broadcast
-      //compass_messages[message.peer_id].tx_time = message.tx_time;
-      //compass_messages[message.peer_id].tx_ms = message.tx_ms;
-
-      compass_messages[message.peer_id].last_updated_at = message.last_updated_at;
-      compass_messages[message.peer_id].hue = message.hue;
-      compass_messages[message.peer_id].saturation = message.saturation;
-      compass_messages[message.peer_id].latitude = message.latitude;
-      compass_messages[message.peer_id].longitude = message.longitude;
-
-      // TODO: print message.network_hash?
-    } else {
-      DEBUG_PRINTLN(F("Receive failed"));
-    }
+  if (!rf95.available()) {
+    // no packets to process
+    return;
   }
+
+  radio_buf_len = RH_RF95_MAX_MESSAGE_LEN; // reset this to max length otherwise it won't receive the full message!
+
+  // Should be a reply message for us now
+  if (!rf95.recv(radio_buf, &radio_buf_len)) {
+    DEBUG_PRINTLN(F("Receive failed"));
+    return;
+  }
+
+  DEBUG_PRINT(F("RSSI: "));
+  DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
+
+  pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
+
+  // TODO: also try decoding as a pinUpdate
+  if (!pb_decode(&stream, SmartCompassMessage_fields, &message)) {
+    DEBUG_PRINT(F("Decoding failed: "));
+    DEBUG_PRINTLN(PB_GET_ERROR(&stream));
+    return;
+  }
+
+  if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINTLN(F("Message is for another network."));
+    // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
+    return;
+  }
+
+  // TODO: i know its "safest" to verify sigs early, but why verify sigs on messages about self?
+  signSmartCompassMessage(message, calculated_hash);
+  if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINT(F("Message hash an invalid hash! "));
+    // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
+    return;
+  }
+
+  // TODO: add another arg for printing the hash
+  printCompassMessage(message, true, true);
+
+  if (message.tx_peer_id == my_peer_id) {
+    DEBUG_PRINT(F("ERROR! Peer id collision! "));
+    DEBUG_PRINTLN(my_peer_id);
+    return;
+  }
+
+  if (message.peer_id == my_peer_id) {
+    DEBUG_PRINTLN(F("Ignoring stats about myself."));
+    // TODO: instead of ignoring, track how how my info is on all peers. if it is old, maybe there was some interference
+    return;
+  }
+
+  if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
+    DEBUG_PRINTLN(F("Ignoring old message."));
+    return;
+  }
+
+  // TODO: make this work. somehow time got set to way in the future
+  /*
+  // sync to the lowest peer id's time
+  // TODO: only do this if there is drift?
+  // TODO: make sure this works well for all cases
+  //if (message.peer_id < my_peer_id) {
+  if (timeStatus() == timeNotSet) {
+    setTime(0, 0, 0, 0, 0, 0);
+    adjustTime(message.tx_time);
+  }
+  */
+
+  if (message.peer_id < my_peer_id) {
+    DEBUG_PRINT(F("Updating network_ms! "));
+    DEBUG_PRINT(network_ms);
+    DEBUG_PRINT(F(" -> "));
+    network_ms = message.tx_ms + 74;  // TODO: tune this offset. probably save it as a global and set from config
+  } else {
+    DEBUG_PRINT(F("Leaving network_ms alone! "));
+  }
+  DEBUG_PRINTLN(network_ms);
+
+  // TODO: do we care about saving tx times? we will change them when we re-broadcast
+  //compass_messages[message.peer_id].tx_time = message.tx_time;
+  //compass_messages[message.peer_id].tx_ms = message.tx_ms;
+
+  compass_messages[message.peer_id].last_updated_at = message.last_updated_at;
+  compass_messages[message.peer_id].hue = message.hue;
+  compass_messages[message.peer_id].saturation = message.saturation;
+  compass_messages[message.peer_id].latitude = message.latitude;
+  compass_messages[message.peer_id].longitude = message.longitude;
+
+  // TODO: print message.network_hash?
+}
+
+void queueBroadcastPin(const int pin_id) {
+  DEBUG_PRINTLN(F("TODO: write queueBroadcastPin"));
+}
+
+void broadcastPin(const int pin_id) {
+  DEBUG_PRINTLN(F("TODO: write broadcastPin"));
 }

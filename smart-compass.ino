@@ -43,10 +43,21 @@
 #define LED_CHIPSET NEOPIXEL
 
 /* these variables are used by multiple ino files and I'm not sure the right place to put them */
-// TODO: maybe pass these around as arguments instead of having them be global?
+// TODO: maybe pass these around as arguments instead of having them be global? at least rename them all to be prefixed with g_
 
 // lights for compass ring
-const int num_LEDs = 16;
+const int inner_ring_start = 0;
+const int inner_ring_size = 16;
+const int inner_ring_end = inner_ring_start + inner_ring_size;  // TODO: use this instead of numLeds a lot of places
+
+const int outer_ring_start = inner_ring_end;
+const int outer_ring_size = 24;
+const int outer_ring_end = outer_ring_start + outer_ring_size;
+
+// TODO: also add a 8 led strip for showing nearby peers
+
+// TODO: split this into 2 (or 3) arrays and use a union?
+const int num_LEDs = outer_ring_end;
 CRGB leds[num_LEDs];
 
 // rotating "base color" used by some patterns
@@ -66,8 +77,16 @@ uint8_t my_network_key[NETWORK_KEY_SIZE];
 
 // these are set by config or fallback to defaults
 // TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
-int broadcast_time_s, default_brightness, flashlight_density, frames_per_second, gps_update_s, max_peer_distance, ms_per_light_pattern,
-  peer_led_ms, radio_power;
+int broadcast_time_s,
+  default_brightness,
+  flashlight_density,
+  frames_per_second,
+  gps_update_s,
+  min_peer_distance,
+  max_peer_distance,
+  ms_per_light_pattern,
+  peer_led_ms,
+  radio_power;
 
 int time_zone_offset;
 
@@ -88,6 +107,7 @@ String gps_log_filename = ""; // TODO: everyone says not to use String, but it s
 File my_file;
 
 // keep us from transmitting too often
+// TODO: i think our loop check has a bug. this used to just be a boolean, but that had a bug. it should have worked tho
 long last_transmitted[max_peers] = {0};
 
 enum Orientation: byte {
@@ -103,8 +123,19 @@ bool config_setup, sd_setup, sensor_setup = false;
 elapsedMillis network_ms = 0;
 
 enum CompassMode: byte {
-  COMPASS_BATHROOM, COMPASS_FRIENDS, COMPASS_HOME
+  COMPASS_FRIENDS, COMPASS_PLACES
 };
+
+const int max_compass_points = max_peers + 1;  // TODO: is this enough?
+
+// compass points go COUNTER-clockwise to match LEDs!
+CHSV inner_compass_points[inner_ring_size][max_compass_points];
+int next_inner_compass_point[inner_ring_size] = {0};
+
+CHSV outer_compass_points[outer_ring_size][max_compass_points];
+int next_outer_compass_point[outer_ring_size] = {0};
+
+int queued_messages = 0;  // todo: rename this counter for just pinUpdates in case we have other messages?
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
@@ -120,9 +151,8 @@ void setupSPI() {
   digitalWrite(LSM9DS1_CSM, HIGH);
   digitalWrite(LSM9DS1_CSAG, HIGH);
 
-  // TODO: configure SPI pins?
-
-  delay(100); // give everything time to wake up
+  // give everything time to wake up
+  delay(200);
 
   SPI.begin();
 }
@@ -158,7 +188,7 @@ void setup() {
 
   setupLights();
 
-  // configure the timer to run at <sampleRate>Hertz
+  // configure the timer that reads GPS data to run at <sampleRate>Hertz
   tcConfigure(100);
   tcStartCounter();
 
@@ -217,6 +247,7 @@ void loop() {
       }
     }
   } else {
+    // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights();
   }
 
