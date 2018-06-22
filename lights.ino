@@ -14,7 +14,7 @@ void setupLights() {
   // TODO: seed fastled random?
 
   // https://learn.adafruit.com/adafruit-feather-m0-basic-proto/power-management
-  // While you can get 500mA from it, you can't do it continuously from 5V as it will overheat the regulator.
+  // "While you can get 500mA from it, you can't do it continuously from 5V as it will overheat the regulator."
   FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN>(leds, num_LEDs).setCorrection(TypicalSMD5050);

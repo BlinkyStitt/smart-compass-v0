@@ -1,7 +1,7 @@
 /* light patterns */
 
 void flashlight() {
-  for (int i = 0; i < num_LEDs; i++) {
+  for (int i = inner_ring_start; i < outer_ring_end; i++) {
     if (i % flashlight_density == 0) {
       leds[i] = CRGB::White;
     } else {
@@ -23,16 +23,13 @@ void sinelon() {
 // TODO: do inner and outer ring at the same time
 void circle() {
   int ms_per_led = 3 * 1000 / frames_per_second;  // 3 frames
-  int pos = (millis() / ms_per_led) % num_LEDs;  // TODO: use now_millis so we stay in sync with others?
+  int pos = (network_ms / ms_per_led) % (outer_ring_end - inner_ring_start) + inner_ring_start;
 
+  // fade everything
   fadeToBlackBy(leds, num_LEDs, 64);
 
-  leds[pos] += CHSV(g_hue, 255, 192);
-
-  pos++;
-  if (pos >= num_LEDs) {
-    pos = 0;
-  }
+  // todo: what saturation and value
+  leds[pos] = CHSV(g_hue, 255, 255);
 }
 
 // This function draws rainbows with an ever-changing, widely-varying set of parameters.
