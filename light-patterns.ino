@@ -20,6 +20,7 @@ void sinelon() {
 }
 
 // TODO: circle with multiple colors
+// TODO: do inner and outer ring at the same time
 void circle() {
   int ms_per_led = 3 * 1000 / frames_per_second;  // 3 frames
   int pos = (millis() / ms_per_led) % num_LEDs;  // TODO: use now_millis so we stay in sync with others?
