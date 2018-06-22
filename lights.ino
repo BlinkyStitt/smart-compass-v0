@@ -37,25 +37,51 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
   // cycle through the colors for each light
   // TODO: dry this up
-  for (int i = 0; i < inner_ring_size; i++) {
-    if (next_inner_compass_point[i] > 0) {
-      int j = 0;
-      if (next_inner_compass_point[i] > 1) {
-        // there are one or more colors that want to shine on this one light. give each 500ms
-        // TODO: instead give the closer peers (brighter compass points) more time?
-        // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
-        // we don't use network_ms here so that the lights don't jump around
-        j = map(((millis() / peer_led_ms) % num_peers), 0, num_peers, 0, next_inner_compass_point[i]);
-      }
+  for (int i = inner_ring_start; i < inner_ring_end; i++) {
+    if (next_inner_compass_point[i] == 0) {
+      // no lights for this inner compass point
 
-      // DEBUG_PRINT("Displaying 1 of "); DEBUG_PRINT(next_compass_point[i]);
-      // DEBUG_PRINT(" colors for light #"); DEBUG_PRINTLN(i);
-
-      leds[i] = inner_compass_points[i][j];
-    } else {
       // lights from other patterns will quickly fade to black
       leds[i].fadeToBlackBy(90);
+
+      continue;
     }
+
+    int j = 0;
+    if (next_inner_compass_point[i] > 1) {
+      // there are one or more colors that want to shine on this one light. give each 500ms
+      // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
+      // we don't use network_ms here so that the lights don't jump around
+      j = map(((millis() / peer_led_ms) % inner_ring_size), 0, inner_ring_size, 0, next_inner_compass_point[i]);
+    }
+
+    // DEBUG_PRINT("Displaying 1 of "); DEBUG_PRINT(next_inner_compass_point[i]);
+    // DEBUG_PRINT(" colors for inner light #"); DEBUG_PRINTLN(i);
+
+    leds[i] = inner_compass_points[i][j];
+  }
+  for (int i = outer_ring_start; i < outer_ring_end; i++) {
+    if (next_outer_compass_point[i] == 0) {
+      // no lights for this outer compass point
+
+      // lights from other patterns will quickly fade to black
+      leds[i].fadeToBlackBy(90);
+
+      continue;
+    }
+
+    int j = 0;
+    if (next_outer_compass_point[i] > 1) {
+      // there are one or more colors that want to shine on this one light. give each 500ms
+      // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
+      // we don't use network_ms here so that the lights don't jump around
+      j = map(((millis() / peer_led_ms) % outer_ring_size), 0, outer_ring_size, 0, next_outer_compass_point[i]);
+    }
+
+    // DEBUG_PRINT("Displaying 1 of "); DEBUG_PRINT(next_outer_compass_point[i]);
+    // DEBUG_PRINT(" colors for outer light #"); DEBUG_PRINTLN(i - outer_ring_start);
+
+    leds[i] = outer_compass_points[i][j];
   }
 }
 
