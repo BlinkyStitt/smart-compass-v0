@@ -302,14 +302,13 @@ void radioTransmit(const int pid) {
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  int bytes_encoded = 0;
   if (tx_compass_message) {
-    bytes_encoded = encodeCompassMessage(ostream, compass_messages[pid], time_now);
+    encodeCompassMessage(ostream, compass_messages[pid], time_now);
   } else {
-    bytes_encoded = encodePinMessage(ostream, compass_pins[tx_pin_id], time_now);
+    encodePinMessage(ostream, compass_pins[tx_pin_id], time_now);
   }
 
-  if (bytes_encoded <= 0) {
+  if (!ostream.bytes_writtenq) {
     DEBUG_PRINTLN("Skipping transmit.");
     return;
   }
@@ -317,7 +316,7 @@ void radioTransmit(const int pid) {
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast
   // (TODO: time it)
   DEBUG_PRINT(F("sending... "));
-  rf95.send(radio_buf, bytes_encoded);
+  rf95.send(radio_buf, ostream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
   }
@@ -334,7 +333,7 @@ void radioTransmit(const int pid) {
 
 // sign compass_message and send it to protobuf output stream
 // returns the number of bytes written to the buffer
-int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
+void encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
   // TODO: checking hue like this means no-one can pick true red as their hue.
   if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
@@ -346,7 +345,7 @@ int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compa
     DEBUG_PRINT(F("No peer data to transmit for #"));
     DEBUG_PRINTLN(compass_message.peer_id);
 
-    return 0;
+    return;
   }
 
   DEBUG_PRINT(F("Encoding compass location message for #"));
@@ -361,22 +360,21 @@ int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compa
 
   if (!pb_encode(&ostream, SmartCompassLocationMessage_fields, &compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
-    return 0;
+    return;
   }
 
   DEBUG_PRINTLN(F("done."));
-  return ostream.bytes_written;
 }
 
 // copy compass_pin values into pin_message_tx, sign it, and then send pin_message_tx to protobuf output stream
 // returns the number of bytes written to the buffer
-int encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned long time_now) {
+void encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned long time_now) {
 //  DEBUG_PRINT(F("Encoding compass pin for #"));
 //  DEBUG_PRINT(compass_pin_id);
 //  DEBUG_PRINTLN(F("... "));
 
   if (compass_pin.hue == 0) {
-    return 0;
+    return;
   }
 
   DEBUG_PRINTLN(F("Encoding compass pin..."));
@@ -393,11 +391,10 @@ int encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned long
 
   if (!pb_encode(&ostream, SmartCompassPinMessage_fields, &pin_message_tx)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
-    return 0;
+    return;
   }
 
   DEBUG_PRINTLN(F("done."));
-  return ostream.bytes_written;
 }
 
 void radioReceive() {
