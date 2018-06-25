@@ -213,7 +213,7 @@ void setup() {
     DEBUG_PRINT(F("error opening gps log: "));
     DEBUG_PRINTLN(gps_log_filename);
   } else {
-    DEBUG_PRINT(F("Logging start: "));
+    DEBUG_PRINT(F("Logging start to "));
     DEBUG_PRINTLN(gps_log_filename);
 
     // add a blank line each time we start
