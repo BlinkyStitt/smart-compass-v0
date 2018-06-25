@@ -27,7 +27,7 @@ void setupGPS() {
 
   // Position fix update rate commands.
   GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ);            // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
   // GPS.sendCommand(PGCMD_ANTENNA);
@@ -92,7 +92,7 @@ void gpsReceive() {
     DEBUG_PRINTLN(now());
   }
 
-  compass_messages[my_peer_id].last_updated_at = now();  // TODO: seconds or milliseconds?
+  compass_messages[my_peer_id].last_updated_at = now(); // TODO: seconds or milliseconds?
 
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;

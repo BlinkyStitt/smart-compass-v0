@@ -71,8 +71,8 @@ void updateCompassPoints(CompassMode compass_mode) {
 }
 
 void addCompassPointsForFriends() {
-  float peer_distance; // meters
-  float magnetic_bearing;  // degrees
+  float peer_distance;    // meters
+  float magnetic_bearing; // degrees
   int compass_point_id = 0, peer_brightness = 0;
 
   for (int i = 0; i < num_peers; i++) {
@@ -86,14 +86,14 @@ void addCompassPointsForFriends() {
     }
 
     magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
-                                 compass_messages[i].latitude, compass_messages[i].longitude,
-                                 &peer_distance);
+                                 compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
 
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     // TODO: if peer data is old, blink or something
-    peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 30, 255);
+    peer_brightness =
+        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 30, 255);
 
     // TODO: double check that this is looping the correct way around the LED
     // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise

@@ -22,7 +22,7 @@ void sinelon() {
 // TODO: circle with multiple colors
 // TODO: do inner and outer ring at the same time
 void circle() {
-  int ms_per_led = 3 * 1000 / frames_per_second;  // 3 frames
+  int ms_per_led = 3 * 1000 / frames_per_second; // 3 frames
   int pos = (network_ms / ms_per_led) % (outer_ring_end - inner_ring_start) + inner_ring_start;
 
   // fade everything
@@ -48,7 +48,7 @@ void pride() {
   uint16_t hue16 = sHue16; // g_hue * 256;
   uint16_t hueinc16 = beatsin88(113, 1, 3000);
 
-  uint16_t ms = network_ms;  // this should keep everyone's lights looking the same
+  uint16_t ms = network_ms; // this should keep everyone's lights looking the same
   uint16_t deltams = ms - sLastMillis;
   sLastMillis = ms;
   sPseudotime += deltams * msmultiplier;

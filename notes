@@ -7,7 +7,7 @@
   --nanopb_out=. smart-compass.proto
 
 
-make sure SmartCompassMessage_size < RH_RF95_MAX_MESSAGE_LEN
+make sure SmartCompassLocationMessage_size < RH_RF95_MAX_MESSAGE_LEN
 
 try freertos if i start having timing issues
 

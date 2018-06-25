@@ -45,7 +45,7 @@ void setupSensor() {
   // lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
 
   // TODO: is this enough? if we need it faster than this, move sensorReceive to timer.ino
-//  orientation_filter.begin(100);
+  //  orientation_filter.begin(100);
 
   sensor_setup = true;
 
