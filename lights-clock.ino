@@ -4,7 +4,7 @@ void updateLightsForClock() {
   // turn the time into a watch face with just an hour hand
 
   // TODO: do we care about gpsMs? we only have 16 lights of output
-  int adjusted_seconds = second();  // + (gpsMs % 1000) / 1000;
+  int adjusted_seconds = second(); // + (gpsMs % 1000) / 1000;
 
   int adjusted_minute = minute() + adjusted_seconds / 60.0;
 
@@ -24,7 +24,7 @@ void updateLightsForClock() {
   DEBUG_PRINTLN(adjusted_seconds);
 
   // TODO: is there a formula for this?
-  //int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
+  // int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
   int hour_led_id = inner_ring_start;
   switch (adjusted_hour) {
   case 0:

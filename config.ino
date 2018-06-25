@@ -1,51 +1,51 @@
 /* Config */
 
 #ifdef DEBUG
-  // from https://github.com/stevemarple/IniFile/blob/master/examples/IniFileExample/IniFileExample.ino
-  void printErrorMessage(uint8_t e, bool eol = true) {
-    DEBUG_PRINT(F("Config Error: "));
+// from https://github.com/stevemarple/IniFile/blob/master/examples/IniFileExample/IniFileExample.ino
+void printErrorMessage(uint8_t e, bool eol = true) {
+  DEBUG_PRINT(F("Config Error: "));
 
-    switch (e) {
-    case IniFile::errorNoError:
-      DEBUG_PRINT(F("no error"));
-      break;
-    case IniFile::errorFileNotFound:
-      DEBUG_PRINT(F("file not found"));
-      break;
-    case IniFile::errorFileNotOpen:
-      DEBUG_PRINT(F("file not open"));
-      break;
-    case IniFile::errorBufferTooSmall:
-      DEBUG_PRINT(F("buffer too small"));
-      break;
-    case IniFile::errorSeekError:
-      DEBUG_PRINT(F("seek error"));
-      break;
-    case IniFile::errorSectionNotFound:
-      DEBUG_PRINT(F("section not found"));
-      break;
-    case IniFile::errorKeyNotFound:
-      DEBUG_PRINT(F("key not found"));
-      break;
-    case IniFile::errorEndOfFile:
-      DEBUG_PRINT(F("end of file"));
-      break;
-    case IniFile::errorUnknownError:
-      DEBUG_PRINT(F("unknown error"));
-      break;
-    default:
-      DEBUG_PRINT(F("unknown error value"));
-      break;
-    }
-    if (eol) {
-      DEBUG_PRINTLN();
-    }
+  switch (e) {
+  case IniFile::errorNoError:
+    DEBUG_PRINT(F("no error"));
+    break;
+  case IniFile::errorFileNotFound:
+    DEBUG_PRINT(F("file not found"));
+    break;
+  case IniFile::errorFileNotOpen:
+    DEBUG_PRINT(F("file not open"));
+    break;
+  case IniFile::errorBufferTooSmall:
+    DEBUG_PRINT(F("buffer too small"));
+    break;
+  case IniFile::errorSeekError:
+    DEBUG_PRINT(F("seek error"));
+    break;
+  case IniFile::errorSectionNotFound:
+    DEBUG_PRINT(F("section not found"));
+    break;
+  case IniFile::errorKeyNotFound:
+    DEBUG_PRINT(F("key not found"));
+    break;
+  case IniFile::errorEndOfFile:
+    DEBUG_PRINT(F("end of file"));
+    break;
+  case IniFile::errorUnknownError:
+    DEBUG_PRINT(F("unknown error"));
+    break;
+  default:
+    DEBUG_PRINT(F("unknown error value"));
+    break;
   }
+  if (eol) {
+    DEBUG_PRINTLN();
+  }
+}
 #else
-  void printErrorMessage(uint8_t e, bool eol = true) {}
+void printErrorMessage(uint8_t e, bool eol = true) {}
 #endif
 
-bool loadRequired(IniFile ini, char* buffer, size_t buffer_len) {
+bool loadRequired(IniFile ini, char *buffer, size_t buffer_len) {
   // load required args
   if (ini.getValue("global", "num_peers", buffer, buffer_len, num_peers)) {
     DEBUG_PRINT(F("num_peers: "));
@@ -86,7 +86,7 @@ bool loadRequired(IniFile ini, char* buffer, size_t buffer_len) {
   return true;
 }
 
-void loadOptional(IniFile ini, char* buffer, size_t buffer_len) {
+void loadOptional(IniFile ini, char *buffer, size_t buffer_len) {
   // load args that have defaults
   // TODO: gps_interval_s?
   ini.getValue("global", "broadcast_time_s", buffer, buffer_len, broadcast_time_s);
@@ -135,35 +135,35 @@ void setupConfig() {
   }
 
   DEBUG_PRINT(F("broadcast_time_s: "));
-  if (! broadcast_time_s) {
+  if (!broadcast_time_s) {
     DEBUG_PRINT(F("(default) "));
     broadcast_time_s = 2;
   }
   DEBUG_PRINTLN(broadcast_time_s);
 
   DEBUG_PRINT(F("default_brightness: "));
-  if (! default_brightness) {
+  if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 60;  // TODO: increase this when done debugging
+    default_brightness = 60; // TODO: increase this when done debugging
   }
   DEBUG_PRINTLN(default_brightness);
 
   DEBUG_PRINT(F("frames_per_second: "));
-  if (! frames_per_second) {
+  if (!frames_per_second) {
     DEBUG_PRINT(F("(default) "));
     frames_per_second = 30;
   }
   DEBUG_PRINTLN(frames_per_second);
 
   DEBUG_PRINT(F("max_peer_distance: "));
-  if (! max_peer_distance) {
+  if (!max_peer_distance) {
     DEBUG_PRINT(F("(default) "));
     max_peer_distance = 5000;
   }
   DEBUG_PRINTLN(max_peer_distance);
 
   DEBUG_PRINT(F("ms_per_light_pattern: "));
-  if (! ms_per_light_pattern) {
+  if (!ms_per_light_pattern) {
     DEBUG_PRINT(F("(default) "));
     ms_per_light_pattern = 10 * 60 * 1000;
   }
@@ -171,7 +171,7 @@ void setupConfig() {
 
   DEBUG_PRINT(F("peer_led_ms: "));
   // time to display the peer when multiple peers are the same direction
-  if (! peer_led_ms) {
+  if (!peer_led_ms) {
     DEBUG_PRINT(F("(default) "));
     peer_led_ms = 500;
   }
@@ -180,7 +180,7 @@ void setupConfig() {
   DEBUG_PRINT(F("radio_power: "));
   // 5-23 dBm
   // TODO: whats the difference in power?
-  if (! radio_power) {
+  if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
     radio_power = 13;
   }
@@ -194,7 +194,7 @@ void setupConfig() {
   DEBUG_PRINTLN(time_zone_offset);
 
   DEBUG_PRINT(F("flashlight_density: "));
-  if (flashlight_density) {
+  if (!flashlight_density) {
     DEBUG_PRINT(F("(default) "));
     flashlight_density = 4;
   }
@@ -220,6 +220,9 @@ void setupConfig() {
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
 
+  memcpy(pin_message_tx_buffer.network_hash, my_network_hash, NETWORK_HASH_SIZE);
+  pin_message_tx_buffer.tx_peer_id = my_peer_id;
+
   /*
   // TODO: i want to include a hash of the network_key and the my_peer_id here, but strings in C are a pain
   // TODO: and filenames on FAT are only 8.3
@@ -238,16 +241,16 @@ void setupConfig() {
   DEBUG_PRINTLN(gps_log_filename);
 }
 
-void networkIdFromKey(uint8_t* network_key, uint8_t* network_hash) {
+void networkIdFromKey(uint8_t *network_key, uint8_t *network_hash) {
   DEBUG_PRINTLN(F("Generating network id from key..."));
 
-  //blake2s.reset(sizeof(network_hash));
+  // blake2s.reset(sizeof(network_hash));
   blake2s.reset(NETWORK_HASH_SIZE);
 
-  //blake2s.update(network_key, sizeof(network_key));
+  // blake2s.update(network_key, sizeof(network_key));
   blake2s.update(network_key, NETWORK_KEY_SIZE);
 
-  //blake2s.finalize(network_hash, sizeof(network_hash));
+  // blake2s.finalize(network_hash, sizeof(network_hash));
   blake2s.finalize(network_hash, NETWORK_HASH_SIZE);
 }
 
@@ -279,7 +282,6 @@ bool setupSecurity() {
   DEBUG_PRINTLN();
   // TODO: END remove this when done debugging!
 
-
   // close the file:
   my_file.close();
 
@@ -297,4 +299,3 @@ bool setupSecurity() {
 
   return true;
 }
-

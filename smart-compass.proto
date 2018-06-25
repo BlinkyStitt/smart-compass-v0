@@ -4,10 +4,11 @@ import "nanopb.proto";
 
 // int32 is bigger than we need for most of these, but they are all stored as varints
 
-message SmartCompassMessage {
+// todo: should the hashes (and tx_peer_id and times?) be in their own "metadata" message object?
+
+message SmartCompassLocationMessage {
     bytes network_hash = 1 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
     bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
-
     uint32 tx_peer_id = 3;
 
     uint32 tx_time = 4;
@@ -19,4 +20,22 @@ message SmartCompassMessage {
     uint32 saturation = 9;
     int32 latitude = 10;
     int32 longitude = 11;
+
+    // todo: if there is a mismatch between peers, we need to re-broadcast old pins
+    // todo: this seems naive and fragile
+    uint32 num_pins = 12;
+}
+
+message SmartCompassPinMessage {
+    bytes network_hash = 1 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+    bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
+    uint32 tx_peer_id = 3;
+
+    uint32 last_updated_at = 4;
+
+    int32 latitude = 5;
+    int32 longitude = 6;
+
+    uint32 hue = 7; // todo: fixed_length and max_size = 8 bits?
+    //uint32 saturation = 8;
 }

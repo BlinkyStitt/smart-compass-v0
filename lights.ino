@@ -1,6 +1,7 @@
 /* lights */
 
-int saved_pin_id = -1; // when a pin is modified, this is updated to match the id. once configuration is complete, this pin_id is broadcast to peers and
+int saved_pin_id = -1; // when a pin is modified, this is updated to match the id. once configuration is complete, this
+                       // pin_id is broadcast to peers and
 
 // TODO: i don't love this pattern
 CompassMode next_compass_mode = COMPASS_FRIENDS;
@@ -115,7 +116,8 @@ void updateLightsForLoading() {
   return;
 }
 
-void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode configure_mode, Orientation last_orientation, Orientation current_orientation) {
+void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode configure_mode,
+                                Orientation last_orientation, Orientation current_orientation) {
   static elapsedMillis configure_ms = 0;
   static CHSV fill_color;
   static int pin_id = -1, num_fill = 0;
@@ -132,12 +134,12 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
     pin_id = -1;
   }
 
-  switch(configure_mode) {
+  switch (configure_mode) {
   case COMPASS_PLACES:
     fill_color = CHSV(240, 255, 128); // blue
     break;
   case COMPASS_FRIENDS:
-    fill_color = CHSV(0, 255, 128);  // red
+    fill_color = CHSV(0, 255, 128); // red
     break;
   }
 
@@ -210,9 +212,11 @@ void updateLights() {
       // if we did any configuring, next_compass_mode will be set to the desired compass_moe
       compass_mode = next_compass_mode;
       // if we did a long time of configuring, we have a new lat/long saved. queue it from broadcast
-      // we didn't broadcast it when it was saved because it might have a non-standard color that takes some extra time to configure
+      // we didn't broadcast it when it was saved because it might have a non-standard color that takes some extra time
+      // to configure
       if (saved_pin_id > 0) {
-        queueBroadcastPin(saved_pin_id);
+        // set transmitted to false now. next time we transmit, this pin id will be shared with peers
+        compass_pins[saved_pin_id].transmitted = false;
 
         // clear saved_pin_id now that the message is queued
         saved_pin_id = -1;
@@ -231,7 +235,8 @@ void updateLights() {
       break;
     case ORIENTED_PORTRAIT:
       // pretty patterns
-      // TODO: different things for the different USB tilts? maybe use that to toggle what the compass shows? need some sort of debounce
+      // TODO: different things for the different USB tilts? maybe use that to toggle what the compass shows? need some
+      // sort of debounce
       updateLightsForHanging();
       break;
     case ORIENTED_PORTRAIT_UPSIDE_DOWN:
@@ -247,33 +252,33 @@ void updateLights() {
 
     last_orientation = current_orientation;
 
-    #ifdef DEBUG
-      // debugging lights
-      int network_ms_wrapped = network_ms % 10000;
-      if (network_ms_wrapped < 1000) {
+#ifdef DEBUG
+    // debugging lights
+    int network_ms_wrapped = network_ms % 10000;
+    if (network_ms_wrapped < 1000) {
+      DEBUG_PRINT(F(" "));
+
+      if (network_ms_wrapped < 100) {
         DEBUG_PRINT(F(" "));
 
-        if (network_ms_wrapped < 100) {
+        if (network_ms_wrapped < 10) {
           DEBUG_PRINT(F(" "));
-
-          if (network_ms_wrapped < 10) {
-            DEBUG_PRINT(F(" "));
-          }
         }
       }
-      DEBUG_PRINT(network_ms_wrapped);
+    }
+    DEBUG_PRINT(network_ms_wrapped);
 
-      DEBUG_PRINT(F(": "));
-      for (int i = 0; i < num_LEDs; i++) {
-        if (leds[i]) {
-          // TODO: better logging?
-          DEBUG_PRINT(F("X"));
-        } else {
-          DEBUG_PRINT(F("O"));
-        }
+    DEBUG_PRINT(F(": "));
+    for (int i = 0; i < num_LEDs; i++) {
+      if (leds[i]) {
+        // TODO: better logging?
+        DEBUG_PRINT(F("X"));
+      } else {
+        DEBUG_PRINT(F("O"));
       }
-      DEBUG_PRINTLN();
-    #endif
+    }
+    DEBUG_PRINTLN();
+#endif
 
     // display the colors
     FastLED.show();

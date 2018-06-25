@@ -25,7 +25,7 @@ BLAKE2s blake2s;
 
 byte hash[HASH_SIZE];
 
-SmartCompassMessage compass_message = SmartCompassMessage_init_default;
+SmartCompassLocationMessage compass_message = SmartCompassLocationMessage_init_default;
 
 /* Setup */
 
@@ -46,7 +46,7 @@ void setup() {
 
 /* Crypto */
 
-void signSmartCompassMessage() {
+void signSmartCompassLocationMessage() {
   unsigned long start;
   unsigned long elapsed;
   start = micros();
@@ -80,5 +80,5 @@ void signSmartCompassMessage() {
 
 void loop() {
   // TODO: stop using globals!
-  signSmartCompassMessage();
+  signSmartCompassLocationMessage();
 }
