@@ -165,9 +165,11 @@ void gpsReceive() {
     return;
   }
 
-  DEBUG_PRINT(F("Logging GPS data: "));
-  DEBUG_PRINTLN(gps_log_filename);
+  DEBUG_PRINT(F("Logging GPS data... "));
+  DEBUG_PRINT(gps_log_filename);
 
+  /*
+  // TODO: this is crashing.
   my_file.print(compass_messages[my_peer_id].last_updated_at);
   my_file.print(",");
   my_file.print(GPS.latitudeDegrees, 5);
@@ -178,9 +180,12 @@ void gpsReceive() {
   my_file.print(",");
   my_file.print(GPS.angle);
   my_file.println(";");
+  */
 
   // TODO: do we want to log anything else?
 
   // close the file:
   my_file.close();
+
+  DEBUG_PRINTLN(F(" done."));
 }

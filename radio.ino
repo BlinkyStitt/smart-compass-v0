@@ -207,14 +207,18 @@ void radioTransmit(const int pid) {
     return; // we will try broadcasting next loop
   }
 
+  // Create a protobuf stream that will write to our buffer
+  pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
+
   int bytes_encoded = 0;
   if (tx_compass_message) {
-    bytes_encoded = encodeCompassMessage(radio_buf, compass_messages[pid], time_now);
+    bytes_encoded = encodeCompassMessage(ostream, compass_messages[pid], time_now);
   } else {
-    bytes_encoded = encodePinMessage(radio_buf, compass_pins[tx_pin_id], time_now);
+    bytes_encoded = encodePinMessage(ostream, compass_pins[tx_pin_id], time_now);
   }
 
-  if (!bytes_encoded) {
+  if (bytes_encoded <= 0) {
+    DEBUG_PRINTLN("Skipping transmit.");
     return;
   }
 
@@ -233,7 +237,7 @@ void radioTransmit(const int pid) {
 }
 
 // returns the number of bytes written to the buffer
-int encodeCompassMessage(uint8_t *buffer, SmartCompassLocationMessage compass_message, unsigned long time_now) {
+int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
   // TODO: checking hue like this means no-one can pick true red as their hue.
   if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
@@ -258,23 +262,26 @@ int encodeCompassMessage(uint8_t *buffer, SmartCompassLocationMessage compass_me
   printCompassMessage(compass_message, false, true);
   signSmartCompassLocationMessage(compass_message, compass_message.message_hash);
 
-  // Create a protobuf stream that will write to our buffer
-  pb_ostream_t ostream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-
   if (!pb_encode(&ostream, SmartCompassLocationMessage_fields, &compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
     return 0;
   }
 
-  DEBUG_PRINTLN(F("done."));
+  DEBUG_PRINTLN(F("done encoding."));
   return ostream.bytes_written;
 }
 
 // returns the number of bytes written to the buffer
-int encodePinMessage(uint8_t *buffer, CompassPin compass_pin, unsigned long time_now) {
+int encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned long time_now) {
   // TODO: write this
   DEBUG_PRINTLN("encodeQueuedMessage NOT YET IMPLEMENTED!");
-  return 0;
+
+  compass_pin.
+
+pin_message_tx_buffer
+
+  DEBUG_PRINTLN(F("done encoding."));
+  return ostream.bytes_written;
 }
 
 void radioReceive() {
