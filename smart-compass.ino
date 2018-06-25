@@ -135,8 +135,8 @@ CompassPin compass_pins[MAX_PINS] = {false, false, 0, 0, 0, 0};
 
 int last_compass_pin = 0;
 
-SmartCompassPinMessage pin_message_rx_buffer = SmartCompassPinMessage_init_default;
-SmartCompassPinMessage pin_message_tx_buffer = SmartCompassPinMessage_init_default;
+SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
+SmartCompassPinMessage pin_message_tx = SmartCompassPinMessage_init_default;
 
 const int max_compass_points = max_peers + 1; // TODO: is this enough?
 
