@@ -104,8 +104,62 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   DEBUG_PRINTLN();
 }
 
+void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
+  /*
+  unsigned long start;
+  unsigned long elapsed;
+  start = micros();
+  */
+
+  // TODO: print the message here?
+
+  // DEBUG_PRINT(F("resetting... "));
+  blake2s.reset((void *)my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
+
+  // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
+  // DEBUG_PRINT(F("updating... "));
+  blake2s.update((void *)message.network_hash, sizeof(message.network_hash));
+  // DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.tx_peer_id, sizeof(message.tx_peer_id));
+  // DEBUG_PRINT(F("."));
+
+  /*
+  // TODO: something is wrong about this. it crashed here for signSmartCompassLocationMessage
+  blake2s.update((void *)message.last_updated_at, sizeof(message.last_updated_at));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.latitude, sizeof(message.latitude));
+  DEBUG_PRINT(F("."));
+  blake2s.update((void *)message.longitude, sizeof(message.longitude));
+  DEBUG_PRINT(F(". "));
+  blake2s.update((void *)message.hue, sizeof(message.hue));
+  DEBUG_PRINT(F("."));
+  */
+
+  // DEBUG_PRINT(F("finalizing... "));
+  blake2s.finalize(hash, NETWORK_HASH_SIZE);
+
+  // DEBUG_PRINT(F("done. "));
+
+  /*
+  elapsed = micros() - start;
+
+  DEBUG_PRINT(elapsed / 1000.0);
+  DEBUG_PRINT(F("us per op, "));
+  DEBUG_PRINT((1000.0 * 1000000.0) / elapsed);
+  DEBUG_PRINTLN(F(" ops per second"));
+  */
+
+  DEBUG_PRINT(F("Hash: "));
+  DEBUG_PRINT2(hash[0], HEX);
+  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+    DEBUG_PRINT(F("-"));
+    DEBUG_PRINT2(hash[i], HEX);
+  }
+  DEBUG_PRINTLN();
+}
+
 #ifdef DEBUG
-void printCompassMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {
+void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
 
   DEBUG_PRINT2(message.network_hash[0], HEX);
@@ -137,15 +191,53 @@ void printCompassMessage(SmartCompassLocationMessage message, bool print_hash = 
   DEBUG_PRINT(message.latitude);
   DEBUG_PRINT(F(" lon="));
   DEBUG_PRINT(message.longitude);
-  // TODO: print keyed_hash?
+
   DEBUG_PRINT(F(" EOM. "));
 
   if (eol) {
     DEBUG_PRINTLN();
   }
 }
+
+void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {
+  DEBUG_PRINT(F("Message: n="));
+
+  DEBUG_PRINT2(message.network_hash[0], HEX);
+  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+    DEBUG_PRINT(F("-"));
+    DEBUG_PRINT2(message.network_hash[i], HEX);
+  }
+
+  if (print_hash) {
+    DEBUG_PRINT(F(" h="));
+    DEBUG_PRINT2(message.message_hash[0], HEX);
+    for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
+      DEBUG_PRINT(F("-"));
+      DEBUG_PRINT2(message.message_hash[i], HEX);
+    }
+  }
+
+  DEBUG_PRINT(F(" txp="));
+  DEBUG_PRINT(message.tx_peer_id);
+  DEBUG_PRINT(F(" t="));
+  DEBUG_PRINT(message.last_updated_at);
+  DEBUG_PRINT(F(" lat="));
+  DEBUG_PRINT(message.latitude);
+  DEBUG_PRINT(F(" lon="));
+  DEBUG_PRINT(message.longitude);
+  DEBUG_PRINT(F(" hue="));
+  DEBUG_PRINT(message.hue);
+
+  DEBUG_PRINT(F(" EOM. "));
+
+  if (eol) {
+    DEBUG_PRINTLN();
+  }
+}
+
 #else
-void printCompassMessage(SmartCompassLocationMessage message) {}
+void printSmartCompassLocationMessage(SmartCompassLocationMessage message) {}
+void printSmartCompassPinnMessage(SmartCompassPinMessage message) {}
 #endif
 
 void radioTransmit(const int pid) {
@@ -230,12 +322,17 @@ void radioTransmit(const int pid) {
     FastLED.delay(2);
   }
 
-  last_transmitted[pid] = time_now;
+  if (tx_compass_message) {
+    last_transmitted[pid] = time_now;
+  } else {
+    compass_pins[tx_pin_id].transmitted = true;
+  }
 
   DEBUG_PRINTLN(F("done."));
   return;
 }
 
+// sign compass_message and send it to protobuf output stream
 // returns the number of bytes written to the buffer
 int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
   // TODO: checking hue like this means no-one can pick true red as their hue.
@@ -252,14 +349,14 @@ int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compa
     return 0;
   }
 
-  DEBUG_PRINT(F("Encoding compass message for #"));
+  DEBUG_PRINT(F("Encoding compass location message for #"));
   DEBUG_PRINT(compass_message.peer_id);
-  DEBUG_PRINT(F("... "));
+  DEBUG_PRINTLN(F("... "));
 
   compass_message.tx_time = time_now;
   compass_message.tx_ms = network_ms;
 
-  printCompassMessage(compass_message, false, true);
+  printSmartCompassLocationMessage(compass_message, false, true);
   signSmartCompassLocationMessage(compass_message, compass_message.message_hash);
 
   if (!pb_encode(&ostream, SmartCompassLocationMessage_fields, &compass_message)) {
@@ -267,20 +364,39 @@ int encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compa
     return 0;
   }
 
-  DEBUG_PRINTLN(F("done encoding."));
+  DEBUG_PRINTLN(F("done."));
   return ostream.bytes_written;
 }
 
+// copy compass_pin values into pin_message_tx, sign it, and then send pin_message_tx to protobuf output stream
 // returns the number of bytes written to the buffer
 int encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned long time_now) {
-  // TODO: write this
-  DEBUG_PRINTLN("encodeQueuedMessage NOT YET IMPLEMENTED!");
+//  DEBUG_PRINT(F("Encoding compass pin for #"));
+//  DEBUG_PRINT(compass_pin_id);
+//  DEBUG_PRINTLN(F("... "));
 
-  compass_pin.
+  if (compass_pin.hue == 0) {
+    return 0;
+  }
 
-pin_message_tx_buffer
+  DEBUG_PRINTLN(F("Encoding compass pin..."));
 
-  DEBUG_PRINTLN(F("done encoding."));
+  // network_hash and tx_peer_id are already setup by config.ino
+
+  pin_message_tx.last_updated_at = compass_pin.last_updated_at;
+  pin_message_tx.latitude = compass_pin.latitude;
+  pin_message_tx.longitude = compass_pin.longitude;
+  pin_message_tx.hue = compass_pin.hue;
+
+  printSmartCompassPinMessage(pin_message_tx, false, true);
+  signSmartCompassPinMessage(pin_message_tx, pin_message_tx.message_hash);
+
+  if (!pb_encode(&ostream, SmartCompassPinMessage_fields, &pin_message_tx)) {
+    DEBUG_PRINTLN(F("ERROR ENCODING!"));
+    return 0;
+  }
+
+  DEBUG_PRINTLN(F("done."));
   return ostream.bytes_written;
 }
 
@@ -331,7 +447,7 @@ void radioReceive() {
     return;
   }
 
-  printCompassMessage(message, true, true);
+  printSmartCompassLocationMessage(message, true, true);
 
   if (message.tx_peer_id == my_peer_id) {
     // TODO: flash lights on the status bar?

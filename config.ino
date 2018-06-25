@@ -220,8 +220,8 @@ void setupConfig() {
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
 
-  memcpy(pin_message_tx_buffer.network_hash, my_network_hash, NETWORK_HASH_SIZE);
-  pin_message_tx_buffer.tx_peer_id = my_peer_id;
+  memcpy(pin_message_tx.network_hash, my_network_hash, NETWORK_HASH_SIZE);
+  pin_message_tx.tx_peer_id = my_peer_id;
 
   /*
   // TODO: i want to include a hash of the network_key and the my_peer_id here, but strings in C are a pain
