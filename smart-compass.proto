@@ -16,8 +16,8 @@ message SmartCompassLocationMessage {
 
     uint32 peer_id = 6;
     uint32 last_updated_at = 7;
-    uint32 hue = 8;
-    uint32 saturation = 9;
+    uint32 hue = 8; // todo: fixed_length and max_size = 8 bits?
+    uint32 saturation = 9; // todo: fixed_length and max_size = 8 bits?
     int32 latitude = 10;
     int32 longitude = 11;
 
@@ -31,11 +31,11 @@ message SmartCompassPinMessage {
     bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
     uint32 tx_peer_id = 3;
 
-    uint32 last_updated_at = 4;
+    uint32 last_updated_at = 5;
 
-    int32 latitude = 5;
-    int32 longitude = 6;
+    int32 latitude = 6;
+    int32 longitude = 7;
 
-    uint32 hue = 7; // todo: fixed_length and max_size = 8 bits?
-    //uint32 saturation = 8;
+    uint32 hue = 8; // todo: fixed_length and max_size = 8 bits?
+    uint32 saturation = 9; // todo: fixed_length and max_size = 8 bits?
 }

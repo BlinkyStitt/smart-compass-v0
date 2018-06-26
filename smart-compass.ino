@@ -2,6 +2,7 @@
 
 #define DEBUG
 #include "bs_debug.h"
+#define ARRAY_SIZE(array) ((sizeof(array))/(sizeof(array[0])))
 
 // TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
@@ -128,10 +129,10 @@ typedef struct _CompassPin {
   int32_t latitude;
   int32_t longitude;
 
-  uint32_t hue; // todo: fixed_length and max_size = 8 bits?
+  CHSV color;
 } CompassPin;
 
-CompassPin compass_pins[MAX_PINS] = {false, false, 0, 0, 0, 0};
+CompassPin compass_pins[MAX_PINS] = {false, false, 0, 0, 0, {0, 0, 0}};
 
 int last_compass_pin = 0;
 
@@ -148,6 +149,20 @@ CHSV outer_compass_points[outer_ring_size][max_compass_points];
 int next_outer_compass_point[outer_ring_size] = {0};
 
 elapsedMillis network_ms = 0;
+
+CHSV pin_colors[] = {
+  // {h, s, v},
+  {160, 71, 255},  // CRGB::RoyalBlue
+  {0, 204, 255},  // Red for disabling, not for actual red pins!
+  {213, 255, 255},  // CRGB::Purple
+  {234, 59, 255},  // CRGB::HotPink;
+  {23, 255, 255},  // CRGB::DarkOrange;
+  {52, 219, 255},  // CRGB::Gold;
+  {104, 171, 255},  // CRGB::SeaGreen; // TODO: this one doesn't look great at full value
+  {128, 255, 255}  // CRGB::Aqua;
+};
+int last_pin_color_id = 0;
+const int delete_pin_color_id = 1;
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
