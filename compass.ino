@@ -70,6 +70,7 @@ void updateCompassPoints(CompassMode compass_mode) {
   }
 }
 
+// todo: this shows "SmartCompassLocationMessages." Be consistent about naming
 void addCompassPointsForFriends() {
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
@@ -127,16 +128,27 @@ void addCompassPointsForFriends() {
   */
 }
 
+// todo: this shows "SmartCompassPinMessages." Be consistent about naming
 void addCompassPointsForPlaces() {
   // TODO: write this
   // TODO: always show at least 1 light per color. if there are more than, show the closest X
+  // TODO: and skip any pins that are Red. we use Red as a mark for deletion
 }
 
-void setPin(int pin_id, CHSV color, long latitude, long longitude) {
+// todo: this uses "SmartCompassPinMessages." Be consistent about naming
+int getCompassPinId(long latitude, long longitude) {
+  // TODO: loop over existing pins, saving the id and distance of the closest pin. if no pins closer than 10m, save a new pin id
+  return -1;
+}
+
+// todo: this uses "SmartCompassPinMessages." Be consistent about naming
+void setCompassPin(int pin_id, CHSV color, long latitude, long longitude) {
   // TODO: write this
   if (pin_id < 0) {
     DEBUG_PRINTLN("ERROR saving pin with invalid ID");
   }
 
-  // TODO: search for a nearby pin. if it doesn't exist, increment num_pins
+  // todo: do something to compass_pins
+
+  // if pin changed, don't set compass_pins[pin_id].transmitted = false. we will do that once its finished being modified
 }

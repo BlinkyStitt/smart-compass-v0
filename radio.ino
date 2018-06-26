@@ -252,22 +252,24 @@ void radioTransmit(const int pid) {
 
   // TODO: tie this 2 second limit to update interval
   // TODO: what if time_now wraps?
-  bool tx_compass_message = true; // if this is false, we transmit a pin id instead. i don't love this pattern
+  bool tx_compass_location = true; // if this is false, we transmit a pin id instead of a friend location. i don't love this pattern
   int tx_pin_id = -1;
+  // TODO: don't hard code 2. calculate based on peer update time
   if (time_now - last_transmitted[pid] < 2) {
     // we already transmitted for this peer recently. don't broadcast it again
 
-    for (int i = 0; i < last_compass_pin; i++) {
-      if (compass_pins[i].active and !compass_pins[i].transmitted) {
-        tx_compass_message = false; // set to false to enable transmitting of compass_pins
+    // check if there are any pins to transmit
+    for (int i = last_compass_pin; i >= 0; i--) {
+      // checking against hue like this stops us from using true red (which is good since that's already used for north)
+      if (!compass_pins[i].transmitted and compass_pins[i].color.hue) {
+        tx_compass_location = false; // set to false to enable transmitting of compass_pins instead of friend locations
         tx_pin_id = i;
         break;
       }
     }
 
-    if (tx_compass_message) {
-      // we don't have any queued messages (currently only pin updates) and we already transmitted peer updates
-
+    if (tx_compass_location) {
+      // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
       rf95.sleep();
@@ -302,26 +304,26 @@ void radioTransmit(const int pid) {
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  if (tx_compass_message) {
+  if (tx_compass_location) {
     encodeCompassMessage(ostream, compass_messages[pid], time_now);
   } else {
     encodePinMessage(ostream, compass_pins[tx_pin_id], time_now);
   }
 
-  if (!ostream.bytes_writtenq) {
+  if (!ostream.bytes_written) {
     DEBUG_PRINTLN("Skipping transmit.");
     return;
   }
 
-  // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs. transmitting is fast
-  // (TODO: time it)
+  // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs so wait now
+  // TODO: time it (tho it seems fast enough)
   DEBUG_PRINT(F("sending... "));
   rf95.send(radio_buf, ostream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     FastLED.delay(2);
   }
 
-  if (tx_compass_message) {
+  if (tx_compass_location) {
     last_transmitted[pid] = time_now;
   } else {
     compass_pins[tx_pin_id].transmitted = true;
@@ -334,7 +336,7 @@ void radioTransmit(const int pid) {
 // sign compass_message and send it to protobuf output stream
 // returns the number of bytes written to the buffer
 void encodeCompassMessage(pb_ostream_t ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
-  // TODO: checking hue like this means no-one can pick true red as their hue.
+  // TODO: checking hue like this means no-one can pick true red as their hue
   if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
     // if the peer is ourselves, don't broadcast unless we have a GPS fix (otherwise we would send 0, 0
@@ -373,18 +375,19 @@ void encodePinMessage(pb_ostream_t ostream, CompassPin compass_pin, unsigned lon
 //  DEBUG_PRINT(compass_pin_id);
 //  DEBUG_PRINTLN(F("... "));
 
-  if (compass_pin.hue == 0) {
+  // TODO: checking hue like this means no-one can pick true red as their hue.
+  if (compass_pin.color.hue == 0) {
     return;
   }
 
   DEBUG_PRINTLN(F("Encoding compass pin..."));
 
-  // network_hash and tx_peer_id are already setup by config.ino
-
+  // pin_message_tx's network_hash and tx_peer_id are already setup by config.ino
   pin_message_tx.last_updated_at = compass_pin.last_updated_at;
   pin_message_tx.latitude = compass_pin.latitude;
   pin_message_tx.longitude = compass_pin.longitude;
-  pin_message_tx.hue = compass_pin.hue;
+  pin_message_tx.hue = compass_pin.color.hue;
+  pin_message_tx.saturation = compass_pin.color.saturation;
 
   printSmartCompassPinMessage(pin_message_tx, false, true);
   signSmartCompassPinMessage(pin_message_tx, pin_message_tx.message_hash);
@@ -401,8 +404,8 @@ void radioReceive() {
   // i had separate buffers for tx and for rx, but that doesn't seem necessary
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
   static uint8_t radio_buf_len;
-  static uint8_t calculated_hash[NETWORK_HASH_SIZE];
-  static SmartCompassLocationMessage message = SmartCompassLocationMessage_init_default;
+  static SmartCompassLocationMessage location_message_rx = SmartCompassLocationMessage_init_default;
+  static SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
 
   if (!rf95.available()) {
     // no packets to process
@@ -422,12 +425,33 @@ void radioReceive() {
 
   pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
 
+  //
   // TODO: also try decoding as a pinUpdate
-  if (!pb_decode(&stream, SmartCompassLocationMessage_fields, &message)) {
-    DEBUG_PRINT(F("Decoding failed: "));
+  //
+  //
+  if (pb_decode(&stream, SmartCompassLocationMessage_fields, &location_message_rx)) {
+    receiveLocationMessage(location_message_rx);
+    return;
+  } else {
+    DEBUG_PRINT(F("Decoding as location message failed: "));
     DEBUG_PRINTLN(PB_GET_ERROR(&stream));
+
+    // TODO: only do this on a certain error type?
+    // TODO: can we simply re-use the stream? do we need to reset or something?
+    stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
+    if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
+      receivePinMessage(pin_message_rx);    // TODO: write this
+    } else {
+      DEBUG_PRINT(F("Decoding as pin message failed: "));
+      DEBUG_PRINTLN(PB_GET_ERROR(&stream));
+    }
+
     return;
   }
+}
+
+void receiveLocationMessage(SmartCompassLocationMessage message) {
+  static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
   if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message is for another network."));
@@ -438,7 +462,7 @@ void radioReceive() {
 
   signSmartCompassLocationMessage(message, calculated_hash);
   if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINT(F("Message hash an invalid hash! "));
+    DEBUG_PRINTLN(F("Message hash an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
     return;
@@ -448,7 +472,7 @@ void radioReceive() {
 
   if (message.tx_peer_id == my_peer_id) {
     // TODO: flash lights on the status bar?
-    DEBUG_PRINT(F("ERROR! Peer id collision! "));
+    DEBUG_PRINT(F("ERROR! Peer id collision!"));
     DEBUG_PRINTLN(my_peer_id);
     return;
   }
@@ -490,6 +514,12 @@ void radioReceive() {
   }
   DEBUG_PRINTLN(network_ms);
 
+  for (int i = message.num_pins + 1; i <= last_compass_pin; i++) {
+    // this peer hasn't heard some pins. re-transmit them
+    // TODO: this won't work well once we have 255 pins, but I think that will be okay for now
+    compass_pins[i].transmitted = false;
+  }
+
   // TODO: do we care about saving tx times? we will change them when we re-broadcast
   // compass_messages[message.peer_id].tx_time = message.tx_time;
   // compass_messages[message.peer_id].tx_ms = message.tx_ms;
@@ -499,6 +529,60 @@ void radioReceive() {
   compass_messages[message.peer_id].saturation = message.saturation;
   compass_messages[message.peer_id].latitude = message.latitude;
   compass_messages[message.peer_id].longitude = message.longitude;
+  compass_messages[message.peer_id].num_pins = message.num_pins;
 }
 
-void broadcastPin(const int pin_id) { DEBUG_PRINTLN(F("TODO: write broadcastPin")); }
+void receivePinMessage(SmartCompassPinMessage message) {
+  static uint8_t calculated_hash[NETWORK_HASH_SIZE];
+
+  if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINTLN(F("Message is for another network."));
+    // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
+    // TODO: flash lights on the status bar?
+    return;
+  }
+
+  signSmartCompassPinMessage(message, calculated_hash);
+  if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINTLN(F("Message hash an invalid hash!"));
+    // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
+    // TODO: flash lights on the status bar?
+    return;
+  }
+
+  printSmartCompassPinMessage(message, true, true);
+
+  if (message.tx_peer_id == my_peer_id) {
+    // TODO: flash lights on the status bar?
+    DEBUG_PRINT(F("ERROR! Peer id collision! "));
+    DEBUG_PRINTLN(my_peer_id);
+    return;
+  }
+
+  // getCompassPinId gets an existing pin id or get a new pin id and increments our pin counter
+  int compass_pin_id = getCompassPinId(GPS.latitude_fixed, GPS.longitude_fixed);
+
+  if (message.last_updated_at < compass_pins[compass_pin_id].last_updated_at) {
+    // TODO: flash lights on the status bar?
+    DEBUG_PRINTLN(F("Heard old message. Queuing transmission."));
+    compass_pins[compass_pin_id].transmitted = false;
+    return;
+  }
+
+  if (message.last_updated_at == compass_pins[compass_pin_id].last_updated_at and message.hue == compass_pins[compass_pin_id].color.hue) {
+    // TODO: flash lights on the status bar?
+    DEBUG_PRINTLN(F("Heard re-broadcast of existing message."));
+    return;
+  }
+
+  compass_pins[compass_pin_id].last_updated_at = message.last_updated_at;
+
+  compass_pins[compass_pin_id].latitude = message.latitude;
+  compass_pins[compass_pin_id].longitude = message.longitude;
+
+  compass_pins[compass_pin_id].color.hue = message.hue;
+  compass_pins[compass_pin_id].color.saturation = message.saturation;
+
+  // send this when it is our time to transmit
+  compass_pins[compass_pin_id].transmitted = false;
+}
