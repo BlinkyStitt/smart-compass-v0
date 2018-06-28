@@ -28,6 +28,7 @@ void setupRadio() {
   }
 
   // we could read this from the SD card, but I think 868 requires a license
+  // TODO: figure out what frequencies we can use
   if (!rf95.setFrequency(RADIO_FREQ)) {
     DEBUG_PRINTLN(F("setFrequency failed! Cannot proceed!"));
     while (1)
@@ -259,7 +260,7 @@ void radioTransmit(const int pid) {
     // we already transmitted for this peer recently. don't broadcast it again
 
     // check if there are any pins to transmit
-    for (int i = last_compass_pin; i >= 0; i--) {
+    for (int i = next_compass_pin - 1; i >= 0; i--) {
       // checking against hue like this stops us from using true red (which is good since that's already used for north)
       if (!compass_pins[i].transmitted and compass_pins[i].color.hue) {
         tx_compass_location = false; // set to false to enable transmitting of compass_pins instead of friend locations
@@ -514,7 +515,7 @@ void receiveLocationMessage(SmartCompassLocationMessage message) {
   }
   DEBUG_PRINTLN(network_ms);
 
-  for (int i = message.num_pins + 1; i <= last_compass_pin; i++) {
+  for (int i = message.num_pins + 1; i < next_compass_pin; i++) {
     // this peer hasn't heard some pins. re-transmit them
     // TODO: this won't work well once we have 255 pins, but I think that will be okay for now
     compass_pins[i].transmitted = false;
@@ -579,6 +580,15 @@ void receivePinMessage(SmartCompassPinMessage message) {
 
   compass_pins[compass_pin_id].latitude = message.latitude;
   compass_pins[compass_pin_id].longitude = message.longitude;
+
+  if (GPS.fix) {
+    compass_pins[compass_pin_id].magnetic_bearing = course_to(GPS.latitude_fixed, GPS.longitude_fixed,
+                                                              message.latitude, message.longitude,
+                                                              &compass_pins[compass_pin_id].distance);
+  } else {
+    compass_pins[compass_pin_id].magnetic_bearing = 0;
+    compass_pins[compass_pin_id].distance = -1;
+  }
 
   compass_pins[compass_pin_id].color.hue = message.hue;
   compass_pins[compass_pin_id].color.saturation = message.saturation;

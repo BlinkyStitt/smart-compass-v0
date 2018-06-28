@@ -59,7 +59,9 @@ void updateCompassPoints(CompassMode compass_mode) {
   outer_compass_points[0][next_outer_compass_point[0]] = CHSV(0, 255, 255);
   next_outer_compass_point[0]++;
 
-  // add points for
+  // add points to the compass
+  // TODO: sort compass_pins
+  // TODO: pass compass_pins (compass_locations/saved_locations) to addCompassPoints function
   switch (compass_mode) {
   case COMPASS_FRIENDS:
     addCompassPointsForFriends();
@@ -71,13 +73,14 @@ void updateCompassPoints(CompassMode compass_mode) {
 }
 
 // todo: this shows "SmartCompassLocationMessages." Be consistent about naming
+// todo: DRY this up with compass locations
 void addCompassPointsForFriends() {
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
   int compass_point_id = 0, peer_brightness = 0;
 
   for (int i = 0; i < num_peers; i++) {
-    if (!compass_messages[i].saturation) {
+    if (!compass_messages[i].hue) {
       // skip the peer if we don't have any color data for them
       continue;
     }
@@ -129,15 +132,91 @@ void addCompassPointsForFriends() {
 }
 
 // todo: this shows "SmartCompassPinMessages." Be consistent about naming
+// TODO: DRY this up. take the compass_pins array as an argument and then have one array for friends and one for
 void addCompassPointsForPlaces() {
   // TODO: write this
   // TODO: always show at least 1 light per color. if there are more than, show the closest X
   // TODO: and skip any pins that are Red. we use Red as a mark for deletion
+
+  static const int num_colors = ARRAY_SIZE(pin_colors);
+
+  // TODO: don't count red. those are ignored entirely
+  int points_per_color[num_colors] = {0};
+  int colors_left = num_colors;
+
+  for (int i = 0; i < next_compass_pin; i++) {
+    // TODO: instead of using compass_pins[i], use compass_pins[sorted_compass_pins[i]] (sort by distance)
+
+    if (compass_pins[i].distance < 0) {
+      // skip pins with invalid distances
+      continue;
+    }
+
+    int j;
+    for (j = 0; j < num_colors; j++) {
+      if (compass_pins[i].color == pin_colors[j]) {
+        break;
+      }
+    }
+
+    if (j == delete_pin_color_id or j >= num_colors) {
+      // TODO: log something here? we didn't find a matching color
+      continue;
+    }
+
+    if (points_per_color[j] >= max_points_per_color) {
+      // this color has too many points on the compass already
+      continue;
+    }
+
+    points_per_color[j]++;
+
+    if (points_per_color[j] == max_points_per_color) {
+      colors_left--;
+    }
+
+    // convert distance to brightness. the closer, the brighter
+    // TODO: scurve instead of linear? use fastLED helpers
+    // TODO: tune this. whats a good minimum on that will still work when batteries are low
+    // TODO: if peer data is old, blink or something
+    int peer_brightness =
+        map(constrain(compass_pins[i].distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
+
+    // TODO: double check that this is looping the correct way around the LED
+    // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
+    if (compass_pins[i].distance <= min_peer_distance) {
+      // TODO: add to a 8 led strip bar
+    } else if (compass_pins[i].distance <= max_peer_distance / 2) {
+      // inner ring
+      int compass_point_id = map(compass_pins[i].magnetic_bearing, 0, 360, 0, inner_ring_size) % inner_ring_size;
+
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]] =
+          CHSV(compass_pins[i].color.hue, compass_pins[i].color.saturation, peer_brightness);
+
+      // TODO: check next_inner_compass_point for overflow
+      next_inner_compass_point[compass_point_id]++;
+    } else {
+      // outer ring
+      int compass_point_id = map(compass_pins[i].magnetic_bearing, 0, 360, 0, outer_ring_size) % outer_ring_size;
+
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]] =
+          CHSV(compass_pins[i].color.hue, compass_pins[i].color.saturation, peer_brightness);
+
+      // TODO: check next_outer_compass_point for overflow
+      next_outer_compass_point[compass_point_id]++;
+    }
+
+    // all colors have their maximum number of points left on the compass
+    if (colors_left <= 0) {
+      break;
+    }
+  }
 }
 
 // todo: this uses "SmartCompassPinMessages." Be consistent about naming
 int getCompassPinId(long latitude, long longitude) {
-  // TODO: loop over existing pins, saving the id and distance of the closest pin. if no pins closer than 10m, save a new pin id
+  // TODO: loop over existing pins. if distance <10, return pin id. if none <10, increment and return last pin id
+  // TODO: add something during updateLights that adds this pin color to the status bar
   return -1;
 }
 
