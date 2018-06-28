@@ -122,19 +122,20 @@ bool config_setup, sd_setup, sensor_setup = false;
 enum CompassMode : byte { COMPASS_FRIENDS, COMPASS_PLACES };
 
 typedef struct _CompassPin {
-  bool active;
   bool transmitted;
   uint32_t last_updated_at;
-
   int32_t latitude;
   int32_t longitude;
-
+  float distance;
+  int32_t magnetic_bearing; // TODO: type?
   CHSV color;
 } CompassPin;
 
-CompassPin compass_pins[MAX_PINS] = {false, false, 0, 0, 0, {0, 0, 0}};
+// todo: make compasslocationmessages work like this
+CompassPin compass_pins[MAX_PINS] = {false, 0, 0, 0, 0, 0, {0, 0, 0}};
 
-int last_compass_pin = 0;
+int distance_sorted_compass_pin_ids[MAX_PINS];
+int next_compass_pin = 0;
 
 SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
 SmartCompassPinMessage pin_message_tx = SmartCompassPinMessage_init_default;
@@ -163,6 +164,8 @@ CHSV pin_colors[] = {
 };
 int last_pin_color_id = 0;
 const int delete_pin_color_id = 1;
+
+const int max_points_per_color = 3;  // TODO: put this on the SD?
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222

@@ -6,6 +6,7 @@ import "nanopb.proto";
 
 // todo: should the hashes (and tx_peer_id and times?) be in their own "metadata" message object?
 
+// todo: i don't like the naming of this
 message SmartCompassLocationMessage {
     bytes network_hash = 1 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
     bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
@@ -26,6 +27,7 @@ message SmartCompassLocationMessage {
     uint32 num_pins = 12;
 }
 
+// todo: i don't like the naming of this
 message SmartCompassPinMessage {
     bytes network_hash = 1 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
     bytes message_hash = 2 [(nanopb).max_size = 16, (nanopb).fixed_length = true];
