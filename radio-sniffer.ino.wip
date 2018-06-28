@@ -1,3 +1,9 @@
+/*
+
+915mhz is the center frequency for our no-license band. its simplest to use that, but it might be worth scanning other bands if 915 is busy
+
+*/
+
 // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
 float _frequencies[] =
 {
