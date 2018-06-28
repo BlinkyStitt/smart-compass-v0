@@ -65,11 +65,12 @@ void updateLightsForClock() {
     break;
   }
 
+  // inner ring and outer ring are wired in opposite directions
   int inner_minute_led_id = map(adjusted_minute, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
-  int outer_minute_led_id = map(adjusted_minute, 0, 60, outer_ring_size, 0) % outer_ring_size + outer_ring_start;
+  int outer_minute_led_id = map(adjusted_minute, 0, 60, 0, outer_ring_size) % outer_ring_size + outer_ring_start;
 
   int inner_second_led_id = map(adjusted_seconds, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
-  int outer_second_led_id = map(adjusted_seconds, 0, 60, outer_ring_size, 0) % outer_ring_size + outer_ring_start;
+  int outer_second_led_id = map(adjusted_seconds, 0, 60, 0, outer_ring_size) % outer_ring_size + outer_ring_start;
 
   /*
   DEBUG_PRINT("led_ids hour ,minute, second: ");

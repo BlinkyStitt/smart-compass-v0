@@ -56,17 +56,22 @@
 // with g_
 
 // lights for compass ring
-const int inner_ring_start = 0;
 const int inner_ring_size = 16;
+const int inner_ring_start = 0;
 const int inner_ring_end = inner_ring_start + inner_ring_size; // TODO: use this instead of numLeds a lot of places
 
-const int outer_ring_start = inner_ring_end;
 const int outer_ring_size = 24;
+const int outer_ring_start = inner_ring_end;
 const int outer_ring_end = outer_ring_start + outer_ring_size;
+
+// TODO: add status bar lights
+//const int status_bar_size = 8;
+//const int status_bar_start = outer_ring_end;
+//const int status_bar_end = status_bar_size + status_bar_size;
 
 // TODO: also add a 8 led strip for showing nearby peers
 
-// TODO: split this into 2 (or 3) arrays and use a union?
+// TODO: split this into 3 different sized arrays and use a union?
 const int num_LEDs = outer_ring_end;
 CRGB leds[num_LEDs];
 
