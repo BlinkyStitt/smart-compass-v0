@@ -41,6 +41,8 @@ bool firstIsBrighter(CHSV first, CHSV second) { return first.value > second.valu
 // TODO: CHSV nearby_points[]
 
 void updateCompassPoints(CompassMode compass_mode) {
+  DEBUG_PRINTLN("Updating compass points...");
+
   // clear past compass points
   // TODO: this isn't very efficient since it recalculates everything every time
   for (int i = 0; i < inner_ring_size; i++) {
@@ -75,6 +77,8 @@ void updateCompassPoints(CompassMode compass_mode) {
 // todo: this shows "SmartCompassLocationMessages." Be consistent about naming
 // todo: DRY this up with compass locations
 void addCompassPointsForFriends() {
+  DEBUG_PRINTLN("Updating compass points for friends...");
+
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
   int compass_point_id = 0, peer_brightness = 0;
@@ -134,6 +138,8 @@ void addCompassPointsForFriends() {
 // todo: this shows "SmartCompassPinMessages." Be consistent about naming
 // TODO: DRY this up. take the compass_pins array as an argument and then have one array for friends and one for
 void addCompassPointsForPlaces() {
+  DEBUG_PRINTLN("Updating compass points for places...");
+
   // TODO: write this
   // TODO: always show at least 1 light per color. if there are more than, show the closest X
   // TODO: and skip any pins that are Red. we use Red as a mark for deletion

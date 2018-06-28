@@ -49,6 +49,7 @@ void gpsReceive() {
   static int last_longitude = 0;
 
   // limit updates to at most every 3 seconds
+  // TODO: configure off SD card instead of hard coding 3 seconds
   if (last_gps_update and (millis() - last_gps_update < 3000)) {
     return;
   }
@@ -155,6 +156,7 @@ void gpsReceive() {
   last_longitude = cur_longitude;
 
   // open the SD card
+  // TODO: config option to disable this
   my_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
@@ -188,4 +190,6 @@ void gpsReceive() {
   my_file.close();
 
   DEBUG_PRINTLN(F(" done."));
+
+  // TODO: every now and then it crashes after this. not sure why
 }

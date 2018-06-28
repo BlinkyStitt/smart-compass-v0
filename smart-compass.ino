@@ -26,6 +26,12 @@
 
 #include "smart-compass.pb.h"
 
+#ifdef DEBUG
+// debug-only includes
+#include <RunningAverage.h>
+
+#endif
+
 #define MAX_PINS 255
 
 // Pins 0 and 1 are used for Serial1 (GPS)
@@ -218,10 +224,6 @@ void setup() {
 
   setupLights();
 
-  // configure the timer that reads GPS data to run at <sampleRate>Hertz
-  tcConfigure(100);
-  tcStartCounter();
-
   // open the SD card
   my_file = SD.open(gps_log_filename, FILE_WRITE);
 
@@ -242,6 +244,10 @@ void setup() {
     // close the file:
     my_file.close();
   }
+
+  // configure the timer that reads GPS data to run at <sampleRate>Hertz
+  tcConfigure(100);
+  tcStartCounter();
 
   DEBUG_PRINTLN(F("Starting..."));
 }

@@ -29,6 +29,7 @@ void setupLights() {
 void updateLightsForCompass(CompassMode compass_mode) {
   // show the compass if we know our own GPS location and have SD to show saved locations
   if (!GPS.fix or !sd_setup) {
+    DEBUG_PRINTLN(F("Compass not ready!"));
     updateLightsForLoading();
     return;
   }
@@ -196,10 +197,15 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
   return;
 }
 
+#ifdef DEBUG
+RunningAverage avg_millis_per_frame(20);
+#endif
+
 void updateLights() {
   static Orientation last_orientation = ORIENTED_PORTRAIT;
   static Orientation current_orientation;
   static CompassMode compass_mode = COMPASS_FRIENDS;
+  static unsigned long last_frame = 0;
 
   // decrease overall brightness if battery is low
   // TODO: how often should we do this?
@@ -233,6 +239,7 @@ void updateLights() {
       // we didn't broadcast it when it was saved because it might have a non-standard color that takes some extra time
       // to configure
       if (saved_pin_id > 0) {
+        DEBUG_PRINTLN(F("Queuing saved pin for transmission."));
         // set transmitted to false now. next time we transmit, this pin id will be shared with peers
         compass_pins[saved_pin_id].transmitted = false;
 
@@ -295,7 +302,14 @@ void updateLights() {
         DEBUG_PRINT(F("O"));
       }
     }
-    DEBUG_PRINTLN();
+
+    //avg_millis_per_frame.addValue(millis() - last_frame);
+
+    DEBUG_PRINT(F(" | ms since last frame="));
+    //DEBUG_PRINTLN(avg_millis_per_frame.getFastAverage());
+    DEBUG_PRINTLN(millis() - last_frame);
+
+    last_frame = millis();
 #endif
 
     // display the colors
