@@ -65,14 +65,14 @@ const int outer_ring_start = inner_ring_end;
 const int outer_ring_end = outer_ring_start + outer_ring_size;
 
 // TODO: add status bar lights
-//const int status_bar_size = 8;
-//const int status_bar_start = outer_ring_end;
-//const int status_bar_end = status_bar_size + status_bar_size;
+const int status_bar_size = 8;
+const int status_bar_start = outer_ring_end;
+const int status_bar_end = status_bar_start + status_bar_size;
 
 // TODO: also add a 8 led strip for showing nearby peers
 
 // TODO: split this into 3 different sized arrays and use a union?
-const int num_LEDs = outer_ring_end;
+const int num_LEDs = status_bar_end;
 CRGB leds[num_LEDs];
 
 // rotating "base color" used by some patterns
@@ -164,8 +164,9 @@ elapsedMillis network_ms = 0;
 
 CHSV pin_colors[] = {
   // {h, s, v},
+  // TODO: color-blind friendly colors from test-lights.ino
   {160, 71, 255},  // CRGB::RoyalBlue
-  {0, 204, 255},  // Red for disabling, not for actual red pins!
+  {0, 255, 255},  // Red for disabling, not for actual red pins!
   {213, 255, 255},  // CRGB::Purple
   {234, 59, 255},  // CRGB::HotPink;
   {23, 255, 255},  // CRGB::DarkOrange;
