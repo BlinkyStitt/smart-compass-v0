@@ -1,0 +1,83 @@
+// https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
+float _frequencies[] =
+{
+    868.0, 915.0,                                                   // From Adafruit Learn
+    903.9, 904.1, 904.3, 904.5, 904.7, 904.9, 905.1, 905.3, 904.6,  // TTN - US Uplink
+    923.3, 923.9, 924.5, 925.1, 925.7, 926.3, 926.9, 927.5          // TTN - US Downlink
+};
+
+// TODO: get frequencies from http://www.arrl.org/band-plan. 903.4-927.0?
+
+// How long should a frequency be monitored
+#define FREQ_TIME_MS 5000
+
+// Used to track how many packets we have seen on each frequency above
+uint16_t _packetCounts[FREQ_COUNT] = { 0 };
+
+uint8_t  _rxBuffer[RH_RF95_MAX_MESSAGE_LEN];                // receive buffer
+uint8_t  _rxRecvLen;                                        // number of bytes actually received
+
+uint32_t _freqExpire        = 0;                            // Millisecond at which frequency should change
+uint32_t _freqIndex         = 0;                            // Which frequency is currently monitored
+
+char     _printBuffer[512]  = "\0";                         // to send output to the PC
+
+void rf95_setFrequency(uint32_t index)
+{
+    if (!rf95.setFrequency(_frequencies[index]))
+    {
+      // TODO: error lights and debug print
+      tft_printfln(2, ILI9341_BLACK, ILI9341_RED, "setFrequency failed ");
+      while (1);
+    }
+
+    // TODO: if debug print
+    snprintf(_printBuffer, sizeof(_printBuffer), "Freq: %04u (%04u)   ", (uint32_t)(_frequencies[index] * 10), _packetCounts[index]);
+    DEBUG_PRINTLN(_printBuffer);
+}
+
+// TODO: do this during main setup. and check sd_setup instead of calling begin
+void sd_inititalize(void)
+{
+  if (SD.begin(SD_CS))
+  {
+      char filename[15];
+
+      strcpy(filename, "LORA__00.TXT");
+
+      for (uint8_t i = 0; i < 100; i++)
+      {
+          filename[6] = '0' + i / 10;
+          filename[7] = '0' + i % 10;
+
+          // create if does not exist, do not open existing, write, sync after write
+          if (!SD.exists(filename))
+          {
+              break;
+          }
+      }
+
+      _logfile = SD.open(filename, FILE_WRITE);
+
+      if (!_logfile)
+      {
+          Serial.print("Couldnt create ");
+          Serial.println(filename);
+          tft_printfln(2, ILI9341_BLACK, ILI9341_RED, "File create failed  ");
+      }
+      else
+      {
+          Serial.print("Writing to ");
+          Serial.println(filename);
+          tft_printfln(2, ILI9341_BLACK, ILI9341_GREEN, "File: %12s  ", filename);
+
+          // Set flag to indicate we can write to SD
+          _sdReady = true;
+      }
+  }
+  else
+  {
+      tft_printfln(2, ILI9341_BLACK, ILI9341_RED, "SD Init failed      ");
+      Serial.println("SD.begin() failed!");
+  }
+}
