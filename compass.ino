@@ -99,7 +99,7 @@ void addCompassPointsForFriends() {
     peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
 
     // TODO: double check that this is looping the correct way around the LED
-    // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
+    // circle 0 -> 360 should go clockwise, but the outer ring lights are wired counter-clockwise
     if (peer_distance <= min_peer_distance) {
       // TODO: what should we do for really close peers? don't just hide them. add to a 8 led strip bar
     } else if (peer_distance <= max_peer_distance / 2) {
@@ -112,7 +112,7 @@ void addCompassPointsForFriends() {
       next_inner_compass_point[compass_point_id]++;
     } else {
       // outer ring
-      compass_point_id = map(magnetic_bearing, 0, 360, 0, outer_ring_size) % outer_ring_size;
+      compass_point_id = map(magnetic_bearing, 0, 360, outer_ring_size, 0) % outer_ring_size;
 
       outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]] =
           CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
