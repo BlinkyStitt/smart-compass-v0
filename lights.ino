@@ -39,7 +39,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
   // cycle through the colors for each light
   // TODO: dry this up
-  for (int i = inner_ring_start; i < inner_ring_end; i++) {
+  for (int i = 0; i < inner_ring_size; i++) {
 //    DEBUG_PRINT(F("inner ring "));
 //    DEBUG_PRINTLN(i);
 
@@ -47,8 +47,17 @@ void updateLightsForCompass(CompassMode compass_mode) {
       // no lights for this inner compass point
 
       // lights from other patterns will quickly fade to black
-      leds[i].fadeToBlackBy(90);
+      leds[inner_ring_start + i].fadeToBlackBy(90);
 
+      continue;
+    }
+
+    if (next_inner_compass_point[i] > max_compass_points) {
+      // TODO: what is going on?
+      DEBUG_PRINT(F("ERROR! INVALID next_outer_compass_point for "));
+      DEBUG_PRINT(i);
+      DEBUG_PRINT(F(": "));
+      DEBUG_PRINTLN(next_outer_compass_point[i]);
       continue;
     }
 
@@ -58,33 +67,38 @@ void updateLightsForCompass(CompassMode compass_mode) {
       // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
       // we don't use network_ms here so that the lights don't jump around
       // TODO: this is wrong
-      j = map(((millis() / peer_led_ms) % inner_ring_size), 0, inner_ring_size, 0, next_inner_compass_point[i]);
+      j = (millis() / peer_led_ms) % next_inner_compass_point[i];
     }
 
-     DEBUG_PRINT("Displaying ");
-     DEBUG_PRINT(j + 1);
-     DEBUG_PRINT(" of ");
-     DEBUG_PRINT(next_inner_compass_point[i]);
-     DEBUG_PRINT(" colors for inner light #");
-     DEBUG_PRINTLN(i);
+//     DEBUG_PRINT("Displaying ");
+//     DEBUG_PRINT(j + 1);
+//     DEBUG_PRINT(" of ");
+//     DEBUG_PRINT(next_inner_compass_point[i]);
+//     DEBUG_PRINT(" colors for inner light #");
+//     DEBUG_PRINTLN(i);
 
-     leds[i] = inner_compass_points[i][j];
+     leds[inner_ring_start + i] = inner_compass_points[i][j];
   }
-  // TODO: outer ring is broken
-  /*
   // TODO: this is broken. i think the bug is somewhere in the setting of outer_compass_points
-  for (int i = outer_ring_start; i < outer_ring_end; i++) {
+  for (int i = 0; i < outer_ring_size; i++) {
 //    DEBUG_PRINT(F("outer ring "));
-//    DEBUG_PRINT(i);
-//    DEBUG_PRINT(F(" - "));
-//    DEBUG_PRINTLN(next_outer_compass_point[i]);
+//    DEBUG_PRINTLN(i);
 
     if (next_outer_compass_point[i] == 0) {
       // no lights for this outer compass point
 
       // lights from other patterns will quickly fade to black
-      leds[i].fadeToBlackBy(90);
+      leds[outer_ring_start + i].fadeToBlackBy(90);
 
+      continue;
+    }
+
+    if (next_outer_compass_point[i] > max_compass_points) {
+      // TODO: what is going on?
+      DEBUG_PRINT(F("ERROR! INVALID next_outer_compass_point for "));
+      DEBUG_PRINT(i);
+      DEBUG_PRINT(F(": "));
+      DEBUG_PRINTLN(next_outer_compass_point[i]);
       continue;
     }
 
@@ -94,19 +108,18 @@ void updateLightsForCompass(CompassMode compass_mode) {
       // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
       // we don't use network_ms here so that the lights don't jump around
       // TODO: this is wrong
-      j = map(((millis() / peer_led_ms) % outer_ring_size), 0, outer_ring_size, 0, next_outer_compass_point[i]);
+      j = (millis() / peer_led_ms) % next_outer_compass_point[i];
     }
 
-     DEBUG_PRINT("Displaying ");
-     DEBUG_PRINT(j + 1);
-     DEBUG_PRINT(" of ");
-     DEBUG_PRINT(next_outer_compass_point[i]);
-     DEBUG_PRINT(" colors for outer light #");
-     DEBUG_PRINTLN(i - outer_ring_start);
+//     DEBUG_PRINT("Displaying ");
+//     DEBUG_PRINT(j + 1);
+//     DEBUG_PRINT(" of ");
+//     DEBUG_PRINT(next_outer_compass_point[i]);
+//     DEBUG_PRINT(" colors for outer light #");
+//     DEBUG_PRINTLN(i);
 
-     leds[i] = outer_compass_points[i][j];
+     leds[outer_ring_start + i] = outer_compass_points[i][j];
   }
-  */
 }
 
 void updateLightsForHanging() {
@@ -214,6 +227,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
     }
   }
 
+  // TODO: dim everything otherwise the unfilled lights stay lit up and its confusing
   fill_solid(leds, num_fill, fill_color);
 
   return;
@@ -315,6 +329,9 @@ void updateLights() {
     }
     DEBUG_PRINT(network_ms_wrapped);
 
+    // TODO: print N  W  S  E
+    // TODO: print 12 9  6  3
+    // TODO: print lights on seperate rows
     DEBUG_PRINT(F(": "));
     for (int i = 0; i < num_LEDs; i++) {
       if (leds[i]) {

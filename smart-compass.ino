@@ -146,7 +146,7 @@ int next_compass_pin = 0;
 SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
 SmartCompassPinMessage pin_message_tx = SmartCompassPinMessage_init_default;
 
-const int max_compass_points = max_peers + 1; // TODO: is this enough?
+const int max_compass_points = max_peers + 1; // TODO: is this enough? what about when we include saved locations?
 
 // compass points go COUNTER-clockwise to match LEDs!
 CHSV inner_compass_points[inner_ring_size][max_compass_points];
