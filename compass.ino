@@ -78,6 +78,7 @@ void updateCompassPoints(CompassMode compass_mode) {
 // todo: DRY this up with compass locations
 void addCompassPointsForFriends() {
   DEBUG_PRINTLN("Updating compass points for friends...");
+  // TODO: somewhere after this is a crash
 
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
@@ -93,15 +94,19 @@ void addCompassPointsForFriends() {
       continue;
     }
 
+    DEBUG_PRINT(F("Calculating magnetic bearing... "));
     magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
                                  compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
+    DEBUG_PRINTLN(F("done."));
 
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     // TODO: if peer data is old, blink or something
+    DEBUG_PRINT(F("Calculating peer brightness... "));
     peer_brightness =
         map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 30, 255);
+    DEBUG_PRINTLN(F("done."));
 
     // TODO: double check that this is looping the correct way around the LED
     // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
@@ -133,6 +138,8 @@ void addCompassPointsForFriends() {
     sortArray(compass_points[i], next_compass_point[i], firstIsBrighter);
   }
   */
+
+  DEBUG_PRINTLN("Done updating compass points for friends...");
 }
 
 // todo: this shows "SmartCompassPinMessages." Be consistent about naming
@@ -217,6 +224,8 @@ void addCompassPointsForPlaces() {
       break;
     }
   }
+
+  DEBUG_PRINTLN("Done updating compass points for places...");
 }
 
 // todo: this uses "SmartCompassPinMessages." Be consistent about naming
