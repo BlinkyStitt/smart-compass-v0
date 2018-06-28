@@ -41,8 +41,6 @@ bool firstIsBrighter(CHSV first, CHSV second) { return first.value > second.valu
 // TODO: CHSV nearby_points[]
 
 void updateCompassPoints(CompassMode compass_mode) {
-  DEBUG_PRINTLN("Updating compass points...");
-
   // clear past compass points
   // TODO: this isn't very efficient since it recalculates everything every time
   for (int i = 0; i < inner_ring_size; i++) {
@@ -77,9 +75,6 @@ void updateCompassPoints(CompassMode compass_mode) {
 // todo: this shows "SmartCompassLocationMessages." Be consistent about naming
 // todo: DRY this up with compass locations
 void addCompassPointsForFriends() {
-  DEBUG_PRINTLN("Updating compass points for friends...");
-  // TODO: somewhere after this is a crash
-
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
   int compass_point_id = 0, peer_brightness = 0;
@@ -94,19 +89,14 @@ void addCompassPointsForFriends() {
       continue;
     }
 
-    DEBUG_PRINT(F("Calculating magnetic bearing... "));
     magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
                                  compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
-    DEBUG_PRINTLN(F("done."));
 
     // convert distance to brightness. the closer, the brighter
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     // TODO: if peer data is old, blink or something
-    DEBUG_PRINT(F("Calculating peer brightness... "));
-    peer_brightness =
-        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 30, 255);
-    DEBUG_PRINTLN(F("done."));
+    peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
 
     // TODO: double check that this is looping the correct way around the LED
     // circle 0 -> 360 should go clockwise, but the lights are wired counter-clockwise
@@ -138,18 +128,13 @@ void addCompassPointsForFriends() {
     sortArray(compass_points[i], next_compass_point[i], firstIsBrighter);
   }
   */
-
-  DEBUG_PRINTLN("Done updating compass points for friends...");
 }
 
 // todo: this shows "SmartCompassPinMessages." Be consistent about naming
 // TODO: DRY this up. take the compass_pins array as an argument and then have one array for friends and one for
 void addCompassPointsForPlaces() {
-  DEBUG_PRINTLN("Updating compass points for places...");
-
-  // TODO: write this
-  // TODO: always show at least 1 light per color. if there are more than, show the closest X
-  // TODO: and skip any pins that are Red. we use Red as a mark for deletion
+  // always show at least 1 light per color. if there are more than, show the closest X
+  // and skip any pins that are Red. we use Red as a mark for deletion
 
   static const int num_colors = ARRAY_SIZE(pin_colors);
 
@@ -224,8 +209,6 @@ void addCompassPointsForPlaces() {
       break;
     }
   }
-
-  DEBUG_PRINTLN("Done updating compass points for places...");
 }
 
 // todo: this uses "SmartCompassPinMessages." Be consistent about naming
