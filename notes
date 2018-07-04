@@ -22,3 +22,6 @@ openssl rand 16 >security.key
 7404: XOOOOOOOOOOOOOOO
 My time to transmit (1529107392)...
 Message: n=73-8C-76-2C-83-AA-53-18-58-EE-73-81-86-27-B6-2 h=0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0 txp=0 p=0 now=1529107392 ms=167426 t=1529107383 lat=377489183 lon=-1224411416 EOM. resetting... updating... ..
+
+
+the adafruit feather m0 proto description says it has an RTC. the lora version doesn't. i dont see any docs about the rtc so maybe its just overlooked and is on the lora?

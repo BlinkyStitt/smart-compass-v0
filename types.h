@@ -20,3 +20,13 @@ enum CompassMode : byte {
   COMPASS_FRIENDS,
   COMPASS_PLACES
 };
+
+typedef struct {
+  bool transmitted;
+  uint32_t last_updated_at;
+  int32_t latitude;
+  int32_t longitude;
+  float distance;
+  int32_t magnetic_bearing; // TODO: type?
+  CHSV color;
+} CompassPin;
