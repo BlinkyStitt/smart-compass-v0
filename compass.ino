@@ -22,7 +22,7 @@ float course_to(long lat1, long lon1, long lat2, long lon2, float *distance) {
   dlam *= cphi; // correct for latitude
 
   // calculate bearing and offset for true north -> magnetic north
-  float magnetic_bearing = rad2deg(atan2(dlam, dphi)) + magnetic_declination;
+  float magnetic_bearing = rad2deg(atan2(dlam, dphi)) + g_magnetic_declination;
 
   // wrap around
   if (magnetic_bearing < 0) {

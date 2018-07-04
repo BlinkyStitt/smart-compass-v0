@@ -17,8 +17,8 @@
 #include <elapsedMillis.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-// TODO: fork TimeLib to include ms
-#include <TimeLib.h>
+// TODO: fork RTCZero to include ms
+#include <RTCZero.h>
 #include <Wire.h>
 
 // it isn't legal for us to encrypt on amateur radio, but we need some sort of security so we sign our messages
@@ -99,7 +99,7 @@ BLAKE2s blake2s;
 uint8_t my_network_hash[NETWORK_HASH_SIZE]; // TODO: union type to access as hex?
 
 // offset between true and magnetic north
-float magnetic_declination = 0.0;
+float g_magnetic_declination = 0.0;
 
 // connect to the GPS
 Adafruit_GPS GPS(&gpsSerial);
@@ -150,6 +150,8 @@ int last_pin_color_id = 0;
 const int delete_pin_color_id = 1;
 
 const int max_points_per_color = 3;  // TODO: put this on the SD?
+
+RTCZero rtc;
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
@@ -225,6 +227,9 @@ void setup() {
     my_file.close();
   }
 
+  // setup the internal rtc
+  rtc.begin();
+
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
   tcConfigure(300);
   tcStartCounter();
@@ -254,7 +259,7 @@ void loop() {
       // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure
       // it matters
       // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
-      time_segment_id = (now() / broadcast_time_s) % time_segments;
+      time_segment_id = (rtc.getY2kEpoch() / broadcast_time_s) % time_segments;
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
 

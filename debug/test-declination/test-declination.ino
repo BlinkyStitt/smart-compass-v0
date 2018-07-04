@@ -126,20 +126,20 @@ void gpsReceive() {
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
   }
 
-  Serial.print("Now: "); Serial.println(now());
+  Serial.print("Now: "); Serial.println(rtc.getY2kEpoch());
 
   Serial.print("Fix: "); Serial.print((int)GPS.fix);
   Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
 
   Serial.print("Location 1: ");
-  Serial.print(GPS.latitude, 4); Serial.print(GPS.lat);
+  Serial.print(GPS.latitude, 5); Serial.print(GPS.lat);
   Serial.print(", ");
-  Serial.print(GPS.longitude, 4); Serial.println(GPS.lon);
+  Serial.print(GPS.longitude, 5); Serial.println(GPS.lon);
 
   Serial.print("Location 2: ");
-  Serial.print(GPS.latitudeDegrees, 4);
+  Serial.print(GPS.latitudeDegrees, 5);
   Serial.print(", ");
-  Serial.println(GPS.longitudeDegrees, 4);
+  Serial.println(GPS.longitudeDegrees, 5);
 
   Serial.print("Location 3: ");
   Serial.print(GPS.latitude_fixed);
