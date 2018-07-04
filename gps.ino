@@ -49,8 +49,8 @@ void gpsReceive() {
   static int last_longitude = 0;
 
   // limit updates to at most every 3 seconds
-  // TODO: configure off SD card instead of hard coding 3 seconds
-  if (last_gps_update and (millis() - last_gps_update < 3000)) {
+  // TODO: configure off SD card instead of hard coding 1 seconds
+  if (last_gps_update and (millis() - last_gps_update < 2000)) {
     return;
   }
 
@@ -82,14 +82,17 @@ void gpsReceive() {
   // set the time to match the GPS if it isn't set or has drifted
   // TODO: include GPS.milliseconds
   // TODO: should we just do this every time? how expensive is this?
-  if ((second() - GPS.seconds > 2) || (timeStatus() == timeNotSet)) {
+  // TODO: our clock is running WAY slow so we just set it every time
+  if ((true) || (second() - GPS.seconds > 1) || (timeStatus() == timeNotSet)) {
+    /*
     DEBUG_PRINT(second());
     DEBUG_PRINT(F(" vs "));
     DEBUG_PRINT(GPS.seconds);
+    */
 
     // TODO: fork TimeLib to include GPS.milliseconds in setTime
     setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
-    DEBUG_PRINT(F("; Now: "));
+    DEBUG_PRINT(F("GPS Time: "));
     DEBUG_PRINTLN(now());
   }
 
@@ -122,12 +125,6 @@ void gpsReceive() {
   DEBUG_PRINT(GPS.longitude, 4); DEBUG_PRINTLN(GPS.lon);
   */
 
-  // TODO: do we have 5 decimals of precision? was 4
-  DEBUG_PRINT(F("Location: "));
-  DEBUG_PRINT2(GPS.latitudeDegrees, 5);
-  DEBUG_PRINT(F(", "));
-  DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
-
   /*
   DEBUG_PRINT("Location 3: ");
   DEBUG_PRINT(GPS.latitude_fixed);
@@ -154,6 +151,12 @@ void gpsReceive() {
   }
   last_latitude = cur_latitude;
   last_longitude = cur_longitude;
+
+  // TODO: do we have 5 decimals of precision? was 4
+  DEBUG_PRINT(F("Location: "));
+  DEBUG_PRINT2(GPS.latitudeDegrees, 5);
+  DEBUG_PRINT(F(", "));
+  DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
 
   // open the SD card
   // TODO: config option to disable this

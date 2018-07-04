@@ -37,6 +37,9 @@ void updateLightsForCompass(CompassMode compass_mode) {
   // calculate distance to friends or saved places
   updateCompassPoints(compass_mode);
 
+  // fade all lights
+  fadeToBlackBy(leds, num_LEDs, 90);
+
   // cycle through the colors for each light
   // TODO: dry this up
   for (int i = 0; i < inner_ring_size; i++) {
@@ -181,6 +184,9 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
     fill_color = pin_colors[last_pin_color_id];
   }
 
+  // fade all lights
+  fadeToBlackBy(leds, num_LEDs, 90);
+
   if (configure_ms < 5000) {
     // fill up the inner circle of lights over 5 seconds
     num_fill = inner_ring_start + constrain(map(configure_ms, 0, 5000, 0, inner_ring_size), 0, inner_ring_size);
@@ -232,10 +238,6 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
 
   return;
 }
-
-#ifdef DEBUG
-RunningAverage avg_millis_per_frame(20);
-#endif
 
 void updateLights() {
   static Orientation last_orientation = ORIENTED_PORTRAIT;
@@ -342,10 +344,7 @@ void updateLights() {
       }
     }
 
-    //avg_millis_per_frame.addValue(millis() - last_frame);
-
     DEBUG_PRINT(F(" | ms since last frame="));
-    //DEBUG_PRINTLN(avg_millis_per_frame.getFastAverage());
     DEBUG_PRINTLN(millis() - last_frame);
 
     last_frame = millis();
