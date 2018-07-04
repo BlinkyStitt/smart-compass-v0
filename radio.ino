@@ -244,11 +244,6 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
-  if (rtc.isConfigured()) {
-    DEBUG_PRINTLN(F("Time not set! Skipping transmission."));
-    return;
-  }
-
   unsigned long time_now = rtc.getY2kEpoch();
 
   // TODO: tie this 2 second limit to update interval
@@ -327,7 +322,7 @@ void radioTransmit(const int pid) {
   rf95.send(radio_buf, ostream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights();  // we update lights here because sending can be slow
-    FastLED.delay(2);   // TODO: how long should we delay?
+    FastLED.delay(loop_delay_ms);
   }
 
   if (tx_compass_location) {

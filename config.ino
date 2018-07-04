@@ -144,19 +144,23 @@ void setupConfig() {
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 30; // TODO: increase this when done debugging
+    default_brightness = 20; // TODO: increase this when done debugging
   }
   DEBUG_PRINTLN(default_brightness);
 
   DEBUG_PRINT(F("frames_per_second: "));
   if (!frames_per_second) {
     DEBUG_PRINT(F("(default) "));
-    frames_per_second = 30;   // TODO: 60?
+    frames_per_second = 60;   // TODO: 60?
   }
   DEBUG_PRINTLN(frames_per_second);
 
   DEBUG_PRINT(F("goal milliseconds per frame: "));
   DEBUG_PRINTLN2(1000.0/frames_per_second, 2);
+
+  loop_delay_ms = 100 / frames_per_second;
+  DEBUG_PRINT(F("loop_delay_ms: "));
+  DEBUG_PRINTLN(loop_delay_ms);
 
   DEBUG_PRINT(F("max_peer_distance: "));
   if (!max_peer_distance) {
@@ -291,11 +295,17 @@ bool setupSecurity() {
   // hash the key for use as the network id
   networkIdFromKey(my_network_key, my_network_hash);
 
-  // TODO: this is wrong. only the first few bytes are being set despite having a full length key
+  // TODO: this is wrong. it's printing "-A-"
   DEBUG_PRINT(F("key-based my_network_hash: "));
+  if (my_network_hash[0] < 0x10) {
+    DEBUG_PRINT2(0, HEX);
+  }
   DEBUG_PRINT2(my_network_hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
+    if (my_network_hash[i] < 0x10) {
+      DEBUG_PRINT2(0, HEX);
+    }
     DEBUG_PRINT2(my_network_hash[i], HEX);
   }
   DEBUG_PRINTLN();

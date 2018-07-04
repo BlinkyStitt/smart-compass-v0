@@ -26,17 +26,16 @@ void updateLightsForClock() {
     }
   }
 
-  // TODO: zero-pad
-//  DEBUG_PRINT("time: ");
-  DEBUG_PRINT(adjusted_hour);
+  print2digits(adjusted_hour);
   DEBUG_PRINT(":");
-  DEBUG_PRINT(adjusted_minute);
+  print2digits(adjusted_minute);
   DEBUG_PRINT(":");
-  DEBUG_PRINTLN(adjusted_seconds);
+  print2digits(adjusted_seconds);
+  DEBUG_PRINTLN();
 
   // TODO: is there a formula for this?
   // int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
-  int hour_led_id = inner_ring_start + inner_ring_size / 2;    // start half way through
+  int hour_led_id = inner_ring_start + (inner_ring_size / 2);    // start half way through
   switch (adjusted_hour) {
   case 0:
     hour_led_id += 0;
@@ -80,14 +79,14 @@ void updateLightsForClock() {
 
   // inner ring and outer ring are wired in opposite directions
   // we also need to rotate 180 degrees since the rings are upside down
-  //int inner_minute_led_id = (map(adjusted_minute, 0, 60, inner_ring_size, 0) + inner_ring_size/2) % inner_ring_size + inner_ring_start;
-  int outer_minute_led_id = (map(adjusted_minute, 0, 60, 0, outer_ring_size) + outer_ring_size/2) % outer_ring_size + outer_ring_start;
+  //int inner_minute_led_id = (map(adjusted_minute, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) % inner_ring_size + inner_ring_start;
+  int outer_minute_led_id = (map(adjusted_minute, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
 
-  //int inner_second_led_id = map(adjusted_seconds, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
-  int outer_second_led_id = (map(adjusted_seconds, 0, 60, 0, outer_ring_size) + outer_ring_size/2) % outer_ring_size + outer_ring_start;
+  //int inner_second_led_id = (map(adjusted_seconds, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) % inner_ring_size + inner_ring_start;
+  int outer_second_led_id = (map(adjusted_seconds, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
 
   /*
-  DEBUG_PRINT("led_ids hour ,minute, second: ");
+  DEBUG_PRINT("hour, minute, second: ");
   DEBUG_PRINT(hour_led_id);
   DEBUG_PRINT(" ");
   DEBUG_PRINT(minute_led_id);
@@ -101,7 +100,7 @@ void updateLightsForClock() {
   // TODO: blink instead of full brightness?
 
   // fade all lights
-  fadeToBlackBy(leds, num_LEDs, 90);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   // set minute first so second passes over it
   //leds[inner_minute_led_id] = CRGB::Blue;
@@ -114,4 +113,11 @@ void updateLightsForClock() {
   // set hour last so it is always on top
   // hour is only on the inner ring
   leds[hour_led_id] = CRGB::Red;
+}
+
+void print2digits(int number) {
+  if (number < 10) {
+    DEBUG_PRINT("0");
+  }
+  DEBUG_PRINT(number);
 }

@@ -1,12 +1,25 @@
 /* light patterns */
 
 void flashlight() {
+  static int turn_on_id = 0;
+  // smoothly transition from other patterns
+  // TODO: would be nice to call fade on just the status bar here
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
+
   for (int i = inner_ring_start; i < outer_ring_end; i++) {
-    if (i % flashlight_density == 0) {
+    if (i % flashlight_density == turn_on_id) {
+      // TODO: slowly turn on (at LED_FADE_RATE?) instead of jumping to full brightness?
       leds[i] = CRGB::White;
-    } else {
-      // smoothly transition from other patterns
-      leds[i].fadeToBlackBy(90);
+    }
+  }
+
+  // TODO: tune this
+  // rotate the LEDs slowly
+  EVERY_N_SECONDS(3) {
+    turn_on_id++;
+
+    if (turn_on_id >= flashlight_density) {
+      turn_on_id = 0;
     }
   }
 }
@@ -14,7 +27,8 @@ void flashlight() {
 // https://gist.github.com/kriegsman
 void sinelon() {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy(leds, num_LEDs, 64);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
+
   int pos = beatsin16(13, 0, num_LEDs);
   leds[pos] += CHSV(g_hue, 255, 192);
 }
@@ -26,7 +40,7 @@ void circle() {
   int pos = (network_ms / ms_per_led) % (outer_ring_end - inner_ring_start) + inner_ring_start;
 
   // fade everything
-  fadeToBlackBy(leds, num_LEDs, 64);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   // todo: what saturation and value
   leds[pos] = CHSV(g_hue, 255, 255);

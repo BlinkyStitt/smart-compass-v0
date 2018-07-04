@@ -133,10 +133,6 @@ static Orientation getOrientation() {
     return ORIENTED_UP;
   }
 
-  // TODO: DEBUGGING! REMOVE WHEN DONE!
-  return ORIENTED_PORTRAIT_UPSIDE_DOWN;
-  // TODO: END DEBUGGING! REMOVE WHEN DONE!
-
   sensorReceive();
 
   // read accelerometer:
