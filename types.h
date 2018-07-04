@@ -27,6 +27,6 @@ typedef struct {
   int32_t latitude;
   int32_t longitude;
   float distance;
-  int32_t magnetic_bearing; // TODO: type?
+  float magnetic_bearing;
   CHSV color;
 } CompassPin;
