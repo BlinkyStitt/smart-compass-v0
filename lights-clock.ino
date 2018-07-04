@@ -1,22 +1,29 @@
-// TODO: change this to work on 2 light rings
+// TODO: the time library is not working well. its running really 16 seconds behind after only a minute
 
 void updateLightsForClock() {
   // turn the time into a watch face with just an hour hand
+  static int adjusted_seconds = 0;
+  static int adjusted_minute = 0;
+  static int adjusted_hour = 0;
 
-  // TODO: do we care about gpsMs? we only have 16 lights of output
-  int adjusted_seconds = second(); // + (gpsMs % 1000) / 1000;
+  // TODO: tune this
+  EVERY_N_MILLISECONDS(500) {
+    // TODO: do we care about gpsMs? we only have 16 lights of output
+    adjusted_seconds = second();
 
-  int adjusted_minute = minute() + adjusted_seconds / 60.0;
+    adjusted_minute = minute() + adjusted_seconds / 60.0;
 
-  // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
-  int adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
-  if (adjusted_hour < 0) {
-    adjusted_hour += 12;
-  } else if (adjusted_hour >= 12) {
-    adjusted_hour -= 12;
+    // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
+    adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
+    if (adjusted_hour < 0) {
+      adjusted_hour += 12;
+    } else if (adjusted_hour >= 12) {
+      adjusted_hour -= 12;
+    }
   }
 
-  DEBUG_PRINT("time: ");
+  // TODO: zero-pad
+//  DEBUG_PRINT("time: ");
   DEBUG_PRINT(adjusted_hour);
   DEBUG_PRINT(":");
   DEBUG_PRINT(adjusted_minute);
@@ -25,7 +32,7 @@ void updateLightsForClock() {
 
   // TODO: is there a formula for this?
   // int hour_led_id = map(adjusted_hour, 0, 12, 16, 0) % 16;
-  int hour_led_id = inner_ring_start;
+  int hour_led_id = inner_ring_start + inner_ring_size / 2;    // start half way through
   switch (adjusted_hour) {
   case 0:
     hour_led_id += 0;
@@ -64,13 +71,16 @@ void updateLightsForClock() {
     hour_led_id += 1;
     break;
   }
+  // wrap around
+  hour_led_id %= inner_ring_size;
 
   // inner ring and outer ring are wired in opposite directions
-  int inner_minute_led_id = map(adjusted_minute, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
-  int outer_minute_led_id = map(adjusted_minute, 0, 60, 0, outer_ring_size) % outer_ring_size + outer_ring_start;
+  // we also need to rotate 180 degrees since the rings are upside down
+  //int inner_minute_led_id = (map(adjusted_minute, 0, 60, inner_ring_size, 0) + inner_ring_size/2) % inner_ring_size + inner_ring_start;
+  int outer_minute_led_id = (map(adjusted_minute, 0, 60, 0, outer_ring_size) + outer_ring_size/2) % outer_ring_size + outer_ring_start;
 
-  int inner_second_led_id = map(adjusted_seconds, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
-  int outer_second_led_id = map(adjusted_seconds, 0, 60, 0, outer_ring_size) % outer_ring_size + outer_ring_start;
+  //int inner_second_led_id = map(adjusted_seconds, 0, 60, inner_ring_size, 0) % inner_ring_size + inner_ring_start;
+  int outer_second_led_id = (map(adjusted_seconds, 0, 60, 0, outer_ring_size) + outer_ring_size/2) % outer_ring_size + outer_ring_start;
 
   /*
   DEBUG_PRINT("led_ids hour ,minute, second: ");
@@ -91,11 +101,11 @@ void updateLightsForClock() {
   fadeToBlackBy(leds, num_LEDs, 90);
 
   // set minute first so second passes over it
-  leds[inner_minute_led_id] = CRGB::Blue;
+  //leds[inner_minute_led_id] = CRGB::Blue;
   leds[outer_minute_led_id] = CRGB::Blue;
 
   // set second
-  leds[inner_second_led_id] = CRGB::Green;
+  //leds[inner_second_led_id] = CRGB::Green;
   leds[outer_second_led_id] = CRGB::Green;
 
   // set hour last so it is always on top

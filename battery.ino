@@ -1,4 +1,4 @@
-int checkBattery() {
+BatteryStatus checkBattery() {
   // TODO: do something with this
   float measuredvbat = analogRead(VBAT_PIN);
   measuredvbat *= 2;    // we divided by 2, so multiply back

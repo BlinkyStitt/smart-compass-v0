@@ -237,8 +237,8 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 }
 
 #else
-void printSmartCompassLocationMessage(SmartCompassLocationMessage message) {}
-void printSmartCompassPinnMessage(SmartCompassPinMessage message) {}
+void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {}
+void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {}
 #endif
 
 void radioTransmit(const int pid) {

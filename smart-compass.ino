@@ -25,12 +25,7 @@
 #include <BLAKE2s.h>
 
 #include "smart-compass.pb.h"
-
-#ifdef DEBUG
-// debug-only includes
-#include <RunningAverage.h>
-
-#endif
+#include "types.h"
 
 #define MAX_PINS 255
 
@@ -117,20 +112,7 @@ File my_file;
 // TODO: i think our loop check has a bug. this used to just be a boolean, but that had a bug. it should have worked tho
 long last_transmitted[max_peers] = {0};
 
-enum Orientation : byte {
-  ORIENTED_UP,
-  ORIENTED_DOWN,
-  ORIENTED_USB_UP,
-  ORIENTED_USB_DOWN,
-  ORIENTED_PORTRAIT_UPSIDE_DOWN,
-  ORIENTED_PORTRAIT
-};
-
-enum BatteryStatus : byte { BATTERY_DEAD, BATTERY_LOW, BATTERY_OK, BATTERY_FULL };
-
 bool config_setup, sd_setup, sensor_setup = false;
-
-enum CompassMode : byte { COMPASS_FRIENDS, COMPASS_PLACES };
 
 typedef struct _CompassPin {
   bool transmitted;
@@ -207,6 +189,8 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
+#else
+  delay(1500);  // todo: tune this. don't get locked out if something crashes
 #endif
 
   DEBUG_PRINTLN("Setting up...");
@@ -252,7 +236,7 @@ void setup() {
   }
 
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
-  tcConfigure(100);
+  tcConfigure(300);
   tcStartCounter();
 
   DEBUG_PRINTLN(F("Starting..."));
@@ -269,6 +253,8 @@ void loop() {
 
     updateLights();
 
+    /*
+    // TODO: disabled while i troubleshoot the clock
     if (timeStatus() == timeNotSet) {
       radioReceive();
     } else {
@@ -289,6 +275,7 @@ void loop() {
         radioReceive();
       }
     }
+    */
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights();

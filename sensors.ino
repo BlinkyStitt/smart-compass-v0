@@ -126,10 +126,10 @@ void sensorReceive() {
 }
 
 static Orientation getOrientation() {
-  DEBUG_PRINT(F("Orientation: "));
+//  DEBUG_PRINT(F("Orientation: "));
 
   if (!sensor_setup) {
-    DEBUG_PRINTLN(F("UP (no sensor)"));
+//    DEBUG_PRINTLN(F("UP (no sensor)"));
     return ORIENTED_UP;
   }
 
@@ -148,29 +148,29 @@ static Orientation getOrientation() {
   if ((absZ > absX) && (absZ > absY)) {
     // base orientation on Z
     if (z > 0) {
-      DEBUG_PRINTLN(F("UP"));
+//      DEBUG_PRINTLN(F("UP"));
       return ORIENTED_UP;
     }
-    DEBUG_PRINTLN(F("DOWN"));
+//    DEBUG_PRINTLN(F("DOWN"));
     return ORIENTED_DOWN;
   }
 
   if ((absY > absX) && (absY > absZ)) {
     // base orientation on Y
     if (y > 0) {
-      DEBUG_PRINTLN(F("USB_DOWN"));
+//      DEBUG_PRINTLN(F("USB_DOWN"));
       return ORIENTED_USB_DOWN;
     }
-    DEBUG_PRINTLN(F("USB_UP"));
+//    DEBUG_PRINTLN(F("USB_UP"));
     return ORIENTED_USB_UP;
   }
 
   // base orientation on X
   if (x < 0) {
-    DEBUG_PRINTLN(F("UPSIDE_DOWN"));
+//    DEBUG_PRINTLN(F("UPSIDE_DOWN"));
     return ORIENTED_PORTRAIT_UPSIDE_DOWN;
   }
 
-  DEBUG_PRINTLN(F("PORTRAIT"));
+//  DEBUG_PRINTLN(F("PORTRAIT"));
   return ORIENTED_PORTRAIT;
 }
