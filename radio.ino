@@ -244,12 +244,12 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
-  if (timeStatus() == timeNotSet) {
+  if (rtc.isConfigured()) {
     DEBUG_PRINTLN(F("Time not set! Skipping transmission."));
     return;
   }
 
-  unsigned long time_now = now();
+  unsigned long time_now = rtc.getY2kEpoch();
 
   // TODO: tie this 2 second limit to update interval
   // TODO: what if time_now wraps?

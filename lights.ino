@@ -305,11 +305,7 @@ void updateLights() {
     case ORIENTED_PORTRAIT_UPSIDE_DOWN:
       // show the time
       // TODO: usb up is showing this, too. check orientations
-      if (timeStatus() == timeSet) {
-        updateLightsForClock();
-      } else {
-        updateLightsForLoading();
-      }
+      updateLightsForClock();
       break;
     }
 

@@ -6,15 +6,19 @@ void updateLightsForClock() {
   static int adjusted_minute = 0;
   static int adjusted_hour = 0;
 
+  if (!rtc.isConfigured()) {
+    updateLightsForLoading();
+  }
+
   // TODO: tune this
   EVERY_N_MILLISECONDS(500) {
     // TODO: do we care about gpsMs? we only have 16 lights of output
-    adjusted_seconds = second();
+    adjusted_seconds = rtc.getSeconds();
 
-    adjusted_minute = minute() + adjusted_seconds / 60.0;
+    adjusted_minute = rtc.getMinutes() + adjusted_seconds / 60.0;
 
     // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
-    adjusted_hour = hour() + time_zone_offset + adjusted_minute / 60.0;
+    adjusted_hour = rtc.getHours() + time_zone_offset + adjusted_minute / 60.0;
     if (adjusted_hour < 0) {
       adjusted_hour += 12;
     } else if (adjusted_hour >= 12) {
@@ -95,7 +99,6 @@ void updateLightsForClock() {
   // TODO: what colors should the leds be?
   // TODO: i'm not sure i like how i'm handling overlapping
   // TODO: blink instead of full brightness?
-  // TODO: add a second, larger ring
 
   // fade all lights
   fadeToBlackBy(leds, num_LEDs, 90);

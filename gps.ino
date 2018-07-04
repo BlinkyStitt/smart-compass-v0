@@ -83,35 +83,32 @@ void gpsReceive() {
   // TODO: include GPS.milliseconds
   // TODO: should we just do this every time? how expensive is this?
   // TODO: our clock is running WAY slow so we just set it every time
-  if ((true) || (second() - GPS.seconds > 1) || (timeStatus() == timeNotSet)) {
+  if (!rtc.isConfigured() or (abs(rtc.getSeconds() - GPS.seconds) > 1)) {
     /*
-    DEBUG_PRINT(second());
+    DEBUG_PRINT(rtc.getSeconds());
     DEBUG_PRINT(F(" vs "));
     DEBUG_PRINT(GPS.seconds);
     */
 
     // TODO: fork TimeLib to include GPS.milliseconds in setTime
-    setTime(GPS.hour, GPS.minute, GPS.seconds, GPS.day, GPS.month, GPS.year);
+    rtc.setTime(GPS.hour, GPS.minute, GPS.seconds);
+    rtc.setDate(GPS.day, GPS.month, GPS.year);
+
     DEBUG_PRINT(F("GPS Time: "));
-    DEBUG_PRINTLN(now());
+    DEBUG_PRINTLN(rtc.getY2kEpoch());
   }
 
-  compass_messages[my_peer_id].last_updated_at = now(); // TODO: seconds or milliseconds?
+  compass_messages[my_peer_id].last_updated_at = rtc.getY2kEpoch(); // TODO: this is seconds. should we use milliseconds?
 
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
   /*
   // hard code salesforce tower while debugging
+  // TODO: enable this by setting config on the SD card
   compass_messages[my_peer_id].latitude = 37789900;
   compass_messages[my_peer_id].longitude = -122396900;
   */
-
-  // TODO: do we really need to do this every time? how expensive is this?
-  // calculate magnetic declination in software. the gps chip and library
-  // support it with GPS.magvariation but the Ultimate GPS module we are using
-  // is configured to store log data instead of calculate it
-  magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
 
   /*
   DEBUG_PRINT("Fix: "); DEBUG_PRINT((int)GPS.fix);
@@ -136,7 +133,7 @@ void gpsReceive() {
   DEBUG_PRINT("Altitude: "); DEBUG_PRINTLN(GPS.altitude);
 
   //DEBUG_PRINT("GPS Mag variation: "); DEBUG_PRINTLN(GPS.magvariation, 4);
-  DEBUG_PRINT("Software Mag variation: "); DEBUG_PRINTLN(magnetic_declination,
+  DEBUG_PRINT("Software Mag variation: "); DEBUG_PRINTLN(g_magnetic_declination,
   4);
   */
 
@@ -157,6 +154,12 @@ void gpsReceive() {
   DEBUG_PRINT2(GPS.latitudeDegrees, 5);
   DEBUG_PRINT(F(", "));
   DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
+
+  // calculate magnetic declination in software. the gps chip and library
+  // support it with GPS.magvariation but the Ultimate GPS module we are using
+  // is configured to store log data instead of calculate declination
+  // TODO: should we do this even less often? how expensive is this?
+  g_magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
 
   // open the SD card
   // TODO: config option to disable this
