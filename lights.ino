@@ -38,7 +38,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
   updateCompassPoints(compass_mode);
 
   // fade all lights
-  fadeToBlackBy(leds, num_LEDs, 90);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   // cycle through the colors for each light
   // TODO: dry this up
@@ -185,7 +185,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
   }
 
   // fade all lights
-  fadeToBlackBy(leds, num_LEDs, 90);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   if (configure_ms < 5000) {
     // fill up the inner circle of lights over 5 seconds

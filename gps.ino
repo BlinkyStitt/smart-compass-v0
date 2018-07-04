@@ -49,8 +49,8 @@ void gpsReceive() {
   static int last_longitude = 0;
 
   // limit updates to at most every 3 seconds
-  // TODO: configure off SD card instead of hard coding 1 seconds
-  if (last_gps_update and (millis() - last_gps_update < 2000)) {
+  // TODO: configure off SD card instead of hard coding the seconds
+  if (last_gps_update and (millis() - last_gps_update < 3000)) {
     return;
   }
 
@@ -76,32 +76,44 @@ void gpsReceive() {
     // TODO: clear my compass_message?
     return;
   }
-  last_gps_update = millis();
 
   // TODO: do we have time before GPS.fix?
   // set the time to match the GPS if it isn't set or has drifted
   // TODO: include GPS.milliseconds
   // TODO: should we just do this every time? how expensive is this?
-  // TODO: our clock is running WAY slow so we just set it every time
   if (!rtc.isConfigured() or (abs(rtc.getSeconds() - GPS.seconds) > 1)) {
-    /*
-    DEBUG_PRINT(rtc.getSeconds());
-    DEBUG_PRINT(F(" vs "));
-    DEBUG_PRINT(GPS.seconds);
-    */
+#ifdef DEBUG
+    if (rtc.isConfigured()) {
+      DEBUG_PRINT(rtc.getSeconds());
+      DEBUG_PRINT(F(" vs "));
+      DEBUG_PRINTLN(GPS.seconds);
+    }
+#endif
 
-    // TODO: fork TimeLib to include GPS.milliseconds in setTime
+    // TODO: fork rtc to include GPS.milliseconds in setTime
     rtc.setTime(GPS.hour, GPS.minute, GPS.seconds);
+
+    // update lights here because setting the time can be slow
+    updateLights();
+
     rtc.setDate(GPS.day, GPS.month, GPS.year);
 
-    DEBUG_PRINT(F("GPS Time: "));
+    // update lights here because setting the time can be slow
+    updateLights();
+
+    DEBUG_PRINT(F("GPS Y2k Epoch: "));
     DEBUG_PRINTLN(rtc.getY2kEpoch());
   }
 
+  last_gps_update = millis();
+
   compass_messages[my_peer_id].last_updated_at = rtc.getY2kEpoch(); // TODO: this is seconds. should we use milliseconds?
 
-  compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
-  compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
+  // A value in decimal degrees to 5 decimal places is precise to 1.1132 meter at the equator
+  // Accuracy to 5 decimal places with commercial GPS units can only be achieved with differential correction.
+  // so lets divide by 1000 to get to ~11 meter accuracy (TODO: round?)
+  compass_messages[my_peer_id].latitude = GPS.latitude_fixed / 1000;
+  compass_messages[my_peer_id].longitude = GPS.longitude_fixed / 1000;
 
   /*
   // hard code salesforce tower while debugging
@@ -138,28 +150,33 @@ void gpsReceive() {
   */
 
   // compare lat/long with less precision so we don't log all the time
-  // TODO: how much precision are we losing? 10m?
-  // TODO: I'm still getting some duplicates
-  int cur_latitude = GPS.latitude_fixed / 100;
-  int cur_longitude = GPS.longitude_fixed / 100;
-  if (last_latitude == cur_latitude && last_longitude == cur_longitude) {
-    // don't bother saving if the points haven't changed
+  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3) and (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3)) {
+    // don't bother saving if the points haven't changed much
     return;
   }
-  last_latitude = cur_latitude;
-  last_longitude = cur_longitude;
+
+  DEBUG_PRINT("last_latitude=");
+  DEBUG_PRINTLN(last_latitude);
+  DEBUG_PRINT("last_longitude=");
+  DEBUG_PRINTLN(last_longitude);
+
+  last_latitude = compass_messages[my_peer_id].latitude;
+  last_longitude = compass_messages[my_peer_id].longitude;
 
   // TODO: do we have 5 decimals of precision? was 4
   DEBUG_PRINT(F("Location: "));
-  DEBUG_PRINT2(GPS.latitudeDegrees, 5);
+  DEBUG_PRINT2(GPS.latitudeDegrees, 4);
   DEBUG_PRINT(F(", "));
-  DEBUG_PRINTLN2(GPS.longitudeDegrees, 5);
+  DEBUG_PRINTLN2(GPS.longitudeDegrees, 4);
 
   // calculate magnetic declination in software. the gps chip and library
   // support it with GPS.magvariation but the Ultimate GPS module we are using
   // is configured to store log data instead of calculate declination
   // TODO: should we do this even less often? how expensive is this?
   g_magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
+
+  // update lights here because logging to GPS can be slow
+  updateLights();
 
   // open the SD card
   // TODO: config option to disable this
@@ -174,28 +191,29 @@ void gpsReceive() {
   }
 
   DEBUG_PRINT(F("Logging GPS data... "));
-  DEBUG_PRINT(gps_log_filename);
+  DEBUG_PRINTLN(gps_log_filename);
 
-  /*
-  // TODO: this is crashing.
+  // TODO: this is crashing (sometimes)
   my_file.print(compass_messages[my_peer_id].last_updated_at);
   my_file.print(",");
-  my_file.print(GPS.latitudeDegrees, 5);
+  my_file.print(GPS.latitudeDegrees, 4);
   my_file.print(",");
-  my_file.print(GPS.longitudeDegrees, 5);
+  my_file.print(GPS.longitudeDegrees, 4);
   my_file.print(",");
   my_file.print(GPS.speed);
   my_file.print(",");
   my_file.print(GPS.angle);
   my_file.println(";");
-  */
 
   // TODO: do we want to log anything else?
+
+  // update lights here because logging to GPS can be slow
+  updateLights();
 
   // close the file:
   my_file.close();
 
-  DEBUG_PRINTLN(F(" done."));
+  DEBUG_PRINTLN(F("Logging done."));
 
   // TODO: every now and then it crashes after this. not sure why
 }

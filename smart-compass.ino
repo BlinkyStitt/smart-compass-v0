@@ -29,6 +29,9 @@
 
 #define MAX_PINS 255
 
+// TODO: put on SD?
+#define LED_FADE_RATE 90
+
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
 #define RFM95_RST 4 // already wired for us
@@ -87,8 +90,8 @@ uint8_t my_network_key[NETWORK_KEY_SIZE];
 
 // these are set by config or fallback to defaults
 // TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
-int broadcast_time_s, default_brightness, flashlight_density, frames_per_second, gps_update_s, min_peer_distance,
-    max_peer_distance, ms_per_light_pattern, peer_led_ms, radio_power;
+int broadcast_time_s, default_brightness, flashlight_density, frames_per_second, gps_update_s, loop_delay_ms,
+    min_peer_distance, max_peer_distance, ms_per_light_pattern, peer_led_ms, radio_power;
 
 int time_zone_offset;
 
@@ -248,18 +251,16 @@ void loop() {
 
     updateLights();
 
-    /*
-    // TODO: disabled while i troubleshoot the clock
-    if (timeStatus() == timeNotSet) {
-      radioReceive();
-    } else {
+    if (rtc.isConfigured()) {
       // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
       // TODO: should there be downtime when no one is transmitting or receiving?
 
       // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure
       // it matters
       // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
+      // TODO: only calculate this every 100ms or something like that?
       time_segment_id = (rtc.getY2kEpoch() / broadcast_time_s) % time_segments;
+
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
 
@@ -269,14 +270,18 @@ void loop() {
         // TODO: have known down time so we can sleep longer?
         radioReceive();
       }
+    } else {
+      // we don't know what time it is. listen and we might hear the time from a peer
+      radioReceive();
     }
-    */
+
+    // TODO: this seems excessive, but maybe it will keep framerate smoother
+    updateLights();
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights();
   }
 
   // don't sleep too long or you get in the way of radios. keep this less < framerate
-  // delayToDither(10);
-  FastLED.delay(10);
+  FastLED.delay(loop_delay_ms);
 }
