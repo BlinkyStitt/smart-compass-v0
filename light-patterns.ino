@@ -15,7 +15,7 @@ void flashlight() {
 
   // TODO: tune this
   // rotate the LEDs slowly
-  EVERY_N_SECONDS(3) {
+  EVERY_N_SECONDS(30) {
     turn_on_id++;
 
     if (turn_on_id >= flashlight_density) {
