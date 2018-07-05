@@ -181,9 +181,11 @@ void setup() {
   Serial.begin(115200);
 
   delay(1000);
+  /*
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
+  */
 #else
   delay(1500);  // todo: tune this. don't get locked out if something crashes
 #endif
@@ -234,6 +236,7 @@ void setup() {
   rtc.begin();
 
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
+  // TODO: tune this
   tcConfigure(300);
   tcStartCounter();
 

@@ -112,8 +112,8 @@ void gpsReceive() {
   // A value in decimal degrees to 5 decimal places is precise to 1.1132 meter at the equator
   // Accuracy to 5 decimal places with commercial GPS units can only be achieved with differential correction.
   // so lets divide by 1000 to get to ~11 meter accuracy (TODO: round?)
-  compass_messages[my_peer_id].latitude = GPS.latitude_fixed / 1000;
-  compass_messages[my_peer_id].longitude = GPS.longitude_fixed / 1000;
+  compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
+  compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
   /*
   // hard code salesforce tower while debugging
@@ -150,7 +150,8 @@ void gpsReceive() {
   */
 
   // compare lat/long with less precision so we don't log all the time
-  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3) and (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3)) {
+  // TODO: what units is this? 30 meters?
+  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3000) and (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
     // don't bother saving if the points haven't changed much
     return;
   }
