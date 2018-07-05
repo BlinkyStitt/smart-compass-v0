@@ -196,7 +196,7 @@ void setupConfig() {
   DEBUG_PRINT(F("time_zone_offset: "));
   if (!time_zone_offset) {
     DEBUG_PRINT(F("(default) "));
-    time_zone_offset = -8;
+    time_zone_offset = -7;
   }
   DEBUG_PRINTLN(time_zone_offset);
 
