@@ -268,14 +268,14 @@ void radioTransmit(const int pid) {
       // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
+      updateLights();  // we update lights here because sending can be slow
       rf95.sleep();
+      updateLights();  // we update lights here because sending can be slow
       return;
     }
   }
 
-  DEBUG_PRINT(F("My time to transmit ("));
-  DEBUG_PRINT(time_now);
-  DEBUG_PRINTLN(F(")... "));
+  DEBUG_PRINTLN(F("My time to transmit..."));
 
   /*
   // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
@@ -299,6 +299,8 @@ void radioTransmit(const int pid) {
 
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
+
+  updateLights();  // we update lights here because sending can be slow
 
   if (tx_compass_location) {
     encodeCompassMessage(&ostream, compass_messages[pid], time_now);
@@ -332,6 +334,9 @@ void radioTransmit(const int pid) {
   }
 
   DEBUG_PRINTLN(F("Transmit done."));
+
+  updateLights();  // we update lights here because sending can be slow
+
   return;
 }
 
@@ -363,6 +368,8 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage com
   printSmartCompassLocationMessage(compass_message, false, true);
   signSmartCompassLocationMessage(compass_message, compass_message.message_hash);
 
+  updateLights();  // we update lights here because encoding can be slow
+
   if (!pb_encode(ostream, SmartCompassLocationMessage_fields, &compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
     return;
@@ -390,6 +397,8 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin compass_pin, unsigned lo
 
   printSmartCompassPinMessage(pin_message_tx, false, true);
   signSmartCompassPinMessage(pin_message_tx, pin_message_tx.message_hash);
+
+  updateLights();  // we update lights here because encoding can be slow
 
   if (!pb_encode(ostream, SmartCompassPinMessage_fields, &pin_message_tx)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
@@ -419,13 +428,16 @@ void radioReceive() {
     return;
   }
 
+  updateLights();  // we update lights here because receiving can be slow
+
   DEBUG_PRINT(F("RSSI: "));
   DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
 
   pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
 
   if (pb_decode(&stream, SmartCompassLocationMessage_fields, &location_message_rx)) {
-    // TODO: update lights here?
+    updateLights();  // we update lights here because decoding can be slow
+
     receiveLocationMessage(location_message_rx);
     return;
   } else {
@@ -436,7 +448,8 @@ void radioReceive() {
     // TODO: can we simply re-use the stream? do we need to reset or something?
     stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
-      // TODO: update lights here?
+      updateLights();  // we update lights here because decoding can be slow
+
       receivePinMessage(pin_message_rx);    // TODO: write this
     } else {
       DEBUG_PRINT(F("Decoding as pin message failed: "));

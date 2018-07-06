@@ -48,6 +48,11 @@ void gpsReceive() {
   static int last_latitude = 0;
   static int last_longitude = 0;
 
+  // check GPS for data
+  // this used to happen in an interrupt, but that can cause issues with neopixels (need dotstar rings!)
+  // NOTE! if framerate is slow, read won't get called often enough and you should move this somewhere it will be called faster
+  GPS.read();
+
   // limit updates to at most every 3 seconds
   // TODO: configure off SD card instead of hard coding the seconds
   if (last_gps_update and (millis() - last_gps_update < 3000)) {
@@ -82,15 +87,10 @@ void gpsReceive() {
   // TODO: include GPS.milliseconds
   // TODO: should we just do this every time? how expensive is this?
   if (!rtc.isConfigured() or (abs(rtc.getSeconds() - GPS.seconds) > 1)) {
-#ifdef DEBUG
-    if (rtc.isConfigured()) {
-      DEBUG_PRINT(rtc.getSeconds());
-      DEBUG_PRINT(F(" vs "));
-      DEBUG_PRINTLN(GPS.seconds);
-    }
-#endif
+    DEBUG_PRINTLN(F("Setting time..."));
 
     // TODO: fork rtc to include GPS.milliseconds in setTime
+    // do minimal commands between this and parsing the gps message
     rtc.setTime(GPS.hour, GPS.minute, GPS.seconds);
 
     // update lights here because setting the time can be slow
@@ -100,9 +100,6 @@ void gpsReceive() {
 
     // update lights here because setting the time can be slow
     updateLights();
-
-    DEBUG_PRINT(F("GPS Y2k Epoch: "));
-    DEBUG_PRINTLN(rtc.getY2kEpoch());
   }
 
   last_gps_update = millis();
@@ -195,6 +192,7 @@ void gpsReceive() {
   DEBUG_PRINTLN(gps_log_filename);
 
   // TODO: this is crashing (sometimes)
+  // TODO: rewrite this to use database code
   my_file.print(compass_messages[my_peer_id].last_updated_at);
   my_file.print(",");
   my_file.print(GPS.latitudeDegrees, 4);

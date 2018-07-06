@@ -2,6 +2,7 @@
 
 // time based pattern spread out across everyone's LEDs
 // TODO: change this so that location shift and color shift are different values
+// TODO: why does this appear to move backwards? maybe we should shift with subtraction?
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
@@ -20,8 +21,7 @@ void networkedLights() {
     // light up every Nth light. the others will dim
     if (shifted_i % 5 == 0) {
       // TODO: use a color pallet?
-      // TODO: shift the color more?
-      int color_value = map((i + shift) % network_LEDs, 0, network_LEDs, 0, 255);
+      int color_value = map((shifted_i) % network_LEDs, 0, network_LEDs, 0, 255);
       leds[i] = CHSV(color_value, 255, 255);
     }
   }
