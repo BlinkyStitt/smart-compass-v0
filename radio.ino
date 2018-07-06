@@ -327,13 +327,17 @@ void radioTransmit(const int pid) {
     FastLED.delay(loop_delay_ms);
   }
 
+  // TODO: it is sometimes crashing here or inside the above while loop :'(
+
+  DEBUG_PRINT(F("Transmit done."));
+
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
   } else {
     compass_pins[tx_pin_id].transmitted = true;
   }
 
-  DEBUG_PRINTLN(F("Transmit done."));
+  DEBUG_PRINTLN(F("Time updated."));
 
   updateLights();  // we update lights here because sending can be slow
 
