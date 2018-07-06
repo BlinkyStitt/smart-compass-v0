@@ -154,7 +154,7 @@ void updateLightsForLoading() {
     return;
   }
 
-  pride();
+  networkedLights();
   return;
 }
 
@@ -270,6 +270,7 @@ void updateLights() {
   }
 
   // update the led array every frame
+  // TODO: TUNE this
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
     current_orientation = getOrientation();
     switch (current_orientation) {

@@ -235,10 +235,13 @@ void setup() {
   // setup the internal rtc
   rtc.begin();
 
+  /*
+  // TODO: no more timer. interrupts slow down millis and we want that in sync between peers
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
   // TODO: tune this
   tcConfigure(300);
   tcStartCounter();
+  */
 
   DEBUG_PRINTLN(F("Starting..."));
 }
@@ -258,6 +261,7 @@ void loop() {
       // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
       // TODO: should there be downtime when no one is transmitting or receiving?
 
+      // TODO: i don't think this is working right.
       // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure
       // it matters
       // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis

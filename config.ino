@@ -186,7 +186,7 @@ void setupConfig() {
 
   DEBUG_PRINT(F("radio_power: "));
   // 5-23 dBm
-  // TODO: whats the difference in power?
+  // TODO: whats the difference in power? tune this. figure out range (with 13, it has crashed on us when running off battery)
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
     radio_power = 13;
