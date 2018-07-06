@@ -127,15 +127,18 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
 void updateLightsForHanging() {
   // do awesome patterns
-  static int num_light_patterns = 1; // TODO: how should this work? this seems fragile. make a list of functions instead
+  static const int num_light_patterns = 1; // TODO: how should this work? this seems fragile. make an array of functions instead
 
-  // TODO: use network_ms (synced with peers) so everyone has the same light pattern
+  // use network_ms (synced with peers) so everyone has the same light pattern
   int pattern_id = (network_ms / ms_per_light_pattern) % num_light_patterns;
 
   // TODO: more patterns
   switch (pattern_id) {
   case 0:
-    pride(); // TODO: pride doesn't look very good with only 16 lights
+    networkedLights();
+    break;
+  case 1:  // TODO: bump num_light_patterns so this will get picked
+    pride();
     break;
   }
 }
