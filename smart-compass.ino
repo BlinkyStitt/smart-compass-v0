@@ -235,6 +235,8 @@ void setup() {
   tcConfigure(10);
   tcStartCounter();
 
+  checkBattery();
+
   DEBUG_PRINTLN(F("Starting..."));
 }
 

@@ -2,29 +2,27 @@
 
 // time based pattern spread out across everyone's LEDs
 // TODO: change this so that location shift and color shift are different values
-// TODO: why does this appear to move backwards? maybe we should shift with subtraction?
 // todo: this is kind of a cheater way to circle. maybe track the 3 bars seperately so it doesn't look like it stutters
 // when the color changes
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
-  static const int ms_per_led = 5 * 1000 / frames_per_second;   // X frames
+  static const int ms_per_led = 4 * 1000 / frames_per_second;   // X frames
   static int shift;
 
-  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
+  fadeToBlackBy(leds, num_LEDs, 88);
 
   // shift the pattern based on peer id and then shift more slowly over time
-  shift = (peer_shift + network_ms / ms_per_led) % network_LEDs;
+  shift = peer_shift + network_ms / ms_per_led;
 
   // i is our local ids for lights
   for (int i = 0; i < num_LEDs; i++) {
-    int shifted_i = i + shift;
+    int network_i = (i + shift) % network_LEDs;
 
     // light up every Nth light. the others will dim
-    if (shifted_i % 5 == 0) {
+    if (network_i % 5 == 0) {
       // TODO: use a color pallet?
-      // TODO: is % 255 needed? i'm seeing crashes and not sure why
-      int color_value = map((shifted_i) % network_LEDs, 0, network_LEDs, 0, 255);
+      int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
       leds[i] = CHSV(color_value, 255, 255);
     }
   }

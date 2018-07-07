@@ -158,6 +158,8 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
     DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
   }
 
+  // TODO: tx_time and last_updated_at are usually going to be very close. transmit age of message instead of tx_time
+
   DEBUG_PRINT(F(" txp="));
   DEBUG_PRINT(message.tx_peer_id);
   DEBUG_PRINT(F(" p="));
@@ -189,6 +191,7 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
     DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
   }
 
+  // TODO: should we include tx_time here?
   DEBUG_PRINT(F(" txp="));
   DEBUG_PRINT(message.tx_peer_id);
   DEBUG_PRINT(F(" t="));
