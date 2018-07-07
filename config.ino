@@ -144,19 +144,19 @@ void setupConfig() {
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 200; // TODO: decrease this when done debugging
+    default_brightness = 128; // TODO: tune this. too high and it crashes (or thats my theory)
   }
   DEBUG_PRINTLN(default_brightness);
 
   DEBUG_PRINT(F("frames_per_second: "));
   if (!frames_per_second) {
     DEBUG_PRINT(F("(default) "));
-    frames_per_second = 60;   // TODO: 60?
+    frames_per_second = 50; // TODO: 60?
   }
   DEBUG_PRINTLN(frames_per_second);
 
   DEBUG_PRINT(F("goal milliseconds per frame: "));
-  DEBUG_PRINTLN2(1000.0/frames_per_second, 2);
+  DEBUG_PRINTLN2(1000.0 / frames_per_second, 2);
 
   loop_delay_ms = 100 / frames_per_second;
   DEBUG_PRINT(F("loop_delay_ms: "));
@@ -186,13 +186,15 @@ void setupConfig() {
 
   DEBUG_PRINT(F("radio_power: "));
   // 5-23 dBm
-  // TODO: whats the difference in power? tune this. figure out range (with 13, it has crashed on us when running off battery)
+  // TODO: whats the difference in power? tune this. figure out range (with 13, it has crashed on us when running off
+  // battery)
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
-    radio_power = 20;
+    radio_power = 13;
   }
   DEBUG_PRINTLN(radio_power);
 
+  // would be cool to set this automatically, but that is way more complicated than it is worth
   DEBUG_PRINT(F("time_zone_offset: "));
   if (!time_zone_offset) {
     DEBUG_PRINT(F("(default) "));

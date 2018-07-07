@@ -15,6 +15,7 @@ void setupGPS() {
   // For parsing data, we don't suggest using anything but either RMC only or
   // RMC+GGA since the parser doesn't care about other sentences at this time
 
+  // TODO: what update rate should we use?
   // Set the update rate
   // different commands to set the update rate from once a second (1 Hz) to 10
   // times a second (10Hz) Note that these only control the rate at which the
@@ -22,12 +23,12 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
 
   // Position fix update rate commands.
-  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ);            // Once every second
+  // GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
   // GPS.sendCommand(PGCMD_ANTENNA);
@@ -42,20 +43,35 @@ void setupGPS() {
   DEBUG_PRINTLN(F("done."));
 }
 
-long getGPSTime() {
-  // TODO: include millis? include day?
-  // according to the docs, the GPS has an RTC so if you have a fix with the battery, you'll always be able to check the time
-  // i can't find where in the code this is handled though. i only see the time set when a message is parsed
-  return GPS.seconds + GPS.minute * 60 + GPS.hour * 60 * 60;
-}
+unsigned long getGPSTime() {
+  // 2018 "epoch"
+  // TODO: this jumps around a bit since it is updated when gps parsing happens. i liked the internal rtc, but it was
+  // slow to use
+  unsigned long t = (GPS.year - 2018);
 
+  t = (t * 12) + GPS.month;
+
+  // not every month has 31 days, but thats fine. we just don't want to roll back last_updated_at
+  t = (t * 31) + GPS.day;
+
+  t = (t * 24) + GPS.hour;
+
+  t = (t * 60) + GPS.minute;
+
+  t = (t * 60) + GPS.seconds;
+
+  // according to the docs, the GPS has an RTC so if you have a fix with the battery, you'll always be able to check the
+  // time i can't find where in the code this is handled though. i only see the time set when a message is parsed so i
+  // think that's when it happens and they just use the rtc to improve cold start
+  return t;
+}
 
 void gpsReceive() {
   static AP_Declination declination_calculator;
   static long last_gps_update = 0;
   static int last_latitude = 0;
   static int last_longitude = 0;
-  static const int min_update_interval = broadcast_time_s * num_peers * 1000;  // TODO: tune this
+  static const int min_update_interval = broadcast_time_s * num_peers * 1000; // TODO: tune this
 
   // limit updates
   /*
@@ -131,7 +147,8 @@ void gpsReceive() {
 
   // compare lat/long with less precision so we don't log all the time
   // TODO: what units is this? 30 meters?
-  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3000) and (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
+  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3000) and
+      (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
     // don't bother saving if the points haven't changed much
     return;
   }

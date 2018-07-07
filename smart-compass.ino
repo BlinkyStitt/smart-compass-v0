@@ -2,22 +2,23 @@
 
 #define DEBUG
 #include "bs_debug.h"
-#define ARRAY_SIZE(array) ((sizeof(array))/(sizeof(array[0])))
+#define ARRAY_SIZE(array) ((sizeof(array)) / (sizeof(array[0])))
 
 // TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
 #include <Adafruit_Sensor.h>
+#include <EDB.h>
 #include <FastLED.h>
 #include <IniFile.h>
 #include <RH_RF95.h>
 #include <SD.h>
 #include <SPI.h>
+#include <Wire.h>
 #include <elapsedMillis.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-#include <Wire.h>
 
 // it isn't legal for us to encrypt on amateur radio, but we need some sort of security so we sign our messages
 #include <BLAKE2s.h>
@@ -33,16 +34,16 @@
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
 #define RFM95_RST 4 // already wired for us
-#define LED_DATA_PIN 5
-#define RFM95_CS 8       // already wired for us
-#define VBAT_PIN 9       // already wired for us  // A7
-#define SDCARD_CS_PIN 10 // TODO: moved to a different pin for cleaner traces
-#define LSM9DS1_CSAG 11  // TODO: moved to a different pin for cleaner traces
-#define LSM9DS1_CSM 12   // TODO: moved to a different pin for cleaner traces
-#define RED_LED_PIN 13   // already wired for us
-#define SPI_MISO_PIN 22  // shared between Radio+Sensors+SD
-#define SPI_MOSI_PIN 23  // shared between Radio+Sensors+SD
-#define SPI_SCK_PIN 24   // shared between Radio+Sensors+SD
+#define LED_DATA 5
+#define RFM95_CS 8      // already wired for us
+#define VBAT_PIN 9      // already wired for us  // A7
+#define SDCARD_CS 10    // TODO: moved to a different pin for cleaner traces
+#define LSM9DS1_CSAG 11 // TODO: moved to a different pin for cleaner traces
+#define LSM9DS1_CSM 12  // TODO: moved to a different pin for cleaner traces
+#define RED_LED 13      // already wired for us
+#define SPI_MISO 22     // shared between Radio+Sensors+SD
+#define SPI_MOSI 23     // shared between Radio+Sensors+SD
+#define SPI_SCK 24      // shared between Radio+Sensors+SD
 #define gpsSerial Serial1
 
 #define LED_CHIPSET NEOPIXEL
@@ -116,7 +117,7 @@ long last_transmitted[max_peers] = {0};
 bool config_setup, sd_setup, sensor_setup = false;
 
 // todo: make compasslocationmessages work like this
-CompassPin compass_pins[MAX_PINS] = {false, 0, 0, 0, 0, 0, {0, 0, 0}};
+CompassPin compass_pins[MAX_PINS] = {0, false, 0, 0, 0, 0, 0, {0, 0, 0}};
 
 int distance_sorted_compass_pin_ids[MAX_PINS];
 int next_compass_pin = 0;
@@ -136,21 +137,22 @@ int next_outer_compass_point[outer_ring_size] = {0};
 elapsedMillis network_ms = 0;
 
 CHSV pin_colors[] = {
-  // {h, s, v},
-  // TODO: color-blind friendly colors from test-lights.ino
-  {160, 71, 255},  // CRGB::RoyalBlue
-  {0, 255, 255},  // Red for disabling, not for actual red pins!
-  {213, 255, 255},  // CRGB::Purple
-  {234, 59, 255},  // CRGB::HotPink;
-  {23, 255, 255},  // CRGB::DarkOrange;
-  {52, 219, 255},  // CRGB::Gold;
-  {104, 171, 255},  // CRGB::SeaGreen; // TODO: this one doesn't look great at full value
-  {128, 255, 255}  // CRGB::Aqua;
+    // {h, s, v},
+    // TODO: color-blind friendly colors from test-lights.ino. i can't tell what any of these are. red, yellow, blue,
+    // white
+    {160, 71, 255},  // CRGB::RoyalBlue
+    {0, 255, 255},   // Red for disabling, not for actual red pins!
+    {213, 255, 255}, // CRGB::Purple
+    {234, 59, 255},  // CRGB::HotPink;
+    {23, 255, 255},  // CRGB::DarkOrange;
+    {52, 219, 255},  // CRGB::Gold;
+    {104, 171, 255}, // CRGB::SeaGreen; // TODO: this one doesn't look great at full value
+    {128, 255, 255}  // CRGB::Aqua;
 };
 int last_pin_color_id = 0;
 const int delete_pin_color_id = 1;
 
-const int max_points_per_color = 3;  // TODO: put this on the SD?
+const int max_points_per_color = 3; // TODO: put this on the SD?
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
@@ -161,7 +163,7 @@ void setupSPI() {
   // the RFM95 at the same time.
   digitalWrite(RFM95_CS, HIGH);
 
-  digitalWrite(SDCARD_CS_PIN, HIGH);
+  digitalWrite(SDCARD_CS, HIGH);
 
   digitalWrite(LSM9DS1_CSM, HIGH);
   digitalWrite(LSM9DS1_CSAG, HIGH);
@@ -176,14 +178,12 @@ void setup() {
 #ifdef DEBUG
   Serial.begin(115200);
 
-  delay(1000);
-  /*
+  delay(5000);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-  */
 #else
-  delay(1500);  // todo: tune this. don't get locked out if something crashes
+  delay(5000); // todo: tune this. don't get locked out if something crashes
 #endif
 
   DEBUG_PRINTLN("Setting up...");
@@ -237,6 +237,46 @@ void setup() {
 
   DEBUG_PRINTLN(F("Starting..."));
 }
+
+/*
+ * this stuff was in its own .ino files, but something was broken about it
+ * i think i fixed it by moving the struct definitions to types.h, but I'm not sure how best to move db_file and db defs
+ */
+
+// TODO: what table size?
+#define TABLE_SIZE 4096 * 2
+
+// The max number of records that should be created = (TABLE_SIZE - sizeof(EDB_Header)) / sizeof(LogEvent).
+// If you try to insert more, operations will return EDB_OUT_OF_RANGE for all records outside the usable range.
+
+const char *db_name = "compass.db";
+File db_file;
+
+// The read and write handlers for using the SD Library
+// Also blinks the led while writing/reading
+// database entries start at 1!
+inline void writer(unsigned long address, const byte *data, unsigned int recsize) {
+  digitalWrite(RED_LED, HIGH);
+  db_file.seek(address);
+  db_file.write(data, recsize);
+  db_file.flush();
+  digitalWrite(RED_LED, LOW);
+}
+
+inline void reader(unsigned long address, byte *data, unsigned int recsize) {
+  digitalWrite(RED_LED, HIGH);
+  db_file.seek(address);
+  db_file.read(data, recsize);
+  digitalWrite(RED_LED, LOW);
+}
+
+// Create an EDB object with the appropriate write and read handlers
+// NOTE! These handlers do NOT open or close the database file!
+EDB db(&writer, &reader);
+
+/*
+ * END things that should be moved into their own ino files
+ */
 
 void loop() {
   // TODO: num_peers * num_peers can get pretty big!

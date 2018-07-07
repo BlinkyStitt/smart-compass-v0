@@ -9,10 +9,10 @@ CompassMode next_compass_mode = COMPASS_FRIENDS;
 void setupLights() {
   DEBUG_PRINT("Setting up lights... ");
 
-  pinMode(LED_DATA_PIN, OUTPUT);
-  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(LED_DATA, OUTPUT);
+  pinMode(RED_LED, OUTPUT);
 
-  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(RED_LED, LOW);
 
   // TODO: seed fastled random?
 
@@ -21,9 +21,10 @@ void setupLights() {
   // TODO: include radio_power instead of hard coding 120 (it is 120mA when radio_power=20)
   // TODO: we won't use the radio at full power and SD at full power at the same time. so tune this
   // TODO: maybe run it without lights to see max power draw and subtract that from 500
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 150 - 50);  // leave some room for the radio and gps and SD and misc
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 150 -
+                                                  20); // leave some room for the radio and gps and SD and misc
 
-  FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN>(leds, num_LEDs).setCorrection(TypicalSMD5050);
+  FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
   FastLED.clear();
   FastLED.show();
@@ -52,8 +53,8 @@ void updateLightsForCompass(CompassMode compass_mode) {
   // cycle through the colors for each light
   // TODO: dry this up
   for (int i = 0; i < inner_ring_size; i++) {
-//    DEBUG_PRINT(F("inner ring "));
-//    DEBUG_PRINTLN(i);
+    //    DEBUG_PRINT(F("inner ring "));
+    //    DEBUG_PRINTLN(i);
 
     if (next_inner_compass_point[i] == 0) {
       // no lights for this inner compass point
@@ -82,19 +83,19 @@ void updateLightsForCompass(CompassMode compass_mode) {
       j = (now_ms / peer_led_ms) % next_inner_compass_point[i];
     }
 
-//     DEBUG_PRINT("Displaying ");
-//     DEBUG_PRINT(j + 1);
-//     DEBUG_PRINT(" of ");
-//     DEBUG_PRINT(next_inner_compass_point[i]);
-//     DEBUG_PRINT(" colors for inner light #");
-//     DEBUG_PRINTLN(i);
+    //     DEBUG_PRINT("Displaying ");
+    //     DEBUG_PRINT(j + 1);
+    //     DEBUG_PRINT(" of ");
+    //     DEBUG_PRINT(next_inner_compass_point[i]);
+    //     DEBUG_PRINT(" colors for inner light #");
+    //     DEBUG_PRINTLN(i);
 
-     leds[inner_ring_start + i] = inner_compass_points[i][j];
+    leds[inner_ring_start + i] = inner_compass_points[i][j];
   }
   // TODO: this is broken. i think the bug is somewhere in the setting of outer_compass_points
   for (int i = 0; i < outer_ring_size; i++) {
-//    DEBUG_PRINT(F("outer ring "));
-//    DEBUG_PRINTLN(i);
+    //    DEBUG_PRINT(F("outer ring "));
+    //    DEBUG_PRINTLN(i);
 
     if (next_outer_compass_point[i] == 0) {
       // no lights for this outer compass point
@@ -123,20 +124,21 @@ void updateLightsForCompass(CompassMode compass_mode) {
       j = (now_ms / peer_led_ms) % next_outer_compass_point[i];
     }
 
-//     DEBUG_PRINT("Displaying ");
-//     DEBUG_PRINT(j + 1);
-//     DEBUG_PRINT(" of ");
-//     DEBUG_PRINT(next_outer_compass_point[i]);
-//     DEBUG_PRINT(" colors for outer light #");
-//     DEBUG_PRINTLN(i);
+    //     DEBUG_PRINT("Displaying ");
+    //     DEBUG_PRINT(j + 1);
+    //     DEBUG_PRINT(" of ");
+    //     DEBUG_PRINT(next_outer_compass_point[i]);
+    //     DEBUG_PRINT(" colors for outer light #");
+    //     DEBUG_PRINTLN(i);
 
-     leds[outer_ring_start + i] = outer_compass_points[i][j];
+    leds[outer_ring_start + i] = outer_compass_points[i][j];
   }
 }
 
 void updateLightsForHanging() {
   // do awesome patterns
-  static const int num_light_patterns = 1; // TODO: how should this work? this seems fragile. make an array of functions instead
+  static const int num_light_patterns =
+      1; // TODO: how should this work? this seems fragile. make an array of functions instead
 
   // use network_ms (synced with peers) so everyone has the same light pattern
   int pattern_id = (network_ms / ms_per_light_pattern) % num_light_patterns;
@@ -146,7 +148,7 @@ void updateLightsForHanging() {
   case 0:
     networkedLights();
     break;
-  case 1:  // TODO: bump num_light_patterns so this will get picked
+  case 1: // TODO: bump num_light_patterns so this will get picked
     pride();
     break;
   }
@@ -189,7 +191,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
       last_pin_color_id = 0;
       break;
     case COMPASS_FRIENDS:
-      last_pin_color_id = delete_pin_color_id;  // use the color for deleting? TODO: or not? this might be confusing
+      last_pin_color_id = delete_pin_color_id; // use the color for deleting? TODO: or not? this might be confusing
       break;
     }
 
@@ -222,13 +224,15 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
           // TODO: set pin_id to either match the nearest pin or return the id of an unset pin
           pin_id = getCompassPinId(GPS.latitude_fixed, GPS.longitude_fixed);
 
-          compass_pins[pin_id].transmitted = true;  // we will use saved_pin_id to set this to false once the pin is done being configured
+          compass_pins[pin_id].transmitted =
+              true; // we will use saved_pin_id to set this to false once the pin is done being configured
           saved_pin_id = pin_id;
         }
 
         if (configure_ms >= 12500) {
           // if the outer ring has been filled for 2.5 seconds, change the color
-          // TODO: slowly fill up with the new color instead? that way it isn't a sudden switch that takes 20 seconds to loop
+          // TODO: slowly fill up with the new color instead? that way it isn't a sudden switch that takes 20 seconds to
+          // loop
           last_pin_color_id++;
 
           if (last_pin_color_id >= ARRAY_SIZE(pin_colors)) {
@@ -237,7 +241,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
 
           fill_color = pin_colors[last_pin_color_id];
 
-          configure_ms = 10000;  // reset timer
+          configure_ms = 10000; // reset timer
         }
 
         setCompassPin(pin_id, fill_color, GPS.latitude_fixed, GPS.longitude_fixed);
@@ -294,6 +298,8 @@ void updateLights() {
         // set transmitted to false now. next time we transmit, this pin id will be shared with peers
         compass_pins[saved_pin_id].transmitted = false;
 
+        // TODO: save to database
+
         // clear saved_pin_id now that the message is queued
         saved_pin_id = -1;
       }
@@ -324,40 +330,43 @@ void updateLights() {
 
     last_orientation = current_orientation;
 
-#ifdef DEBUG
-    // debugging lights
-    int network_ms_wrapped = network_ms % 10000;
-    if (network_ms_wrapped < 1000) {
-      DEBUG_PRINT(F(" "));
-
-      if (network_ms_wrapped < 100) {
-        DEBUG_PRINT(F(" "));
-
-        if (network_ms_wrapped < 10) {
+    // TODO: i doubt this is related to the crash at all, but i'm stumped
+    /*
+    #ifdef DEBUG
+        // debugging lights
+        int network_ms_wrapped = network_ms % 10000;
+        if (network_ms_wrapped < 1000) {
           DEBUG_PRINT(F(" "));
+
+          if (network_ms_wrapped < 100) {
+            DEBUG_PRINT(F(" "));
+
+            if (network_ms_wrapped < 10) {
+              DEBUG_PRINT(F(" "));
+            }
+          }
         }
-      }
-    }
-    DEBUG_PRINT(network_ms_wrapped);
+        DEBUG_PRINT(network_ms_wrapped);
 
-    // TODO: print N  W  S  E
-    // TODO: print 12 9  6  3
-    // TODO: print lights on seperate rows
-    DEBUG_PRINT(F(": "));
-    for (int i = 0; i < num_LEDs; i++) {
-      if (leds[i]) {
-        // TODO: better logging?
-        DEBUG_PRINT(F("X"));
-      } else {
-        DEBUG_PRINT(F("O"));
-      }
-    }
+        // TODO: print N  W  S  E
+        // TODO: print 12 9  6  3
+        // TODO: print lights on seperate rows
+        DEBUG_PRINT(F(": "));
+        for (int i = 0; i < num_LEDs; i++) {
+          if (leds[i]) {
+            // TODO: better logging?
+            DEBUG_PRINT(F("X"));
+          } else {
+            DEBUG_PRINT(F("O"));
+          }
+        }
 
-    DEBUG_PRINT(F(" | ms since last frame="));
-    DEBUG_PRINTLN(millis() - last_frame);
+        DEBUG_PRINT(F(" | ms since last frame="));
+        DEBUG_PRINTLN(millis() - last_frame);
 
-    last_frame = millis();
-#endif
+        last_frame = millis();
+    #endif
+    */
 
     // display the colors
     FastLED.show();
