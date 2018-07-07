@@ -7,7 +7,7 @@
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
-  static const int ms_per_led = 4 * 1000 / frames_per_second;   // X frames
+  static const int ms_per_led = 4 * 1000 / frames_per_second;   // 4 frames
   static int shift;
 
   fadeToBlackBy(leds, num_LEDs, 88);
