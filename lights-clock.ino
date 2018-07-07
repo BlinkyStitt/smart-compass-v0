@@ -80,11 +80,15 @@ void updateLightsForClock() {
 
   // inner ring and outer ring are wired in opposite directions
   // we also need to rotate 180 degrees since the rings are upside down
-  //int inner_minute_led_id = (map(adjusted_minute, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) % inner_ring_size + inner_ring_start;
-  int outer_minute_led_id = (map(adjusted_minute, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
+  // int inner_minute_led_id = (map(adjusted_minute, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) % inner_ring_size
+  // + inner_ring_start;
+  int outer_minute_led_id =
+      (map(adjusted_minute, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
 
-  //int inner_second_led_id = (map(adjusted_seconds, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) % inner_ring_size + inner_ring_start;
-  int outer_second_led_id = (map(adjusted_seconds, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
+  // int inner_second_led_id = (map(adjusted_seconds, 0, 60, inner_ring_size, 0) + inner_ring_size / 2) %
+  // inner_ring_size + inner_ring_start;
+  int outer_second_led_id =
+      (map(adjusted_seconds, 0, 60, 0, outer_ring_size) + outer_ring_size / 2) % outer_ring_size + outer_ring_start;
 
   /*
   DEBUG_PRINT("hour, minute, second: ");
@@ -104,11 +108,11 @@ void updateLightsForClock() {
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   // set minute first so second passes over it
-  //leds[inner_minute_led_id] = CRGB::Blue;
+  // leds[inner_minute_led_id] = CRGB::Blue;
   leds[outer_minute_led_id] = CRGB::Blue;
 
   // set second
-  //leds[inner_second_led_id] = CRGB::Green;
+  // leds[inner_second_led_id] = CRGB::Green;
   leds[outer_second_led_id] = CRGB::Green;
 
   // set hour last so it is always on top

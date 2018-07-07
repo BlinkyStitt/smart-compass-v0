@@ -22,6 +22,7 @@ enum CompassMode : byte {
 };
 
 typedef struct {
+  int database_id;  // TODO: long?
   bool transmitted;
   uint32_t last_updated_at;
   int32_t latitude;
@@ -30,3 +31,15 @@ typedef struct {
   float magnetic_bearing;
   CHSV color;
 } CompassPin;
+
+
+// Record definition for the database table
+// TODO: consistent naming with pins
+typedef struct {
+  int location_id = -1;
+  int next_track;
+  int play_count;
+  int32_t latitude;
+  int32_t longitude;
+  CHSV color;
+} LocationData;

@@ -3,7 +3,7 @@
 void setupSD() {
   DEBUG_PRINT(F("Setting up SD... "));
 
-  if (!SD.begin(SDCARD_CS_PIN)) {
+  if (!SD.begin(SDCARD_CS)) {
     DEBUG_PRINTLN(F("failed! No SD!"));
     return;
   }

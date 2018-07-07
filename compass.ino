@@ -96,7 +96,8 @@ void addCompassPointsForFriends() {
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     // TODO: if peer data is old, blink or something
-    peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
+    peer_brightness =
+        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
 
     // TODO: double check that this is looping the correct way around the LED
     // circle 0 -> 360 should go clockwise, but the outer ring lights are wired counter-clockwise
@@ -227,5 +228,6 @@ void setCompassPin(int pin_id, CHSV color, long latitude, long longitude) {
 
   // todo: do something to compass_pins
 
-  // if pin changed, don't set compass_pins[pin_id].transmitted = false. we will do that once its finished being modified
+  // if pin changed, don't set compass_pins[pin_id].transmitted = false. we will do that once its finished being
+  // modified
 }

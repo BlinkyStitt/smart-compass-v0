@@ -97,18 +97,7 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   */
 
   DEBUG_PRINT(F("Hash: "));
-  if (hash[0] <= 0x10) {
-    DEBUG_PRINT2(0, HEX);
-  }
-  DEBUG_PRINT2(hash[0], HEX);
-  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    if (hash[i] <= 0x10) {
-      DEBUG_PRINT2(0, HEX);
-    }
-    DEBUG_PRINT2(hash[i], HEX);
-  }
-  DEBUG_PRINTLN();
+  DEBUG_HEX8(hash, NETWORK_HASH_SIZE, true);
 }
 
 void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
@@ -157,31 +146,17 @@ void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
   */
 
   DEBUG_PRINT(F("Hash: "));
-  DEBUG_PRINT2(hash[0], HEX);
-  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    DEBUG_PRINT2(hash[i], HEX);
-  }
-  DEBUG_PRINTLN();
+  DEBUG_HEX8(hash, NETWORK_HASH_SIZE, true);
 }
 
 #ifdef DEBUG
 void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
-
-  DEBUG_PRINT2(message.network_hash[0], HEX);
-  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    DEBUG_PRINT2(message.network_hash[i], HEX);
-  }
+  DEBUG_HEX8(message.network_hash, NETWORK_HASH_SIZE, false);
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
-    DEBUG_PRINT2(message.message_hash[0], HEX);
-    for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-      DEBUG_PRINT(F("-"));
-      DEBUG_PRINT2(message.message_hash[i], HEX);
-    }
+    DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
   }
 
   DEBUG_PRINT(F(" txp="));
@@ -208,32 +183,11 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
 
 void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
-
-  if (message.network_hash[0] <= 0x10) {
-    DEBUG_PRINT2(0, HEX);
-  }
-  DEBUG_PRINT2(message.network_hash[0], HEX);
-  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    if (message.network_hash[i] <= 0x10) {
-      DEBUG_PRINT2(0, HEX);
-    }
-    DEBUG_PRINT2(message.network_hash[i], HEX);
-  }
+  DEBUG_HEX8(message.network_hash, NETWORK_HASH_SIZE, false);
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
-    if (message.message_hash[0] <= 0x10) {
-      DEBUG_PRINT2(0, HEX);
-    }
-    DEBUG_PRINT2(message.message_hash[0], HEX);
-    for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-      DEBUG_PRINT(F("-"));
-      if (message.message_hash[i] <= 0x10) {
-        DEBUG_PRINT2(0, HEX);
-      }
-      DEBUG_PRINT2(message.message_hash[i], HEX);
-    }
+    DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
   }
 
   DEBUG_PRINT(F(" txp="));
@@ -262,15 +216,16 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
-  updateLights();  // we update lights here because checking the time can be slow
+  updateLights(); // we update lights here because checking the time can be slow
 
   unsigned long time_now = getGPSTime();
 
-  updateLights();  // we update lights here because sending can be slow
+  updateLights(); // we update lights here because sending can be slow
 
   // TODO: tie this 2 second limit to update interval
   // TODO: what if time_now wraps?
-  bool tx_compass_location = true; // if this is false, we transmit a pin id instead of a friend location. i don't love this pattern
+  bool tx_compass_location =
+      true; // if this is false, we transmit a pin id instead of a friend location. i don't love this pattern
   int tx_pin_id = -1;
   // TODO: don't hard code 2. calculate based on peer update time
   if (time_now - last_transmitted[pid] < 2) {
@@ -286,14 +241,14 @@ void radioTransmit(const int pid) {
       }
     }
 
-    updateLights();  // we update lights here because sending can be slow
+    updateLights(); // we update lights here because sending can be slow
 
     if (tx_compass_location) {
       // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
       rf95.sleep();
-      updateLights();  // we update lights here because sending can be slow
+      updateLights(); // we update lights here because sending can be slow
       return;
     }
   }
@@ -323,7 +278,7 @@ void radioTransmit(const int pid) {
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  updateLights();  // we update lights here because sending can be slow
+  updateLights(); // we update lights here because sending can be slow
 
   if (tx_compass_location) {
     encodeCompassMessage(&ostream, compass_messages[pid], time_now);
@@ -337,7 +292,7 @@ void radioTransmit(const int pid) {
     return;
   }
 
-  updateLights();  // we update lights here because encoding can be slow
+  updateLights(); // we update lights here because encoding can be slow
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs so wait now
   // TODO: time it (tho it seems fast enough)
@@ -346,7 +301,7 @@ void radioTransmit(const int pid) {
   DEBUG_PRINTLN(F(" bytes... "));
   rf95.send(radio_buf, ostream.bytes_written);
   while (rf95.mode() == RH_RF95_MODE_TX) {
-    updateLights();  // we update lights here because sending can be slow
+    updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
   }
 
@@ -362,7 +317,7 @@ void radioTransmit(const int pid) {
 
   DEBUG_PRINTLN(F("Time updated."));
 
-  updateLights();  // we update lights here because sending can be slow
+  updateLights(); // we update lights here because sending can be slow
 
   return;
 }
@@ -395,7 +350,7 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage com
   printSmartCompassLocationMessage(compass_message, false, true);
   signSmartCompassLocationMessage(compass_message, compass_message.message_hash);
 
-  updateLights();  // we update lights here because encoding can be slow
+  updateLights(); // we update lights here because encoding can be slow
 
   if (!pb_encode(ostream, SmartCompassLocationMessage_fields, &compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
@@ -425,7 +380,7 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin compass_pin, unsigned lo
   printSmartCompassPinMessage(pin_message_tx, false, true);
   signSmartCompassPinMessage(pin_message_tx, pin_message_tx.message_hash);
 
-  updateLights();  // we update lights here because encoding can be slow
+  updateLights(); // we update lights here because encoding can be slow
 
   if (!pb_encode(ostream, SmartCompassPinMessage_fields, &pin_message_tx)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
@@ -455,7 +410,7 @@ void radioReceive() {
     return;
   }
 
-  updateLights();  // we update lights here because receiving can be slow
+  updateLights(); // we update lights here because receiving can be slow
 
   DEBUG_PRINT(F("RSSI: "));
   DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
@@ -463,7 +418,7 @@ void radioReceive() {
   pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
 
   if (pb_decode(&stream, SmartCompassLocationMessage_fields, &location_message_rx)) {
-    updateLights();  // we update lights here because decoding can be slow
+    updateLights(); // we update lights here because decoding can be slow
 
     receiveLocationMessage(location_message_rx);
     return;
@@ -475,9 +430,9 @@ void radioReceive() {
     // TODO: can we simply re-use the stream? do we need to reset or something?
     stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
-      updateLights();  // we update lights here because decoding can be slow
+      updateLights(); // we update lights here because decoding can be slow
 
-      receivePinMessage(pin_message_rx);    // TODO: write this
+      receivePinMessage(pin_message_rx); // TODO: write this
     } else {
       DEBUG_PRINT(F("Decoding as pin message failed: "));
       DEBUG_PRINTLN(PB_GET_ERROR(&stream));
@@ -606,7 +561,8 @@ void receivePinMessage(SmartCompassPinMessage message) {
     return;
   }
 
-  if (message.last_updated_at == compass_pins[compass_pin_id].last_updated_at and message.hue == compass_pins[compass_pin_id].color.hue) {
+  if (message.last_updated_at == compass_pins[compass_pin_id].last_updated_at and
+      message.hue == compass_pins[compass_pin_id].color.hue) {
     // TODO: flash lights on the status bar?
     DEBUG_PRINTLN(F("Heard re-broadcast of existing message."));
     return;
@@ -618,9 +574,9 @@ void receivePinMessage(SmartCompassPinMessage message) {
   compass_pins[compass_pin_id].longitude = message.longitude;
 
   if (GPS.fix) {
-    compass_pins[compass_pin_id].magnetic_bearing = course_to(GPS.latitude_fixed, GPS.longitude_fixed,
-                                                              message.latitude, message.longitude,
-                                                              &compass_pins[compass_pin_id].distance);
+    compass_pins[compass_pin_id].magnetic_bearing =
+        course_to(GPS.latitude_fixed, GPS.longitude_fixed, message.latitude, message.longitude,
+                  &compass_pins[compass_pin_id].distance);
   } else {
     compass_pins[compass_pin_id].magnetic_bearing = 0;
     compass_pins[compass_pin_id].distance = -1;

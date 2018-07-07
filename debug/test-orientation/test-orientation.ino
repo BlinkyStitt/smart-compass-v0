@@ -6,16 +6,16 @@
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
 #define RFM95_RST 4 // already wired for us
-#define LED_DATA_PIN 5
+#define LED_DATA 5
 #define RFM95_CS 8 // already wired for us
 #define VBAT_PIN 9 // already wired for us  // A7
-#define SDCARD_CS_PIN 10
+#define SDCARD_CS 10
 #define LSM9DS1_CSAG 11
 #define LSM9DS1_CSM 12
-#define RED_LED_PIN 13  // already wired for us
-#define SPI_MISO_PIN 22 // shared between Radio+Sensors+SD
-#define SPI_MOSI_PIN 23 // shared between Radio+Sensors+SD
-#define SPI_SCK_PIN 24  // shared between Radio+Sensors+SD
+#define RED_LED 13  // already wired for us
+#define SPI_MISO 22 // shared between Radio+Sensors+SD
+#define SPI_MOSI 23 // shared between Radio+Sensors+SD
+#define SPI_SCK 24  // shared between Radio+Sensors+SD
 
 /* Sensors */
 
