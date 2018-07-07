@@ -330,8 +330,7 @@ void updateLights() {
 
     last_orientation = current_orientation;
 
-    // TODO: i doubt this is related to the crash at all, but i'm stumped
-    /*
+    // TODO: i doubt this is related to the crash at all, but i'm stumped    /*
     #ifdef DEBUG
         // debugging lights
         int network_ms_wrapped = network_ms % 10000;
@@ -366,7 +365,6 @@ void updateLights() {
 
         last_frame = millis();
     #endif
-    */
 
     // display the colors
     FastLED.show();

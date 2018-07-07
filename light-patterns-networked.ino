@@ -8,7 +8,7 @@
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
-  static const int ms_per_led = 4 * 1000 / frames_per_second;
+  static const int ms_per_led = 5 * 1000 / frames_per_second;   // X frames
   static int shift;
 
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
@@ -24,7 +24,7 @@ void networkedLights() {
     if (shifted_i % 5 == 0) {
       // TODO: use a color pallet?
       // TODO: is % 255 needed? i'm seeing crashes and not sure why
-      int color_value = map((shifted_i) % network_LEDs, 0, network_LEDs, 0, 255) % 255;
+      int color_value = map((shifted_i) % network_LEDs, 0, network_LEDs, 0, 255);
       leds[i] = CHSV(color_value, 255, 255);
     }
   }

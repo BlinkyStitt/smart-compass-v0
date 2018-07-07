@@ -190,7 +190,7 @@ void setupConfig() {
   // battery)
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
-    radio_power = 13;
+    radio_power = 20;
   }
   DEBUG_PRINTLN(radio_power);
 
@@ -198,7 +198,7 @@ void setupConfig() {
   DEBUG_PRINT(F("time_zone_offset: "));
   if (!time_zone_offset) {
     DEBUG_PRINT(F("(default) "));
-    time_zone_offset = -7;
+    time_zone_offset = -8;
   }
   DEBUG_PRINTLN(time_zone_offset);
 
