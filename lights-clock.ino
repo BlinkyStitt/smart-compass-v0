@@ -6,19 +6,21 @@ void updateLightsForClock() {
   static int adjusted_minute = 0;
   static int adjusted_hour = 0;
 
-  if (!rtc.isConfigured()) {
+  if (!GPS.fix) {
+    // todo: since we have a coin cell battery,
     updateLightsForLoading();
   }
 
   // TODO: tune this
   EVERY_N_MILLISECONDS(500) {
     // TODO: do we care about gpsMs? we only have 16 lights of output
-    adjusted_seconds = rtc.getSeconds();
+    adjusted_seconds = GPS.seconds;
 
-    adjusted_minute = rtc.getMinutes() + adjusted_seconds / 60.0;
+    // TODO: handle fractional timezone
+    adjusted_minute = GPS.minute + adjusted_seconds / 60.0;
 
     // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
-    adjusted_hour = rtc.getHours() + time_zone_offset + adjusted_minute / 60.0;
+    adjusted_hour = GPS.hour + time_zone_offset + adjusted_minute / 60.0;
     if (adjusted_hour < 0) {
       adjusted_hour += 12;
     } else if (adjusted_hour >= 12) {

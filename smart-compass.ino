@@ -17,8 +17,6 @@
 #include <elapsedMillis.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-// TODO: fork RTCZero to include ms
-#include <RTCZero.h>
 #include <Wire.h>
 
 // it isn't legal for us to encrypt on amateur radio, but we need some sort of security so we sign our messages
@@ -154,8 +152,6 @@ const int delete_pin_color_id = 1;
 
 const int max_points_per_color = 3;  // TODO: put this on the SD?
 
-RTCZero rtc;
-
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
   // The RFM95 has a pulldown on this pin, so the radio
@@ -234,9 +230,6 @@ void setup() {
     my_file.close();
   }
 
-  // setup the internal rtc
-  rtc.begin();
-
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
   // TODO: what rate should we read at? the flora example does 1Hz!
   tcConfigure(100);
@@ -256,7 +249,7 @@ void loop() {
 
     updateLights();
 
-    if (rtc.isConfigured()) {
+    if (GPS.fix) {
       // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
       // TODO: should there be downtime when no one is transmitting or receiving?
 
@@ -265,7 +258,7 @@ void loop() {
       // it matters
       // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
       // TODO: only calculate this every 100ms or something like that?
-      time_segment_id = (rtc.getY2kEpoch() / broadcast_time_s) % time_segments;
+      time_segment_id = (getGPSTime() / broadcast_time_s) % time_segments;
 
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
