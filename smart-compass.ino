@@ -232,7 +232,7 @@ void setup() {
 
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
   // TODO: what rate should we read at? the flora example does 1Hz!
-  tcConfigure(100);
+  tcConfigure(10);
   tcStartCounter();
 
   DEBUG_PRINTLN(F("Starting..."));
@@ -302,6 +302,13 @@ void loop() {
 
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
+
+      /*
+      // this is going to be too verbose
+      DEBUG_PRINT(broadcasting_peer_id);
+      DEBUG_PRINT(" -> ");
+      DEBUG_PRINTLN(broadcasted_peer_id);
+      */
 
       if (broadcasting_peer_id == my_peer_id) {
         radioTransmit(broadcasted_peer_id); // this will noop if we have transmitted recently
