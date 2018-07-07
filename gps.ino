@@ -178,6 +178,7 @@ void gpsReceive() {
 
   // open the SD card
   // TODO: config option to disable this
+  // TODO: O_APPEND instead? (setup already created it)
   my_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
