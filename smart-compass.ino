@@ -192,6 +192,8 @@ void setup() {
 
   DEBUG_PRINTLN("Setting up...");
 
+  // TODO: disable ADC?
+
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();
 
@@ -235,13 +237,10 @@ void setup() {
   // setup the internal rtc
   rtc.begin();
 
-  /*
-  // TODO: no more timer. interrupts slow down millis and we want that in sync between peers
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
-  // TODO: tune this
-  tcConfigure(300);
+  // TODO: what rate should we read at? the flora example does 1Hz!
+  tcConfigure(100);
   tcStartCounter();
-  */
 
   DEBUG_PRINTLN(F("Starting..."));
 }

@@ -12,14 +12,19 @@ void setupLights() {
   pinMode(LED_DATA_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
 
+  digitalWrite(RED_LED_PIN, LOW);
+
   // TODO: seed fastled random?
 
   // https://learn.adafruit.com/adafruit-feather-m0-basic-proto/power-management
   // "While you can get 500mA from it, you can't do it continuously from 5V as it will overheat the regulator."
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500);
+  // TODO: include radio_power instead of hard coding 120 (it is 120mA when radio_power=20)
+  // TODO: we won't use the radio at full power and SD at full power at the same time. so tune this
+  // TODO: maybe run it without lights to see max power draw and subtract that from 500
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 150 - 50);  // leave some room for the radio and gps and SD and misc
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA_PIN>(leds, num_LEDs).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(default_brightness); // TODO: read this from the SD card
+  FastLED.setBrightness(default_brightness);
   FastLED.clear();
   FastLED.show();
 
@@ -27,12 +32,16 @@ void setupLights() {
 }
 
 void updateLightsForCompass(CompassMode compass_mode) {
+  static unsigned long now_ms = 0;
+
   // show the compass if we know our own GPS location and have SD to show saved locations
   if (!GPS.fix or !sd_setup) {
     DEBUG_PRINTLN(F("Compass not ready!"));
     updateLightsForLoading();
     return;
   }
+
+  now_ms = millis();
 
   // calculate distance to friends or saved places
   updateCompassPoints(compass_mode);
@@ -70,7 +79,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
       // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
       // we don't use network_ms here so that the lights don't jump around
       // TODO: this is wrong
-      j = (millis() / peer_led_ms) % next_inner_compass_point[i];
+      j = (now_ms / peer_led_ms) % next_inner_compass_point[i];
     }
 
 //     DEBUG_PRINT("Displaying ");
@@ -111,7 +120,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
       // TODO: use a static variable for this and increment it every 500ms instead? or use FastLED beat helper?
       // we don't use network_ms here so that the lights don't jump around
       // TODO: this is wrong
-      j = (millis() / peer_led_ms) % next_outer_compass_point[i];
+      j = (now_ms / peer_led_ms) % next_outer_compass_point[i];
     }
 
 //     DEBUG_PRINT("Displaying ");

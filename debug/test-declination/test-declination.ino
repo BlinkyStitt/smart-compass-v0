@@ -3,6 +3,7 @@
 #include <Adafruit_GPS.h>
 #include <ArduinoSort.h>
 #include <AP_Declination.h>
+// TODO: rewrite this to use rtczero
 #include <TimeLib.h>
 
 /* GPS */

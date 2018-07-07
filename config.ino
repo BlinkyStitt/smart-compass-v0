@@ -144,7 +144,7 @@ void setupConfig() {
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 255; // TODO: decrease this when done debugging
+    default_brightness = 200; // TODO: decrease this when done debugging
   }
   DEBUG_PRINTLN(default_brightness);
 
@@ -189,7 +189,7 @@ void setupConfig() {
   // TODO: whats the difference in power? tune this. figure out range (with 13, it has crashed on us when running off battery)
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
-    radio_power = 23;
+    radio_power = 20;
   }
   DEBUG_PRINTLN(radio_power);
 
@@ -203,7 +203,7 @@ void setupConfig() {
   DEBUG_PRINT(F("flashlight_density: "));
   if (!flashlight_density) {
     DEBUG_PRINT(F("(default) "));
-    flashlight_density = 1; // TODO: increase this when done debugging. full density is too much for the battery
+    flashlight_density = 4; // TODO: increase this when done debugging. full density is too much for the battery
   }
   DEBUG_PRINTLN(flashlight_density);
 
@@ -281,9 +281,15 @@ bool setupSecurity() {
 
   // TODO: remove this when done debugging!
   DEBUG_PRINT(F("my_network_key: "));
+  if (my_network_key[0] <= 'F') {
+    DEBUG_PRINT2(0, HEX);
+  }
   DEBUG_PRINT2(my_network_key[0], HEX);
   for (int i = 1; i < NETWORK_KEY_SIZE; i++) {
     DEBUG_PRINT(F("-"));
+    if (my_network_key[i] <= 'F') {
+      DEBUG_PRINT2(0, HEX);
+    }
     DEBUG_PRINT2(my_network_key[i], HEX);
   }
   DEBUG_PRINTLN();
@@ -297,13 +303,13 @@ bool setupSecurity() {
 
   // TODO: this is wrong. it's printing "-A-"
   DEBUG_PRINT(F("key-based my_network_hash: "));
-  if (my_network_hash[0] < 0x10) {
+  if (my_network_hash[0] <= 'F') {
     DEBUG_PRINT2(0, HEX);
   }
   DEBUG_PRINT2(my_network_hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
-    if (my_network_hash[i] < 0x10) {
+    if (my_network_hash[i] =< 'F') {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(my_network_hash[i], HEX);
