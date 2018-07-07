@@ -14,6 +14,7 @@
 #define SPI_MOSI_PIN 23 // shared between Radio+Sensors+SD
 #define SPI_SCK_PIN 24  // shared between Radio+Sensors+SD
 
+// the gps has it's own rtc. just use GPS.seconds
 RTCZero rtc;
 
 /* Setup */

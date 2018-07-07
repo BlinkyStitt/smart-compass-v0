@@ -20,7 +20,6 @@ void setupSensor() {
   DEBUG_PRINT(F("Setting up sensors..."));
 
   if (!lsm.begin()) {
-    // TODO: what does 'F' do?
     DEBUG_PRINTLN(F("Oops, no LSM9DS1 detected... Check your wiring!"));
     return;
   }

@@ -22,11 +22,11 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
-  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
+  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
 
   // Position fix update rate commands.
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
   GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ);            // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
@@ -42,6 +42,14 @@ void setupGPS() {
   DEBUG_PRINTLN(F("done."));
 }
 
+long getGPSTime() {
+  // TODO: include millis? include day?
+  // according to the docs, the GPS has an RTC so if you have a fix with the battery, you'll always be able to check the time
+  // i can't find where in the code this is handled though. i only see the time set when a message is parsed
+  return GPS.seconds + GPS.minute * 60 + GPS.hour * 60 * 60;
+}
+
+
 void gpsReceive() {
   static AP_Declination declination_calculator;
   static long last_gps_update = 0;
@@ -50,9 +58,12 @@ void gpsReceive() {
   static const int min_update_interval = broadcast_time_s * num_peers * 1000;  // TODO: tune this
 
   // limit updates
+  /*
+  // TODO: enable this?
   if (last_gps_update and (millis() - last_gps_update < min_update_interval)) {
     return;
   }
+  */
 
   // if no new sentence is received... (updates at most every 100 mHz thanks to PMTK_SET_NMEA_UPDATE_*)
   if (!GPS.newNMEAreceived()) {
@@ -70,29 +81,13 @@ void gpsReceive() {
     return;
   }
 
-  // TODO: do we have time before GPS.fix?
-  // set the time to match the GPS if it isn't set or has drifted
-  // TODO: include GPS.milliseconds
-  // TODO: should we just do this every time? how expensive is this?
-  if (!rtc.isConfigured() or (abs(rtc.getSeconds() - GPS.seconds) > 1)) {
-    DEBUG_PRINTLN(F("Setting time..."));
+  // we used to update an rtc here, but the GPS time seems to work better. setting the rtc is slow
 
-    // TODO: the GPS has an rtc that is set to utc time automatically on fix. how do we access it?
-    // do minimal commands between this and parsing the gps message
-    rtc.setTime(GPS.hour, GPS.minute, GPS.seconds);
-
-    // update lights here because setting the time can be slow
-    updateLights();
-
-    rtc.setDate(GPS.day, GPS.month, GPS.year);
-
-    // update lights here because setting the time can be slow
-    updateLights();
-  }
+  updateLights();
 
   last_gps_update = millis();
 
-  compass_messages[my_peer_id].last_updated_at = rtc.getY2kEpoch(); // TODO: this is seconds. should we use milliseconds?
+  compass_messages[my_peer_id].last_updated_at = getGPSTime(); // TODO: this is seconds. should we use milliseconds?
 
   // A value in decimal degrees to 5 decimal places is precise to 1.1132 meter at the equator
   // Accuracy to 5 decimal places with commercial GPS units can only be achieved with differential correction.

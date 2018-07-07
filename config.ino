@@ -281,13 +281,13 @@ bool setupSecurity() {
 
   // TODO: remove this when done debugging!
   DEBUG_PRINT(F("my_network_key: "));
-  if (my_network_key[0] <= 'F') {
+  if (my_network_key[0] <= 0x10) {
     DEBUG_PRINT2(0, HEX);
   }
   DEBUG_PRINT2(my_network_key[0], HEX);
   for (int i = 1; i < NETWORK_KEY_SIZE; i++) {
     DEBUG_PRINT(F("-"));
-    if (my_network_key[i] <= 'F') {
+    if (my_network_key[i] <= 0x10) {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(my_network_key[i], HEX);
@@ -303,13 +303,13 @@ bool setupSecurity() {
 
   // TODO: this is wrong. it's printing "-A-"
   DEBUG_PRINT(F("key-based my_network_hash: "));
-  if (my_network_hash[0] <= 'F') {
+  if (my_network_hash[0] <= 0x10) {
     DEBUG_PRINT2(0, HEX);
   }
   DEBUG_PRINT2(my_network_hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
-    if (my_network_hash[i] =< 'F') {
+    if (my_network_hash[i] <= 0x10) {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(my_network_hash[i], HEX);

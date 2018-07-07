@@ -97,13 +97,13 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   */
 
   DEBUG_PRINT(F("Hash: "));
-  if (hash[0] <= 'F') {
+  if (hash[0] <= 0x10) {
     DEBUG_PRINT2(0, HEX);
   }
   DEBUG_PRINT2(hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
-    if (hash[i] <= 'F') {
+    if (hash[i] <= 0x10) {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(hash[i], HEX);
@@ -209,13 +209,13 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
 void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
 
-  if (message.network_hash[0] <= 'F') {
+  if (message.network_hash[0] <= 0x10) {
     DEBUG_PRINT2(0, HEX);
   }
   DEBUG_PRINT2(message.network_hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
-    if (message.network_hash[i] <= 'F') {
+    if (message.network_hash[i] <= 0x10) {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(message.network_hash[i], HEX);
@@ -223,13 +223,13 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
-    if (message.message_hash[0] <= 'F') {
+    if (message.message_hash[0] <= 0x10) {
       DEBUG_PRINT2(0, HEX);
     }
     DEBUG_PRINT2(message.message_hash[0], HEX);
     for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
       DEBUG_PRINT(F("-"));
-      if (message.message_hash[i] <= 'F') {
+      if (message.message_hash[i] <= 0x10) {
         DEBUG_PRINT2(0, HEX);
       }
       DEBUG_PRINT2(message.message_hash[i], HEX);
@@ -264,7 +264,7 @@ void radioTransmit(const int pid) {
 
   updateLights();  // we update lights here because checking the time can be slow
 
-  unsigned long time_now = rtc.getY2kEpoch();
+  unsigned long time_now = getGPSTime();
 
   updateLights();  // we update lights here because sending can be slow
 
