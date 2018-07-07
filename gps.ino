@@ -47,15 +47,10 @@ void gpsReceive() {
   static long last_gps_update = 0;
   static int last_latitude = 0;
   static int last_longitude = 0;
+  static const int min_update_interval = broadcast_time_s * num_peers * 1000;  // TODO: tune this
 
-  // check GPS for data
-  // this used to happen in an interrupt, but that can cause issues with neopixels (need dotstar rings!)
-  // NOTE! if framerate is slow, read won't get called often enough and you should move this somewhere it will be called faster
-  GPS.read();
-
-  // limit updates to at most every 3 seconds
-  // TODO: configure off SD card instead of hard coding the seconds
-  if (last_gps_update and (millis() - last_gps_update < 3000)) {
+  // limit updates
+  if (last_gps_update and (millis() - last_gps_update < min_update_interval)) {
     return;
   }
 
@@ -64,13 +59,6 @@ void gpsReceive() {
     // exit
     return;
   }
-
-  // we have a new sentence! we can check the checksum, parse it...
-  // a tricky thing here is if we print the NMEA sentence, or data
-  // we end up not listening and catching other sentences!
-  // so be very wary if using OUTPUT_ALLDATA and trying to print out data
-  // DEBUG_PRINTLN(GPS.lastNMEA());   // this also sets the newNMEAreceived()
-  // flag to false
 
   if (!GPS.parse(GPS.lastNMEA())) { // this also sets the newNMEAreceived() flag to false
     // we can fail to parse a sentence in which case we should just wait for another
@@ -89,7 +77,7 @@ void gpsReceive() {
   if (!rtc.isConfigured() or (abs(rtc.getSeconds() - GPS.seconds) > 1)) {
     DEBUG_PRINTLN(F("Setting time..."));
 
-    // TODO: fork rtc to include GPS.milliseconds in setTime
+    // TODO: the GPS has an rtc that is set to utc time automatically on fix. how do we access it?
     // do minimal commands between this and parsing the gps message
     rtc.setTime(GPS.hour, GPS.minute, GPS.seconds);
 

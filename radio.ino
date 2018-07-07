@@ -97,9 +97,15 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   */
 
   DEBUG_PRINT(F("Hash: "));
+  if (hash[0] <= 'F') {
+    DEBUG_PRINT2(0, HEX);
+  }
   DEBUG_PRINT2(hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
+    if (hash[i] <= 'F') {
+      DEBUG_PRINT2(0, HEX);
+    }
     DEBUG_PRINT2(hash[i], HEX);
   }
   DEBUG_PRINTLN();
@@ -203,17 +209,29 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
 void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
 
+  if (message.network_hash[0] <= 'F') {
+    DEBUG_PRINT2(0, HEX);
+  }
   DEBUG_PRINT2(message.network_hash[0], HEX);
   for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
     DEBUG_PRINT(F("-"));
+    if (message.network_hash[i] <= 'F') {
+      DEBUG_PRINT2(0, HEX);
+    }
     DEBUG_PRINT2(message.network_hash[i], HEX);
   }
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
+    if (message.message_hash[0] <= 'F') {
+      DEBUG_PRINT2(0, HEX);
+    }
     DEBUG_PRINT2(message.message_hash[0], HEX);
     for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
       DEBUG_PRINT(F("-"));
+      if (message.message_hash[i] <= 'F') {
+        DEBUG_PRINT2(0, HEX);
+      }
       DEBUG_PRINT2(message.message_hash[i], HEX);
     }
   }
@@ -244,7 +262,11 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
+  updateLights();  // we update lights here because checking the time can be slow
+
   unsigned long time_now = rtc.getY2kEpoch();
+
+  updateLights();  // we update lights here because sending can be slow
 
   // TODO: tie this 2 second limit to update interval
   // TODO: what if time_now wraps?
@@ -264,11 +286,12 @@ void radioTransmit(const int pid) {
       }
     }
 
+    updateLights();  // we update lights here because sending can be slow
+
     if (tx_compass_location) {
       // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
-      updateLights();  // we update lights here because sending can be slow
       rf95.sleep();
       updateLights();  // we update lights here because sending can be slow
       return;
@@ -329,7 +352,7 @@ void radioTransmit(const int pid) {
 
   // TODO: it is sometimes crashing here or inside the above while loop :'(
 
-  DEBUG_PRINT(F("Transmit done."));
+  DEBUG_PRINT(F("Transmit done. "));
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
