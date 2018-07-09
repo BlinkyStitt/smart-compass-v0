@@ -110,8 +110,8 @@ void updateLightsForClock() {
   leds[outer_minute_led_id] = CRGB::Blue;
 
   // set second
-  // leds[inner_second_led_id] = CRGB::Green;
-  leds[outer_second_led_id] = CRGB::Green;
+  // leds[inner_second_led_id] = CRGB::Yellow;
+  leds[outer_second_led_id] = CRGB::Yellow;
 
   // set hour last so it is always on top
   // hour is only on the inner ring
