@@ -75,8 +75,6 @@ void updateLightsForClock() {
     hour_led_id += 9;
     break;
   }
-  // wrap around
-  hour_led_id %= inner_ring_size;
 
   // inner ring and outer ring are wired in opposite directions
   // we also need to rotate 180 degrees since the rings are upside down
