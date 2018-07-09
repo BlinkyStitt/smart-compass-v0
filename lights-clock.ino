@@ -6,12 +6,12 @@ void updateLightsForClock() {
   static int adjusted_minute = 0;
   static int adjusted_hour = 0;
 
+  // we use GPS for time instead of the slower internal rtc
   if (!GPS.fix) {
-    // todo: since we have a coin cell battery,
     updateLightsForLoading();
+    return;
   }
 
-  // TODO: tune this
   EVERY_N_MILLISECONDS(500) {
     // TODO: do we care about gpsMs? we only have 16 lights of output
     adjusted_seconds = GPS.seconds;
