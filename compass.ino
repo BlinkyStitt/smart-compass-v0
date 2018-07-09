@@ -216,6 +216,7 @@ void addCompassPointsForPlaces() {
 int getCompassPinId(long latitude, long longitude) {
   // TODO: loop over existing pins. if distance <10, return pin id. if none <10, increment and return last pin id
   // TODO: add something during updateLights that adds this pin color to the status bar
+  // TODO: this would be fast if we sort the pins by distance.
   return -1;
 }
 
@@ -230,4 +231,6 @@ void setCompassPin(int pin_id, CHSV color, long latitude, long longitude) {
 
   // if pin changed, don't set compass_pins[pin_id].transmitted = false. we will do that once its finished being
   // modified
+
+  // TODO: sort compass_pins
 }

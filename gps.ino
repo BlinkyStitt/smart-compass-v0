@@ -69,8 +69,8 @@ unsigned long getGPSTime() {
 void gpsReceive() {
   static AP_Declination declination_calculator;
   static long last_gps_update = 0;
-  static int last_latitude = 0;
-  static int last_longitude = 0;
+  static int last_logged_latitude = 0;
+  static int last_logged_longitude = 0;
   static const int min_update_interval = broadcast_time_s * num_peers * 1000; // TODO: tune this
 
   // limit updates
@@ -111,6 +111,23 @@ void gpsReceive() {
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
+  // compare lat/long with less precision so we don't log all the time
+  // TODO: what units is this? 30 meters?
+  if ((abs(last_logged_latitude - compass_messages[my_peer_id].latitude) < 3000) and
+      (abs(last_logged_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
+    // don't bother saving if the points haven't changed much
+    return;
+  }
+  // everything under this only happens if the location has changed by 30 meters
+
+  DEBUG_PRINT("last_logged_latitude=");
+  DEBUG_PRINTLN(last_logged_latitude);
+  DEBUG_PRINT("last_logged_longitude=");
+  DEBUG_PRINTLN(last_logged_longitude);
+
+  last_logged_latitude = compass_messages[my_peer_id].latitude;
+  last_logged_longitude = compass_messages[my_peer_id].longitude;
+
   /*
   // hard code salesforce tower while debugging
   // TODO: enable this by setting config on the SD card
@@ -130,6 +147,11 @@ void gpsReceive() {
   DEBUG_PRINT(GPS.longitude, 4); DEBUG_PRINTLN(GPS.lon);
   */
 
+  DEBUG_PRINT(F("Location: "));
+  DEBUG_PRINT2(GPS.latitudeDegrees, 4);
+  DEBUG_PRINT(F(", "));
+  DEBUG_PRINTLN2(GPS.longitudeDegrees, 4);
+
   /*
   DEBUG_PRINT("Location 3: ");
   DEBUG_PRINT(GPS.latitude_fixed);
@@ -145,40 +167,15 @@ void gpsReceive() {
   4);
   */
 
-  // compare lat/long with less precision so we don't log all the time
-  // TODO: what units is this? 30 meters?
-  if ((abs(last_latitude - compass_messages[my_peer_id].latitude) < 3000) and
-      (abs(last_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
-    // don't bother saving if the points haven't changed much
-    return;
-  }
-
-  DEBUG_PRINT("last_latitude=");
-  DEBUG_PRINTLN(last_latitude);
-  DEBUG_PRINT("last_longitude=");
-  DEBUG_PRINTLN(last_longitude);
-
-  last_latitude = compass_messages[my_peer_id].latitude;
-  last_longitude = compass_messages[my_peer_id].longitude;
-
-  // TODO: do we have 5 decimals of precision? was 4
-  DEBUG_PRINT(F("Location: "));
-  DEBUG_PRINT2(GPS.latitudeDegrees, 4);
-  DEBUG_PRINT(F(", "));
-  DEBUG_PRINTLN2(GPS.longitudeDegrees, 4);
-
   // calculate magnetic declination in software. the gps chip and library
   // support it with GPS.magvariation but the Ultimate GPS module we are using
   // is configured to store log data instead of calculate declination
-  // TODO: should we do this even less often? how expensive is this?
   g_magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
 
   // update lights here because logging to GPS can be slow
   updateLights();
 
   // open the SD card
-  // TODO: config option to disable this
-  // TODO: O_APPEND instead? (setup already created it)
   my_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
@@ -192,8 +189,6 @@ void gpsReceive() {
   DEBUG_PRINT(F("Logging GPS data... "));
   DEBUG_PRINTLN(gps_log_filename);
 
-  // TODO: this is crashing (sometimes)
-  // TODO: rewrite this to use database code
   my_file.print(compass_messages[my_peer_id].last_updated_at);
   my_file.print(",");
   my_file.print(GPS.latitudeDegrees, 4);
@@ -215,5 +210,5 @@ void gpsReceive() {
 
   DEBUG_PRINTLN(F("Logging done."));
 
-  // TODO: every now and then it crashes after this. not sure why
+  // TODO: sort compass_pins
 }

@@ -562,6 +562,11 @@ void receivePinMessage(SmartCompassPinMessage message) {
   // getCompassPinId gets an existing pin id or get a new pin id and increments our pin counter
   int compass_pin_id = getCompassPinId(GPS.latitude_fixed, GPS.longitude_fixed);
 
+  if (compass_pin_id == -1) {
+    // TODO: remove this once getCompassPinId is actually implemented
+    return;
+  }
+
   if (message.last_updated_at < compass_pins[compass_pin_id].last_updated_at) {
     // TODO: flash lights on the status bar?
     DEBUG_PRINTLN(F("Heard old message. Queuing transmission."));
