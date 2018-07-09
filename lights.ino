@@ -201,11 +201,11 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
   // fade all lights
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
-  if (configure_ms < 5000) {
-    // fill up the inner circle of lights over 5 seconds
-    num_fill = inner_ring_start + constrain(map(configure_ms, 0, 5000, 0, inner_ring_size), 0, inner_ring_size);
+  if (configure_ms < 4000) {
+    // fill up the inner circle of lights over 4 seconds
+    num_fill = inner_ring_start + constrain(map(configure_ms, 0, 4000, 0, inner_ring_size), 0, inner_ring_size);
   } else {
-    // the compass has been held in configure mode for 5 seconds and the inner ring has filled completely
+    // the compass has been held in configure mode for 4 seconds and the inner ring has filled completely
     next_compass_mode = configure_mode; // TODO: pass by reference instead of globals?
 
     if (configure_mode != COMPASS_PLACES) {
@@ -213,26 +213,22 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
       // don't do anything with the outer ring. just leave the inner filled
       num_fill = inner_ring_end;
     } else {
-      // keep the inner ring filled and fill up the outer circle of lights over 5 seconds
-      num_fill = outer_ring_start + constrain(map(configure_ms, 5000, 10000, 0, outer_ring_size), 0, outer_ring_size);
+      // keep the inner ring filled and fill up the outer circle of lights over 4 seconds
+      num_fill = outer_ring_start + constrain(map(configure_ms, 4000, 8000, 0, outer_ring_size), 0, outer_ring_size);
 
-      if (configure_ms >= 10000) {
+      if (configure_ms >= 8000) {
         // the outer ring is filled!
-        // TODO: rotate through different fill_colors with a small pallet (exclude red since that is north)
 
         if (pin_id != -1) {
-          // TODO: set pin_id to either match the nearest pin or return the id of an unset pin
+          // set pin_id to either match the nearest pin or return the id of the next unset pin
           pin_id = getCompassPinId(GPS.latitude_fixed, GPS.longitude_fixed);
 
-          compass_pins[pin_id].transmitted =
-              true; // we will use saved_pin_id to set this to false once the pin is done being configured
+          compass_pins[pin_id].transmitted = true;
           saved_pin_id = pin_id;
         }
 
-        if (configure_ms >= 12500) {
-          // if the outer ring has been filled for 2.5 seconds, change the color
-          // TODO: slowly fill up with the new color instead? that way it isn't a sudden switch that takes 20 seconds to
-          // loop
+        if (configure_ms >= 10000) {
+          // if the outer ring has been filled for 2 seconds, change the color
           last_pin_color_id++;
 
           if (last_pin_color_id >= ARRAY_SIZE(pin_colors)) {
@@ -241,7 +237,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
 
           fill_color = pin_colors[last_pin_color_id];
 
-          configure_ms = 10000; // reset timer
+          configure_ms = 8000;  // reset timer
         }
 
         setCompassPin(pin_id, fill_color, GPS.latitude_fixed, GPS.longitude_fixed);
