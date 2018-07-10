@@ -21,8 +21,8 @@ void setupLights() {
   // TODO: include radio_power instead of hard coding 120 (it is 120mA when radio_power=20)
   // TODO: we won't use the radio at full power and SD at full power at the same time. so tune this
   // TODO: maybe run it without lights to see max power draw and subtract that from 500
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 150 -
-                                                  20); // leave some room for the radio and gps and SD and misc
+  // leave some room for the radio and gps and SD and mcu (TODO: and 100mA for charger?)
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 100 - 50);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
@@ -259,7 +259,7 @@ void updateLights() {
 
   // decrease overall brightness if battery is low
   // TODO: how often should we do this?
-  EVERY_N_SECONDS(120) {
+  EVERY_N_SECONDS(300) {
     switch (checkBattery()) {
     case BATTERY_DEAD:
       // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
@@ -272,7 +272,8 @@ void updateLights() {
     case BATTERY_OK:
       FastLED.setBrightness(default_brightness * .90);
       break;
-    case BATTERY_FULL:
+    case BATTERY_CHARGING:
+      // TODO: different light pattern instead?
       FastLED.setBrightness(default_brightness);
       break;
     }

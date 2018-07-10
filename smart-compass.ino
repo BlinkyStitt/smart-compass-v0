@@ -287,8 +287,8 @@ EDB db(&writer, &reader);
 
 void loop() {
   // TODO: num_peers * num_peers can get pretty big!
-  // each peer needs enough time to broadcast data for every other peer
-  static unsigned int time_segments = num_peers * num_peers;
+  // each peer needs enough time to broadcast data for every other peer. then we double it so we can spend half the time sleeping
+  static const unsigned int time_segments = num_peers * num_peers * 2;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
 
   if (config_setup) {
@@ -297,11 +297,9 @@ void loop() {
     updateLights();
 
     if (GPS.fix) {
-      // TODO: should there be downtime when no one is transmitting or receiving? would let us sleep the radios for longer
-
       time_segment_id = (getGPSTime() / broadcast_time_s) % time_segments;
 
-      broadcasting_peer_id = time_segment_id / num_peers;
+      broadcasting_peer_id = time_segment_id / (num_peers * 2);
       broadcasted_peer_id = time_segment_id % num_peers;
 
       /*
@@ -312,7 +310,10 @@ void loop() {
       */
 
       if (broadcasting_peer_id == my_peer_id) {
-        radioTransmit(broadcasted_peer_id); // this will noop if we have transmitted recently
+        radioTransmit(broadcasted_peer_id); // this will sleep the radio if we've already transmitted for this segment
+      } else if (broadcasting_peer_id > num_peers) {
+        // spend 1/2 the time with the radio sleeping
+        radioSleep();
       } else {
         radioReceive();
       }

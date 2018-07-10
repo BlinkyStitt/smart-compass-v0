@@ -13,7 +13,7 @@ enum BatteryStatus : byte {
   BATTERY_DEAD,
   BATTERY_LOW,
   BATTERY_OK,
-  BATTERY_FULL
+  BATTERY_CHARGING
 };
 
 enum CompassMode : byte {

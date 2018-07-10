@@ -215,22 +215,25 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
 void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {}
 #endif
 
+void radioSleep() {
+  rf95.sleep();
+}
+
 void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   updateLights(); // we update lights here because checking the time can be slow
 
+  // TODO: what if time_now wraps?
   unsigned long time_now = getGPSTime();
 
   updateLights(); // we update lights here because sending can be slow
 
-  // TODO: tie this 2 second limit to update interval
-  // TODO: what if time_now wraps?
-  bool tx_compass_location =
-      true; // if this is false, we transmit a pin id instead of a friend location. i don't love this pattern
+  // if tx_compass_location is false, we transmit a pin id instead of a friend location. i don't love this pattern
+  // TODO: what happens when we want to tx other things?
+  bool tx_compass_location = true;
   int tx_pin_id = -1;
-  // TODO: don't hard code 2. calculate based on peer update time
-  if (time_now - last_transmitted[pid] < 2) {
+  if (time_now - last_transmitted[pid] < broadcast_time_s) {
     // we already transmitted for this peer recently. don't broadcast it again
 
     // check if there are any pins to transmit
@@ -249,7 +252,7 @@ void radioTransmit(const int pid) {
       // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
-      rf95.sleep();
+      radioSleep();
       updateLights(); // we update lights here because sending can be slow
       return;
     }
