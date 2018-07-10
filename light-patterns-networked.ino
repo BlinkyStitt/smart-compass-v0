@@ -2,7 +2,7 @@
 
 // time based pattern spread out across everyone's LEDs
 // TODO: change this so that location shift and color shift are different values
-// todo: this is kind of a cheater way to circle. maybe track the 3 bars seperately so it doesn't look like it stutters
+// todo: this is kind of a cheater way to circle. maybe track the 3 bars separately so it doesn't look like it stutters
 // when the color changes
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
@@ -10,7 +10,7 @@ void networkedLights() {
   static const int ms_per_led = 4 * 1000 / frames_per_second;   // 4 frames
   static int shift;
 
-  fadeToBlackBy(leds, num_LEDs, 90);
+  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
   // shift the pattern based on peer id and then shift more slowly over time
   shift = peer_shift + network_ms / ms_per_led;
@@ -22,6 +22,7 @@ void networkedLights() {
     // light up every Nth light. the others will dim
     if (network_i % 5 == 0) {
       // TODO: use a color pallet?
+      // TODO: this spreads the whole rainbow across all 4. do we want to change color slower than that?
       int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
       leds[i] = CHSV(color_value, 255, 255);
     }
