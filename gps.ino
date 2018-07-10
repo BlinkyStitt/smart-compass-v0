@@ -99,7 +99,7 @@ void gpsReceive() {
 
   // we used to update an rtc here, but the GPS time seems to work better. setting the rtc is slow
 
-  updateLights();
+  //updateLights();
 
   last_gps_update = millis();
 
@@ -111,14 +111,18 @@ void gpsReceive() {
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
+  updateLights();
+
   // compare lat/long with less precision so we don't log all the time
   // TODO: what units is this? 30 meters?
-  if ((abs(last_logged_latitude - compass_messages[my_peer_id].latitude) < 3000) and
-      (abs(last_logged_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
+  if ((abs(last_logged_latitude - compass_messages[my_peer_id].latitude) < 3000) and (abs(last_logged_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
     // don't bother saving if the points haven't changed much
     return;
   }
+
   // everything under this only happens if the location has changed by 30 meters
+
+  updateLights();
 
   DEBUG_PRINT("last_logged_latitude=");
   DEBUG_PRINTLN(last_logged_latitude);
@@ -167,6 +171,9 @@ void gpsReceive() {
   4);
   */
 
+  // update lights here because logging to GPS can be slow
+  updateLights();
+
   // calculate magnetic declination in software. the gps chip and library
   // support it with GPS.magvariation but the Ultimate GPS module we are using
   // is configured to store log data instead of calculate declination
@@ -177,6 +184,7 @@ void gpsReceive() {
 
   // open the SD card
   my_file = SD.open(gps_log_filename, FILE_WRITE);
+  updateLights();
 
   // if the file opened okay, write to it:
   if (!my_file) {
@@ -185,18 +193,28 @@ void gpsReceive() {
     DEBUG_PRINTLN(gps_log_filename);
     return;
   }
+  updateLights();
 
   DEBUG_PRINT(F("Logging GPS data... "));
   DEBUG_PRINTLN(gps_log_filename);
+  updateLights();
 
   my_file.print(compass_messages[my_peer_id].last_updated_at);
   my_file.print(",");
+  updateLights();
+
   my_file.print(GPS.latitudeDegrees, 4);
   my_file.print(",");
+  updateLights();
+
   my_file.print(GPS.longitudeDegrees, 4);
   my_file.print(",");
+  updateLights();
+
   my_file.print(GPS.speed);
   my_file.print(",");
+  updateLights();
+
   my_file.print(GPS.angle);
   my_file.println(";");
 
