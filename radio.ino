@@ -11,13 +11,31 @@ void setupRadio() {
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
-  delay(100); // give the radio time to wake up
+  FastLED.delay(100); // give the radio time to wake up
 
+  resetRadio(false);
+
+  // setModemConfig()?
+
+  DEBUG_PRINTLN(F(" done."));
+}
+
+void resetRadio(bool with_lights) {
   // manual reset
   digitalWrite(RFM95_RST, LOW);
-  delay(10);
+  FastLED.delay(10);
+
+  if (with_lights) {
+    // TODO: set a status light?
+    updateLights();
+  }
+
   digitalWrite(RFM95_RST, HIGH);
-  delay(10);
+  FastLED.delay(10);
+
+  if (with_lights) {
+    updateLights();
+  }
 
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
   // CRC on
@@ -39,8 +57,6 @@ void setupRadio() {
 
   // The default transmitter power is 13dBm, using PA_BOOST.
   rf95.setTxPower(constrain(radio_power, 5, 23), false);
-
-  DEBUG_PRINTLN(F(" done."));
 }
 
 void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_t *hash) {
@@ -83,11 +99,7 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   //blake2s.update((void *)message.longitude, sizeof(message.longitude));
   //DEBUG_PRINT(".");
 
-  DEBUG_PRINTLN();
-
-  updateLights();
-
-  DEBUG_PRINTLN(F(" finalizing... "));
+  DEBUG_PRINTLN(F(" finalizing..."));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
 
   /*
@@ -220,7 +232,8 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 #endif
 
 void radioSleep() {
-  rf95.sleep();
+  // TODO: it doesn't seem to be waking up from sleep right. transmit keeps getting stuck
+  //rf95.sleep();
 }
 
 void radioTransmit(const int pid) {
@@ -315,14 +328,30 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
   rf95.send(radio_buf, ostream.bytes_written);
+
+  unsigned long abort_time = millis() + 300; // TODO: tune this
+
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
+
+    if (millis() > abort_time) {
+      DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
+      abort_time = 0;
+      break;
+      // TODO: what should we do here? reset the radio?
+      //resetRadio(true);
+    }
+    // TODO: BUG! we got stuck transmitting here. i noticed because power usage stayed at +100mA
   }
 
   // TODO: it is sometimes crashing here or inside the above while loop :'(
 
-  DEBUG_PRINT(F("Transmit done. "));
+  if (abort_time == 0) {
+    DEBUG_PRINT(F("Transmit ERR. "));
+  } else {
+    DEBUG_PRINT(F("Transmit done. "));
+  }
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
@@ -351,6 +380,9 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage com
 
     DEBUG_PRINT(F("No peer data to transmit for #"));
     DEBUG_PRINTLN(compass_message.peer_id);
+
+    // TODO: if half of the network is on, this might cause excessive sleeps, but let's test
+    radioSleep();
 
     return;
   }
