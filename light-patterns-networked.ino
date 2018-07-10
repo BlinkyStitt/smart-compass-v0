@@ -10,8 +10,13 @@ void networkedLights() {
   static const int ms_per_led = 4 * 1000 / frames_per_second;   // 4 frames
   static int shift;
 
-  fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
-  //fadeLightBy(leds, num_LEDs, LED_FADE_RATE);
+  static const unsigned int min_distance= 5;
+  static const unsigned int max_distance = num_LEDs;  // num_LEDs + a few for fade rate
+  static unsigned int distance = max_distance / 2;  // max(min_distance, max_distance / (1+nearby_peers));  // min 5, max numLEDs + a few for fade rate
+  // TODO: change density based on how many peers are nearby?
+
+  // todo: fade slower (32) for larger distances
+  fadeToBlackBy(leds, num_LEDs, 32);
 
   // shift the pattern based on peer id and then shift more slowly over time
   shift = peer_shift + network_ms / ms_per_led;
@@ -20,8 +25,8 @@ void networkedLights() {
   for (int i = 0; i < num_LEDs; i++) {
     int network_i = (i + shift) % network_LEDs;
 
-    // light up every Nth light. the others will dim
-    if (network_i % 5 == 0) {
+    // light up every Nth light. the others will fade
+    if (network_i % distance == 0) {
       // TODO: use a color pallet?
       // TODO: this spreads the whole rainbow across all 4. do we want to change color slower than that?
       // TODO: do something with saturation, too?

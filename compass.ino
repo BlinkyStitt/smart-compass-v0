@@ -187,6 +187,7 @@ void addCompassPointsForPlaces() {
       // TODO: add to a 8 led strip bar
     } else if (compass_pins[i].distance <= max_peer_distance / 2) {
       // inner ring
+      // TODO: inner ring is off by one now that I arranged the lights differently
       int compass_point_id = map(compass_pins[i].magnetic_bearing, 0, 360, 0, inner_ring_size) % inner_ring_size;
 
       inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]] =
