@@ -11,6 +11,7 @@ void networkedLights() {
   static int shift;
 
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
+  //fadeLightBy(leds, num_LEDs, LED_FADE_RATE);
 
   // shift the pattern based on peer id and then shift more slowly over time
   shift = peer_shift + network_ms / ms_per_led;
@@ -26,7 +27,8 @@ void networkedLights() {
       // TODO: do something with saturation, too?
       int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
       // TODO: cycle brightness instead of doing fixed full so that the flicker is less
-      leds[i] = CHSV(color_value, 255, 255);
+      // TODO: or blend?
+      leds[i] = CHSV(color_value, 230, 230);
     }
   }
 }
