@@ -137,14 +137,14 @@ void setupConfig() {
   DEBUG_PRINT(F("broadcast_time_s: "));
   if (!broadcast_time_s) {
     DEBUG_PRINT(F("(default) "));
-    broadcast_time_s = 2;
+    broadcast_time_s = 3;
   }
   DEBUG_PRINTLN(broadcast_time_s);
 
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 128; // TODO: tune this. too high and it crashes (or thats my theory)
+    default_brightness = 64; // TODO: tune this. too high and it crashes (or that's my theory)
   }
   DEBUG_PRINTLN(default_brightness);
 
@@ -186,8 +186,7 @@ void setupConfig() {
 
   DEBUG_PRINT(F("radio_power: "));
   // 5-23 dBm
-  // TODO: whats the difference in power? tune this. figure out range (with 13, it has crashed on us when running off
-  // battery)
+  // TODO: whats the difference in power? figure out range and tune this. lights.ino has power draw configured for 20
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
     radio_power = 20;

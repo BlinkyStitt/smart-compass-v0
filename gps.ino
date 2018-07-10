@@ -208,6 +208,9 @@ void gpsReceive() {
   // close the file:
   my_file.close();
 
+  // update lights here because logging to GPS can be slow
+  updateLights();
+
   DEBUG_PRINTLN(F("Logging done."));
 
   // TODO: sort compass_pins
