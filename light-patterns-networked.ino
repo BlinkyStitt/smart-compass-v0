@@ -25,6 +25,7 @@ void networkedLights() {
       // TODO: this spreads the whole rainbow across all 4. do we want to change color slower than that?
       // TODO: do something with saturation, too?
       int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
+      // TODO: cycle brightness instead of doing fixed full so that the flicker is less
       leds[i] = CHSV(color_value, 255, 255);
     }
   }

@@ -83,6 +83,10 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   //blake2s.update((void *)message.longitude, sizeof(message.longitude));
   //DEBUG_PRINT(".");
 
+  DEBUG_PRINTLN();
+
+  updateLights();
+
   DEBUG_PRINTLN(F(" finalizing... "));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
 
@@ -297,13 +301,13 @@ void radioTransmit(const int pid) {
     encodePinMessage(&ostream, compass_pins[tx_pin_id], time_now);
   }
 
+  updateLights(); // we update lights here because encoding can be slow
+
   // TODO: bytes_written seems to always be 0, even with a successful encode
   if (!ostream.bytes_written) {
     DEBUG_PRINTLN("Skipping transmit.");
     return;
   }
-
-  updateLights(); // we update lights here because encoding can be slow
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs so wait now
   // TODO: time it (tho it seems fast enough)
