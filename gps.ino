@@ -231,5 +231,5 @@ void gpsReceive() {
 
   DEBUG_PRINTLN(F("Logging done."));
 
-  // TODO: sort compass_pins
+  // TODO: sort compass_pins by distance
 }

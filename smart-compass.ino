@@ -205,14 +205,14 @@ void setup() {
 
   setupConfig();
 
+  setupLights();
+
   // do more setup now that we have our configuration
   if (config_setup) {
     setupGPS();
     setupRadio();
     setupSensor();
   }
-
-  setupLights();
 
   // open the SD card
   my_file = SD.open(gps_log_filename, FILE_WRITE);
@@ -317,6 +317,10 @@ void loop() {
       } else {
         radioReceive();
       }
+    } else {
+      // even if we don't have a GPS fix, we can still update peer locations
+      // this will take more power since the GPS will be searching for a fix and the radio will be on
+      radioReceive();
     }
 
     // transmitting can be slow. update lights again just in case
@@ -325,6 +329,17 @@ void loop() {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights();
   }
+
+  // TODO: if debug, EVERY_N_SECONDS(10) {
+    // TODO: print if configured
+    // TODO: print if the radio is sleeping
+    // TODO: print if the gps has a fix
+    // TODO: print number of saved gps points
+    // TODO: print  broadcasting_peer_id and broadcasted_peer_id
+    // TODO: print transmit errors
+    // TODO: print memory/cpu stats
+    // TODO: print other things
+
 
   // don't sleep too long or you get in the way of radios. keep this less < framerate
   FastLED.delay(loop_delay_ms);

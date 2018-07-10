@@ -251,6 +251,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
   return;
 }
 
+// TODO: change this to take an argument so we can (while debugging) print who the caller is
 void updateLights() {
   static Orientation last_orientation = ORIENTED_PORTRAIT;
   static Orientation current_orientation;
