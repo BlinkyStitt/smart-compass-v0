@@ -144,7 +144,7 @@ void setupConfig() {
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 64; // TODO: tune this. too high and it crashes (or that's my theory)
+    default_brightness = 32; // TODO: tune this
   }
   DEBUG_PRINTLN(default_brightness);
 
