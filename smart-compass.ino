@@ -1,6 +1,7 @@
 // TODO: use addmod8
 
 #define DEBUG
+//#define DEBUG_SERIAL_WAIT
 #include "bs_debug.h"
 #define ARRAY_SIZE(array) ((sizeof(array)) / (sizeof(array[0])))
 
@@ -176,19 +177,23 @@ void setupSPI() {
 
 void setup() {
 #ifdef DEBUG
+#ifdef DEBUG_SERIAL_WAIT
   Serial.begin(115200);
 
   delay(5000);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-#else
+#else  // no DEBUG_SERIAL_WAIT
   delay(5000); // todo: tune this. don't get locked out if something crashes
-#endif
+#endif  // DEBUG_SERIAL_WAIT
+#else  // no DEBUG
+  delay(5000); // todo: tune this. don't get locked out if something crashes
+#endif  // DEBUG
 
   DEBUG_PRINTLN("Setting up...");
 
-  // TODO: disable ADC?
+  // TODO: disable ADC or other things to save battery?
 
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();
@@ -292,21 +297,15 @@ void loop() {
     updateLights();
 
     if (GPS.fix) {
-      // if it's our time to transmit, radioTransmit(), else wait for radioReceive()
-      // TODO: should there be downtime when no one is transmitting or receiving?
+      // TODO: should there be downtime when no one is transmitting or receiving? would let us sleep the radios for longer
 
-      // TODO: i don't think this is working right.
-      // TODO: should we be including millis in this somehow? time segment length would be better then, but I'm not sure
-      // it matters
-      // TODO: change this to broadcast_time_ms if we can figure out a reliable way to include millis
-      // TODO: only calculate this every 100ms or something like that?
       time_segment_id = (getGPSTime() / broadcast_time_s) % time_segments;
 
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
 
       /*
-      // this is going to be too verbose
+      // this is going to be verbose
       DEBUG_PRINT(broadcasting_peer_id);
       DEBUG_PRINT(" -> ");
       DEBUG_PRINTLN(broadcasted_peer_id);
@@ -315,15 +314,11 @@ void loop() {
       if (broadcasting_peer_id == my_peer_id) {
         radioTransmit(broadcasted_peer_id); // this will noop if we have transmitted recently
       } else {
-        // TODO: have known down time so we can sleep longer?
         radioReceive();
       }
-    } else {
-      // we don't know what time it is. listen and we might hear the time from a peer
-      radioReceive();
     }
 
-    // TODO: this seems excessive, but maybe it will keep framerate smoother
+    // transmitting can be slow. update lights again just in case
     updateLights();
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
