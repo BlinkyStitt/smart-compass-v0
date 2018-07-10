@@ -25,6 +25,6 @@ BatteryStatus checkBattery() {
     return BATTERY_OK;
   }
 
-  DEBUG_PRINTLN(F("CHARGING"));
-  return BATTERY_CHARGING;
+  DEBUG_PRINTLN(F("FULL"));
+  return BATTERY_FULL;
 }
