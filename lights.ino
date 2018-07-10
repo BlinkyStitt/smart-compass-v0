@@ -272,7 +272,7 @@ void updateLights() {
     case BATTERY_OK:
       FastLED.setBrightness(default_brightness * .90);
       break;
-    case BATTERY_CHARGING:
+    case BATTERY_FULL:
       // TODO: different light pattern instead?
       FastLED.setBrightness(default_brightness);
       break;

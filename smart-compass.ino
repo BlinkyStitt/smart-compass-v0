@@ -30,7 +30,7 @@
 #define MAX_PINS 255
 
 // TODO: put on SD?
-#define LED_FADE_RATE 90
+#define LED_FADE_RATE 100
 
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
