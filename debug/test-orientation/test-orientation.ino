@@ -68,8 +68,8 @@ void setup() {
 
   Serial.println("Setting up...");
 
-  // make sure radio doesn't get in the way
-  digitalWrite(RFM95_CS, HIGH);
+  // disable the radio
+  pinMode(RFM95_CS, INPUT_PULLUP);
 
   setupSensor();
 

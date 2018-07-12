@@ -77,18 +77,13 @@ CHSV colors[] = {
 };
 
 void setupSPI() {
-  // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
-  // The RFM95 has a pulldown on this pin, so the radio
-  // is technically always selected unless you set the pin low.
-  // this will cause other SPI devices to fail to function as
-  // expected because CS (active-low) will be selected for
-  // the RFM95 at the same time.
-  digitalWrite(RFM95_CS, HIGH);
+  // disable the radio and other extras
+  pinMode(RFM95_CS, INPUT_PULLUP);
 
-  digitalWrite(SDCARD_CS, HIGH);
+  pinMode(SDCARD_CS, INPUT_PULLUP);
 
-  digitalWrite(LSM9DS1_CSM, HIGH);
-  digitalWrite(LSM9DS1_CSAG, HIGH);
+  pinMode(LSM9DS1_CSM, INPUT_PULLUP);
+  pinMode(LSM9DS1_CSAG, INPUT_PULLUP);
 
   // give everything time to wake up
   delay(200);
