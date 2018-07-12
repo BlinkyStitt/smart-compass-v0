@@ -53,6 +53,9 @@ void setup() {
     delay(1);
   }
 
+  // disable the radio
+  pinMode(RFM95_CS, INPUT_PULLUP);
+
   // do more setup now that we have our configuration
   setupGPS();
 

@@ -56,7 +56,8 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  digitalWrite(RFM95_CS, HIGH);
+  // disable the radio
+  pinMode(RFM95_CS, INPUT_PULLUP);
 
   Serial.print("\nInitializing SD card...");
 

@@ -64,6 +64,9 @@ void setup() {
     delay(1);
   }
 
+  // disable the radio
+  pinMode(RFM95_CS, INPUT_PULLUP);
+
   setupSensor();
 }
 

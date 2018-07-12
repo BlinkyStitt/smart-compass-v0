@@ -34,9 +34,8 @@ void setup() {
 
   Serial.println("Setting up...");
 
-  // make sure radio doesn't get in the way
-  // TODO: another example I saw set this to INPUT_PULLUP, but I'm not sure
-  digitalWrite(RFM95_CS, HIGH);
+  // disable the radio
+  pinMode(RFM95_CS, INPUT_PULLUP);
 
   setupRTC();
 
