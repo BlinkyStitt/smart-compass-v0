@@ -9,22 +9,22 @@ BatteryStatus checkBattery() {
   DEBUG_PRINTLN(measuredvbat);
   */
 
-  DEBUG_PRINT(F("Battery: "));
+  //DEBUG_PRINT(F("Battery: "));
   if (measuredvbat < 3.3) {
-    DEBUG_PRINTLN(F("DEAD"));
+    //DEBUG_PRINTLN(F("DEAD"));
     return BATTERY_DEAD;
   }
 
   if (measuredvbat < 3.7) {
-    DEBUG_PRINTLN(F("LOW"));
+    //DEBUG_PRINTLN(F("LOW"));
     return BATTERY_LOW;
   }
 
   if (measuredvbat < 4.1) {
-    DEBUG_PRINTLN(F("OK"));
+    //DEBUG_PRINTLN(F("OK"));
     return BATTERY_OK;
   }
 
-  DEBUG_PRINTLN(F("FULL"));
+  //DEBUG_PRINTLN(F("FULL"));
   return BATTERY_FULL;
 }
