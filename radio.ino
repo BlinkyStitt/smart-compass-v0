@@ -256,7 +256,8 @@ void radioTransmit(const int pid) {
     // check if there are any pins to transmit
     for (int i = next_compass_pin - 1; i >= 0; i--) {
       // checking against hue like this stops us from using true red (which is good since that's already used for north)
-      if (!compass_pins[i].transmitted and compass_pins[i].color.hue) {
+      // TODO: but then how should we broadcast that a pin should be deleted?
+      if (!compass_pins[i].transmitted and compass_pins[i].database_id > 0) {
         tx_compass_location = false; // set to false to enable transmitting of compass_pins instead of friend locations
         tx_pin_id = i;
         break;
@@ -275,9 +276,9 @@ void radioTransmit(const int pid) {
     }
   }
 
-  DEBUG_PRINT(F("My time to transmit "));
+  DEBUG_PRINT(F("Time to transmit data from "));
   DEBUG_PRINT(my_peer_id);
-  DEBUG_PRINT(" -> ");
+  DEBUG_PRINT(" about ");
   DEBUG_PRINT(pid);
   DEBUG_PRINT(" ");
   DEBUG_PRINT(getGPSTime());

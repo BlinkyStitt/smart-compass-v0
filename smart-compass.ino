@@ -1,11 +1,8 @@
-// TODO: use addmod8
-
 #define DEBUG
 //#define DEBUG_SERIAL_WAIT
 #include "bs_debug.h"
 #define ARRAY_SIZE(array) ((sizeof(array)) / (sizeof(array[0])))
 
-// TODO: how is clang-format deciding to order these? they aren't alphabetical
 #include <AP_Declination.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_LSM9DS1.h>
@@ -29,47 +26,40 @@
 
 #define MAX_PINS 255
 
-// TODO: put on SD?
 #define LED_FADE_RATE 77
 
 // Pins 0 and 1 are used for Serial1 (GPS)
 #define RFM95_INT 3 // already wired for us
 #define RFM95_RST 4 // already wired for us
 #define LED_DATA 5
+#define FLOATING_PIN 6
 #define RFM95_CS 8      // already wired for us
 #define VBAT_PIN 9      // already wired for us  // A7
-#define SDCARD_CS 10    // TODO: moved to a different pin for cleaner traces
-#define LSM9DS1_CSAG 11 // TODO: moved to a different pin for cleaner traces
-#define LSM9DS1_CSM 12  // TODO: moved to a different pin for cleaner traces
+#define SDCARD_CS 10
+#define LSM9DS1_CSAG 11
+#define LSM9DS1_CSM 12
 #define RED_LED 13      // already wired for us
 #define SPI_MISO 22     // shared between Radio+Sensors+SD
 #define SPI_MOSI 23     // shared between Radio+Sensors+SD
 #define SPI_SCK 24      // shared between Radio+Sensors+SD
+
 #define gpsSerial Serial1
 
 #define LED_CHIPSET NEOPIXEL
 
-/* these variables are used by multiple ino files and I'm not sure the right place to put them */
-// TODO: maybe pass these around as arguments instead of having them be global? at least rename them all to be prefixed
-// with g_
-
 // lights for compass ring
 const int inner_ring_size = 16;
 const int inner_ring_start = 0;
-const int inner_ring_end = inner_ring_start + inner_ring_size; // TODO: use this instead of numLeds a lot of places
+const int inner_ring_end = inner_ring_start + inner_ring_size;
 
 const int outer_ring_size = 24;
 const int outer_ring_start = inner_ring_end;
 const int outer_ring_end = outer_ring_start + outer_ring_size;
 
-// TODO: add status bar lights
 const int status_bar_size = 8;
 const int status_bar_start = outer_ring_end;
 const int status_bar_end = status_bar_start + status_bar_size;
 
-// TODO: also add a 8 led strip for showing nearby peers
-
-// TODO: split this into 3 different sized arrays and use a union?
 const int num_LEDs = status_bar_end;
 CRGB leds[num_LEDs];
 
@@ -89,17 +79,15 @@ int my_peer_id, my_hue, my_saturation, num_peers;
 uint8_t my_network_key[NETWORK_KEY_SIZE];
 
 // these are set by config or fallback to defaults
-// TODO: making this unsigned makes IniConfig sad. they shouldn't ever be negative though!
 int broadcast_time_s, default_brightness, flashlight_density, frames_per_second, gps_update_s, loop_delay_ms,
     min_peer_distance, max_peer_distance, ms_per_light_pattern, peer_led_ms, radio_power;
 
 int time_zone_offset;
 
 // it is not legal to encrypt in the US, but we can sign and hash for security
-// TODO: make sure to update the protobuf, too!
 #define NETWORK_HASH_SIZE 16
 BLAKE2s blake2s;
-uint8_t my_network_hash[NETWORK_HASH_SIZE]; // TODO: union type to access as hex?
+uint8_t my_network_hash[NETWORK_HASH_SIZE];
 
 // offset between true and magnetic north
 float g_magnetic_declination = 0.0;
@@ -108,17 +96,17 @@ float g_magnetic_declination = 0.0;
 Adafruit_GPS GPS(&gpsSerial);
 
 // save GPS data to SD card
-String gps_log_filename = ""; // TODO: everyone says not to use String, but it seems fine and is way simpler
+// TODO: don't use String. use char array instead
+String gps_log_filename = "";
 File my_file;
 
 // keep us from transmitting too often
-// TODO: i think our loop check has a bug. this used to just be a boolean, but that had a bug. it should have worked tho
 long last_transmitted[max_peers] = {0};
 
 bool config_setup, sd_setup, sensor_setup = false;
 
-// todo: make compasslocationmessages work like this
-CompassPin compass_pins[MAX_PINS] = {0, false, 0, 0, 0, 0, 0, {0, 0, 0}};
+// TODO: these are getting overridden! i don't think these are declared how i need. i should be using pointers
+CompassPin compass_pins[MAX_PINS] = {-1, false, 0, 0, 0, 0, 0, {0, 0, 0}};
 
 int distance_sorted_compass_pin_ids[MAX_PINS];
 int next_compass_pin = 0;
@@ -126,20 +114,25 @@ int next_compass_pin = 0;
 SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
 SmartCompassPinMessage pin_message_tx = SmartCompassPinMessage_init_default;
 
-const int max_compass_points = max_peers + 1; // TODO: is this enough? what about when we include saved locations?
+const int max_compass_points = max_peers + 1;
 
-// compass points go COUNTER-clockwise to match LEDs!
+// inner compass points go COUNTER-clockwise to match LEDs!
+// TODO: this is wrong! this is not claiming the memory like i expected it to and setting this is breaking compass_pins
 CHSV inner_compass_points[inner_ring_size][max_compass_points];
 int next_inner_compass_point[inner_ring_size] = {0};
 
+// TODO: initialize this?
 CHSV outer_compass_points[outer_ring_size][max_compass_points];
 int next_outer_compass_point[outer_ring_size] = {0};
+
+// TODO: initialize this?
+CHSV status_bar[status_bar_size];
+int next_status_bar_id = 0;
 
 elapsedMillis network_ms = 0;
 
 CHSV pin_colors[] = {
     // {h, s, v},
-    // TODO: color-blind friendly colors from test-lights.ino. i can't tell what any of these are. red, yellow, blue,
     // white
     {160, 71, 255},  // CRGB::RoyalBlue
     {0, 255, 255},   // Red for disabling, not for actual red pins!
@@ -147,13 +140,13 @@ CHSV pin_colors[] = {
     {234, 59, 255},  // CRGB::HotPink;
     {23, 255, 255},  // CRGB::DarkOrange;
     {52, 219, 255},  // CRGB::Gold;
-    {104, 171, 255}, // CRGB::SeaGreen; // TODO: this one doesn't look great at full value
+    {104, 171, 255}, // CRGB::SeaGreen;
     {128, 255, 255}  // CRGB::Aqua;
 };
 int last_pin_color_id = 0;
 const int delete_pin_color_id = 1;
 
-const int max_points_per_color = 3; // TODO: put this on the SD?
+const int max_points_per_color = 3;
 
 void setupSPI() {
   // https://github.com/ImprobableStudios/Feather_TFT_LoRa_Sniffer/blob/9a8012ba316a652da669fe097c4b76c98bbaf35c/Feather_TFT_LoRa_Sniffer.ino#L222
@@ -176,29 +169,16 @@ void setupSPI() {
 }
 
 void setup() {
-#ifdef DEBUG
-#ifdef DEBUG_SERIAL_WAIT
-  Serial.begin(115200);
-
-  delay(5000);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
-#else  // no DEBUG_SERIAL_WAIT
-  delay(5000); // todo: tune this. don't get locked out if something crashes
-#endif  // DEBUG_SERIAL_WAIT
-#else  // no DEBUG
-  delay(5000); // todo: tune this. don't get locked out if something crashes
-#endif  // DEBUG
+  debug_serial(115200, 5000);
 
   DEBUG_PRINTLN("Setting up...");
-
-  // TODO: disable ADC or other things to save battery?
 
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();
 
-  randomSeed(analogRead(6));
+  checkBattery();
+
+  randomSeed(analogRead(FLOATING_PIN));
 
   // configuration depends on SD card so do it first
   setupSD();
@@ -211,8 +191,9 @@ void setup() {
   if (config_setup) {
     setupGPS();
     setupRadio();
-    setupSensor();
   }
+
+  setupSensor();
 
   // open the SD card
   my_file = SD.open(gps_log_filename, FILE_WRITE);
@@ -229,51 +210,50 @@ void setup() {
     // add a blank line each time we start
     my_file.println("");
 
-    // TODO: do we want to log anything else?
-
     // close the file:
     my_file.close();
   }
 
+  // TODO: load saved locations
+
   // configure the timer that reads GPS data to run at <sampleRate>Hertz
-  // TODO: what rate should we read at? the flora example does 1Hz!
   tcConfigure(10);
   tcStartCounter();
 
-  checkBattery();
+  if (sd_setup) {
+    loadCompassPins();
+  }
 
   DEBUG_PRINTLN(F("Starting..."));
 }
 
 /*
  * this stuff was in its own .ino files, but something was broken about it
- * i think i fixed it by moving the struct definitions to types.h, but I'm not sure how best to move db_file and db defs
+ * i think i fixed it by moving the struct definitions to types.h, but I'm not sure how best to move my_file and db defs
  */
 
-// TODO: what table size?
 #define TABLE_SIZE 4096 * 2
 
 // The max number of records that should be created = (TABLE_SIZE - sizeof(EDB_Header)) / sizeof(LogEvent).
 // If you try to insert more, operations will return EDB_OUT_OF_RANGE for all records outside the usable range.
 
 const char *db_name = "compass.db";
-File db_file;
 
 // The read and write handlers for using the SD Library
 // Also blinks the led while writing/reading
 // database entries start at 1!
 inline void writer(unsigned long address, const byte *data, unsigned int recsize) {
   digitalWrite(RED_LED, HIGH);
-  db_file.seek(address);
-  db_file.write(data, recsize);
-  db_file.flush();
+  my_file.seek(address);
+  my_file.write(data, recsize);
+  my_file.flush();
   digitalWrite(RED_LED, LOW);
 }
 
 inline void reader(unsigned long address, byte *data, unsigned int recsize) {
   digitalWrite(RED_LED, HIGH);
-  db_file.seek(address);
-  db_file.read(data, recsize);
+  my_file.seek(address);
+  my_file.read(data, recsize);
   digitalWrite(RED_LED, LOW);
 }
 
@@ -286,7 +266,6 @@ EDB db(&writer, &reader);
  */
 
 void loop() {
-  // TODO: num_peers * num_peers can get pretty big!
   // each peer needs enough time to broadcast data for every other peer. then we double it so we can spend half the time sleeping
   static const unsigned int time_segments = num_peers * num_peers * 2;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
@@ -302,16 +281,9 @@ void loop() {
       broadcasting_peer_id = time_segment_id / (num_peers * 2);
       broadcasted_peer_id = time_segment_id % num_peers;
 
-      /*
-      // this is going to be verbose
-      DEBUG_PRINT(broadcasting_peer_id);
-      DEBUG_PRINT(" -> ");
-      DEBUG_PRINTLN(broadcasted_peer_id);
-      */
-
       if (broadcasting_peer_id == my_peer_id) {
         radioTransmit(broadcasted_peer_id); // this will sleep the radio if we've already transmitted for this segment
-      } else if (broadcasting_peer_id > num_peers) {
+      } else if (broadcasting_peer_id >= num_peers) {
         // spend 1/2 the time with the radio sleeping
         radioSleep();
       } else {
@@ -329,17 +301,6 @@ void loop() {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights();
   }
-
-  // TODO: if debug, EVERY_N_SECONDS(10) {
-    // TODO: print if configured
-    // TODO: print if the radio is sleeping
-    // TODO: print if the gps has a fix
-    // TODO: print number of saved gps points
-    // TODO: print  broadcasting_peer_id and broadcasted_peer_id
-    // TODO: print transmit errors
-    // TODO: print memory/cpu stats
-    // TODO: print other things
-
 
   // don't sleep too long or you get in the way of radios. keep this less < framerate
   FastLED.delay(loop_delay_ms);
