@@ -21,11 +21,13 @@ void setupLights() {
   // TODO: include radio_power instead of hard coding 120 (it is 120mA when radio_power=20)
   // TODO: we won't use the radio at full power and SD at full power at the same time. so tune this
   // TODO: maybe run it without lights to see max power draw and subtract that from 500
-  // leave some room for the radio and gps and SD and mcu (TODO: and 100mA for charger?)
+  // leave some room for the radio and gps and SD and mcu
+  // we don't need to leave room for the charger because we have a separate (faster) charger attached
   FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 100 - 50);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
+
   FastLED.clear();
   FastLED.show();
 
@@ -34,6 +36,8 @@ void setupLights() {
 
 void updateLightsForCompass(CompassMode compass_mode) {
   static unsigned long now_ms = 0;
+
+  // TODO: this has bugs in it that is accessing memory incorrectly
 
   // show the compass if we know our own GPS location and have SD to show saved locations
   if (!GPS.fix or !sd_setup) {
@@ -44,6 +48,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
   now_ms = millis();
 
+  // TODO: this is breaking compass_pins
   // calculate distance to friends or saved places
   updateCompassPoints(compass_mode);
 
@@ -66,11 +71,11 @@ void updateLightsForCompass(CompassMode compass_mode) {
     }
 
     if (next_inner_compass_point[i] > max_compass_points) {
-      // TODO: what is going on?
-      DEBUG_PRINT(F("ERROR! INVALID next_outer_compass_point for "));
+      // TODO: what is going on? why is this happening?
+      DEBUG_PRINT(F("ERROR! INVALID next_inner_compass_point for "));
       DEBUG_PRINT(i);
       DEBUG_PRINT(F(": "));
-      DEBUG_PRINTLN(next_outer_compass_point[i]);
+      DEBUG_PRINTLN(next_inner_compass_point[i]);
       continue;
     }
 
@@ -92,7 +97,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
     leds[inner_ring_start + i] = inner_compass_points[i][j];
   }
-  // TODO: this is broken. i think the bug is somewhere in the setting of outer_compass_points
+
   for (int i = 0; i < outer_ring_size; i++) {
     //    DEBUG_PRINT(F("outer ring "));
     //    DEBUG_PRINTLN(i);
@@ -293,13 +298,15 @@ void updateLights() {
       // we didn't broadcast it when it was saved because it might have a non-standard color that takes some extra time
       // to configure
       if (saved_pin_id > 0) {
+        // TODO: make sure this isn't too slow. if it is slow, do this save somewhere else
+        saveCompassPin(saved_pin_id);
+
         DEBUG_PRINTLN(F("Queuing saved pin for transmission."));
+
         // set transmitted to false now. next time we transmit, this pin id will be shared with peers
         compass_pins[saved_pin_id].transmitted = false;
 
-        // TODO: save to database
-
-        // clear saved_pin_id now that the message is queued
+        // clear saved_pin_id now that the message is saved to the sd and queued for transmission
         saved_pin_id = -1;
       }
 

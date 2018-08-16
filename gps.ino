@@ -23,12 +23,12 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
 
   // Position fix update rate commands.
-  // GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
+   GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
   // GPS.sendCommand(PGCMD_ANTENNA);
@@ -44,9 +44,14 @@ void setupGPS() {
 }
 
 unsigned long getGPSTime() {
+  // according to the docs, the GPS has an RTC so if you have a fix with the battery once, you'll always be able to
+  // check the time
+
+  // i liked the internal rtc, but it was slow to use
+
+  // TODO: this jumps around a bit since it is updated when gps parsing happens
+
   // 2018 "epoch"
-  // TODO: this jumps around a bit since it is updated when gps parsing happens. i liked the internal rtc, but it was
-  // slow to use
   unsigned long t = (GPS.year - 2018);
 
   t = (t * 12) + GPS.month;
@@ -60,9 +65,6 @@ unsigned long getGPSTime() {
 
   t = (t * 60) + GPS.seconds;
 
-  // according to the docs, the GPS has an RTC so if you have a fix with the battery, you'll always be able to check the
-  // time i can't find where in the code this is handled though. i only see the time set when a message is parsed so i
-  // think that's when it happens and they just use the rtc to improve cold start
   return t;
 }
 
@@ -73,15 +75,7 @@ void gpsReceive() {
   static int last_logged_longitude = 0;
   static const int min_update_interval = broadcast_time_s * num_peers * 1000; // TODO: tune this
 
-  // limit updates
-  /*
-  // TODO: enable this?
-  if (last_gps_update and (millis() - last_gps_update < min_update_interval)) {
-    return;
-  }
-  */
-
-  // if no new sentence is received... (updates at most every 100 mHz thanks to PMTK_SET_NMEA_UPDATE_*)
+  // if no new sentence is received...
   if (!GPS.newNMEAreceived()) {
     // exit
     return;
@@ -94,13 +88,11 @@ void gpsReceive() {
 
   if (!GPS.fix) {
     // TODO: clear my compass_message?
+    // even though we don't have a fix, parsing the message updates GPSTime
     return;
   }
 
-  // we used to update an rtc here, but the GPS time seems to work better. setting the rtc is slow
-
-  //updateLights();
-
+  // TODO: we seem to be calling gpsReceive twice in rapid succession with newNMEAreceived being true. not sure how. skip the second with this counter?
   last_gps_update = millis();
 
   compass_messages[my_peer_id].last_updated_at = getGPSTime(); // TODO: this is seconds. should we use milliseconds?
@@ -111,12 +103,14 @@ void gpsReceive() {
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
+  // TODO: setting next_compass_pin in updateLights is corrupting compass_messages[my_peer_id]! memory issue!
   updateLights();
 
   // compare lat/long with less precision so we don't log all the time
   // TODO: what units is this? 30 meters?
   if ((abs(last_logged_latitude - compass_messages[my_peer_id].latitude) < 3000) and (abs(last_logged_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
     // don't bother saving if the points haven't changed much
+    DEBUG_PRINTLN("GPS unchanged");
     return;
   }
 
@@ -131,6 +125,16 @@ void gpsReceive() {
 
   last_logged_latitude = compass_messages[my_peer_id].latitude;
   last_logged_longitude = compass_messages[my_peer_id].longitude;
+
+  DEBUG_PRINT("new last_logged_latitude=");
+  DEBUG_PRINTLN(last_logged_latitude);
+  DEBUG_PRINT("new last_logged_longitude=");
+  DEBUG_PRINTLN(last_logged_longitude);
+
+  if (last_logged_latitude == 0) {
+    DEBUG_PRINT("WTF is happening here? "); // TODO: something in update lights.
+    DEBUG_PRINTLN(compass_messages[my_peer_id].latitude);
+  }
 
   /*
   // hard code salesforce tower while debugging

@@ -127,11 +127,8 @@ void sensorReceive() {
 static Orientation getOrientation() {
   //  DEBUG_PRINT(F("Orientation: "));
 
-  // TODO: remove this when done debugging!
-  return ORIENTED_PORTRAIT;
-
   if (!sensor_setup) {
-    //    DEBUG_PRINTLN(F("UP (no sensor)"));
+    DEBUG_PRINTLN(F("UP (no sensor)"));
     return ORIENTED_UP;
   }
 

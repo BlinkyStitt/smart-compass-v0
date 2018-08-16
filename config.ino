@@ -101,7 +101,7 @@ void loadOptional(IniFile ini, char *buffer, size_t buffer_len) {
 }
 
 void setupConfig() {
-  const size_t buffer_len = 80;
+  const size_t buffer_len = 120;
   char buffer[buffer_len];
 
   const char *filename = "/config.ini";
@@ -118,10 +118,11 @@ void setupConfig() {
       DEBUG_PRINTLN(F(" does not exist. Cannot proceed with config!"));
     } else {
       if (!ini.validate(buffer, buffer_len)) {
-        // TODO: default to just pretty lights since we don't have a network id or home locations
         DEBUG_PRINT(ini.getFilename());
         DEBUG_PRINT(F(" not valid. Cannot proceed with config!"));
         printErrorMessage(ini.getError());
+
+        // config_setup will be false
       } else {
         if (loadRequired(ini, buffer, buffer_len)) {
           loadOptional(ini, buffer, buffer_len);

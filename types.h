@@ -36,10 +36,8 @@ typedef struct {
 // Record definition for the database table
 // TODO: consistent naming with pins
 typedef struct {
-  int location_id = -1;
-  int next_track;
-  int play_count;
+  uint32_t last_updated_at;
   int32_t latitude;
   int32_t longitude;
   CHSV color;
-} LocationData;
+} SavedLocationData;

@@ -1,6 +1,8 @@
 /* light patterns */
 
 void flashlight() {
+  DEBUG_PRINTLN("flashlight");
+
   static int turn_on_id = 0;
   // smoothly transition from other patterns
   // TODO: would be nice to call fade on just the status bar here
@@ -26,6 +28,8 @@ void flashlight() {
 
 // https://gist.github.com/kriegsman
 void sinelon() {
+  DEBUG_PRINTLN("sinelon");
+
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
@@ -35,7 +39,10 @@ void sinelon() {
 
 // TODO: circle with multiple colors
 // TODO: do inner and outer ring at the same time
+// TODO: this is wrong
 void circle() {
+  DEBUG_PRINTLN("circle");
+
   int ms_per_led = 3 * 1000 / frames_per_second; // 3 frames
   int pos = (network_ms / ms_per_led) % (outer_ring_end - inner_ring_start) + inner_ring_start;
 
@@ -49,6 +56,8 @@ void circle() {
 // This function draws rainbows with an ever-changing, widely-varying set of parameters.
 // https://gist.github.com/kriegsman/964de772d64c502760e5
 void pride() {
+  DEBUG_PRINTLN("pride");
+
   static uint16_t sPseudotime = 0;
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
