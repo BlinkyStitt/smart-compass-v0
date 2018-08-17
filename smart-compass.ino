@@ -24,7 +24,7 @@
 #include "smart-compass.pb.h"
 #include "types.h"
 
-#define MAX_PINS 255
+#define MAX_PINS 12
 
 #define LED_FADE_RATE 77
 
@@ -70,6 +70,7 @@ uint8_t g_hue = 0;
 const int max_peers = 4;
 
 // setup messages for all possible peers
+// TODO: pointers here? i think this is geting corrupted
 SmartCompassLocationMessage compass_messages[max_peers] = {SmartCompassLocationMessage_init_default};
 
 #define NETWORK_KEY_SIZE 16
@@ -106,7 +107,7 @@ long last_transmitted[max_peers] = {0};
 bool config_setup, sd_setup, sensor_setup = false;
 
 // TODO: these are getting overridden! i don't think these are declared how i need. i should be using pointers
-CompassPin compass_pins[MAX_PINS] = {-1, false, 0, 0, 0, 0, 0, {0, 0, 0}};
+CompassPin compass_pins[MAX_PINS];
 
 int distance_sorted_compass_pin_ids[MAX_PINS];
 int next_compass_pin = 0;
@@ -119,11 +120,11 @@ const int max_compass_points = max_peers + 1;
 // inner compass points go COUNTER-clockwise to match LEDs!
 // TODO: this is wrong! this is not claiming the memory like i expected it to and setting this is breaking compass_pins
 CHSV inner_compass_points[inner_ring_size][max_compass_points];
-int next_inner_compass_point[inner_ring_size] = {0};
+int next_inner_compass_point[inner_ring_size];
 
 // TODO: initialize this?
 CHSV outer_compass_points[outer_ring_size][max_compass_points];
-int next_outer_compass_point[outer_ring_size] = {0};
+int next_outer_compass_point[outer_ring_size];
 
 // TODO: initialize this?
 CHSV status_bar[status_bar_size];
@@ -134,6 +135,7 @@ elapsedMillis network_ms = 0;
 CHSV pin_colors[] = {
     // {h, s, v},
     // white
+    // TODO: color-blind friendly colors instead! BLUE, RED, YELLOW, WHITE
     {160, 71, 255},  // CRGB::RoyalBlue
     {0, 255, 255},   // Red for disabling, not for actual red pins!
     {213, 255, 255}, // CRGB::Purple
@@ -172,6 +174,50 @@ void setup() {
   debug_serial(115200, 5000);
 
   DEBUG_PRINTLN("Setting up...");
+
+  for (int i = 0; i < MAX_PINS; i++) {
+    compass_pins[i].database_id = -1;
+  }
+
+  for (int i = 0; i < inner_ring_size; i++) {
+    next_inner_compass_point[i] = 0;
+
+    for (int j = 0; j < max_compass_points; j++) {
+      inner_compass_points[i][j].hue = 128;
+      inner_compass_points[i][j].saturation = 128;
+      inner_compass_points[i][j].value = 128;
+    }
+  }
+
+  for (int i = 0; i < outer_ring_size; i++) {
+    next_outer_compass_point[i] = 0;
+
+    for (int j = 0; j < max_compass_points; j++) {
+      outer_compass_points[i][j].hue = 128;
+      outer_compass_points[i][j].saturation = 128;
+      outer_compass_points[i][j].value = 128;
+    }
+  }
+
+  // TODO: something else is
+
+  /*
+  for (int i = 0; i < MAX_PINS; i++) {
+    DEBUG_PRINTLN(compass_pins[i].database_id);
+  }
+
+  for (int i = 0; i < inner_ring_size; i++) {
+    for (int j = 0; j < max_compass_points; j++) {
+      DEBUG_PRINTLN(inner_compass_points[i][j].hue);
+    }
+  }
+
+  for (int i = 0; i < outer_ring_size; i++) {
+    for (int j = 0; j < max_compass_points; j++) {
+      DEBUG_PRINTLN(outer_compass_points[i][j].hue);
+    }
+  }
+  */
 
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();

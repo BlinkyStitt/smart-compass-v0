@@ -181,7 +181,7 @@ void setupConfig() {
   // time to display the peer when multiple peers are the same direction
   if (!peer_led_ms) {
     DEBUG_PRINT(F("(default) "));
-    peer_led_ms = 500;
+    peer_led_ms = 800;
   }
   DEBUG_PRINTLN(peer_led_ms);
 
@@ -195,10 +195,12 @@ void setupConfig() {
   DEBUG_PRINTLN(radio_power);
 
   // would be cool to set this automatically, but that is way more complicated than it is worth
+  // TODO: i think I'm doing something wrong with timezone offset. the time always seems off by an hour...
   DEBUG_PRINT(F("time_zone_offset: "));
   if (!time_zone_offset) {
     DEBUG_PRINT(F("(default) "));
-    time_zone_offset = -8;
+    // PST = -8; PDT = -7
+    time_zone_offset = -7;
   }
   DEBUG_PRINTLN(time_zone_offset);
 

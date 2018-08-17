@@ -23,11 +23,11 @@ void setupGPS() {
   // send one of the position fix rate commands below too. For the parsing code
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
-  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second
+  //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_2HZ); // Twice every second (needed for time keeping!)
 
   // Position fix update rate commands.
-   GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds (we aren't moving much)
   //GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
@@ -70,7 +70,6 @@ unsigned long getGPSTime() {
 
 void gpsReceive() {
   static AP_Declination declination_calculator;
-  static long last_gps_update = 0;
   static int last_logged_latitude = 0;
   static int last_logged_longitude = 0;
   static const int min_update_interval = broadcast_time_s * num_peers * 1000; // TODO: tune this
@@ -85,15 +84,13 @@ void gpsReceive() {
     // we can fail to parse a sentence in which case we should just wait for another
     return;
   }
+  // if parse was successful, we should have an updated GPS time
 
   if (!GPS.fix) {
     // TODO: clear my compass_message?
     // even though we don't have a fix, parsing the message updates GPSTime
     return;
   }
-
-  // TODO: we seem to be calling gpsReceive twice in rapid succession with newNMEAreceived being true. not sure how. skip the second with this counter?
-  last_gps_update = millis();
 
   compass_messages[my_peer_id].last_updated_at = getGPSTime(); // TODO: this is seconds. should we use milliseconds?
 
@@ -103,18 +100,16 @@ void gpsReceive() {
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
-  // TODO: setting next_compass_pin in updateLights is corrupting compass_messages[my_peer_id]! memory issue!
   updateLights();
 
   // compare lat/long with less precision so we don't log all the time
   // TODO: what units is this? 30 meters?
-  if ((abs(last_logged_latitude - compass_messages[my_peer_id].latitude) < 3000) and (abs(last_logged_longitude - compass_messages[my_peer_id].longitude) < 3000)) {
+  if ((abs(last_logged_latitude - GPS.latitude_fixed) < 3000) and (abs(last_logged_longitude - GPS.longitude_fixed) < 3000)) {
     // don't bother saving if the points haven't changed much
     DEBUG_PRINTLN("GPS unchanged");
     return;
   }
-
-  // everything under this only happens if the location has changed by 30 meters
+  // the location has changed by 30 meters or more since we last logged
 
   updateLights();
 
@@ -123,17 +118,24 @@ void gpsReceive() {
   DEBUG_PRINT("last_logged_longitude=");
   DEBUG_PRINTLN(last_logged_longitude);
 
-  last_logged_latitude = compass_messages[my_peer_id].latitude;
-  last_logged_longitude = compass_messages[my_peer_id].longitude;
+  last_logged_latitude = GPS.latitude_fixed;
+  last_logged_longitude = GPS.longitude_fixed;
 
   DEBUG_PRINT("new last_logged_latitude=");
   DEBUG_PRINTLN(last_logged_latitude);
   DEBUG_PRINT("new last_logged_longitude=");
   DEBUG_PRINTLN(last_logged_longitude);
 
-  if (last_logged_latitude == 0) {
-    DEBUG_PRINT("WTF is happening here? "); // TODO: something in update lights.
+  // TODO: something in updateLights (setting next_compass_pin?) is corrupting compass_messages[my_peer_id]!
+  if (compass_messages[my_peer_id].latitude == 0 or compass_messages[my_peer_id].longitude == 0) {
+    DEBUG_PRINT("WTF is happening here? ");
     DEBUG_PRINTLN(compass_messages[my_peer_id].latitude);
+    DEBUG_PRINT(", ");
+    DEBUG_PRINTLN(compass_messages[my_peer_id].latitude);
+    DEBUG_PRINT(" != ");
+    DEBUG_PRINT(GPS.latitude_fixed);
+    DEBUG_PRINT(", ");
+    DEBUG_PRINTLN(GPS.longitude_fixed);
   }
 
   /*
@@ -198,6 +200,12 @@ void gpsReceive() {
     return;
   }
   updateLights();
+
+  // TODO: why is this happening?
+  if (compass_messages[my_peer_id].last_updated_at != getGPSTime()) {
+    DEBUG_PRINT(F("ERROR! compass_messages corrupted!"));
+    return;
+  }
 
   DEBUG_PRINT(F("Logging GPS data... "));
   DEBUG_PRINTLN(gps_log_filename);

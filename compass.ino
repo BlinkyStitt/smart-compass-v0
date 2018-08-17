@@ -49,24 +49,28 @@ void updateCompassPoints(CompassMode compass_mode) {
 
   // compass points go COUNTER-clockwise to match LEDs!
   // add north to inner ring
-  inner_compass_points[0][next_inner_compass_point[0]] = CHSV(0, 255, 255);
+  inner_compass_points[0][next_inner_compass_point[0]].hue = 0;
+  inner_compass_points[0][next_inner_compass_point[0]].saturation = 255;
+  inner_compass_points[0][next_inner_compass_point[0]].value = 255;
   next_inner_compass_point[0]++;
 
   // add north to outer ring
-  outer_compass_points[0][next_outer_compass_point[0]] = CHSV(0, 255, 255);
+  outer_compass_points[0][next_outer_compass_point[0]].hue = 0;
+  outer_compass_points[0][next_outer_compass_point[0]].saturation = 255;
+  outer_compass_points[0][next_outer_compass_point[0]].value = 255;
   next_outer_compass_point[0]++;
 
   // add low battery indicator to the status bar
   switch (checkBattery()) {
   case BATTERY_DEAD:
   case BATTERY_LOW:
-    status_bar[next_status_bar_id] = CHSV(0, 255, 50);
+    status_bar[next_status_bar_id].hue = 0;
+    status_bar[next_status_bar_id].saturation = 255;
+    status_bar[next_status_bar_id].value = 64; // TODO: how bright?
     next_status_bar_id++;
     break;
   }
 
-  // TODO: something down here is busted?
-  /*
   // add points to the compass
   // TODO: sort compass_pins
   // TODO: pass compass_pins (compass_locations/saved_locations) to addCompassPoints function
@@ -78,7 +82,6 @@ void updateCompassPoints(CompassMode compass_mode) {
     addCompassPointsForPlaces();
     break;
   }
-  */
 }
 
 // todo: this shows "SmartCompassLocationMessages." Be consistent about naming
@@ -87,7 +90,6 @@ void addCompassPointsForFriends() {
   float peer_distance;    // meters
   float magnetic_bearing; // degrees
   int compass_point_id = 0, peer_brightness = 0;
-  CHSV compass_point_color;
 
   for (int i = 0; i < num_peers; i++) {
     if (!compass_messages[i].hue) {
@@ -107,9 +109,7 @@ void addCompassPointsForFriends() {
     // TODO: tune this
     // TODO: if peer data is old, blink or something
     peer_brightness =
-        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 60, 255);
-
-    compass_point_color = CHSV(compass_messages[i].hue, compass_messages[i].saturation, peer_brightness);
+        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 128, 255);
 
     // circle 0 -> 360 should go clockwise, but the outer ring lights are wired counter-clockwise
     if (peer_distance <= min_peer_distance) {
@@ -122,7 +122,9 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      status_bar[next_status_bar_id] = compass_point_color;
+      status_bar[next_status_bar_id].hue = compass_pins[i].color.hue;
+      status_bar[next_status_bar_id].saturation = compass_pins[i].color.saturation;
+      status_bar[next_status_bar_id].value = peer_brightness;
 
       next_status_bar_id++;
     } else if (peer_distance <= max_peer_distance / 2) {
@@ -136,7 +138,9 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]] = compass_point_color;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].value = peer_brightness;
 
       next_inner_compass_point[compass_point_id]++;
     } else {
@@ -150,7 +154,9 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]] = compass_point_color;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].value = peer_brightness;
 
       next_outer_compass_point[compass_point_id]++;
     }
@@ -176,8 +182,6 @@ void addCompassPointsForPlaces() {
   // TODO: don't count red. those are ignored entirely
   int points_per_color[num_colors] = {0};
   int colors_left = num_colors;
-
-  CHSV compass_point_color;
 
   for (int i = 0; i < next_compass_pin; i++) {
     // TODO: instead of using compass_pins[i], use compass_pins[sorted_compass_pins[i]] (sort by distance)
@@ -219,9 +223,6 @@ void addCompassPointsForPlaces() {
     int peer_brightness =
         map(constrain(compass_pins[i].distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 128, 255);
 
-
-    compass_point_color = CHSV(compass_pins[i].color.hue, compass_pins[i].color.saturation, peer_brightness);
-
     // TODO: distance is being calculated wrong. print lat, long, distance and bearing here for debug purposes
 
     // TODO: debug program to double check that this is looping the correct way around the LED
@@ -230,34 +231,47 @@ void addCompassPointsForPlaces() {
       // use the status bar to show nearby peers
 
       if (next_status_bar_id >= status_bar_size) {
-        // we have too many nearby peers (statuses) to show.
+        // TODO: how should we handle too many nearby peers?
+        DEBUG_PRINTLN("TOO MANY STATUSES!");
         continue;
       }
 
-      status_bar[next_status_bar_id] = compass_point_color;
+      status_bar[next_status_bar_id].hue = compass_pins[i].color.hue;
+      status_bar[next_status_bar_id].saturation = compass_pins[i].color.saturation;
+      status_bar[next_status_bar_id].value = peer_brightness;
 
       next_status_bar_id++;
     } else if (compass_pins[i].distance <= max_peer_distance / 2) {
       // inner ring
-      // TODO: inner ring is off by one now that I arranged the lights differently. this might need tweaking
       int compass_point_id = map(compass_pins[i].magnetic_bearing, 0, 360, 0, inner_ring_size) % inner_ring_size;
 
-      // TODO: check next_inner_compass_point[compass_point_id] for overflow
+      // check that next_inner_compass_point[compass_point_id] is a safe value
+      if (next_inner_compass_point[compass_point_id] >= max_compass_points) {
+        // TODO: how should we handle too many peers?
+        DEBUG_PRINTLN("TOO MANY INNER POINTS!");
+        continue;
+      }
 
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]] =
-          CHSV(compass_pins[i].color.hue, compass_pins[i].color.saturation, peer_brightness);
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].value = peer_brightness;
 
       next_inner_compass_point[compass_point_id]++;
     } else {
       // outer ring
       int compass_point_id = map(compass_pins[i].magnetic_bearing, 0, 360, 0, outer_ring_size) % outer_ring_size;
 
-      // TODO: check next_outer_compass_point[compass_point_id] for overflow
+      // check that next_outer_compass_point[compass_point_id] is a safe value
+      if (next_outer_compass_point[compass_point_id] >= max_compass_points) {
+        // TODO: how should we handle too many peers?
+        DEBUG_PRINTLN("TOO MANY OUTER POINTS!");
+        continue;
+      }
 
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]] =
-          CHSV(compass_pins[i].color.hue, compass_pins[i].color.saturation, peer_brightness);
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].value = peer_brightness;
 
-      // TODO: check next_outer_compass_point for overflow
       next_outer_compass_point[compass_point_id]++;
     }
 

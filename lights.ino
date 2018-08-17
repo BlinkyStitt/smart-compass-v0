@@ -48,7 +48,6 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
   now_ms = millis();
 
-  // TODO: this is breaking compass_pins
   // calculate distance to friends or saved places
   updateCompassPoints(compass_mode);
 
