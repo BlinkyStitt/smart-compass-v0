@@ -101,6 +101,10 @@ void addCompassPointsForFriends() {
       continue;
     }
 
+    // TODO: if the message is older than 10 minutes, set hue to 0 and continue
+
+    // TODO: add a debug print here of our location and theirs
+
     magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
                                  compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
 

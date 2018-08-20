@@ -365,6 +365,9 @@ void updateLights() {
           }
         }
 
+        DEBUG_PRINT(F(" | GPS Fix="));
+        DEBUG_PRINT(GPS.fix);
+
         DEBUG_PRINT(F(" | ms since last frame="));
         DEBUG_PRINTLN(millis() - last_frame);
 

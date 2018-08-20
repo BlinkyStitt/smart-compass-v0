@@ -24,11 +24,11 @@ void setupGPS() {
   // to work nicely and have time to sort thru the data, and print it out we
   // don't suggest using anything higher than 1 Hz
   //GPS.sendCommand(PMTK_SET_NMEA_UPDATE_100_MILLIHERTZ); // Once every 10 seconds
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_2HZ); // Twice every second (needed for time keeping!)
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // Once every second (needed for time keeping!)
 
   // Position fix update rate commands.
-  GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds (we aren't moving much)
-  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
+  //GPS.sendCommand(PMTK_API_SET_FIX_CTL_100_MILLIHERTZ); // Once every 10 seconds (we aren't moving much)
+  GPS.sendCommand(PMTK_API_SET_FIX_CTL_1HZ); // Once every second
 
   // Request updates on antenna status, comment out to keep quiet
   // GPS.sendCommand(PGCMD_ANTENNA);

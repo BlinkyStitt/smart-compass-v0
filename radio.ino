@@ -284,6 +284,8 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(getGPSTime());
   DEBUG_PRINTLN("...");
 
+  // TODO: if the message is 10 minutes old or older, ignore it
+
   /*
   // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
   // http://www.airspayce.com/mikem/arduino/RadioHead/classRHGenericDriver.html#ac577b932ba8b042b8170b24d513635c7
@@ -528,6 +530,8 @@ void receiveLocationMessage(SmartCompassLocationMessage message) {
     DEBUG_PRINTLN(F("Ignoring old message."));
     return;
   }
+
+  // TODO: if message is older than 10 minutes, ignore it
 
   /*
   // sync to the lowest peer id's time
