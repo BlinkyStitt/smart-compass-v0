@@ -207,7 +207,7 @@ void setupConfig() {
   DEBUG_PRINT(F("flashlight_density: "));
   if (!flashlight_density) {
     DEBUG_PRINT(F("(default) "));
-    flashlight_density = 4; // TODO: increase this when done debugging. full density is too much for the battery
+    flashlight_density = 3; // TODO: increase this when done debugging. full density is too much for the battery
   }
   DEBUG_PRINTLN(flashlight_density);
 

@@ -54,74 +54,6 @@ void setupSensor() {
 void sensorReceive() {
   lsm.read();
   lsm.getEvent(&accel, &mag, &gyro, &temp);
-
-  /*
-  // Apply mag offset compensation (base values in gauss. offsets in uTesla)
-  float x = mag.magnetic.x - mag_offsets[0] / 100;
-  float y = mag.magnetic.y - mag_offsets[1] / 100;
-  float z = mag.magnetic.z - mag_offsets[2] / 100;
-
-  // Apply mag soft iron error compensation
-  float mx = x * mag_softiron_matrix[0][0] + y * mag_softiron_matrix[0][1] + z * mag_softiron_matrix[0][2];
-  float my = x * mag_softiron_matrix[1][0] + y * mag_softiron_matrix[1][1] + z * mag_softiron_matrix[1][2];
-  float mz = x * mag_softiron_matrix[2][0] + y * mag_softiron_matrix[2][1] + z * mag_softiron_matrix[2][2];
-
-  // TODO: not sure about this one. i think its actually in dps
-  // The filter library expects gyro data in degrees/s, but adafruit sensor
-  // uses rad/s so we need to convert them first (or adapt the filter lib
-  // where they are being converted)
-  float gx = gyro.gyro.x;  // * 57.2958F;
-  float gy = gyro.gyro.y; // * 57.2958F;
-  float gz = gyro.gyro.z; // * 57.2958F;
-
-  orientation_filter.update(gx, gy, gz,
-                            accel.acceleration.x, accel.acceleration.y, accel.acceleration.z,
-                            mx, my, mz);
-  */
-
-  /*
-  // print the heading, pitch and roll
-  float roll = orientation_filter.getRoll();
-  float pitch = orientation_filter.getPitch();
-  float heading = orientation_filter.getYaw();
-  DEBUG_PRINT("Orientation: ");
-  DEBUG_PRINT(heading);
-  DEBUG_PRINT(" ");
-  DEBUG_PRINT(pitch);
-  DEBUG_PRINT(" ");
-  DEBUG_PRINTLN(roll);
-  */
-
-  // TODO: this is giving a value between 12-13. supposedly this is for the chip to use and not really an environ sensor
-  /*
-  DEBUG_PRINT("temp: ");
-  DEBUG_PRINT(temp.temperature);
-  */
-
-  /*
-  // debugging sensors
-  DEBUG_PRINT("accel (m/s^2): ");
-  DEBUG_PRINT(accel.acceleration.x);
-  DEBUG_PRINT("x ");
-  DEBUG_PRINT(accel.acceleration.y);
-  DEBUG_PRINT("y ");
-  DEBUG_PRINT(accel.acceleration.z);
-  DEBUG_PRINT("z ");
-  DEBUG_PRINT("; mag (gauss): ");
-  DEBUG_PRINT(mx);
-  DEBUG_PRINT("x ");
-  DEBUG_PRINT(my);
-  DEBUG_PRINT("y ");
-  DEBUG_PRINT(mz);
-  DEBUG_PRINT("z ");
-  DEBUG_PRINT("; gyro (dps): ");
-  DEBUG_PRINT(gx);
-  DEBUG_PRINT("x ");
-  DEBUG_PRINT(gy);
-  DEBUG_PRINT("y ");
-  DEBUG_PRINT(gz);
-  DEBUG_PRINTLN("z");
-  */
 }
 
 static Orientation getOrientation() {
@@ -144,14 +76,16 @@ static Orientation getOrientation() {
   int absY = abs(y);
   int absZ = abs(z);
 
+  // the lights are now on the back of the device! what was up is now down
+
   if ((absZ > absX) && (absZ > absY)) {
     // base orientation on Z
     if (z > 0) {
-      //      DEBUG_PRINTLN(F("UP"));
-      return ORIENTED_UP;
+      //    DEBUG_PRINTLN(F("DOWN"));
+      return ORIENTED_DOWN;
     }
-    //    DEBUG_PRINTLN(F("DOWN"));
-    return ORIENTED_DOWN;
+    //      DEBUG_PRINTLN(F("UP"));
+    return ORIENTED_UP;
   }
 
   if ((absY > absX) && (absY > absZ)) {
