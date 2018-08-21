@@ -9,15 +9,15 @@ void createTable() {
 void setupDatabase() {
   // open database if it exists, create database if it doesn't
   if (SD.exists(db_name)) {
-    my_file = SD.open(db_name, FILE_WRITE);
+    g_file = SD.open(db_name, FILE_WRITE);
 
     // Sometimes it wont open at first attempt, especially after cold start
     // Let's try one more time
-    if (!my_file) {
-      my_file = SD.open(db_name, FILE_WRITE);
+    if (!g_file) {
+      g_file = SD.open(db_name, FILE_WRITE);
     }
 
-    if (my_file) {
+    if (g_file) {
       DEBUG_PRINT("Opening current table... ");
       EDB_Status result = db.open(0);
       if (result == EDB_OK) {
@@ -36,7 +36,7 @@ void setupDatabase() {
       return;
     }
   } else {
-    my_file = SD.open(db_name, FILE_WRITE);
+    g_file = SD.open(db_name, FILE_WRITE);
 
     createTable();
   }
@@ -48,9 +48,9 @@ void setupDatabase() {
 }
 
 bool openDatabase() {
-  my_file = SD.open(db_name, FILE_WRITE);
+  g_file = SD.open(db_name, FILE_WRITE);
 
-  if (my_file) {
+  if (g_file) {
     return true;
   } else {
     DEBUG_PRINT("Could not open file ");
@@ -59,7 +59,7 @@ bool openDatabase() {
   }
 }
 
-void closeDatabase() { my_file.close(); }
+void closeDatabase() { g_file.close(); }
 
 // utility functions
 

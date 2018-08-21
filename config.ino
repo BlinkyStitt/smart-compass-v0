@@ -268,10 +268,10 @@ void networkIdFromKey(uint8_t *network_key, uint8_t *network_hash) {
 bool setupSecurity() {
   // TODO: open security.key and store in my_network_key
 
-  my_file = SD.open(F("security.key"));
+  g_file = SD.open(F("security.key"));
 
   DEBUG_PRINT(F("Opening security.key... "));
-  if (!my_file) {
+  if (!g_file) {
     // if the file didn't open, print an error and fail:
     DEBUG_PRINTLN(F("failed!"));
     return false;
@@ -279,7 +279,7 @@ bool setupSecurity() {
   DEBUG_PRINTLN(F("open."));
 
   // read the key into a variable
-  my_file.read(my_network_key, NETWORK_KEY_SIZE);
+  g_file.read(my_network_key, NETWORK_KEY_SIZE);
 
   DEBUG_PRINTLN("my_network_key set!");
 
@@ -300,7 +300,7 @@ bool setupSecurity() {
   // TODO: END remove this when done debugging!
 
   // close the file:
-  my_file.close();
+  g_file.close();
 
   // hash the key for use as the network id
   networkIdFromKey(my_network_key, my_network_hash);
