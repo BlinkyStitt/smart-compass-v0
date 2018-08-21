@@ -189,11 +189,11 @@ void gpsReceive() {
   updateLights();
 
   // open the SD card
-  my_file = SD.open(gps_log_filename, FILE_WRITE);
+  g_file = SD.open(gps_log_filename, FILE_WRITE);
   updateLights();
 
   // if the file opened okay, write to it:
-  if (!my_file) {
+  if (!g_file) {
     // if the file didn't open, print an error and abort
     DEBUG_PRINT(F("error opening gps log: "));
     DEBUG_PRINTLN(gps_log_filename);
@@ -211,24 +211,24 @@ void gpsReceive() {
   DEBUG_PRINTLN(gps_log_filename);
   updateLights();
 
-  my_file.print(compass_messages[my_peer_id].last_updated_at);
-  my_file.print(",");
+  g_file.print(compass_messages[my_peer_id].last_updated_at);
+  g_file.print(",");
   updateLights();
 
-  my_file.print(GPS.latitudeDegrees, 4);
-  my_file.print(",");
+  g_file.print(GPS.latitudeDegrees, 4);
+  g_file.print(",");
   updateLights();
 
-  my_file.print(GPS.longitudeDegrees, 4);
-  my_file.print(",");
+  g_file.print(GPS.longitudeDegrees, 4);
+  g_file.print(",");
   updateLights();
 
-  my_file.print(GPS.speed);
-  my_file.print(",");
+  g_file.print(GPS.speed);
+  g_file.print(",");
   updateLights();
 
-  my_file.print(GPS.angle);
-  my_file.println(";");
+  g_file.print(GPS.angle);
+  g_file.println(";");
 
   // TODO: do we want to log anything else?
 
@@ -236,7 +236,7 @@ void gpsReceive() {
   updateLights();
 
   // close the file:
-  my_file.close();
+  g_file.close();
 
   // update lights here because logging to GPS can be slow
   updateLights();

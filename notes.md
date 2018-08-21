@@ -9,16 +9,10 @@ Generate shared network key:
 
 TODO:
 - make sure SmartCompassLocationMessage_size < RH_RF95_MAX_MESSAGE_LEN
-- add nearby to status bar
-- add red light to status bar when battery is low
-- are we still using g_hue?
-- IniFile doesn't support unsigned ints, but most of our variables should be unsigned
 - database saving is broken
-- everyone says not to use String, but it seems fine for gps_log_filename and is way simpler
-- rename my_file to g_file
 - make peer locations and saved locations use the same code but just with different arrays
 - is max_compass_points big enough? what about when we include saved locations?
--  color-blind friendly colors from test-lights.ino. i can't tell what any of the current pin_colors are. red, yellow, blue, white.
+- color-blind friendly colors from test-lights.ino. i can't tell what any of the current pin_colors are. red, yellow, blue, white.
 - document max_points_per_color. its not a very descriptive name. it groups up saved locations by color and then only shows the nearest X
 - move max_points_per_color to the SD?
 - actually solder something on pin 6 so we can get a decent random?
@@ -30,6 +24,7 @@ TODO:
 - lots left to write in compass.ino
 
 TODO v2:
+- IniFile doesn't support unsigned ints, but most of our variables should be unsigned
 - how is clang-format deciding to order includes? they aren't alphabetical
 - is 128 bit blake2s hashing secure enough?
 - Full message signing is crashing: "Message: n=73-8C-76-2C-83-AA-53-18-58-EE-73-81-86-27-B6-2 h=0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0 txp=0 p=0 now=1529107392 ms=167426 t=1529107383 lat=377489183 lon=-1224411416 EOM. resetting... updating... .."

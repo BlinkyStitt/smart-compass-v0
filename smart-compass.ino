@@ -99,7 +99,7 @@ Adafruit_GPS GPS(&gpsSerial);
 // save GPS data to SD card
 // TODO: don't use String. use char array instead
 String gps_log_filename = "";
-File my_file;
+File g_file;
 
 // keep us from transmitting too often
 long last_transmitted[max_peers] = {0};
@@ -242,10 +242,10 @@ void setup() {
   setupSensor();
 
   // open the SD card
-  my_file = SD.open(gps_log_filename, FILE_WRITE);
+  g_file = SD.open(gps_log_filename, FILE_WRITE);
 
   // if the file opened okay, write to it:
-  if (!my_file) {
+  if (!g_file) {
     // if the file didn't open, print an error and abort
     DEBUG_PRINT(F("error opening gps log: "));
     DEBUG_PRINTLN(gps_log_filename);
@@ -254,10 +254,10 @@ void setup() {
     DEBUG_PRINTLN(gps_log_filename);
 
     // add a blank line each time we start
-    my_file.println("");
+    g_file.println("");
 
     // close the file:
-    my_file.close();
+    g_file.close();
   }
 
   // TODO: load saved locations
@@ -275,7 +275,7 @@ void setup() {
 
 /*
  * this stuff was in its own .ino files, but something was broken about it
- * i think i fixed it by moving the struct definitions to types.h, but I'm not sure how best to move my_file and db defs
+ * i think i fixed it by moving the struct definitions to types.h, but I'm not sure how best to move g_file and db defs
  */
 
 #define TABLE_SIZE 4096 * 2
@@ -290,16 +290,16 @@ const char *db_name = "compass.db";
 // database entries start at 1!
 inline void writer(unsigned long address, const byte *data, unsigned int recsize) {
   digitalWrite(RED_LED, HIGH);
-  my_file.seek(address);
-  my_file.write(data, recsize);
-  my_file.flush();
+  g_file.seek(address);
+  g_file.write(data, recsize);
+  g_file.flush();
   digitalWrite(RED_LED, LOW);
 }
 
 inline void reader(unsigned long address, byte *data, unsigned int recsize) {
   digitalWrite(RED_LED, HIGH);
-  my_file.seek(address);
-  my_file.read(data, recsize);
+  g_file.seek(address);
+  g_file.read(data, recsize);
   digitalWrite(RED_LED, LOW);
 }
 

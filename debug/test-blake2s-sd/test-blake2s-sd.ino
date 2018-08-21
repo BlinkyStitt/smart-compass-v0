@@ -30,7 +30,7 @@ BLAKE2s blake2s;
 
 byte hash[HASH_SIZE];
 
-File my_file;
+File g_file;
 
 bool sd_setup = false;
 
@@ -74,10 +74,10 @@ void networkIdFromKey(uint8_t* network_key, uint8_t* network_hash) {
 void setupSecurity() {
   // TODO: open security.key and store in my_network_key
 
-  my_file = SD.open(F("security.key"));
+  g_file = SD.open(F("security.key"));
 
   Serial.print(F("Opening security.key... "));
-  if (!my_file) {
+  if (!g_file) {
     // if the file didn't open, print an error:
     Serial.println(F("failed!"));
     return;
@@ -85,12 +85,12 @@ void setupSecurity() {
   Serial.println(F("open."));
 
   // read the key into a variable
-  my_file.read(my_network_key, NETWORK_KEY_SIZE);
+  g_file.read(my_network_key, NETWORK_KEY_SIZE);
 
   Serial.println("my_network_key set!");
 
   // close the file:
-  my_file.close();
+  g_file.close();
 
   // this will override whatever they set
   // TODO: not sure about the types here..
