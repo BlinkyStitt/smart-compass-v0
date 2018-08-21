@@ -135,15 +135,11 @@ elapsedMillis network_ms = 0;
 CHSV pin_colors[] = {
     // {h, s, v},
     // white
-    // TODO: color-blind friendly colors instead! BLUE, RED, YELLOW, WHITE
-    {160, 71, 255},  // CRGB::RoyalBlue
-    {0, 255, 255},   // Red for disabling, not for actual red pins!
-    {213, 255, 255}, // CRGB::Purple
-    {234, 59, 255},  // CRGB::HotPink;
-    {23, 255, 255},  // CRGB::DarkOrange;
-    {52, 219, 255},  // CRGB::Gold;
-    {104, 171, 255}, // CRGB::SeaGreen;
-    {128, 255, 255}  // CRGB::Aqua;
+    {HUE_BLUE, 255, 255},
+    {HUE_RED, 255, 255},   // Red for disabling, not for actual red pins!
+    {HUE_YELLOW, 255, 255},
+    {HUE_BLUE, 255, 255},
+    {HUE_PINK, 128, 255},
 };
 int last_pin_color_id = 0;
 const int delete_pin_color_id = 1;

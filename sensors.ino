@@ -57,7 +57,7 @@ void sensorReceive() {
 }
 
 static Orientation getOrientation() {
-  //  DEBUG_PRINT(F("Orientation: "));
+  // DEBUG_PRINT(F("Orientation: "));
 
   if (!sensor_setup) {
     DEBUG_PRINTLN(F("UP (no sensor)"));
