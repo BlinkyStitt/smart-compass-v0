@@ -365,8 +365,28 @@ void updateLights() {
           }
         }
 
+
+        DEBUG_PRINT(F(" | ID="));
+        DEBUG_PRINT(my_peer_id);
+
+        DEBUG_PRINT(F(" | SD="));
+        DEBUG_PRINT(sd_setup);
+
+        DEBUG_PRINT(F(" | Conf="));
+        DEBUG_PRINT(config_setup);
+
+        DEBUG_PRINT(F(" | Sens="));
+        DEBUG_PRINT(sensor_setup);
+
         DEBUG_PRINT(F(" | GPS Fix="));
         DEBUG_PRINT(GPS.fix);
+
+        DEBUG_PRINT(F(" | Radio: "));
+        DEBUG_PRINT(g_time_segment_id);
+        DEBUG_PRINT(F(" = "));
+        DEBUG_PRINT(g_broadcasting_peer_id);
+        DEBUG_PRINT(F(" -> "));
+        DEBUG_PRINT(g_broadcasted_peer_id);
 
         DEBUG_PRINT(F(" | ms since last frame="));
         DEBUG_PRINTLN(millis() - last_frame);

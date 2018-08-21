@@ -250,6 +250,12 @@ void setupConfig() {
 
   DEBUG_PRINT(F("gps_log_filename: "));
   DEBUG_PRINTLN(gps_log_filename);
+
+  if (my_peer_id >= num_peers) {
+    DEBUG_PRINTLN("INVALID peer_id!");
+    config_setup = false;
+    return;
+  }
 }
 
 void networkIdFromKey(uint8_t *network_key, uint8_t *network_hash) {
@@ -285,18 +291,7 @@ bool setupSecurity() {
 
   // TODO: remove this when done debugging!
   DEBUG_PRINT(F("my_network_key: "));
-  if (my_network_key[0] <= 0x10) {
-    DEBUG_PRINT2(0, HEX);
-  }
-  DEBUG_PRINT2(my_network_key[0], HEX);
-  for (int i = 1; i < NETWORK_KEY_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    if (my_network_key[i] <= 0x10) {
-      DEBUG_PRINT2(0, HEX);
-    }
-    DEBUG_PRINT2(my_network_key[i], HEX);
-  }
-  DEBUG_PRINTLN();
+  DEBUG_HEX8(my_network_key, NETWORK_KEY_SIZE, true);
   // TODO: END remove this when done debugging!
 
   // close the file:
@@ -305,20 +300,7 @@ bool setupSecurity() {
   // hash the key for use as the network id
   networkIdFromKey(my_network_key, my_network_hash);
 
-  // TODO: this is wrong. it's printing "-A-"
-  DEBUG_PRINT(F("key-based my_network_hash: "));
-  if (my_network_hash[0] <= 0x10) {
-    DEBUG_PRINT2(0, HEX);
-  }
-  DEBUG_PRINT2(my_network_hash[0], HEX);
-  for (int i = 1; i < NETWORK_HASH_SIZE; i++) {
-    DEBUG_PRINT(F("-"));
-    if (my_network_hash[i] <= 0x10) {
-      DEBUG_PRINT2(0, HEX);
-    }
-    DEBUG_PRINT2(my_network_hash[i], HEX);
-  }
-  DEBUG_PRINTLN();
+  DEBUG_HEX8(my_network_hash, NETWORK_HASH_SIZE, true);
 
   return true;
 }

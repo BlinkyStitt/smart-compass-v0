@@ -76,28 +76,29 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage *message, uint8
   blake2s.update((void *)message->tx_peer_id, sizeof(message->tx_peer_id));
   DEBUG_PRINT(".");
 
-  // TODO: something is wrong about this. it crashes here (sometimes)
-  //  blake2s.update((void *)message->tx_time, sizeof(message->tx_time));
-  //  DEBUG_PRINT(".");
-  //blake2s.update((void *)message->tx_ms, sizeof(message->tx_ms));
-  //DEBUG_PRINT(".");
+  // TODO: this crashes
+//  blake2s.update((void *)message->tx_time, sizeof(message->tx_time));
+//  DEBUG_PRINT(".");
+//  blake2s.update((void *)message->tx_ms, sizeof(message->tx_ms));
+//  DEBUG_PRINT(".");
 
   blake2s.update((void *)message->peer_id, sizeof(message->peer_id));
   DEBUG_PRINT(".");
 
   // TODO: this crashes
-  //blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
-  //DEBUG_PRINT(".");
+//  blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
+//  DEBUG_PRINT(".");
+
   blake2s.update((void *)message->hue, sizeof(message->hue));
   DEBUG_PRINT(".");
   blake2s.update((void *)message->saturation, sizeof(message->saturation));
   DEBUG_PRINT(".");
 
   // TODO: this crashes
-  //blake2s.update((void *)message->latitude, sizeof(message->latitude));
-  //DEBUG_PRINT(".");
-  //blake2s.update((void *)message->longitude, sizeof(message->longitude));
-  //DEBUG_PRINT(".");
+//  blake2s.update((void *)message->latitude, sizeof(message->latitude));
+//  DEBUG_PRINT(".");
+//  blake2s.update((void *)message->longitude, sizeof(message->longitude));
+//  DEBUG_PRINT(".");
 
   DEBUG_PRINTLN(F(" finalizing..."));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
@@ -334,6 +335,7 @@ void radioTransmit(const int pid) {
 
   unsigned long abort_time = millis() + 300; // TODO: tune this
 
+  // TODO: BUG! we are still getting stuck here!
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
@@ -358,11 +360,13 @@ void radioTransmit(const int pid) {
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
+
+    DEBUG_PRINTLN(F("Last transmit time updated."));
   } else {
     compass_pins[tx_pin_id].transmitted = true;
-  }
 
-  DEBUG_PRINTLN(F("Time updated."));
+    DEBUG_PRINTLN(F("Pin marked as transmitted."));
+  }
 
   updateLights();  // we update lights here because sending can be slow
 
@@ -402,12 +406,15 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *co
 
   updateLights(); // we update lights here because encoding can be slow
 
-  if (!pb_encode(ostream, SmartCompassLocationMessage_fields, &compass_message)) {
+  if (!pb_encode(ostream, SmartCompassLocationMessage_fields, compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
     return;
   }
 
   DEBUG_PRINTLN(F("Encoding done."));
+
+  // second print to make sure nothing got corrupted
+  printSmartCompassLocationMessage(compass_message, true, true);
 }
 
 // copy compass_pin values into pin_message_tx, sign it, and then send pin_message_tx to protobuf output stream
@@ -440,13 +447,14 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
   }
 
   DEBUG_PRINTLN(F("Encoding done."));
+
+  // second print to make sure nothing got corrupted
+  printSmartCompassPinMessage(&pin_message_tx, true, true);
 }
 
 void radioReceive() {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
   static uint8_t radio_buf_len;
-  static SmartCompassLocationMessage location_message_rx = SmartCompassLocationMessage_init_default;
-  static SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
 
   if (!rf95.available()) {
     // no packets to process
@@ -483,7 +491,7 @@ void radioReceive() {
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
       updateLights(); // we update lights here because decoding can be slow
 
-      receivePinMessage(&pin_message_rx); // TODO: write this
+      receivePinMessage(&pin_message_rx);
     } else {
       DEBUG_PRINT(F("Decoding as pin message failed: "));
       DEBUG_PRINTLN(PB_GET_ERROR(&stream));
@@ -496,17 +504,21 @@ void radioReceive() {
 void receiveLocationMessage(SmartCompassLocationMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
-  if (memcmp(message->network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINTLN(F("Message is for another network."));
+  if (memcmp(&message->network_hash, &my_network_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINT(F("Message is for another network: "));
+    DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
+    DEBUG_PRINT(F(" != "));
+    DEBUG_HEX8(my_network_hash, NETWORK_HASH_SIZE, true);
+
     // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
     // TODO: flash lights on the status bar?
     return;
   }
 
-  // TODO: i think this is wrong.
+  // TODO: i think this is wrong. i think we need a & or *
   signSmartCompassLocationMessage(message, calculated_hash);
 
-  if (memcmp(calculated_hash, message->message_hash, NETWORK_HASH_SIZE) != 0) {
+  if (memcmp(&calculated_hash, &message->message_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message hash an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
@@ -520,6 +532,40 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
     DEBUG_PRINT(F("ERROR! Peer id collision!"));
     DEBUG_PRINTLN(my_peer_id);
     return;
+  }
+
+  // TODO: this is drifting faster than i was hoping it would. plus the latency from the radio and its hard to keep these in sync
+  if (message->tx_peer_id < my_peer_id) {
+    if (abs(message->tx_ms - network_ms) >= g_network_offset) {
+      // TODO: flash lights on the status bar if there is a large difference?
+      DEBUG_PRINTLN(getGPSTime());
+      DEBUG_PRINT(F("Updating network_ms! "));
+      DEBUG_PRINT(network_ms);
+      DEBUG_PRINT(F(" -> "));
+
+      // TODO: add difference between message tx time and our local clock time?
+
+      network_ms = message->tx_ms + g_network_offset;
+
+      DEBUG_PRINTLN(network_ms);
+    } else {
+      DEBUG_PRINT(F("Leaving network_ms alone! Times in sync "));
+
+      DEBUG_PRINT(network_ms);
+      DEBUG_PRINT(F(" !-> "));
+
+      DEBUG_PRINT(message->tx_ms);
+      DEBUG_PRINT(F(" + "));
+      DEBUG_PRINTLN(g_network_offset);
+    }
+  } else {
+    DEBUG_PRINT(F("Leaving network_ms alone! TX peer is junior. "));
+    DEBUG_PRINT(network_ms);
+    DEBUG_PRINT(F(" !-> "));
+
+    DEBUG_PRINT(message->tx_ms);
+    DEBUG_PRINT(F(" + "));
+    DEBUG_PRINTLN(g_network_offset);
   }
 
   if (message->peer_id == my_peer_id) {
@@ -548,19 +594,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   }
   */
 
-  // TODO: simply accepting the lower peer's time seems like it could have issues, but how much would that really
-  // matter?
-  if (message->peer_id < my_peer_id) {
-    // TODO: flash lights on the status bar if there is a large difference?
-    DEBUG_PRINT(F("Updating network_ms! "));
-    DEBUG_PRINT(network_ms);
-    DEBUG_PRINT(F(" -> "));
-    network_ms = message->tx_ms; // TODO: offset this? probably have a offset global set from config
-  } else {
-    DEBUG_PRINT(F("Leaving network_ms alone! "));
-  }
-  DEBUG_PRINTLN(network_ms);
-
   for (int i = message->num_pins + 1; i < next_compass_pin; i++) {
     // this peer hasn't heard some pins. re-transmit them
     // TODO: this won't work well once we have 255 pins, but I think that will be okay for now
@@ -582,17 +615,20 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
 void receivePinMessage(SmartCompassPinMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
-  if (memcmp(message->network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINTLN(F("Message is for another network."));
+  if (memcmp(&message->network_hash, &my_network_hash, NETWORK_HASH_SIZE) != 0) {
+    DEBUG_PRINT(F("Message is for another network: "));
+    DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
+    DEBUG_PRINT(F(" != "));
+    DEBUG_HEX8(my_network_hash, NETWORK_HASH_SIZE, true);
+
     // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
     // TODO: flash lights on the status bar?
     return;
   }
 
-  // TODO: i think this is wrong.
   signSmartCompassPinMessage(message, calculated_hash);
 
-  if (memcmp(calculated_hash, message->message_hash, NETWORK_HASH_SIZE) != 0) {
+  if (memcmp(&calculated_hash, &message->message_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message hash an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
