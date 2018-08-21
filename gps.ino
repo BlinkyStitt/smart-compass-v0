@@ -113,28 +113,28 @@ void gpsReceive() {
 
   updateLights();
 
-  DEBUG_PRINT("last_logged_latitude=");
+  DEBUG_PRINT(F("last_logged_latitude="));
   DEBUG_PRINTLN(last_logged_latitude);
-  DEBUG_PRINT("last_logged_longitude=");
+  DEBUG_PRINT(F("last_logged_longitude="));
   DEBUG_PRINTLN(last_logged_longitude);
 
   last_logged_latitude = GPS.latitude_fixed;
   last_logged_longitude = GPS.longitude_fixed;
 
-  DEBUG_PRINT("new last_logged_latitude=");
+  DEBUG_PRINT(F("new last_logged_latitude="));
   DEBUG_PRINTLN(last_logged_latitude);
-  DEBUG_PRINT("new last_logged_longitude=");
+  DEBUG_PRINT(F("new last_logged_longitude="));
   DEBUG_PRINTLN(last_logged_longitude);
 
   // TODO: something in updateLights (setting next_compass_pin?) is corrupting compass_messages[my_peer_id]!
   if (compass_messages[my_peer_id].latitude == 0 or compass_messages[my_peer_id].longitude == 0) {
-    DEBUG_PRINT("WTF is happening here? ");
+    DEBUG_PRINT(F("WTF is happening here? "));
     DEBUG_PRINTLN(compass_messages[my_peer_id].latitude);
-    DEBUG_PRINT(", ");
+    DEBUG_PRINT(F(", "));
     DEBUG_PRINTLN(compass_messages[my_peer_id].latitude);
-    DEBUG_PRINT(" != ");
+    DEBUG_PRINT(F(" != "));
     DEBUG_PRINT(GPS.latitude_fixed);
-    DEBUG_PRINT(", ");
+    DEBUG_PRINT(F(", "));
     DEBUG_PRINTLN(GPS.longitude_fixed);
   }
 
@@ -203,7 +203,10 @@ void gpsReceive() {
 
   // TODO: why is this happening?
   if (compass_messages[my_peer_id].last_updated_at != getGPSTime()) {
-    DEBUG_PRINT(F("ERROR! compass_messages corrupted!"));
+    DEBUG_PRINT(F("ERROR! compass_messages corrupted! "));
+    DEBUG_PRINT(compass_messages[my_peer_id].last_updated_at);
+    DEBUG_PRINT(" != ");
+    DEBUG_PRINTLN(getGPSTime());
     return;
   }
 
@@ -212,23 +215,23 @@ void gpsReceive() {
   updateLights();
 
   g_file.print(compass_messages[my_peer_id].last_updated_at);
-  g_file.print(",");
+  g_file.print(F(","));
   updateLights();
 
   g_file.print(GPS.latitudeDegrees, 4);
-  g_file.print(",");
+  g_file.print(F(","));
   updateLights();
 
   g_file.print(GPS.longitudeDegrees, 4);
-  g_file.print(",");
+  g_file.print(F(","));
   updateLights();
 
   g_file.print(GPS.speed);
-  g_file.print(",");
+  g_file.print(F(","));
   updateLights();
 
   g_file.print(GPS.angle);
-  g_file.println(";");
+  g_file.println(F(";"));
 
   // TODO: do we want to log anything else?
 

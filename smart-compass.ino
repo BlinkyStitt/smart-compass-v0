@@ -113,6 +113,8 @@ int distance_sorted_compass_pin_ids[MAX_PINS];
 int next_compass_pin = 0;
 
 SmartCompassPinMessage pin_message_rx = SmartCompassPinMessage_init_default;
+SmartCompassLocationMessage location_message_rx = SmartCompassLocationMessage_init_default;
+
 SmartCompassPinMessage pin_message_tx = SmartCompassPinMessage_init_default;
 
 const int max_compass_points = max_peers + 1;
@@ -131,6 +133,8 @@ CHSV status_bar[status_bar_size];
 int next_status_bar_id = 0;
 
 elapsedMillis network_ms = 0;
+
+int g_network_offset = 650;  // TODO: tune this. probably put it on the SD
 
 CHSV pin_colors[] = {
     // {h, s, v},
@@ -307,9 +311,14 @@ EDB db(&writer, &reader);
  * END things that should be moved into their own ino files
  */
 
+unsigned int g_time_segment_id = 99;
+unsigned int g_broadcasting_peer_id = 99;
+unsigned int g_broadcasted_peer_id = 99;
+
 void loop() {
-  // each peer needs enough time to broadcast data for every other peer. then we double it so we can spend half the time sleeping
-  static const unsigned int time_segments = num_peers * num_peers * 2;
+  // each peer needs enough time to broadcast data for every other peer.
+  // TODO: then double the number of time segments so we can spend half the time sleeping
+  static const unsigned int time_segments = num_peers * num_peers;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
 
   if (config_setup) {
@@ -320,8 +329,14 @@ void loop() {
     if (GPS.fix) {
       time_segment_id = (getGPSTime() / broadcast_time_s) % time_segments;
 
-      broadcasting_peer_id = time_segment_id / (num_peers * 2);
+      broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
+
+      // DEBUG
+      g_time_segment_id = time_segment_id;
+      g_broadcasting_peer_id = broadcasting_peer_id;
+      g_broadcasted_peer_id = broadcasted_peer_id;
+      // END DEBUG
 
       if (broadcasting_peer_id == my_peer_id) {
         radioTransmit(broadcasted_peer_id); // this will sleep the radio if we've already transmitted for this segment
