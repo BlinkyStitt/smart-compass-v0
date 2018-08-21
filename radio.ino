@@ -67,38 +67,30 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage *message, uint8
   */
 
   DEBUG_PRINT(F("resetting... "));
-  blake2s.reset((void *)my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
+  blake2s.reset(&my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
   DEBUG_PRINT(F("updating"));
-  blake2s.update((void *)message->network_hash, sizeof(message->network_hash));
+  blake2s.update(&message->network_hash, sizeof(message->network_hash));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message->tx_peer_id, sizeof(message->tx_peer_id));
+  blake2s.update(&message->tx_peer_id, sizeof(message->tx_peer_id));
   DEBUG_PRINT(".");
-
-  // TODO: this crashes
-//  blake2s.update((void *)message->tx_time, sizeof(message->tx_time));
-//  DEBUG_PRINT(".");
-//  blake2s.update((void *)message->tx_ms, sizeof(message->tx_ms));
-//  DEBUG_PRINT(".");
-
-  blake2s.update((void *)message->peer_id, sizeof(message->peer_id));
+  blake2s.update(&message->tx_time, sizeof(message->tx_time));
   DEBUG_PRINT(".");
-
-  // TODO: this crashes
-//  blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
-//  DEBUG_PRINT(".");
-
-  blake2s.update((void *)message->hue, sizeof(message->hue));
+  blake2s.update(&message->tx_ms, sizeof(message->tx_ms));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message->saturation, sizeof(message->saturation));
+  blake2s.update(&message->peer_id, sizeof(message->peer_id));
   DEBUG_PRINT(".");
-
-  // TODO: this crashes
-//  blake2s.update((void *)message->latitude, sizeof(message->latitude));
-//  DEBUG_PRINT(".");
-//  blake2s.update((void *)message->longitude, sizeof(message->longitude));
-//  DEBUG_PRINT(".");
+  blake2s.update(&message->last_updated_at, sizeof(message->last_updated_at));
+  DEBUG_PRINT(".");
+  blake2s.update(&message->hue, sizeof(message->hue));
+  DEBUG_PRINT(".");
+  blake2s.update(&message->saturation, sizeof(message->saturation));
+  DEBUG_PRINT(".");
+  blake2s.update(&message->latitude, sizeof(message->latitude));
+  DEBUG_PRINT(".");
+  blake2s.update(&message->longitude, sizeof(message->longitude));
+  DEBUG_PRINT(".");
 
   DEBUG_PRINTLN(F(" finalizing..."));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
@@ -125,26 +117,22 @@ void signSmartCompassPinMessage(SmartCompassPinMessage *message, uint8_t *hash) 
 
   // TODO: print the message here?
 
-  // DEBUG_PRINT(F("resetting... "));
-  blake2s.reset((void *)my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
+  DEBUG_PRINT(F("resetting... "));
+  blake2s.reset(&my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
   DEBUG_PRINT(F("updating"));
-  blake2s.update((void *)message->network_hash, sizeof(message->network_hash));
+  blake2s.update(&message->network_hash, sizeof(message->network_hash));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message->tx_peer_id, sizeof(message->tx_peer_id));
+  blake2s.update(&message->tx_peer_id, sizeof(message->tx_peer_id));
   DEBUG_PRINT(".");
-
-  /*
-  // TODO: something is wrong about this. it crashed here for signSmartCompassLocationMessage
-  blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
+  blake2s.update(&message->last_updated_at, sizeof(message->last_updated_at));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message->latitude, sizeof(message->latitude));
+  blake2s.update(&message->latitude, sizeof(message->latitude));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message->longitude, sizeof(message->longitude));
+  blake2s.update(&message->longitude, sizeof(message->longitude));
   DEBUG_PRINT(F("."));
-  */
-  blake2s.update((void *)message->hue, sizeof(message->hue));
+  blake2s.update(&message->hue, sizeof(message->hue));
   DEBUG_PRINT(".");
 
   DEBUG_PRINT(F(" finalizing... "));
