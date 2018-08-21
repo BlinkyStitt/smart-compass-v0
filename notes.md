@@ -22,6 +22,7 @@ TODO:
 - what table size?
 - make sure course_to actualy works. and confirm distance is in meters
 - lots left to write in compass.ino
+- repeater code?
 
 TODO v2:
 - IniFile doesn't support unsigned ints, but most of our variables should be unsigned

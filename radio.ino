@@ -59,7 +59,7 @@ void resetRadio(bool with_lights) {
   rf95.setTxPower(constrain(radio_power, 5, 23), false);
 }
 
-void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_t *hash) {
+void signSmartCompassLocationMessage(SmartCompassLocationMessage *message, uint8_t *hash) {
   /*
   unsigned long start;
   unsigned long elapsed;
@@ -71,32 +71,32 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
   DEBUG_PRINT(F("updating"));
-  blake2s.update((void *)message.network_hash, sizeof(message.network_hash));
+  blake2s.update((void *)message->network_hash, sizeof(message->network_hash));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message.tx_peer_id, sizeof(message.tx_peer_id));
+  blake2s.update((void *)message->tx_peer_id, sizeof(message->tx_peer_id));
   DEBUG_PRINT(".");
 
   // TODO: something is wrong about this. it crashes here (sometimes)
-  //  blake2s.update((void *)message.tx_time, sizeof(message.tx_time));
+  //  blake2s.update((void *)message->tx_time, sizeof(message->tx_time));
   //  DEBUG_PRINT(".");
-  //blake2s.update((void *)message.tx_ms, sizeof(message.tx_ms));
+  //blake2s.update((void *)message->tx_ms, sizeof(message->tx_ms));
   //DEBUG_PRINT(".");
 
-  blake2s.update((void *)message.peer_id, sizeof(message.peer_id));
+  blake2s.update((void *)message->peer_id, sizeof(message->peer_id));
   DEBUG_PRINT(".");
 
   // TODO: this crashes
-  //blake2s.update((void *)message.last_updated_at, sizeof(message.last_updated_at));
+  //blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
   //DEBUG_PRINT(".");
-  blake2s.update((void *)message.hue, sizeof(message.hue));
+  blake2s.update((void *)message->hue, sizeof(message->hue));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message.saturation, sizeof(message.saturation));
+  blake2s.update((void *)message->saturation, sizeof(message->saturation));
   DEBUG_PRINT(".");
 
   // TODO: this crashes
-  //blake2s.update((void *)message.latitude, sizeof(message.latitude));
+  //blake2s.update((void *)message->latitude, sizeof(message->latitude));
   //DEBUG_PRINT(".");
-  //blake2s.update((void *)message.longitude, sizeof(message.longitude));
+  //blake2s.update((void *)message->longitude, sizeof(message->longitude));
   //DEBUG_PRINT(".");
 
   DEBUG_PRINTLN(F(" finalizing..."));
@@ -115,7 +115,7 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage message, uint8_
   DEBUG_HEX8(hash, NETWORK_HASH_SIZE, true);
 }
 
-void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
+void signSmartCompassPinMessage(SmartCompassPinMessage *message, uint8_t *hash) {
   /*
   unsigned long start;
   unsigned long elapsed;
@@ -129,21 +129,21 @@ void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
   DEBUG_PRINT(F("updating"));
-  blake2s.update((void *)message.network_hash, sizeof(message.network_hash));
+  blake2s.update((void *)message->network_hash, sizeof(message->network_hash));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message.tx_peer_id, sizeof(message.tx_peer_id));
+  blake2s.update((void *)message->tx_peer_id, sizeof(message->tx_peer_id));
   DEBUG_PRINT(".");
 
   /*
   // TODO: something is wrong about this. it crashed here for signSmartCompassLocationMessage
-  blake2s.update((void *)message.last_updated_at, sizeof(message.last_updated_at));
+  blake2s.update((void *)message->last_updated_at, sizeof(message->last_updated_at));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message.latitude, sizeof(message.latitude));
+  blake2s.update((void *)message->latitude, sizeof(message->latitude));
   DEBUG_PRINT(".");
-  blake2s.update((void *)message.longitude, sizeof(message.longitude));
+  blake2s.update((void *)message->longitude, sizeof(message->longitude));
   DEBUG_PRINT(F("."));
   */
-  blake2s.update((void *)message.hue, sizeof(message.hue));
+  blake2s.update((void *)message->hue, sizeof(message->hue));
   DEBUG_PRINT(".");
 
   DEBUG_PRINT(F(" finalizing... "));
@@ -165,31 +165,31 @@ void signSmartCompassPinMessage(SmartCompassPinMessage message, uint8_t *hash) {
 }
 
 #ifdef DEBUG
-void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {
+void printSmartCompassLocationMessage(SmartCompassLocationMessage *message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
-  DEBUG_HEX8(message.network_hash, NETWORK_HASH_SIZE, false);
+  DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
-    DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
+    DEBUG_HEX8(message->message_hash, NETWORK_HASH_SIZE, false);
   }
 
   // TODO: tx_time and last_updated_at are usually going to be very close. transmit age of message instead of tx_time
 
   DEBUG_PRINT(F(" txp="));
-  DEBUG_PRINT(message.tx_peer_id);
+  DEBUG_PRINT(message->tx_peer_id);
   DEBUG_PRINT(F(" p="));
-  DEBUG_PRINT(message.peer_id);
+  DEBUG_PRINT(message->peer_id);
   DEBUG_PRINT(F(" now="));
-  DEBUG_PRINT(message.tx_time);
+  DEBUG_PRINT(message->tx_time);
   DEBUG_PRINT(F(" ms="));
-  DEBUG_PRINT(message.tx_ms);
+  DEBUG_PRINT(message->tx_ms);
   DEBUG_PRINT(F(" t="));
-  DEBUG_PRINT(message.last_updated_at);
+  DEBUG_PRINT(message->last_updated_at);
   DEBUG_PRINT(F(" lat="));
-  DEBUG_PRINT(message.latitude);
+  DEBUG_PRINT(message->latitude);
   DEBUG_PRINT(F(" lon="));
-  DEBUG_PRINT(message.longitude);
+  DEBUG_PRINT(message->longitude);
 
   DEBUG_PRINT(F(" EOM. "));
 
@@ -198,26 +198,26 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool 
   }
 }
 
-void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {
+void printSmartCompassPinMessage(SmartCompassPinMessage *message, bool print_hash = false, bool eol = false) {
   DEBUG_PRINT(F("Message: n="));
-  DEBUG_HEX8(message.network_hash, NETWORK_HASH_SIZE, false);
+  DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
 
   if (print_hash) {
     DEBUG_PRINT(F(" h="));
-    DEBUG_HEX8(message.message_hash, NETWORK_HASH_SIZE, false);
+    DEBUG_HEX8(message->message_hash, NETWORK_HASH_SIZE, false);
   }
 
   // TODO: should we include tx_time here?
   DEBUG_PRINT(F(" txp="));
-  DEBUG_PRINT(message.tx_peer_id);
+  DEBUG_PRINT(message->tx_peer_id);
   DEBUG_PRINT(F(" t="));
-  DEBUG_PRINT(message.last_updated_at);
+  DEBUG_PRINT(message->last_updated_at);
   DEBUG_PRINT(F(" lat="));
-  DEBUG_PRINT(message.latitude);
+  DEBUG_PRINT(message->latitude);
   DEBUG_PRINT(F(" lon="));
-  DEBUG_PRINT(message.longitude);
+  DEBUG_PRINT(message->longitude);
   DEBUG_PRINT(F(" hue="));
-  DEBUG_PRINT(message.hue);
+  DEBUG_PRINT(message->hue);
 
   DEBUG_PRINT(F(" EOM. "));
 
@@ -227,8 +227,8 @@ void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash
 }
 
 #else
-void printSmartCompassLocationMessage(SmartCompassLocationMessage message, bool print_hash = false, bool eol = false) {}
-void printSmartCompassPinMessage(SmartCompassPinMessage message, bool print_hash = false, bool eol = false) {}
+void printSmartCompassLocationMessage(SmartCompassLocationMessage *message, bool print_hash = false, bool eol = false) {}
+void printSmartCompassPinMessage(SmartCompassPinMessage *message, bool print_hash = false, bool eol = false) {}
 #endif
 
 void radioSleep() {
@@ -312,9 +312,9 @@ void radioTransmit(const int pid) {
   updateLights(); // we update lights here because sending can be slow
 
   if (tx_compass_location) {
-    encodeCompassMessage(&ostream, compass_messages[pid], time_now);
+    encodeCompassMessage(&ostream, &compass_messages[pid], time_now);
   } else {
-    encodePinMessage(&ostream, compass_pins[tx_pin_id], time_now);
+    encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
   }
 
   updateLights(); // we update lights here because encoding can be slow
@@ -338,17 +338,17 @@ void radioTransmit(const int pid) {
     updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
 
+    // BUG FIX! we got stuck transmitting here. i noticed because power usage stayed at +100mA
     if (millis() > abort_time) {
       DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
       abort_time = 0;
-      break;
+
       // TODO: what should we do here? reset the radio?
       //resetRadio(true);
-    }
-    // TODO: BUG! we got stuck transmitting here. i noticed because power usage stayed at +100mA
-  }
 
-  // TODO: it is sometimes crashing here or inside the above while loop :'(
+      break;
+    }
+  }
 
   if (abort_time == 0) {
     DEBUG_PRINT(F("Transmit ERR. "));
@@ -364,7 +364,7 @@ void radioTransmit(const int pid) {
 
   DEBUG_PRINTLN(F("Time updated."));
 
-  updateLights(); // we update lights here because sending can be slow
+  updateLights();  // we update lights here because sending can be slow
 
   return;
 }
@@ -372,17 +372,17 @@ void radioTransmit(const int pid) {
 // sign compass_message and send it to protobuf output stream
 // returns the number of bytes written to the buffer
 // TODO: should compass_message be passed by reference, too?
-void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage compass_message, unsigned long time_now) {
+void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *compass_message, unsigned long time_now) {
   // TODO: checking hue like this means no-one can pick true red as their hue
-  if (!compass_message.hue or (compass_message.peer_id == my_peer_id and !GPS.fix)) {
+  if (!compass_message->hue or (compass_message->peer_id == my_peer_id and !GPS.fix)) {
     // if we don't have any info for this peer, skip sending anything
     // if the peer is ourselves, don't broadcast unless we have a GPS fix (otherwise we would send 0, 0
 
     // don't retry
-    last_transmitted[compass_message.peer_id] = time_now;
+    last_transmitted[compass_message->peer_id] = time_now;
 
     DEBUG_PRINT(F("No peer data to transmit for #"));
-    DEBUG_PRINTLN(compass_message.peer_id);
+    DEBUG_PRINTLN(compass_message->peer_id);
 
     // TODO: if half of the network is on, this might cause excessive sleeps, but let's test
     radioSleep();
@@ -391,14 +391,14 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage com
   }
 
   DEBUG_PRINT(F("Encoding compass location message for #"));
-  DEBUG_PRINT(compass_message.peer_id);
+  DEBUG_PRINT(compass_message->peer_id);
   DEBUG_PRINTLN(F("... "));
 
-  compass_message.tx_time = time_now;
-  compass_message.tx_ms = network_ms;
+  compass_message->tx_time = time_now;
+  compass_message->tx_ms = network_ms;
 
   printSmartCompassLocationMessage(compass_message, false, true);
-  signSmartCompassLocationMessage(compass_message, compass_message.message_hash);
+  signSmartCompassLocationMessage(compass_message, compass_message->message_hash);
 
   updateLights(); // we update lights here because encoding can be slow
 
@@ -413,22 +413,24 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage com
 // copy compass_pin values into pin_message_tx, sign it, and then send pin_message_tx to protobuf output stream
 // returns the number of bytes written to the buffer
 // TODO: should compass_pin be passed by reference, too?
-void encodePinMessage(pb_ostream_t *ostream, CompassPin compass_pin, unsigned long time_now) {
-  if (compass_pin.color.hue == 0) {
+void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned long time_now) {
+  if (compass_pin->color.hue == 0) {
     return;
   }
 
   DEBUG_PRINTLN(F("Encoding compass pin..."));
 
   // pin_message_tx's network_hash and tx_peer_id are already setup by config.ino
-  pin_message_tx.last_updated_at = compass_pin.last_updated_at;
-  pin_message_tx.latitude = compass_pin.latitude;
-  pin_message_tx.longitude = compass_pin.longitude;
-  pin_message_tx.hue = compass_pin.color.hue;
-  pin_message_tx.saturation = compass_pin.color.saturation;
+  pin_message_tx.last_updated_at = compass_pin->last_updated_at;
+  pin_message_tx.latitude = compass_pin->latitude;
+  pin_message_tx.longitude = compass_pin->longitude;
+  pin_message_tx.hue = compass_pin->color.hue;
+  pin_message_tx.saturation = compass_pin->color.saturation;
 
-  printSmartCompassPinMessage(pin_message_tx, false, true);
-  signSmartCompassPinMessage(pin_message_tx, pin_message_tx.message_hash);
+  printSmartCompassPinMessage(&pin_message_tx, false, true);
+
+  // TODO: i think this is wrong.
+  signSmartCompassPinMessage(&pin_message_tx, pin_message_tx.message_hash);
 
   updateLights(); // we update lights here because encoding can be slow
 
@@ -441,7 +443,6 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin compass_pin, unsigned lo
 }
 
 void radioReceive() {
-  // TODO: call updatelights somewhere in here if it takes too long
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
   static uint8_t radio_buf_len;
   static SmartCompassLocationMessage location_message_rx = SmartCompassLocationMessage_init_default;
@@ -470,7 +471,7 @@ void radioReceive() {
   if (pb_decode(&stream, SmartCompassLocationMessage_fields, &location_message_rx)) {
     updateLights(); // we update lights here because decoding can be slow
 
-    receiveLocationMessage(location_message_rx);
+    receiveLocationMessage(&location_message_rx);
     return;
   } else {
     DEBUG_PRINT(F("Decoding as location message failed: "));
@@ -482,7 +483,7 @@ void radioReceive() {
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
       updateLights(); // we update lights here because decoding can be slow
 
-      receivePinMessage(pin_message_rx); // TODO: write this
+      receivePinMessage(&pin_message_rx); // TODO: write this
     } else {
       DEBUG_PRINT(F("Decoding as pin message failed: "));
       DEBUG_PRINTLN(PB_GET_ERROR(&stream));
@@ -492,18 +493,20 @@ void radioReceive() {
   }
 }
 
-void receiveLocationMessage(SmartCompassLocationMessage message) {
+void receiveLocationMessage(SmartCompassLocationMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
-  if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
+  if (memcmp(message->network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message is for another network."));
     // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
     // TODO: flash lights on the status bar?
     return;
   }
 
+  // TODO: i think this is wrong.
   signSmartCompassLocationMessage(message, calculated_hash);
-  if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
+
+  if (memcmp(calculated_hash, message->message_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message hash an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
@@ -512,20 +515,20 @@ void receiveLocationMessage(SmartCompassLocationMessage message) {
 
   printSmartCompassLocationMessage(message, true, true);
 
-  if (message.tx_peer_id == my_peer_id) {
+  if (message->tx_peer_id == my_peer_id) {
     // TODO: flash lights on the status bar?
     DEBUG_PRINT(F("ERROR! Peer id collision!"));
     DEBUG_PRINTLN(my_peer_id);
     return;
   }
 
-  if (message.peer_id == my_peer_id) {
+  if (message->peer_id == my_peer_id) {
     DEBUG_PRINTLN(F("Ignoring stats about myself."));
     // TODO: instead of ignoring, track how old my info is on all peers. if it is old, maybe there was some interference
     return;
   }
 
-  if (message.last_updated_at < compass_messages[message.peer_id].last_updated_at) {
+  if (message->last_updated_at < compass_messages[message->peer_id].last_updated_at) {
     // TODO: flash lights on the status bar?
     DEBUG_PRINTLN(F("Ignoring old message."));
     return;
@@ -547,47 +550,49 @@ void receiveLocationMessage(SmartCompassLocationMessage message) {
 
   // TODO: simply accepting the lower peer's time seems like it could have issues, but how much would that really
   // matter?
-  if (message.peer_id < my_peer_id) {
+  if (message->peer_id < my_peer_id) {
     // TODO: flash lights on the status bar if there is a large difference?
     DEBUG_PRINT(F("Updating network_ms! "));
     DEBUG_PRINT(network_ms);
     DEBUG_PRINT(F(" -> "));
-    network_ms = message.tx_ms + 74; // TODO: tune this offset. probably save it as a global and set from config
+    network_ms = message->tx_ms; // TODO: offset this? probably have a offset global set from config
   } else {
     DEBUG_PRINT(F("Leaving network_ms alone! "));
   }
   DEBUG_PRINTLN(network_ms);
 
-  for (int i = message.num_pins + 1; i < next_compass_pin; i++) {
+  for (int i = message->num_pins + 1; i < next_compass_pin; i++) {
     // this peer hasn't heard some pins. re-transmit them
     // TODO: this won't work well once we have 255 pins, but I think that will be okay for now
     compass_pins[i].transmitted = false;
   }
 
   // TODO: do we care about saving tx times? we will change them when we re-broadcast
-  // compass_messages[message.peer_id].tx_time = message.tx_time;
-  // compass_messages[message.peer_id].tx_ms = message.tx_ms;
+  // compass_messages[message->peer_id].tx_time = message->tx_time;
+  // compass_messages[message->peer_id].tx_ms = message->tx_ms;
 
-  compass_messages[message.peer_id].last_updated_at = message.last_updated_at;
-  compass_messages[message.peer_id].hue = message.hue;
-  compass_messages[message.peer_id].saturation = message.saturation;
-  compass_messages[message.peer_id].latitude = message.latitude;
-  compass_messages[message.peer_id].longitude = message.longitude;
-  compass_messages[message.peer_id].num_pins = message.num_pins;
+  compass_messages[message->peer_id].last_updated_at = message->last_updated_at;
+  compass_messages[message->peer_id].hue = message->hue;
+  compass_messages[message->peer_id].saturation = message->saturation;
+  compass_messages[message->peer_id].latitude = message->latitude;
+  compass_messages[message->peer_id].longitude = message->longitude;
+  compass_messages[message->peer_id].num_pins = message->num_pins;
 }
 
-void receivePinMessage(SmartCompassPinMessage message) {
+void receivePinMessage(SmartCompassPinMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
-  if (memcmp(message.network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
+  if (memcmp(message->network_hash, my_network_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message is for another network."));
     // TODO: log this to the SD? I doubt we will ever actually see this, but metrics are good, right?
     // TODO: flash lights on the status bar?
     return;
   }
 
+  // TODO: i think this is wrong.
   signSmartCompassPinMessage(message, calculated_hash);
-  if (memcmp(calculated_hash, message.message_hash, NETWORK_HASH_SIZE) != 0) {
+
+  if (memcmp(calculated_hash, message->message_hash, NETWORK_HASH_SIZE) != 0) {
     DEBUG_PRINTLN(F("Message hash an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
@@ -596,7 +601,7 @@ void receivePinMessage(SmartCompassPinMessage message) {
 
   printSmartCompassPinMessage(message, true, true);
 
-  if (message.tx_peer_id == my_peer_id) {
+  if (message->tx_peer_id == my_peer_id) {
     // TODO: flash lights on the status bar?
     DEBUG_PRINT(F("ERROR! Peer id collision! "));
     DEBUG_PRINTLN(my_peer_id);
@@ -611,36 +616,36 @@ void receivePinMessage(SmartCompassPinMessage message) {
     return;
   }
 
-  if (message.last_updated_at < compass_pins[compass_pin_id].last_updated_at) {
+  if (message->last_updated_at < compass_pins[compass_pin_id].last_updated_at) {
     // TODO: flash lights on the status bar?
-    DEBUG_PRINTLN(F("Heard old message. Queuing transmission."));
+    DEBUG_PRINTLN(F("Heard old message-> Queuing transmission."));
     compass_pins[compass_pin_id].transmitted = false;
     return;
   }
 
-  if (message.last_updated_at == compass_pins[compass_pin_id].last_updated_at and
-      message.hue == compass_pins[compass_pin_id].color.hue) {
+  if (message->last_updated_at == compass_pins[compass_pin_id].last_updated_at and
+      message->hue == compass_pins[compass_pin_id].color.hue) {
     // TODO: flash lights on the status bar?
-    DEBUG_PRINTLN(F("Heard re-broadcast of existing message."));
+    DEBUG_PRINTLN(F("Heard re-broadcast of existing message->"));
     return;
   }
 
-  compass_pins[compass_pin_id].last_updated_at = message.last_updated_at;
+  compass_pins[compass_pin_id].last_updated_at = message->last_updated_at;
 
-  compass_pins[compass_pin_id].latitude = message.latitude;
-  compass_pins[compass_pin_id].longitude = message.longitude;
+  compass_pins[compass_pin_id].latitude = message->latitude;
+  compass_pins[compass_pin_id].longitude = message->longitude;
 
   if (GPS.fix) {
     compass_pins[compass_pin_id].magnetic_bearing =
-        course_to(GPS.latitude_fixed, GPS.longitude_fixed, message.latitude, message.longitude,
+        course_to(GPS.latitude_fixed, GPS.longitude_fixed, message->latitude, message->longitude,
                   &compass_pins[compass_pin_id].distance);
   } else {
     compass_pins[compass_pin_id].magnetic_bearing = 0;
     compass_pins[compass_pin_id].distance = -1;
   }
 
-  compass_pins[compass_pin_id].color.hue = message.hue;
-  compass_pins[compass_pin_id].color.saturation = message.saturation;
+  compass_pins[compass_pin_id].color.hue = message->hue;
+  compass_pins[compass_pin_id].color.saturation = message->saturation;
 
   // send this when it is our time to transmit
   compass_pins[compass_pin_id].transmitted = false;
