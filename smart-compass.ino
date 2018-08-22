@@ -134,7 +134,7 @@ int next_status_bar_id = 0;
 
 elapsedMillis network_ms = 0;
 
-int g_network_offset = 550;  // TODO: tune this. probably put it on the SD
+int g_network_offset = 125 + 425;  // TODO: tune this. probably put it on the SD. tx takes 125ms
 
 const CHSV pin_colors[] PROGMEM = {
     // {h, s, v},
