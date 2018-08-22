@@ -29,7 +29,10 @@ typedef struct {
   int32_t longitude;
   float distance;
   float magnetic_bearing;
-  CHSV color;
+
+  // TODO: what type?
+  int hue;
+  int saturation;
 } CompassPin;
 
 
@@ -39,5 +42,9 @@ typedef struct {
   uint32_t last_updated_at;
   int32_t latitude;
   int32_t longitude;
-  CHSV color;
+
+  // TODO: what type?
+  int hue;
+  int saturation;
+
 } SavedLocationData;

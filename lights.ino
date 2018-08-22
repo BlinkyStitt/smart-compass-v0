@@ -23,7 +23,8 @@ void setupLights() {
   // TODO: maybe run it without lights to see max power draw and subtract that from 500
   // leave some room for the radio and gps and SD and mcu
   // we don't need to leave room for the charger because we have a separate (faster) charger attached
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 120 - 25 - 100 - 50);
+  //FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 125 - 30 - 100 - 50);
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 100);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
@@ -54,7 +55,16 @@ void updateLightsForCompass(CompassMode compass_mode) {
   // fade all lights
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
 
-  // cycle through the colors for each light
+  // add status bar lights
+  for (int i = 0; i < next_status_bar_id; i++) {
+    if (!status_bar[i].value) {
+      continue;
+    }
+
+    leds[status_bar_start + i] = status_bar[i];
+  }
+
+  // cycle through the colors for each light on the inner ring
   // TODO: dry this up
   for (int i = 0; i < inner_ring_size; i++) {
     //    DEBUG_PRINT(F("inner ring "));
@@ -62,10 +72,6 @@ void updateLightsForCompass(CompassMode compass_mode) {
 
     if (next_inner_compass_point[i] == 0) {
       // no lights for this inner compass point
-
-      // lights from other patterns will quickly fade to black
-      leds[inner_ring_start + i].fadeToBlackBy(90);
-
       continue;
     }
 
@@ -97,6 +103,7 @@ void updateLightsForCompass(CompassMode compass_mode) {
     leds[inner_ring_start + i] = inner_compass_points[i][j];
   }
 
+  // cycle through the colors for each light on the outer ring
   for (int i = 0; i < outer_ring_size; i++) {
     //    DEBUG_PRINT(F("outer ring "));
     //    DEBUG_PRINTLN(i);
@@ -173,6 +180,7 @@ void updateLightsForLoading() {
   return;
 }
 
+// TODO: pointers here?
 void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode configure_mode,
                                 Orientation last_orientation, Orientation current_orientation) {
   static elapsedMillis configure_ms = 0;
@@ -244,7 +252,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
           configure_ms = 8000;  // reset timer
         }
 
-        setCompassPin(pin_id, fill_color, GPS.latitude_fixed, GPS.longitude_fixed);
+        setCompassPin(pin_id, &fill_color, GPS.latitude_fixed, GPS.longitude_fixed);
       }
     }
   }
@@ -365,7 +373,6 @@ void updateLights() {
           }
         }
 
-
         DEBUG_PRINT(F(" | ID="));
         DEBUG_PRINT(my_peer_id);
 
@@ -377,6 +384,9 @@ void updateLights() {
 
         DEBUG_PRINT(F(" | Sens="));
         DEBUG_PRINT(sensor_setup);
+
+        DEBUG_PRINT(F(" | CM="));
+        DEBUG_PRINT(compass_mode);
 
         DEBUG_PRINT(F(" | GPS Fix="));
         DEBUG_PRINT(GPS.fix);

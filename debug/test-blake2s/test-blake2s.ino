@@ -51,19 +51,19 @@ void signSmartCompassLocationMessage() {
   unsigned long elapsed;
   start = micros();
 
-  blake2s.reset((void *)my_network_key, sizeof(my_network_key), HASH_SIZE);
+  blake2s.reset(&my_network_key, sizeof(my_network_key), HASH_SIZE);
 
   // TODO: this seems fragile. is there a dynamic way to include all elements EXCEPT for the hash?
-  blake2s.update((void *)compass_message.network_hash, sizeof(compass_message.network_hash));
-  blake2s.update((void *)compass_message.tx_peer_id, sizeof(compass_message.tx_peer_id));
-  blake2s.update((void *)compass_message.tx_time, sizeof(compass_message.tx_time));
-  blake2s.update((void *)compass_message.tx_ms, sizeof(compass_message.tx_ms));
-  blake2s.update((void *)compass_message.peer_id, sizeof(compass_message.peer_id));
-  blake2s.update((void *)compass_message.last_updated_at, sizeof(compass_message.last_updated_at));
-  blake2s.update((void *)compass_message.hue, sizeof(compass_message.hue));
-  blake2s.update((void *)compass_message.saturation, sizeof(compass_message.saturation));
-  blake2s.update((void *)compass_message.latitude, sizeof(compass_message.latitude));
-  blake2s.update((void *)compass_message.longitude, sizeof(compass_message.longitude));
+  blake2s.update(&compass_message.network_hash, sizeof(compass_message.network_hash));
+  blake2s.update(&compass_message.tx_peer_id, sizeof(compass_message.tx_peer_id));
+  blake2s.update(&compass_message.tx_time, sizeof(compass_message.tx_time));
+  blake2s.update(&compass_message.tx_ms, sizeof(compass_message.tx_ms));
+  blake2s.update(&compass_message.peer_id, sizeof(compass_message.peer_id));
+  blake2s.update(&compass_message.last_updated_at, sizeof(compass_message.last_updated_at));
+  blake2s.update(&compass_message.hue, sizeof(compass_message.hue));
+  blake2s.update(&compass_message.saturation, sizeof(compass_message.saturation));
+  blake2s.update(&compass_message.latitude, sizeof(compass_message.latitude));
+  blake2s.update(&compass_message.longitude, sizeof(compass_message.longitude));
 
   blake2s.finalize(hash, HASH_SIZE);
 

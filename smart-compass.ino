@@ -134,9 +134,9 @@ int next_status_bar_id = 0;
 
 elapsedMillis network_ms = 0;
 
-int g_network_offset = 650;  // TODO: tune this. probably put it on the SD
+int g_network_offset = 400;  // TODO: tune this. probably put it on the SD
 
-CHSV pin_colors[] = {
+const CHSV pin_colors[] PROGMEM = {
     // {h, s, v},
     // white
     {HUE_BLUE, 255, 255},

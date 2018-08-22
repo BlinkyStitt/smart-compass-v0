@@ -226,7 +226,8 @@ void radioSleep() {
 }
 
 void radioTransmit(const int pid) {
-  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
+  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN] = {0};
+  //static unsigned long wait_until = 0;
 
   updateLights(); // we update lights here because checking the time can be slow
 
@@ -265,6 +266,20 @@ void radioTransmit(const int pid) {
     }
   }
 
+  /*
+  if (tx_compass_location and (pid == 0)) {
+    // if we are broadcasting the first peer, delay a little bit in case GPS is out of sync and a nearby peer isn't listening yet
+
+    // wait 1/10 of our broadcast time
+    // TODO: i would prefer to return here so we can be more responsive, but i don't know how to set wait_until properly if we do that
+    wait_until = millis() + (broadcast_time_s * 100); // TODO: tune this
+    while (millis() < wait_until) {
+      updateLights();
+      FastLED.delay(loop_delay_ms);
+    }
+  }
+  */
+
   DEBUG_PRINT(F("Time to transmit data from "));
   DEBUG_PRINT(my_peer_id);
   DEBUG_PRINT(" about ");
@@ -273,7 +288,7 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(getGPSTime());
   DEBUG_PRINTLN("...");
 
-  // TODO: if the message is 10 minutes old or older, ignore it
+  // TODO: if the message is 10 minutes old or older, set message hue to 0 and return instead of transmitting
 
   /*
   // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
@@ -321,9 +336,9 @@ void radioTransmit(const int pid) {
   DEBUG_PRINTLN(F(" bytes... "));
   rf95.send(radio_buf, ostream.bytes_written);
 
-  unsigned long abort_time = millis() + 300; // TODO: tune this
+  unsigned long abort_time = millis() + 200; // TODO: tune this
 
-  // TODO: BUG! we are still getting stuck here!
+  // TODO: BUG! we are still getting stuck here even after adding abort_time!
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
@@ -409,7 +424,7 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *co
 // returns the number of bytes written to the buffer
 // TODO: should compass_pin be passed by reference, too?
 void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned long time_now) {
-  if (compass_pin->color.hue == 0) {
+  if (compass_pin->hue == 0) {
     return;
   }
 
@@ -419,8 +434,8 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
   pin_message_tx.last_updated_at = compass_pin->last_updated_at;
   pin_message_tx.latitude = compass_pin->latitude;
   pin_message_tx.longitude = compass_pin->longitude;
-  pin_message_tx.hue = compass_pin->color.hue;
-  pin_message_tx.saturation = compass_pin->color.saturation;
+  pin_message_tx.hue = compass_pin->hue;
+  pin_message_tx.saturation = compass_pin->saturation;
 
   printSmartCompassPinMessage(&pin_message_tx, false, true);
 
@@ -440,6 +455,7 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
   printSmartCompassPinMessage(&pin_message_tx, true, true);
 }
 
+// TODO: return a boolean and then radioTransmit could do `if (radioReceive()) { abort tx and wait for next loop }`
 void radioReceive() {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
   static uint8_t radio_buf_len;
@@ -592,12 +608,34 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   // compass_messages[message->peer_id].tx_time = message->tx_time;
   // compass_messages[message->peer_id].tx_ms = message->tx_ms;
 
+  DEBUG_PRINT(F("Saving location for "));
+  DEBUG_PRINTLN(message->peer_id);
+
   compass_messages[message->peer_id].last_updated_at = message->last_updated_at;
   compass_messages[message->peer_id].hue = message->hue;
   compass_messages[message->peer_id].saturation = message->saturation;
   compass_messages[message->peer_id].latitude = message->latitude;
   compass_messages[message->peer_id].longitude = message->longitude;
   compass_messages[message->peer_id].num_pins = message->num_pins;
+
+  DEBUG_PRINT(F("last_updated_at: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].last_updated_at);
+
+  DEBUG_PRINT(F("hue: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].hue);
+
+  DEBUG_PRINT(F("saturation: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].saturation);
+
+  DEBUG_PRINT(F("latitude: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].latitude);
+
+  DEBUG_PRINT(F("longitude: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].longitude);
+
+  DEBUG_PRINT(F("num_pins: "));
+  DEBUG_PRINTLN(compass_messages[message->peer_id].num_pins);
+
 }
 
 void receivePinMessage(SmartCompassPinMessage *message) {
@@ -648,9 +686,9 @@ void receivePinMessage(SmartCompassPinMessage *message) {
   }
 
   if (message->last_updated_at == compass_pins[compass_pin_id].last_updated_at and
-      message->hue == compass_pins[compass_pin_id].color.hue) {
+      message->hue == compass_pins[compass_pin_id].hue) {
     // TODO: flash lights on the status bar?
-    DEBUG_PRINTLN(F("Heard re-broadcast of existing message->"));
+    DEBUG_PRINTLN(F("Heard re-broadcast of existing message-> Skipping."));
     return;
   }
 
@@ -668,8 +706,8 @@ void receivePinMessage(SmartCompassPinMessage *message) {
     compass_pins[compass_pin_id].distance = -1;
   }
 
-  compass_pins[compass_pin_id].color.hue = message->hue;
-  compass_pins[compass_pin_id].color.saturation = message->saturation;
+  compass_pins[compass_pin_id].hue = message->hue;
+  compass_pins[compass_pin_id].saturation = message->saturation;
 
   // send this when it is our time to transmit
   compass_pins[compass_pin_id].transmitted = false;
