@@ -56,12 +56,13 @@ void sensorReceive() {
   lsm.getEvent(&accel, &mag, &gyro, &temp);
 }
 
-static Orientation getOrientation() {
+void getOrientation(Orientation *o) {
   // DEBUG_PRINT(F("Orientation: "));
 
   if (!sensor_setup) {
     DEBUG_PRINTLN(F("UP (no sensor)"));
-    return ORIENTED_UP;
+    *o = ORIENTED_UP;
+    return;
   }
 
   sensorReceive();
@@ -82,28 +83,34 @@ static Orientation getOrientation() {
     // base orientation on Z
     if (z > 0) {
       //    DEBUG_PRINTLN(F("DOWN"));
-      return ORIENTED_DOWN;
+      *o = ORIENTED_DOWN;
+      return;
     }
     //      DEBUG_PRINTLN(F("UP"));
-    return ORIENTED_UP;
+    *o = ORIENTED_UP;
+    return;
   }
 
   if ((absY > absX) && (absY > absZ)) {
     // base orientation on Y
     if (y > 0) {
       //      DEBUG_PRINTLN(F("USB_DOWN"));
-      return ORIENTED_USB_DOWN;
+      *o = ORIENTED_USB_DOWN;
+      return;
     }
     //    DEBUG_PRINTLN(F("USB_UP"));
-    return ORIENTED_USB_UP;
+    *o = ORIENTED_USB_UP;
+    return;
   }
 
   // base orientation on X
   if (x < 0) {
     //    DEBUG_PRINTLN(F("UPSIDE_DOWN"));
-    return ORIENTED_PORTRAIT_UPSIDE_DOWN;
+    *o = ORIENTED_PORTRAIT_UPSIDE_DOWN;
+    return;
   }
 
   //  DEBUG_PRINTLN(F("PORTRAIT"));
-  return ORIENTED_PORTRAIT;
+  *o = ORIENTED_PORTRAIT;
+  return;
 }

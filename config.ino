@@ -271,19 +271,13 @@ void setupConfig() {
 void networkIdFromKey(uint8_t *network_key, uint8_t *network_hash) {
   DEBUG_PRINTLN(F("Generating network id from key..."));
 
-  // blake2s.reset(sizeof(network_hash));
+  // TODO: not sure about this...
   blake2s.reset(NETWORK_HASH_SIZE);
-
-  // blake2s.update(network_key, sizeof(network_key));
   blake2s.update(network_key, NETWORK_KEY_SIZE);
-
-  // blake2s.finalize(network_hash, sizeof(network_hash));
   blake2s.finalize(network_hash, NETWORK_HASH_SIZE);
 }
 
 bool setupSecurity() {
-  // TODO: open security.key and store in my_network_key
-
   g_file = SD.open(F("security.key"));
 
   DEBUG_PRINT(F("Opening security.key... "));

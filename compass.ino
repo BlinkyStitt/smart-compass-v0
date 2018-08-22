@@ -36,9 +36,9 @@ float course_to(const long lat1, const long lon1, const long lat2, const long lo
 }
 
 // compare compass points
-bool firstIsBrighter(CHSV first, CHSV second) { return first.value > second.value; }
+bool firstIsBrighter(CHSV *first, CHSV *second) { return first->value > second->value; }
 
-void updateCompassPoints(CompassMode compass_mode) {
+void updateCompassPoints(CompassMode *compass_mode) {
   // clear past compass points
   // TODO: this isn't very efficient since it recalculates everything every time, but it works
   for (int i = 0; i < inner_ring_size; i++) {
@@ -97,7 +97,7 @@ void updateCompassPoints(CompassMode compass_mode) {
   // add points to the compass
   // TODO: sort compass_pins
   // TODO: pass compass_pins (compass_locations/saved_locations) to addCompassPoints function
-  switch (compass_mode) {
+  switch (*compass_mode) {
   case COMPASS_FRIENDS:
     addCompassPointsForFriends();
     break;
@@ -329,7 +329,7 @@ void addCompassPointsForPlaces() {
 }
 
 // todo: be more consistent about naming
-int getCompassPinId(long latitude, long longitude) {
+int getCompassPinId(const long latitude, const long longitude) {
   int compass_pin_id = -1;
 
   // TODO: loop over existing pins. if distance <10, return pin id. if none <10, increment and return next_compass_pin_id

@@ -59,14 +59,16 @@ void setup() {
 void networkIdFromKey(uint8_t* network_key, uint8_t* network_hash) {
   Serial.println(F("Generating network id from key..."));
 
+  // TODO: i think this is wrong. sizeof pointers doesn't do what we want
+
   Serial.println("resetting...");
-  blake2s.reset(sizeof(network_hash));
+  blake2s.reset(NETWORK_HASH_SIZE);
 
   Serial.println("updating...");
-  blake2s.update((void *)network_key, sizeof(network_key));
+  blake2s.update(&network_key, NETWORK_KEY_SIZE);
 
   Serial.println("finalizing...");
-  blake2s.finalize(network_hash, sizeof(network_hash));
+  blake2s.finalize(network_hash, NETWORK_HASH_SIZE);
 
   Serial.println("done!");
 }

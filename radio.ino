@@ -66,6 +66,8 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage *message, uint8
   start = micros();
   */
 
+  // TODO: is this right? first variable is &, but sizeof isn't?
+
   DEBUG_PRINT(F("resetting... "));
   blake2s.reset(&my_network_key, sizeof(my_network_key), NETWORK_HASH_SIZE);
 
@@ -92,6 +94,7 @@ void signSmartCompassLocationMessage(SmartCompassLocationMessage *message, uint8
   blake2s.update(&message->longitude, sizeof(message->longitude));
   DEBUG_PRINT(".");
 
+  // TODO: is this right? should hash have a &?
   DEBUG_PRINTLN(F(" finalizing..."));
   blake2s.finalize(hash, NETWORK_HASH_SIZE);
 
@@ -325,7 +328,7 @@ void radioTransmit(const int pid) {
 
   // TODO: bytes_written seems to always be 0, even with a successful encode
   if (!ostream.bytes_written) {
-    DEBUG_PRINTLN("Skipping transmit.");
+    DEBUG_PRINTLN(F("Skipping transmit."));
     return;
   }
 
@@ -334,7 +337,13 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(F("Sending "));
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
-  rf95.send(radio_buf, ostream.bytes_written);
+
+  if (my_peer_id != pid) {
+    // TODO: why is it crashing here sometimes? the bytes_written is 75 (73 always seems fine, but i dont think thats the exact issue)
+    DEBUG_PRINTLN(F("DEBUG! Skipping transmit of peer data"));
+  } else {
+    rf95.send(radio_buf, ostream.bytes_written);
+  }
 
   unsigned long abort_time = millis() + 200; // TODO: tune this
 
@@ -348,10 +357,12 @@ void radioTransmit(const int pid) {
       DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
       abort_time = 0;
 
-      // TODO: what should we do here? reset the radio?
+      // TODO: what should we do here? reset the radio? break the loop and let it try to continue on?
       //resetRadio(true);
+      //break;
 
-      break;
+      while(1)
+        ;
     }
   }
 
@@ -608,9 +619,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   // compass_messages[message->peer_id].tx_time = message->tx_time;
   // compass_messages[message->peer_id].tx_ms = message->tx_ms;
 
-  DEBUG_PRINT(F("Saving location for "));
-  DEBUG_PRINTLN(message->peer_id);
-
   compass_messages[message->peer_id].last_updated_at = message->last_updated_at;
   compass_messages[message->peer_id].hue = message->hue;
   compass_messages[message->peer_id].saturation = message->saturation;
@@ -618,22 +626,20 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   compass_messages[message->peer_id].longitude = message->longitude;
   compass_messages[message->peer_id].num_pins = message->num_pins;
 
-  DEBUG_PRINT(F("last_updated_at: "));
-  DEBUG_PRINTLN(compass_messages[message->peer_id].last_updated_at);
+  DEBUG_PRINT(F("Saving location for peer "));
+  DEBUG_PRINT(message->peer_id);
+  DEBUG_PRINT(F("; last_updated_at: "));
+  DEBUG_PRINT(compass_messages[message->peer_id].last_updated_at);
 
-  DEBUG_PRINT(F("hue: "));
-  DEBUG_PRINTLN(compass_messages[message->peer_id].hue);
-
-  DEBUG_PRINT(F("saturation: "));
-  DEBUG_PRINTLN(compass_messages[message->peer_id].saturation);
-
-  DEBUG_PRINT(F("latitude: "));
-  DEBUG_PRINTLN(compass_messages[message->peer_id].latitude);
-
-  DEBUG_PRINT(F("longitude: "));
-  DEBUG_PRINTLN(compass_messages[message->peer_id].longitude);
-
-  DEBUG_PRINT(F("num_pins: "));
+  DEBUG_PRINT(F("; hue: "));
+  DEBUG_PRINT(compass_messages[message->peer_id].hue);
+  DEBUG_PRINT(F("; saturation: "));
+  DEBUG_PRINT(compass_messages[message->peer_id].saturation);
+  DEBUG_PRINT(F("; latitude: "));
+  DEBUG_PRINT(compass_messages[message->peer_id].latitude);
+  DEBUG_PRINT(F("; longitude: "));
+  DEBUG_PRINT(compass_messages[message->peer_id].longitude);
+  DEBUG_PRINT(F("; num_pins: "));
   DEBUG_PRINTLN(compass_messages[message->peer_id].num_pins);
 
 }
