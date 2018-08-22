@@ -10,21 +10,23 @@ Generate shared network key:
 TODO:
 - make sure SmartCompassLocationMessage_size < RH_RF95_MAX_MESSAGE_LEN
 - database saving is broken
+- make sure course_to actually works. and confirm distance is in meters
+- lots left to write in compass.ino
+- time zone code is having issues. when it was 4, the time was right. now that its 5 it says 6...
+- i think if we are in flashlight mode while the radio transmits, we are crashing
+- repeater code?
 - make peer locations and saved locations use the same code but just with different arrays
 - is max_compass_points big enough? what about when we include saved locations?
 - color-blind friendly colors from test-lights.ino. i can't tell what any of the current pin_colors are. red, yellow, blue, white.
 - document max_points_per_color. its not a very descriptive name. it groups up saved locations by color and then only shows the nearest X
 - move max_points_per_color to the SD?
-- actually solder something on pin 6 so we can get a decent random?
 - put LED_FADE_RATE on SD
 - do we want to log anything else on start?
 - what rate should we read GPS data at? the flora example does 1Hz but we don't want to suck too much power
 - what table size?
-- make sure course_to actualy works. and confirm distance is in meters
-- lots left to write in compass.ino
-- repeater code?
 
 TODO v2:
+- actually solder something on pin 6 so we can get a decent random?
 - IniFile doesn't support unsigned ints, but most of our variables should be unsigned
 - how is clang-format deciding to order includes? they aren't alphabetical
 - is 128 bit blake2s hashing secure enough?

@@ -2,6 +2,17 @@
 
 void flashlight() {
   static int turn_on_id = 0;
+
+  // TODO: tune this
+  // rotate the LEDs slowly
+  EVERY_N_SECONDS(60) {
+    turn_on_id++;
+
+    if (turn_on_id >= flashlight_density) {
+      turn_on_id = 0;
+    }
+  }
+
   // smoothly transition from other patterns
   // TODO: would be nice to call fade on just the status bar here
   fadeToBlackBy(leds, num_LEDs, LED_FADE_RATE);
@@ -10,16 +21,6 @@ void flashlight() {
     if (i % flashlight_density == turn_on_id) {
       // TODO: slowly turn on (at LED_FADE_RATE?) instead of jumping to full brightness?
       leds[i] = CRGB::White;
-    }
-  }
-
-  // TODO: tune this
-  // rotate the LEDs slowly
-  EVERY_N_SECONDS(30) {
-    turn_on_id++;
-
-    if (turn_on_id >= flashlight_density) {
-      turn_on_id = 0;
     }
   }
 }

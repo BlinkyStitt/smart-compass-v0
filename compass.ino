@@ -8,6 +8,7 @@ int deg2rad(const long deg) { return deg * 1000 / 57296; }
 // http://forum.arduino.cc/index.php?topic=393511.msg3232854#msg3232854
 // find the bearing and distance in meters from point 1 to 2, using the equirectangular approximation
 // lat and lon are degrees*1.0e6, 10 cm precision
+// TODO: i'm pretty sure that these units are wrong. without dividing distance, it said they were 100m away from eachother
 float course_to(const long lat1, const long lon1, const long lat2, const long lon2, float *distance) {
   float dlam, dphi, radius = 6371000.0;
 
@@ -29,7 +30,8 @@ float course_to(const long lat1, const long lon1, const long lat2, const long lo
     magnetic_bearing -= 360.0;
   }
 
-  *distance = radius * sqrt(dphi * dphi + dlam * dlam);
+  // TODO: not sure about units here
+  *distance = radius * sqrt(dphi * dphi + dlam * dlam) / 100;
   return magnetic_bearing;
 }
 
@@ -71,6 +73,27 @@ void updateCompassPoints(CompassMode compass_mode) {
     break;
   }
 
+  // TODO: make sure we don't overflow next_status_bar_id (do that in add_color_to_leds helper)
+  status_bar[next_status_bar_id].hue = compass_messages[my_peer_id].hue;
+  status_bar[next_status_bar_id].saturation = compass_messages[my_peer_id].saturation;
+  status_bar[next_status_bar_id].value = 128;
+
+  // TODO: this is very verbose
+  /*
+  DEBUG_PRINT(F("Adding status light for self @ "));
+  DEBUG_PRINT(compass_messages[my_peer_id].latitude);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINT(compass_messages[my_peer_id].longitude);
+  DEBUG_PRINT(F("; Hue: "));
+  DEBUG_PRINT(status_bar[next_status_bar_id].hue);
+  DEBUG_PRINT(F("; Saturation: "));
+  DEBUG_PRINT(status_bar[next_status_bar_id].saturation);
+  DEBUG_PRINT(F("; Value: "));
+  DEBUG_PRINTLN(status_bar[next_status_bar_id].value);
+  */
+
+  next_status_bar_id++;
+
   // add points to the compass
   // TODO: sort compass_pins
   // TODO: pass compass_pins (compass_locations/saved_locations) to addCompassPoints function
@@ -92,18 +115,16 @@ void addCompassPointsForFriends() {
   int compass_point_id = 0, peer_brightness = 0;
 
   for (int i = 0; i < num_peers; i++) {
-    if (!compass_messages[i].hue) {
+    if (compass_messages[i].hue == 0) {
       // skip the peer if we don't have any color data for them
       continue;
     }
     if (i == my_peer_id) {
-      // don't show yourself (or maybe just show it on the status bar so you can see your own color?
+      // don't show yourself on the compass ring.
       continue;
     }
 
     // TODO: if the message is older than 10 minutes, set hue to 0 and continue
-
-    // TODO: add a debug print here of our location and theirs
 
     magnetic_bearing = course_to(compass_messages[my_peer_id].latitude, compass_messages[my_peer_id].longitude,
                                  compass_messages[i].latitude, compass_messages[i].longitude, &peer_distance);
@@ -112,8 +133,27 @@ void addCompassPointsForFriends() {
     // TODO: scurve instead of linear? use fastLED helpers
     // TODO: tune this
     // TODO: if peer data is old, blink or something
-    peer_brightness =
-        map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 128, 255);
+    peer_brightness = map(constrain(peer_distance, min_peer_distance, max_peer_distance), 0, max_peer_distance, 128, 255);
+
+    // TODO: this is SUPER verbose
+    /*
+    DEBUG_PRINT(F("Adding compass point for "));
+    DEBUG_PRINT(i);
+    DEBUG_PRINT(F(" @ "));
+    DEBUG_PRINT(compass_messages[i].latitude);
+    DEBUG_PRINT(F(", "));
+    DEBUG_PRINT(compass_messages[i].longitude);
+    DEBUG_PRINT(F(" Bearing: "));
+    DEBUG_PRINT(magnetic_bearing);
+    DEBUG_PRINT(F("; Distance: "));
+    DEBUG_PRINT(peer_distance);
+    DEBUG_PRINT(F("; Hue: "));
+    DEBUG_PRINT(compass_messages[i].hue);
+    DEBUG_PRINT(F("; Saturation: "));
+    DEBUG_PRINT(compass_messages[i].saturation);
+    DEBUG_PRINT(F("; Brightness: "));
+    DEBUG_PRINTLN(peer_brightness);
+    */
 
     // circle 0 -> 360 should go clockwise, but the outer ring lights are wired counter-clockwise
     if (peer_distance <= min_peer_distance) {
@@ -126,8 +166,8 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      status_bar[next_status_bar_id].hue = compass_pins[i].color.hue;
-      status_bar[next_status_bar_id].saturation = compass_pins[i].color.saturation;
+      status_bar[next_status_bar_id].hue = compass_messages[i].hue;
+      status_bar[next_status_bar_id].saturation = compass_messages[i].saturation;
       status_bar[next_status_bar_id].value = peer_brightness;
 
       next_status_bar_id++;
@@ -142,8 +182,8 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_messages[i].hue;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_messages[i].saturation;
       inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].value = peer_brightness;
 
       next_inner_compass_point[compass_point_id]++;
@@ -158,8 +198,8 @@ void addCompassPointsForFriends() {
         continue;
       }
 
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_messages[i].hue;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_messages[i].saturation;
       outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].value = peer_brightness;
 
       next_outer_compass_point[compass_point_id]++;
@@ -199,7 +239,9 @@ void addCompassPointsForPlaces() {
     // TODO: why don't we just store that instead of the color? that would save this lookup
     int pin_color_id;
     for (pin_color_id = 0; pin_color_id < num_colors; pin_color_id++) {
-      if (compass_pins[i].color == pin_colors[pin_color_id]) {
+      if (compass_pins[i].hue == pin_colors[pin_color_id].hue and
+          compass_pins[i].saturation == pin_colors[pin_color_id].saturation) {
+        // color match!
         break;
       }
     }
@@ -240,8 +282,8 @@ void addCompassPointsForPlaces() {
         continue;
       }
 
-      status_bar[next_status_bar_id].hue = compass_pins[i].color.hue;
-      status_bar[next_status_bar_id].saturation = compass_pins[i].color.saturation;
+      status_bar[next_status_bar_id].hue = compass_pins[i].hue;
+      status_bar[next_status_bar_id].saturation = compass_pins[i].saturation;
       status_bar[next_status_bar_id].value = peer_brightness;
 
       next_status_bar_id++;
@@ -256,8 +298,8 @@ void addCompassPointsForPlaces() {
         continue;
       }
 
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
-      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].hue = compass_pins[i].hue;
+      inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].saturation = compass_pins[i].saturation;
       inner_compass_points[compass_point_id][next_inner_compass_point[compass_point_id]].value = peer_brightness;
 
       next_inner_compass_point[compass_point_id]++;
@@ -272,8 +314,8 @@ void addCompassPointsForPlaces() {
         continue;
       }
 
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_pins[i].color.hue;
-      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_pins[i].color.saturation;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].hue = compass_pins[i].hue;
+      outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].saturation = compass_pins[i].saturation;
       outer_compass_points[compass_point_id][next_outer_compass_point[compass_point_id]].value = peer_brightness;
 
       next_outer_compass_point[compass_point_id]++;
@@ -297,13 +339,15 @@ int getCompassPinId(long latitude, long longitude) {
 }
 
 // todo: this uses "SmartCompassPinMessages." Be consistent about naming
-void setCompassPin(int pin_id, CHSV color, long latitude, long longitude) {
+void setCompassPin(int pin_id, CHSV *color, long latitude, long longitude) {
   if (pin_id < 0) {
     DEBUG_PRINTLN("ERROR Setting compass_pins with a negative index!");
     return;
   }
 
-  compass_pins[pin_id].color = color;
+  compass_pins[pin_id].hue = color->hue;
+  compass_pins[pin_id].saturation = color->saturation;
+
   compass_pins[pin_id].latitude = latitude;
   compass_pins[pin_id].longitude = longitude;
 
@@ -320,7 +364,8 @@ void saveCompassPin(const int pin_id) {
   saved_location_data.last_updated_at = compass_pins[pin_id].last_updated_at;
   saved_location_data.latitude = compass_pins[pin_id].latitude;
   saved_location_data.longitude = compass_pins[pin_id].longitude;
-  saved_location_data.color = compass_pins[pin_id].color;
+  saved_location_data.hue = compass_pins[pin_id].hue;
+  saved_location_data.saturation = compass_pins[pin_id].saturation;
 
   openDatabase();
 
@@ -374,7 +419,8 @@ void loadCompassPins() {
     compass_pins[next_compass_pin].distance = 0;
     compass_pins[next_compass_pin].magnetic_bearing = 0;
 
-    compass_pins[next_compass_pin].color = saved_location_data.color;
+    compass_pins[next_compass_pin].hue = saved_location_data.hue;
+    compass_pins[next_compass_pin].saturation = saved_location_data.saturation;
 
     next_compass_pin++;
   }
