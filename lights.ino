@@ -398,6 +398,9 @@ void updateLights() {
         DEBUG_PRINT(F(" -> "));
         DEBUG_PRINT(g_broadcasted_peer_id);
 
+        DEBUG_PRINT(" | ");
+        freeMemory(false);
+
         DEBUG_PRINT(F(" | ms since last frame="));
         DEBUG_PRINTLN(millis() - last_frame);
 
