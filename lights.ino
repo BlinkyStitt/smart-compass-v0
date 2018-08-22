@@ -380,14 +380,17 @@ void updateLights() {
         DEBUG_PRINT(F(" | ID="));
         DEBUG_PRINT(my_peer_id);
 
-        DEBUG_PRINT(F(" | SD="));
-        DEBUG_PRINT(sd_setup);
+        if (!sd_setup) {
+          DEBUG_PRINT(F(" | !SD "));
+        }
 
-        DEBUG_PRINT(F(" | Conf="));
-        DEBUG_PRINT(config_setup);
+        if (!config_setup) {
+          DEBUG_PRINT(F(" | !Conf "));
+        }
 
-        DEBUG_PRINT(F(" | Sens="));
-        DEBUG_PRINT(sensor_setup);
+        if (!sensor_setup) {
+          DEBUG_PRINT(F(" | !Sens "));
+        }
 
         DEBUG_PRINT(F(" | CM="));
         DEBUG_PRINT(compass_mode);

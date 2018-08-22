@@ -337,15 +337,9 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(F("Sending "));
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
+  rf95.send(radio_buf, ostream.bytes_written);
 
-  if (my_peer_id != pid) {
-    // TODO: why is it crashing here sometimes? the bytes_written is 75 (73 always seems fine, but i dont think thats the exact issue)
-    DEBUG_PRINTLN(F("DEBUG! Skipping transmit of peer data"));
-  } else {
-    rf95.send(radio_buf, ostream.bytes_written);
-  }
-
-  unsigned long abort_time = millis() + 200; // TODO: tune this
+  unsigned long abort_time = millis() + 200; // TODO: tune this. transmit usually takes 125ms
 
   // TODO: BUG! we are still getting stuck here even after adding abort_time!
   while (rf95.mode() == RH_RF95_MODE_TX) {
