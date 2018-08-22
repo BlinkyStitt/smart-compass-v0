@@ -1,5 +1,5 @@
 #define DEBUG
-//#define DEBUG_SERIAL_WAIT
+#define DEBUG_SERIAL_WAIT
 #include "bs_debug.h"
 #define ARRAY_SIZE(array) ((sizeof(array)) / (sizeof(array[0])))
 

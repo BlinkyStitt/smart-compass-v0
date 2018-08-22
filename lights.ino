@@ -35,7 +35,7 @@ void setupLights() {
   DEBUG_PRINTLN("done.");
 }
 
-void updateLightsForCompass(CompassMode compass_mode) {
+void updateLightsForCompass(CompassMode *compass_mode) {
   static unsigned long now_ms = 0;
 
   // TODO: this has bugs in it that is accessing memory incorrectly
@@ -293,10 +293,14 @@ void updateLights() {
     }
   }
 
+  EVERY_N_SECONDS(10) {
+    // TODO: print peer location data
+  }
+
   // update the led array every frame
   // TODO: TUNE this
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    current_orientation = getOrientation();
+    getOrientation(&current_orientation);
     switch (current_orientation) {
     case ORIENTED_UP:
       // if we did any configuring, next_compass_mode will be set to the desired compass_moe
@@ -317,7 +321,7 @@ void updateLights() {
         saved_pin_id = -1;
       }
 
-      updateLightsForCompass(compass_mode);
+      updateLightsForCompass(&compass_mode);
       break;
     case ORIENTED_DOWN:
       flashlight();

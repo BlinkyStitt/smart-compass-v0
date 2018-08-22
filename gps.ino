@@ -65,6 +65,7 @@ unsigned long getGPSTime() {
 
   t = (t * 60) + GPS.seconds;
 
+  // TODO: set a variable instead of returning one?
   return t;
 }
 
