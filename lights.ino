@@ -391,15 +391,15 @@ void updateLights(int debug_int) {
         DEBUG_PRINT(my_peer_id);
 
         if (!sd_setup) {
-          DEBUG_PRINT(F(" | !SD "));
+          DEBUG_PRINT(F(" | !SD"));
         }
 
         if (!config_setup) {
-          DEBUG_PRINT(F(" | !Conf "));
+          DEBUG_PRINT(F(" | !Conf"));
         }
 
         if (!sensor_setup) {
-          DEBUG_PRINT(F(" | !Sens "));
+          DEBUG_PRINT(F(" | !Sens"));
         }
 
         DEBUG_PRINT(F(" | CM="));
