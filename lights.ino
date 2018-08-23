@@ -273,8 +273,10 @@ void updateLights() {
   // decrease overall brightness if battery is low
   // TODO: how often should we do this?
   EVERY_N_SECONDS(300) {
+    checkBattery(&g_battery_status);
+
     // TODO: set a floor on these
-    switch (checkBattery()) {
+    switch (g_battery_status) {
     case BATTERY_DEAD:
       // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
       // TODO: maybe add a red led to a strip of 8 LEDs?

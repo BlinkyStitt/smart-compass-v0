@@ -136,6 +136,8 @@ elapsedMillis network_ms = 0;
 
 int g_network_offset = 125 + 425;  // TODO: tune this. probably put it on the SD. tx takes 125ms
 
+BatteryStatus g_battery_status = BATTERY_FULL;
+
 const CHSV pin_colors[] PROGMEM = {
     // {h, s, v},
     // white
@@ -222,7 +224,7 @@ void setup() {
   // Configure SPI pins for everything BEFORE trying to do anything with them individually
   setupSPI();
 
-  checkBattery();
+  checkBattery(&g_battery_status);
 
   randomSeed(analogRead(FLOATING_PIN));
 
@@ -339,7 +341,8 @@ void loop() {
       // END DEBUG
 
       if (broadcasting_peer_id == my_peer_id) {
-        radioTransmit(broadcasted_peer_id); // this will sleep the radio if we've already transmitted for this segment
+        // TODO: trying to figure out where the crash is
+        //radioTransmit(broadcasted_peer_id);
       } else if (broadcasting_peer_id >= num_peers) {
         // spend 1/2 the time with the radio sleeping
         radioSleep();

@@ -337,34 +337,18 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(F("Sending "));
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
+
+  // TODO: this crashes seemingly randomly before finishing transmission. i think its a coincidence or the bug is above here
   rf95.send(radio_buf, ostream.bytes_written);
 
-  unsigned long abort_time = millis() + 200; // TODO: tune this. transmit usually takes 125ms
-
   // TODO: BUG! we are still getting stuck here even after adding abort_time!
+  // TODO: updateLights must be doing something naughty
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights(); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
-
-    // BUG FIX! we got stuck transmitting here. i noticed because power usage stayed at +100mA
-    if (millis() > abort_time) {
-      DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
-      abort_time = 0;
-
-      // TODO: what should we do here? reset the radio? break the loop and let it try to continue on?
-      //resetRadio(true);
-      //break;
-
-      while(1)
-        ;
-    }
   }
 
-  if (abort_time == 0) {
-    DEBUG_PRINT(F("Transmit ERR. "));
-  } else {
-    DEBUG_PRINT(F("Transmit done. "));
-  }
+  DEBUG_PRINT(F("Transmit done. "));
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
