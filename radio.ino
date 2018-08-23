@@ -27,14 +27,14 @@ void resetRadio(bool with_lights) {
 
   if (with_lights) {
     // TODO: set a status light?
-    updateLights();
+    updateLights(1);
   }
 
   digitalWrite(RFM95_RST, HIGH);
   FastLED.delay(10);
 
   if (with_lights) {
-    updateLights();
+    updateLights(2);
   }
 
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol,
@@ -229,17 +229,17 @@ void radioSleep() {
 }
 
 void radioTransmit(const int pid) {
-  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN] = {0};
-  //static unsigned long wait_until = 0;
+  static unsigned long wait_until = 0;
+  static bool reset_wait_until = true;
 
   // TODO: what if time_now wraps?
   static unsigned long time_now = 0;
 
-  updateLights(); // we update lights here because checking the time can be slow
+  updateLights(3); // we update lights here because checking the time can be slow
 
   getGPSTime(&time_now);
 
-  updateLights(); // we update lights here because sending can be slow
+  updateLights(4); // we update lights here because sending can be slow
 
   // if tx_compass_location is false, we transmit a pin id instead of a friend location. i don't love this pattern
   // TODO: what happens when we want to tx other things?
@@ -259,39 +259,41 @@ void radioTransmit(const int pid) {
       }
     }
 
-    updateLights(); // we update lights here because sending can be slow
+    updateLights(5); // we update lights here because sending can be slow
 
     if (tx_compass_location) {
       // we don't have any queued messages and we already transmitted peer updates
       // put the radio to sleep to save power
       // TODO: this takes a finite amount of time to wake. not sure how long tho...
       radioSleep();
-      updateLights(); // we update lights here because sending can be slow
+      updateLights(6); // we update lights here because sending can be slow
       return;
     }
   }
 
-  /*
   if (tx_compass_location and (pid == 0)) {
     // if we are broadcasting the first peer, delay a little bit in case GPS is out of sync and a nearby peer isn't listening yet
 
-    // wait 1/10 of our broadcast time
-    // TODO: i would prefer to return here so we can be more responsive, but i don't know how to set wait_until properly if we do that
-    wait_until = millis() + (broadcast_time_s * 100); // TODO: tune this
-    while (millis() < wait_until) {
-      updateLights();
-      FastLED.delay(loop_delay_ms);
+    if (reset_wait_until) {
+      wait_until = millis() + 200;
+      reset_wait_until = false;
+      return;
     }
+
+    if (millis() < wait_until) {
+      return;
+    }
+
+    reset_wait_until = true;
   }
-  */
+
+  // TODO: if the message is 10 minutes old or older, set message hue to 0 and return instead of transmitting
 
   DEBUG_PRINT(F("Time to transmit data from "));
   DEBUG_PRINT(my_peer_id);
   DEBUG_PRINT(" about ");
   DEBUG_PRINT(pid);
   DEBUG_PRINTLN("...");
-
-  // TODO: if the message is 10 minutes old or older, set message hue to 0 and return instead of transmitting
 
   /*
   // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
@@ -313,10 +315,13 @@ void radioTransmit(const int pid) {
     return; // we will try broadcasting next loop
   }
 
+  // create a buffer for the radio
+  uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
+
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  updateLights(); // we update lights here because sending can be slow
+  updateLights(7); // we update lights here because sending can be slow
 
   if (tx_compass_location) {
     encodeCompassMessage(&ostream, &compass_messages[pid], time_now);
@@ -324,7 +329,7 @@ void radioTransmit(const int pid) {
     encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
   }
 
-  updateLights(); // we update lights here because encoding can be slow
+  updateLights(8); // we update lights here because encoding can be slow
 
   // TODO: bytes_written seems to always be 0, even with a successful encode
   if (!ostream.bytes_written) {
@@ -337,18 +342,34 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(F("Sending "));
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
-
   // TODO: this crashes seemingly randomly before finishing transmission. i think its a coincidence or the bug is above here
   rf95.send(radio_buf, ostream.bytes_written);
 
-  // TODO: BUG! we are still getting stuck here even after adding abort_time!
+  // TODO: BUG! we are still getting stuck here even after adding abort_time! it must be a power issue
+  unsigned long abort_time = millis() + 250; // TODO: tune this
+
   // TODO: updateLights must be doing something naughty
   while (rf95.mode() == RH_RF95_MODE_TX) {
-    updateLights(); // we update lights here because sending can be slow
+    updateLights(9); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
-  }
 
-  DEBUG_PRINT(F("Transmit done. "));
+     // BUG FIX! we got stuck transmitting here. i noticed because power usage stayed at +100mA
+     // TODO: i think there is still a bug here
+     if (millis() > abort_time) {
+       DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
+       abort_time = 0;
+
+       // TODO: what should we do here? reset the radio? break the loop and let it try to continue on?
+       resetRadio(true);
+       break;
+     }
+   }
+
+  if (abort_time == 0) {
+    DEBUG_PRINT(F("Transmit ERR. "));
+  } else {
+    DEBUG_PRINT(F("Transmit done. "));
+  }
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
@@ -360,7 +381,7 @@ void radioTransmit(const int pid) {
     DEBUG_PRINTLN(F("Pin marked as transmitted."));
   }
 
-  updateLights();  // we update lights here because sending can be slow
+  updateLights(10);  // we update lights here because sending can be slow
 
   return;
 }
@@ -396,7 +417,7 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *co
   printSmartCompassLocationMessage(compass_message, false, true);
   signSmartCompassLocationMessage(compass_message, compass_message->message_hash);
 
-  updateLights(); // we update lights here because encoding can be slow
+  updateLights(11); // we update lights here because encoding can be slow
 
   if (!pb_encode(ostream, SmartCompassLocationMessage_fields, compass_message)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
@@ -431,7 +452,7 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
   // TODO: i think this is wrong.
   signSmartCompassPinMessage(&pin_message_tx, pin_message_tx.message_hash);
 
-  updateLights(); // we update lights here because encoding can be slow
+  updateLights(12); // we update lights here because encoding can be slow
 
   if (!pb_encode(ostream, SmartCompassPinMessage_fields, &pin_message_tx)) {
     DEBUG_PRINTLN(F("ERROR ENCODING!"));
@@ -462,15 +483,16 @@ void radioReceive() {
     return;
   }
 
-  updateLights(); // we update lights here because receiving can be slow
+  updateLights(13); // we update lights here because receiving can be slow
 
   DEBUG_PRINT(F("RSSI: "));
+  // TODO: what is the scale for this?
   DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
 
   pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
 
   if (pb_decode(&stream, SmartCompassLocationMessage_fields, &location_message_rx)) {
-    updateLights(); // we update lights here because decoding can be slow
+    updateLights(14); // we update lights here because decoding can be slow
 
     receiveLocationMessage(&location_message_rx);
     return;
@@ -482,7 +504,7 @@ void radioReceive() {
     // TODO: can we simply re-use the stream? do we need to reset or something?
     stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
-      updateLights(); // we update lights here because decoding can be slow
+      updateLights(15); // we update lights here because decoding can be slow
 
       receivePinMessage(&pin_message_rx);
     } else {

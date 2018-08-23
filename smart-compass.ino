@@ -328,7 +328,7 @@ void loop() {
   if (config_setup) {
     gpsReceive();
 
-    updateLights();
+    updateLights(16);
 
     if (GPS.fix) {
       getGPSTime(&gps_time);
@@ -345,8 +345,8 @@ void loop() {
       // END DEBUG
 
       if (broadcasting_peer_id == my_peer_id) {
-        // TODO: trying to figure out where the crash is
-        //radioTransmit(broadcasted_peer_id);
+        // TODO: trying to figure out where the crash is. i think its in here
+        radioTransmit(broadcasted_peer_id);
       } else if (broadcasting_peer_id >= num_peers) {
         // spend 1/2 the time with the radio sleeping
         radioSleep();
@@ -360,10 +360,10 @@ void loop() {
     }
 
     // transmitting can be slow. update lights again just in case
-    updateLights();
+    updateLights(17);
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
-    updateLights();
+    updateLights(18);
   }
 
   // don't sleep too long or you get in the way of radios. keep this less < framerate

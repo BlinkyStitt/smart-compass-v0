@@ -98,18 +98,18 @@ void gpsReceive() {
   compass_messages[my_peer_id].latitude = GPS.latitude_fixed;
   compass_messages[my_peer_id].longitude = GPS.longitude_fixed;
 
-  updateLights();
+  updateLights(19);
 
   // compare lat/long with less precision so we don't log all the time
   // TODO: what units is this? 30 meters?
   if ((abs(last_logged_latitude - GPS.latitude_fixed) < 3000) and (abs(last_logged_longitude - GPS.longitude_fixed) < 3000)) {
     // don't bother saving if the points haven't changed much
-    DEBUG_PRINTLN("GPS unchanged");
+    //DEBUG_PRINTLN("GPS unchanged");
     return;
   }
   // the location has changed by 30 meters or more since we last logged
 
-  updateLights();
+  updateLights(20);
 
   DEBUG_PRINT(F("last_logged_latitude="));
   DEBUG_PRINTLN(last_logged_latitude);
@@ -176,7 +176,7 @@ void gpsReceive() {
   */
 
   // update lights here because logging to GPS can be slow
-  updateLights();
+  updateLights(21);
 
   // calculate magnetic declination in software. the gps chip and library
   // support it with GPS.magvariation but the Ultimate GPS module we are using
@@ -184,11 +184,11 @@ void gpsReceive() {
   g_magnetic_declination = declination_calculator.get_declination(GPS.latitudeDegrees, GPS.longitudeDegrees);
 
   // update lights here because logging to GPS can be slow
-  updateLights();
+  updateLights(22);
 
   // open the SD card
   g_file = SD.open(gps_log_filename, FILE_WRITE);
-  updateLights();
+  updateLights(23);
 
   // if the file opened okay, write to it:
   if (!g_file) {
@@ -197,27 +197,27 @@ void gpsReceive() {
     DEBUG_PRINTLN(gps_log_filename);
     return;
   }
-  updateLights();
+  updateLights(24);
 
   DEBUG_PRINT(F("Logging GPS data... "));
   DEBUG_PRINTLN(gps_log_filename);
-  updateLights();
+  updateLights(25);
 
   g_file.print(compass_messages[my_peer_id].last_updated_at);
   g_file.print(F(","));
-  updateLights();
+  updateLights(26);
 
   g_file.print(GPS.latitudeDegrees, 4);
   g_file.print(F(","));
-  updateLights();
+  updateLights(27);
 
   g_file.print(GPS.longitudeDegrees, 4);
   g_file.print(F(","));
-  updateLights();
+  updateLights(28);
 
   g_file.print(GPS.speed);
   g_file.print(F(","));
-  updateLights();
+  updateLights(29);
 
   g_file.print(GPS.angle);
   g_file.println(F(";"));
@@ -225,13 +225,13 @@ void gpsReceive() {
   // TODO: do we want to log anything else?
 
   // update lights here because logging to GPS can be slow
-  updateLights();
+  updateLights(30);
 
   // close the file:
   g_file.close();
 
   // update lights here because logging to GPS can be slow
-  updateLights();
+  updateLights(31);
 
   DEBUG_PRINTLN(F("Logging done."));
 
