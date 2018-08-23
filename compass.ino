@@ -352,7 +352,7 @@ void setCompassPin(int pin_id, CHSV *color, long latitude, long longitude) {
   compass_pins[pin_id].longitude = longitude;
 
   // TODO: not sure about this. maybe only set if we aren't given a time?
-  compass_pins[pin_id].last_updated_at = getGPSTime();
+  getGPSTime(&compass_pins[pin_id].last_updated_at);
 
   // TODO: sort an index of compass_pins by distance?
 }

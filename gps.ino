@@ -43,7 +43,7 @@ void setupGPS() {
   DEBUG_PRINTLN(F("done."));
 }
 
-unsigned long getGPSTime() {
+void getGPSTime(unsigned long *t) {
   // according to the docs, the GPS has an RTC so if you have a fix with the battery once, you'll always be able to
   // check the time
 
@@ -52,21 +52,18 @@ unsigned long getGPSTime() {
   // TODO: this jumps around a bit since it is updated when gps parsing happens
 
   // 2018 "epoch"
-  unsigned long t = (GPS.year - 2018);
+  *t = (GPS.year - 2018);
 
-  t = (t * 12) + GPS.month;
+  *t = (*t * 12) + GPS.month;
 
   // not every month has 31 days, but thats fine. we just don't want to roll back last_updated_at
-  t = (t * 31) + GPS.day;
+  *t = (*t * 31) + GPS.day;
 
-  t = (t * 24) + GPS.hour;
+  *t = (*t * 24) + GPS.hour;
 
-  t = (t * 60) + GPS.minute;
+  *t = (*t * 60) + GPS.minute;
 
-  t = (t * 60) + GPS.seconds;
-
-  // TODO: set a variable instead of returning one?
-  return t;
+  *t = (*t * 60) + GPS.seconds;
 }
 
 void gpsReceive() {
@@ -93,7 +90,7 @@ void gpsReceive() {
     return;
   }
 
-  compass_messages[my_peer_id].last_updated_at = getGPSTime(); // TODO: this is seconds. should we use milliseconds?
+  getGPSTime(&compass_messages[my_peer_id].last_updated_at); // TODO: this is seconds. should we use milliseconds?
 
   // A value in decimal degrees to 5 decimal places is precise to 1.1132 meter at the equator
   // Accuracy to 5 decimal places with commercial GPS units can only be achieved with differential correction.
@@ -201,15 +198,6 @@ void gpsReceive() {
     return;
   }
   updateLights();
-
-  // TODO: why is this happening?
-  if (compass_messages[my_peer_id].last_updated_at != getGPSTime()) {
-    DEBUG_PRINT(F("ERROR! compass_messages corrupted! "));
-    DEBUG_PRINT(compass_messages[my_peer_id].last_updated_at);
-    DEBUG_PRINT(" != ");
-    DEBUG_PRINTLN(getGPSTime());
-    return;
-  }
 
   DEBUG_PRINT(F("Logging GPS data... "));
   DEBUG_PRINTLN(gps_log_filename);

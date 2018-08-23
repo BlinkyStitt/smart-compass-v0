@@ -232,10 +232,12 @@ void radioTransmit(const int pid) {
   static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN] = {0};
   //static unsigned long wait_until = 0;
 
+  // TODO: what if time_now wraps?
+  static unsigned long time_now = 0;
+
   updateLights(); // we update lights here because checking the time can be slow
 
-  // TODO: what if time_now wraps?
-  unsigned long time_now = getGPSTime();
+  getGPSTime(&time_now);
 
   updateLights(); // we update lights here because sending can be slow
 
@@ -287,8 +289,6 @@ void radioTransmit(const int pid) {
   DEBUG_PRINT(my_peer_id);
   DEBUG_PRINT(" about ");
   DEBUG_PRINT(pid);
-  DEBUG_PRINT(" ");
-  DEBUG_PRINT(getGPSTime());
   DEBUG_PRINTLN("...");
 
   // TODO: if the message is 10 minutes old or older, set message hue to 0 and return instead of transmitting
@@ -531,7 +531,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   if (message->tx_peer_id < my_peer_id) {
     if (abs(message->tx_ms - network_ms) >= g_network_offset) {
       // TODO: flash lights on the status bar if there is a large difference?
-      DEBUG_PRINTLN(getGPSTime());
       DEBUG_PRINT(F("Updating network_ms! "));
       DEBUG_PRINT(network_ms);
       DEBUG_PRINT(F(" -> "));
