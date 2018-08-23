@@ -19,6 +19,7 @@
 #include <pb_encode.h>
 
 // it isn't legal for us to encrypt on amateur radio, but we need some sort of security so we sign our messages
+// TODO: i think the code using this is broken and is causing crashes
 #include <BLAKE2s.h>
 
 #include "smart-compass.pb.h"
@@ -322,6 +323,7 @@ void loop() {
   // TODO: then double the number of time segments so we can spend half the time sleeping
   static const unsigned int time_segments = num_peers * num_peers;
   static unsigned int time_segment_id, broadcasting_peer_id, broadcasted_peer_id;
+  static unsigned long gps_time = 0;
 
   if (config_setup) {
     gpsReceive();
@@ -329,7 +331,9 @@ void loop() {
     updateLights();
 
     if (GPS.fix) {
-      time_segment_id = (getGPSTime() / broadcast_time_s) % time_segments;
+      getGPSTime(&gps_time);
+
+      time_segment_id = (gps_time / broadcast_time_s) % time_segments;
 
       broadcasting_peer_id = time_segment_id / num_peers;
       broadcasted_peer_id = time_segment_id % num_peers;
