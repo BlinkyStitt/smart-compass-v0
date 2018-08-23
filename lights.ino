@@ -6,6 +6,7 @@ int saved_pin_id = -1; // when a pin is modified, this is updated to match the i
 // TODO: i don't love this pattern
 CompassMode next_compass_mode = COMPASS_FRIENDS;
 
+// TODO: split this into two functions. one that can run before config, and one that can run after. run the former before serial connects
 void setupLights() {
   DEBUG_PRINT("Setting up lights... ");
 
