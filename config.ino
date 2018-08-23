@@ -138,7 +138,7 @@ void setupConfig() {
   DEBUG_PRINT(F("broadcast_time_s: "));
   if (!broadcast_time_s) {
     DEBUG_PRINT(F("(default) "));
-    broadcast_time_s = 3;
+    broadcast_time_s = 2;   // TODO: increase this when done debugging
   }
   DEBUG_PRINTLN(broadcast_time_s);
 

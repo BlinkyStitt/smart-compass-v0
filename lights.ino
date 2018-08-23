@@ -181,8 +181,8 @@ void updateLightsForLoading() {
 }
 
 // TODO: pointers here?
-void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode configure_mode,
-                                Orientation last_orientation, Orientation current_orientation) {
+void updateLightsForConfiguring(const CompassMode *compass_mode, const CompassMode *configure_mode,
+                                const Orientation *last_orientation, const Orientation *current_orientation) {
   static elapsedMillis configure_ms = 0;
   static CHSV fill_color;
   static int pin_id = -1, num_fill = 0;
@@ -198,7 +198,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
     configure_ms = 0;
     pin_id = -1;
 
-    switch (configure_mode) {
+    switch (*configure_mode) {
     case COMPASS_PLACES:
       last_pin_color_id = 0;
       break;
@@ -218,9 +218,9 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
     num_fill = inner_ring_start + constrain(map(configure_ms, 0, 4000, 0, inner_ring_size), 0, inner_ring_size);
   } else {
     // the compass has been held in configure mode for 4 seconds and the inner ring has filled completely
-    next_compass_mode = configure_mode; // TODO: pass by reference instead of globals?
+    next_compass_mode = *configure_mode;
 
-    if (configure_mode != COMPASS_PLACES) {
+    if (*configure_mode != COMPASS_PLACES) {
       // only COMPASS_PLACES lets you save locations
       // don't do anything with the outer ring. just leave the inner filled
       num_fill = inner_ring_end;
@@ -264,7 +264,7 @@ void updateLightsForConfiguring(const CompassMode compass_mode, CompassMode conf
 }
 
 // TODO: change this to take an argument so we can (while debugging) print who the caller is
-void updateLights() {
+void updateLights(int debug_int) {
   static Orientation last_orientation = ORIENTED_PORTRAIT;
   static Orientation current_orientation;
   static CompassMode compass_mode = COMPASS_FRIENDS;
@@ -329,10 +329,14 @@ void updateLights() {
       flashlight();
       break;
     case ORIENTED_USB_DOWN:
-      updateLightsForConfiguring(compass_mode, COMPASS_PLACES, last_orientation, current_orientation);
+      // TODO: re-enable this once i figure out pointers
+      //updateLightsForConfiguring(&compass_mode, &COMPASS_PLACES, &last_orientation, &current_orientation);
+      updateLightsForHanging();
       break;
     case ORIENTED_USB_UP:
-      updateLightsForConfiguring(compass_mode, COMPASS_FRIENDS, last_orientation, current_orientation);
+      // TODO: re-enable this once i figure out pointers
+      //updateLightsForConfiguring(&compass_mode, &COMPASS_FRIENDS, &last_orientation, &current_orientation);
+      updateLightsForHanging();
       break;
     case ORIENTED_PORTRAIT:
       // pretty patterns
@@ -352,6 +356,10 @@ void updateLights() {
     // TODO: i doubt this is related to the crash at all, but i'm stumped    /*
     #ifdef DEBUG
         // debugging lights
+
+        DEBUG_PRINT(debug_int);
+        DEBUG_PRINT(F(" "));
+
         int network_ms_wrapped = network_ms % 10000;
         if (network_ms_wrapped < 1000) {
           DEBUG_PRINT(F(" "));
@@ -409,6 +417,9 @@ void updateLights() {
 
         DEBUG_PRINT(" | ");
         freeMemory(false);
+
+        DEBUG_PRINT(" | ms=");
+        DEBUG_PRINT(millis());
 
         DEBUG_PRINT(F(" | ms since last frame="));
         DEBUG_PRINTLN(millis() - last_frame);
