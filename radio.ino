@@ -223,7 +223,7 @@ void printSmartCompassLocationMessage(SmartCompassLocationMessage *message, bool
 void printSmartCompassPinMessage(SmartCompassPinMessage *message, bool print_hash = false, bool eol = false) {}
 #endif
 
-void radioSleep() {
+inline void radioSleep() {
   // TODO: it doesn't seem to be waking up from sleep right. transmit keeps getting stuck
   //rf95.sleep();
 }
@@ -247,10 +247,11 @@ void radioTransmit(const int pid) {
   int tx_pin_id = -1;
 
   // TODO: i think the for loop in this is bugged
-  /*
   if (time_now - last_transmitted[pid] < broadcast_time_s) {
     // we already transmitted for this peer recently. don't broadcast it again
 
+    // TODO: the crash might be related to this. i'm not sure though. now i'm thinking there is probably more than one
+    /*
     // check if there are any pins to transmit
     for (int i = next_compass_pin - 1; i >= 0; i--) {
       // checking against hue like this stops us from using true red (which is good since that's already used for north)
@@ -261,6 +262,7 @@ void radioTransmit(const int pid) {
         break;
       }
     }
+    */
 
     updateLights(5); // we update lights here because sending can be slow
 
@@ -273,7 +275,6 @@ void radioTransmit(const int pid) {
       return;
     }
   }
-  */
 
   if (tx_compass_location and (pid == 0)) {
     // if we are broadcasting the first peer, delay a little bit in case GPS is out of sync and a nearby peer isn't listening yet
