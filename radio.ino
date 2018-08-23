@@ -245,6 +245,9 @@ void radioTransmit(const int pid) {
   // TODO: what happens when we want to tx other things?
   bool tx_compass_location = true;
   int tx_pin_id = -1;
+
+  // TODO: i think the for loop in this is bugged
+  /*
   if (time_now - last_transmitted[pid] < broadcast_time_s) {
     // we already transmitted for this peer recently. don't broadcast it again
 
@@ -270,6 +273,7 @@ void radioTransmit(const int pid) {
       return;
     }
   }
+  */
 
   if (tx_compass_location and (pid == 0)) {
     // if we are broadcasting the first peer, delay a little bit in case GPS is out of sync and a nearby peer isn't listening yet
@@ -348,18 +352,16 @@ void radioTransmit(const int pid) {
   // TODO: BUG! we are still getting stuck here even after adding abort_time! it must be a power issue
   unsigned long abort_time = millis() + 250; // TODO: tune this
 
-  // TODO: updateLights must be doing something naughty
   while (rf95.mode() == RH_RF95_MODE_TX) {
     updateLights(9); // we update lights here because sending can be slow
     FastLED.delay(loop_delay_ms);
 
      // BUG FIX! we got stuck transmitting here. i noticed because power usage stayed at +100mA
-     // TODO: i think there is still a bug here
      if (millis() > abort_time) {
        DEBUG_PRINTLN(F("ERR! transmit got stuck!"));
        abort_time = 0;
 
-       // TODO: what should we do here? reset the radio? break the loop and let it try to continue on?
+       // does this work?
        resetRadio(true);
        break;
      }
