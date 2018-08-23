@@ -63,7 +63,7 @@ void updateCompassPoints(CompassMode *compass_mode) {
   next_outer_compass_point[0]++;
 
   // add low battery indicator to the status bar
-  switch (checkBattery()) {
+  switch (g_battery_status) {
   case BATTERY_DEAD:
   case BATTERY_LOW:
     status_bar[next_status_bar_id].hue = 0;
