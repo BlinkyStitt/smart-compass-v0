@@ -20,10 +20,11 @@ void updateLightsForClock() {
     adjusted_minute = GPS.minute + adjusted_seconds / 60.0;
 
     // we include the minute_led_ids here in case of fractional timezones. we will likely drop the minute_led_id
+    // hours start at 1, not 0!
     adjusted_hour = GPS.hour + time_zone_offset + adjusted_minute / 60.0;
-    if (adjusted_hour < 0) {
+    if (adjusted_hour <= 0) {
       adjusted_hour += 12;
-    } else if (adjusted_hour >= 12) {
+    } else if (adjusted_hour > 12) {
       adjusted_hour -= 12;
     }
   }
@@ -38,40 +39,40 @@ void updateLightsForClock() {
   // TODO: is there a formula for this?
   int hour_led_id = inner_ring_start;
   switch (adjusted_hour) {
-  case 0:
+  case 1:
     hour_led_id += 8;
     break;
-  case 1:
+  case 2:
     hour_led_id += 7;
     break;
-  case 2:
+  case 3:
     hour_led_id += 5;
     break;
-  case 3:
+  case 4:
     hour_led_id += 4;
     break;
-  case 4:
+  case 5:
     hour_led_id += 3;
     break;
-  case 5:
+  case 6:
     hour_led_id += 1;
     break;
-  case 6:
+  case 7:
     hour_led_id += 0;
     break;
-  case 7:
+  case 8:
     hour_led_id += 15;
     break;
-  case 8:
+  case 9:
     hour_led_id += 13;
     break;
-  case 9:
+  case 10:
     hour_led_id += 12;
     break;
-  case 10:
+  case 11:
     hour_led_id += 11;
     break;
-  case 11:
+  case 12:
     hour_led_id += 9;
     break;
   }
