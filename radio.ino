@@ -337,7 +337,7 @@ void radioTransmit(const int pid) {
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  //updateLights(7); // we update lights here because sending can be slow
+  updateLights(7); // we update lights here because sending can be slow
 
   // TODO: i think this is wrong and this is causing a crash during send, but now that i've seen a crash just sending a bunch of As i don't know
   if (tx_compass_location) {
@@ -346,7 +346,7 @@ void radioTransmit(const int pid) {
     encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
   }
 
-  //updateLights(8); // we update lights here because encoding can be slow
+  // we used to update lights here because encoding can be slow, but we want minimal time between encode and tx
 
   if (!ostream.bytes_written) {
     DEBUG_PRINTLN(F("Skipping transmit."));
@@ -372,7 +372,8 @@ void radioTransmit(const int pid) {
 
   while (rf95.mode() == RH_RF95_MODE_TX) {
 
-    // TODO: we are crashing while transmitting. abort_time isn't helping this crash (but it does fix a different one!). this must be a power issue.
+    // TODO: we are crashing while transmitting. abort_time isn't helping this crash (but it does fix a different one!)
+    // TODO: this must be a power issue involving something in updateLights. Current theory is checking the orientation breaks the radio
     updateLights(9); // we update lights here because sending can be slow
 
     FastLED.delay(loop_delay_ms);
@@ -493,8 +494,6 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
 // TODO: return a boolean and then radioTransmit could do `if (radioReceive()) { abort tx and wait for next loop }`
 // TODO: I've had it crash here!
 void radioReceive() {
-  // TODO: even turning off the lights here it crashes sometimes. lets try just leaving them off entirely
-
   if (!rf95.available()) {
     // no packets to process
     return;
@@ -513,11 +512,11 @@ void radioReceive() {
 
   DEBUG_PRINTLN(F("DONE!"));
 
-  updateLights(13); // we update lights here because receiving can be slow
-
   DEBUG_PRINT(F("RSSI: "));
   // TODO: what is the scale for this?
   DEBUG_PRINTLN2(rf95.lastRssi(), DEC);
+
+  updateLights(13); // we update lights here because receiving can be slow
 
   pb_istream_t stream = pb_istream_from_buffer(radio_buf, radio_buf_len);
 
@@ -565,44 +564,24 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   signSmartCompassLocationMessage(message, calculated_hash);
 
   if (memcmp(&calculated_hash, &message->message_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINTLN(F("Message hash an invalid hash!"));
+    DEBUG_PRINTLN(F("Message has an invalid hash!"));
     // TODO: log this to the SD? I doubt we will ever actually see this, but security is a good idea, right?
     // TODO: flash lights on the status bar?
     return;
   }
   printSmartCompassLocationMessage(message, true, true);
 
-  if (message->tx_peer_id >= num_peers) {
-    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
-    DEBUG_PRINT(message->tx_peer_id);
-    DEBUG_PRINT(F(" >= "));
-    DEBUG_PRINTLN(num_peers);
-    return;
-  }
-
-  if (message->peer_id >= num_peers) {
-    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
-    DEBUG_PRINT(message->peer_id);
-    DEBUG_PRINT(F(" >= "));
-    DEBUG_PRINTLN(num_peers);
-    return;
-  }
-
-  if (message->tx_peer_id == my_peer_id) {
-    // TODO: flash lights on the status bar?
-    DEBUG_PRINT(F("ERROR! Peer id collision!"));
-    DEBUG_PRINTLN(my_peer_id);
-    return;
-  }
-
+  // do this check as quick as possible so that the delay checking network_ms is as small as possible
   if (message->tx_peer_id < my_peer_id) {
+    // if tx_peer_id is smaller than our id, use their network_ms
+    // TODO: more complicated systems could be designed for syncing network_ms, but this is quick and easy
     if (abs(message->tx_ms - network_ms) >= g_network_offset) {
       // TODO: flash lights on the status bar if there is a large difference?
       DEBUG_PRINT(F("Updating network_ms! "));
       DEBUG_PRINT(network_ms);
       DEBUG_PRINT(F(" -> "));
 
-      // TODO: do something to tweak g_network_offset to be based on seen offset
+      // TODO: do something to tweak g_network_offset to be based on seen offset?
 
       network_ms = message->tx_ms + g_network_offset;
 
@@ -617,6 +596,17 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
       DEBUG_PRINT(F(" + "));
       DEBUG_PRINTLN(g_network_offset);
     }
+  } else if (message->tx_peer_id == my_peer_id) {
+    // TODO: flash lights on the status bar?
+    DEBUG_PRINT(F("ERROR! Peer id collision!"));
+    DEBUG_PRINTLN(my_peer_id);
+    return;
+  } else if (message->tx_peer_id >= num_peers) {
+    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
+    DEBUG_PRINT(message->tx_peer_id);
+    DEBUG_PRINT(F(" >= "));
+    DEBUG_PRINTLN(num_peers);
+    return;
   } else {
     DEBUG_PRINT(F("Leaving network_ms alone! TX peer is junior. "));
     DEBUG_PRINT(network_ms);
@@ -626,6 +616,15 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
     DEBUG_PRINT(F(" + "));
     DEBUG_PRINTLN(g_network_offset);
   }
+
+  if (message->peer_id >= num_peers) {
+    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
+    DEBUG_PRINT(message->peer_id);
+    DEBUG_PRINT(F(" >= "));
+    DEBUG_PRINTLN(num_peers);
+    return;
+  }
+
 
   if (message->peer_id == my_peer_id) {
     DEBUG_PRINTLN(F("Ignoring stats about myself."));

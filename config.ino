@@ -146,7 +146,7 @@ void setupConfig() {
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
     // TODO: different brightness for night and day
-    default_brightness = 12; // TODO: tune this
+    default_brightness = 32; // TODO: tune this
   }
   DEBUG_PRINTLN(default_brightness);
 
@@ -238,9 +238,6 @@ void setupConfig() {
 
   compass_messages[my_peer_id].hue = my_hue;
   compass_messages[my_peer_id].saturation = my_saturation;
-
-  DEBUG_PRINT(F("compass message init... Hue="));
-  DEBUG_PRINTLN(compass_messages[my_peer_id].hue);
 
   memcpy(pin_message_tx.network_hash, my_network_hash, NETWORK_HASH_SIZE);
   pin_message_tx.tx_peer_id = my_peer_id;

@@ -320,6 +320,7 @@ EDB db(&writer, &reader);
 unsigned int g_time_segment_id = 99;
 unsigned int g_broadcasting_peer_id = 99;
 unsigned int g_broadcasted_peer_id = 99;
+Orientation g_current_orientation;
 
 void loop() {
   // each peer needs enough time to broadcast data for every other peer.
@@ -329,6 +330,42 @@ void loop() {
   static unsigned long gps_time = 0;
 
   if (config_setup) {
+    // decrease overall brightness if battery is low
+    // TODO: how often should we do this?
+    EVERY_N_SECONDS(300) {
+      checkBattery(&g_battery_status);
+
+      // TODO: only do this if the battery level has changed. (unless callign setBrightness is cheap?)
+      // TODO: set a floor on these
+      switch (g_battery_status) {
+      case BATTERY_DEAD:
+        // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
+        // TODO: maybe add a red led to a strip of 8 LEDs?
+        FastLED.setBrightness(default_brightness * .5);
+        break;
+      case BATTERY_LOW:
+        FastLED.setBrightness(default_brightness * .75);
+        break;
+      case BATTERY_OK:
+        FastLED.setBrightness(default_brightness * .90);
+        break;
+      case BATTERY_FULL:
+        // TODO: different light pattern instead?
+        FastLED.setBrightness(default_brightness);
+        break;
+      }
+    }
+
+    /*
+    EVERY_N_SECONDS(10) {
+      // TODO: print peer location data
+    }
+    */
+
+    EVERY_N_MILLISECONDS(1000 / frames_per_second) {
+      getOrientation(&g_current_orientation);
+    }
+
     gpsReceive();
 
     updateLights(16);
@@ -363,7 +400,7 @@ void loop() {
     }
 
     // transmitting can be slow. update lights again just in case
-    //updateLights(17);
+    updateLights(17);
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights(18);
