@@ -146,8 +146,14 @@ void updateLightsForCompass(CompassMode *compass_mode) {
     //     DEBUG_PRINT(" colors for outer light #");
     //     DEBUG_PRINTLN(i);
 
-    // TODO: in order to make the network lights patter nprettier, i shifted the outer ring over one. compensate for that here
-    leds[outer_ring_start + i] = outer_compass_points[i][j];
+    // in order to make the network lights pattern prettier, i shifted the outer ring over one. compensate for that here
+    int i_offset = i - 1;
+    if (i_offset < 0) {
+      // wrap around
+      i_offset += outer_ring_size;
+    }
+
+    leds[outer_ring_start + i_offset] = outer_compass_points[i][j];
   }
 }
 
@@ -308,9 +314,7 @@ void updateLights(int debug_int) {
 
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    // TODO: debugging
-    updateLightsForHanging();
-    /*
+    // TODO: maybe the bug was actually below here. i hard coded network lights and didn't get a crash
     getOrientation(&current_orientation);
     switch (current_orientation) {
     case ORIENTED_UP:
@@ -361,7 +365,7 @@ void updateLights(int debug_int) {
     }
 
     last_orientation = current_orientation;
-    */
+    // TODO: maybe the bug was actually above here
 
     // TODO: i doubt this is related to the crash at all, but i'm stumped    /*
     #ifdef DEBUG
