@@ -21,6 +21,8 @@ void setupRadio() {
 }
 
 void resetRadio(bool with_lights) {
+  DEBUG_PRINTLN("Resetting the Radio...");
+
   // manual reset
   digitalWrite(RFM95_RST, LOW);
   FastLED.delay(10);
@@ -53,7 +55,7 @@ void resetRadio(bool with_lights) {
       ;
   }
   DEBUG_PRINT(F("Freq: "));
-  DEBUG_PRINT(RADIO_FREQ);
+  DEBUG_PRINTLN(RADIO_FREQ);
 
   // The default transmitter power is 13dBm, using PA_BOOST.
   rf95.setTxPower(constrain(radio_power, 5, 23), false);
@@ -246,11 +248,11 @@ void radioTransmit(const int pid) {
   bool tx_compass_location = true;
   int tx_pin_id = -1;
 
-  // TODO: i think the for loop in this is bugged
+  // TODO: i distabled this while testing to send out a ton of transmission really fast
   if (time_now - last_transmitted[pid] < broadcast_time_s) {
     // we already transmitted for this peer recently. don't broadcast it again
 
-    // TODO: the crash might be related to this. i'm not sure though. now i'm thinking there is probably more than one
+    // TODO: a crash might be related to this. i'm not sure though. now i'm thinking there is probably more than one
     /*
     // check if there are any pins to transmit
     for (int i = next_compass_pin - 1; i >= 0; i--) {
@@ -263,7 +265,6 @@ void radioTransmit(const int pid) {
       }
     }
     */
-
     updateLights(5); // we update lights here because sending can be slow
 
     if (tx_compass_location) {
@@ -280,6 +281,7 @@ void radioTransmit(const int pid) {
     // if we are broadcasting the first peer, delay a little bit in case GPS is out of sync and a nearby peer isn't listening yet
 
     if (reset_wait_until) {
+      // TODO: make this 10% of our transmit time?
       wait_until = millis() + 200;
       reset_wait_until = false;
       return;
@@ -320,41 +322,59 @@ void radioTransmit(const int pid) {
     return; // we will try broadcasting next loop
   }
 
+  // TODO: lets try turning off the lights here and seeing if we can get it to crash.
+  // turn off all lights
+  // TODO: this is jarring to look at. instead, fade all to black? or set brightness to 10%?
+  // TODO: and make sure to set the brightness back to the approriate level for the battery charge when done transmitting
+  // TODO: or maybe we should instead be calling setPower
+  //fill_solid(leds, num_LEDs, CRGB::Black);
+  //FastLED.show();
+  //TODO? FastLED.setMaxPowerInVoltsAndMilliamps(checkBatteryVoltage(), 10);
+
   // create a buffer for the radio
   uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
 
   // Create a protobuf stream that will write to our buffer
   pb_ostream_t ostream = pb_ostream_from_buffer(radio_buf, sizeof(radio_buf));
 
-  updateLights(7); // we update lights here because sending can be slow
+  //updateLights(7); // we update lights here because sending can be slow
 
+  // TODO: i think this is wrong and this is causing a crash during send, but now that i've seen a crash just sending a bunch of As i don't know
   if (tx_compass_location) {
     encodeCompassMessage(&ostream, &compass_messages[pid], time_now);
   } else {
     encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
   }
 
-  updateLights(8); // we update lights here because encoding can be slow
+  //updateLights(8); // we update lights here because encoding can be slow
 
-  // TODO: bytes_written seems to always be 0, even with a successful encode
   if (!ostream.bytes_written) {
     DEBUG_PRINTLN(F("Skipping transmit."));
     return;
   }
 
   // sending will wait for any previous send with waitPacketSent(), but we want to dither LEDs so wait now
-  // TODO: time it (tho it seems fast enough)
   DEBUG_PRINT(F("Sending "));
   DEBUG_PRINT(ostream.bytes_written);
   DEBUG_PRINTLN(F(" bytes... "));
+
+  DEBUG_PRINT(F("TX #"));
+  DEBUG_PRINTLN(g_packets_sent);
+
   // TODO: this crashes seemingly randomly before finishing transmission. i think its a coincidence or the bug is above here
+  // maybe the bug is the buffer getting stomped on somehow and the radio not liking an invalid send?
+  // TODO: disabled send and it kept working for >14 minutes without crashing. bug is here
   rf95.send(radio_buf, ostream.bytes_written);
 
-  // TODO: BUG! we are still getting stuck here even after adding abort_time! it must be a power issue
+  g_packets_sent++;
+
   unsigned long abort_time = millis() + 250; // TODO: tune this
 
   while (rf95.mode() == RH_RF95_MODE_TX) {
+
+    // TODO: we are crashing while transmitting. abort_time isn't helping this crash (but it does fix a different one!). this must be a power issue.
     updateLights(9); // we update lights here because sending can be slow
+
     FastLED.delay(loop_delay_ms);
 
      // BUG FIX! we got stuck transmitting here. i noticed because power usage stayed at +100mA
@@ -369,10 +389,12 @@ void radioTransmit(const int pid) {
    }
 
   if (abort_time == 0) {
-    DEBUG_PRINT(F("Transmit ERR. "));
+    DEBUG_PRINTLN(F("Transmit ERR. "));
   } else {
-    DEBUG_PRINT(F("Transmit done. "));
+    DEBUG_PRINTLN(F("Transmit done. "));
   }
+
+  // TODO: increase led power limits after decreasing them above
 
   if (tx_compass_location) {
     last_transmitted[pid] = time_now;
@@ -391,7 +413,7 @@ void radioTransmit(const int pid) {
 
 // sign compass_message and send it to protobuf output stream
 // returns the number of bytes written to the buffer
-// TODO: should compass_message be passed by reference, too?
+// TODO: something about this is broken but i don't know if its in the crypto or in the pb_encode
 void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *compass_message, unsigned long time_now) {
   // TODO: checking hue like this means no-one can pick true red as their hue
   if (!compass_message->hue or (compass_message->peer_id == my_peer_id and !GPS.fix)) {
@@ -435,7 +457,7 @@ void encodeCompassMessage(pb_ostream_t *ostream, SmartCompassLocationMessage *co
 
 // copy compass_pin values into pin_message_tx, sign it, and then send pin_message_tx to protobuf output stream
 // returns the number of bytes written to the buffer
-// TODO: should compass_pin be passed by reference, too?
+// TODO: something about this is broken
 void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned long time_now) {
   if (compass_pin->hue == 0) {
     return;
@@ -469,22 +491,27 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
 }
 
 // TODO: return a boolean and then radioTransmit could do `if (radioReceive()) { abort tx and wait for next loop }`
+// TODO: I've had it crash here!
 void radioReceive() {
-  static uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
-  static uint8_t radio_buf_len;
+  // TODO: even turning off the lights here it crashes sometimes. lets try just leaving them off entirely
 
   if (!rf95.available()) {
     // no packets to process
     return;
   }
 
-  radio_buf_len = RH_RF95_MAX_MESSAGE_LEN; // reset this to max length otherwise it won't receive the full message!
+  uint8_t radio_buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t radio_buf_len = RH_RF95_MAX_MESSAGE_LEN;  // start this at max length so it will read the full message
+
+  DEBUG_PRINT(F("Receiving... "));
 
   // Should be a reply message for us now
   if (!rf95.recv(radio_buf, &radio_buf_len)) {
-    DEBUG_PRINTLN(F("Receive failed"));
+    DEBUG_PRINTLN(F("FAILED!"));
     return;
   }
+
+  DEBUG_PRINTLN(F("DONE!"));
 
   updateLights(13); // we update lights here because receiving can be slow
 
@@ -498,8 +525,9 @@ void radioReceive() {
     updateLights(14); // we update lights here because decoding can be slow
 
     receiveLocationMessage(&location_message_rx);
-    return;
   } else {
+    // TODO: re-enable this once other things are working
+    /*
     DEBUG_PRINT(F("Decoding as location message failed: "));
     DEBUG_PRINTLN(PB_GET_ERROR(&stream));
 
@@ -509,21 +537,20 @@ void radioReceive() {
     if (pb_decode(&stream, SmartCompassPinMessage_fields, &pin_message_rx)) {
       updateLights(15); // we update lights here because decoding can be slow
 
-      receivePinMessage(&pin_message_rx);
+       receivePinMessage(&pin_message_rx);
     } else {
       DEBUG_PRINT(F("Decoding as pin message failed: "));
       DEBUG_PRINTLN(PB_GET_ERROR(&stream));
     }
 
     return;
+    */
   }
 }
 
 void receiveLocationMessage(SmartCompassLocationMessage *message) {
-  static uint8_t calculated_hash[NETWORK_HASH_SIZE];
-
   if (memcmp(&message->network_hash, &my_network_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINT(F("Message is for another network: "));
+    DEBUG_PRINT(F("Location message is for another network: "));
     DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
     DEBUG_PRINT(F(" != "));
     DEBUG_HEX8(my_network_hash, NETWORK_HASH_SIZE, true);
@@ -533,7 +560,8 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
     return;
   }
 
-  // TODO: i think this is wrong. i think we need a & or *
+  DEBUG_PRINTLN(F("Checking hash..."));
+  uint8_t calculated_hash[NETWORK_HASH_SIZE];
   signSmartCompassLocationMessage(message, calculated_hash);
 
   if (memcmp(&calculated_hash, &message->message_hash, NETWORK_HASH_SIZE) != 0) {
@@ -542,8 +570,23 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
     // TODO: flash lights on the status bar?
     return;
   }
-
   printSmartCompassLocationMessage(message, true, true);
+
+  if (message->tx_peer_id >= num_peers) {
+    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
+    DEBUG_PRINT(message->tx_peer_id);
+    DEBUG_PRINT(F(" >= "));
+    DEBUG_PRINTLN(num_peers);
+    return;
+  }
+
+  if (message->peer_id >= num_peers) {
+    DEBUG_PRINT(F("ERROR! Peer num mismatch!"));
+    DEBUG_PRINT(message->peer_id);
+    DEBUG_PRINT(F(" >= "));
+    DEBUG_PRINTLN(num_peers);
+    return;
+  }
 
   if (message->tx_peer_id == my_peer_id) {
     // TODO: flash lights on the status bar?
@@ -552,7 +595,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
     return;
   }
 
-  // TODO: this is drifting faster than i was hoping it would. plus the latency from the radio and its hard to keep these in sync
   if (message->tx_peer_id < my_peer_id) {
     if (abs(message->tx_ms - network_ms) >= g_network_offset) {
       // TODO: flash lights on the status bar if there is a large difference?
@@ -560,7 +602,7 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
       DEBUG_PRINT(network_ms);
       DEBUG_PRINT(F(" -> "));
 
-      // TODO: add difference between message tx time and our local clock time?
+      // TODO: do something to tweak g_network_offset to be based on seen offset
 
       network_ms = message->tx_ms + g_network_offset;
 
@@ -598,18 +640,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
   }
 
   // TODO: if message is older than 10 minutes, ignore it
-
-  /*
-  // sync to the lowest peer id's time
-  // TODO: make this work. somehow time got set to way in the future
-  // TODO: only do this if there is drift?
-  // TODO: make sure this works well for all cases
-  //if (message.peer_id < my_peer_id) {
-  if (timeStatus() == timeNotSet) {
-    setTime(0, 0, 0, 0, 0, 0);
-    adjustTime(message.tx_time);
-  }
-  */
 
   for (int i = message->num_pins + 1; i < next_compass_pin; i++) {
     // this peer hasn't heard some pins. re-transmit them
@@ -650,7 +680,7 @@ void receivePinMessage(SmartCompassPinMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
   if (memcmp(&message->network_hash, &my_network_hash, NETWORK_HASH_SIZE) != 0) {
-    DEBUG_PRINT(F("Message is for another network: "));
+    DEBUG_PRINT(F("Pin message is for another network: "));
     DEBUG_HEX8(message->network_hash, NETWORK_HASH_SIZE, false);
     DEBUG_PRINT(F(" != "));
     DEBUG_HEX8(my_network_hash, NETWORK_HASH_SIZE, true);
@@ -660,6 +690,7 @@ void receivePinMessage(SmartCompassPinMessage *message) {
     return;
   }
 
+  DEBUG_PRINTLN(F("Received message for our network. Checking signature..."));
   signSmartCompassPinMessage(message, calculated_hash);
 
   if (memcmp(&calculated_hash, &message->message_hash, NETWORK_HASH_SIZE) != 0) {
