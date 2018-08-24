@@ -494,6 +494,8 @@ void encodePinMessage(pb_ostream_t *ostream, CompassPin *compass_pin, unsigned l
 // TODO: return a boolean and then radioTransmit could do `if (radioReceive()) { abort tx and wait for next loop }`
 // TODO: I've had it crash here!
 void radioReceive() {
+  // TODO: if it crashes here even after dropping power, i'm not sure what we should do.
+
   if (!rf95.available()) {
     // no packets to process
     return;

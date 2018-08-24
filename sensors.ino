@@ -43,7 +43,6 @@ void setupSensor() {
   // lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
   // lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
 
-  // TODO: is this enough? if we need it faster than this, move sensorReceive to timer.ino
   //  orientation_filter.begin(100);
 
   sensor_setup = true;
@@ -52,35 +51,28 @@ void setupSensor() {
 }
 
 void sensorReceive() {
-  static unsigned long next_update = 0;
+  // TODO: this is definitely our culprit for the last of the crashes! if we wake up the sensor during radio tx or rx, it crashes
+  // TODO: i don't know how to make sure we don't do it during tx though!
 
-  // TODO: this should be a global since we are using multiple places now
-  static int goal_fps = 1000.0 / frames_per_second;
-
-  // limit our refresh rate
-  if (millis() < next_update) {
-    return;
-  }
-
-  // TODO: this might be our culprit for the last of the crashes! if we wake up the sensor and it draws power while the
+  // the above if should have caught this already, but just in case
   // TODO: lights are bright and the radio is drawing full power?
   if (rf95.mode() == RH_RF95_MODE_TX) {
     return;
   }
 
-  // TODO: is this the right mode? its the only one that had rx in it
+  // TODO: is this the right mode? its the only one that had rx in it, but we are still crashing on receive so I think not
   if (rf95.mode() == RH_RF95_MODE_RXCONTINUOUS) {
     return;
   }
 
-  // 20ms * 2 delay time. more delay = less battery drain
-  next_update = millis() + goal_fps * 2;
-
+  DEBUG_PRINTLN(F("Reading sensor..."));
   lsm.read();
   lsm.getEvent(&accel, &mag, &gyro, &temp);
 }
 
 void getOrientation(Orientation *o) {
+  static unsigned long next_update = 0;
+
   // DEBUG_PRINT(F("Orientation: "));
 
   if (!sensor_setup) {
@@ -88,6 +80,12 @@ void getOrientation(Orientation *o) {
     *o = ORIENTED_UP;
     return;
   }
+
+  if (millis() < next_update) {
+    return;
+  }
+  // TODO: tune this
+  next_update = millis() + 200;
 
   sensorReceive();
 
