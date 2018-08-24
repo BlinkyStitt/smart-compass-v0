@@ -25,7 +25,10 @@ void setupLights() {
   // leave some room for the radio and gps and SD and mcu
   // we don't need to leave room for the charger because we have a separate (faster) charger attached
   //FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 125 - 30 - 100 - 50);
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 100);
+
+  // TODO: oops. i wired the leds to the 3.3v pin instead of to the USB pin and now we pull too much
+  //FastLED.setMaxPowerInVoltsAndMilliamps(checkBatteryVoltage(), 50);
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 50);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
@@ -143,6 +146,7 @@ void updateLightsForCompass(CompassMode *compass_mode) {
     //     DEBUG_PRINT(" colors for outer light #");
     //     DEBUG_PRINTLN(i);
 
+    // TODO: in order to make the network lights patter nprettier, i shifted the outer ring over one. compensate for that here
     leds[outer_ring_start + i] = outer_compass_points[i][j];
   }
 }
@@ -296,13 +300,17 @@ void updateLights(int debug_int) {
     }
   }
 
+  /*
   EVERY_N_SECONDS(10) {
     // TODO: print peer location data
   }
+  */
 
   // update the led array every frame
-  // TODO: TUNE this
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
+    // TODO: debugging
+    updateLightsForHanging();
+    /*
     getOrientation(&current_orientation);
     switch (current_orientation) {
     case ORIENTED_UP:
@@ -353,6 +361,7 @@ void updateLights(int debug_int) {
     }
 
     last_orientation = current_orientation;
+    */
 
     // TODO: i doubt this is related to the crash at all, but i'm stumped    /*
     #ifdef DEBUG

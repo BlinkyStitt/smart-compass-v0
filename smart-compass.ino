@@ -27,6 +27,7 @@
 
 #define MAX_PINS 12
 
+// TODO: was 77, but i think we need higher to keep the power usage down
 #define LED_FADE_RATE 77
 
 // Pins 0 and 1 are used for Serial1 (GPS)
@@ -138,6 +139,8 @@ elapsedMillis network_ms = 0;
 int g_network_offset = 125 + 425;  // TODO: tune this. probably put it on the SD. tx takes 125ms
 
 BatteryStatus g_battery_status = BATTERY_FULL;
+
+int g_packets_sent = 0;
 
 const CHSV pin_colors[] PROGMEM = {
     // {h, s, v},
@@ -360,7 +363,7 @@ void loop() {
     }
 
     // transmitting can be slow. update lights again just in case
-    updateLights(17);
+    //updateLights(17);
   } else {
     // without config, we can't do anything with radios or saved GPS locations. just do the lights
     updateLights(18);

@@ -145,7 +145,8 @@ void setupConfig() {
   DEBUG_PRINT(F("default_brightness: "));
   if (!default_brightness) {
     DEBUG_PRINT(F("(default) "));
-    default_brightness = 24; // TODO: tune this
+    // TODO: different brightness for night and day
+    default_brightness = 12; // TODO: tune this
   }
   DEBUG_PRINTLN(default_brightness);
 
@@ -197,7 +198,7 @@ void setupConfig() {
   // TODO: whats the difference in power? figure out range and tune this. lights.ino has power draw configured for 20
   if (!radio_power) {
     DEBUG_PRINT(F("(default) "));
-    radio_power = 20;
+    radio_power = 20;  // TODO: i think this might be related to crashing, but i'm not sure
   }
   DEBUG_PRINTLN(radio_power);
 
