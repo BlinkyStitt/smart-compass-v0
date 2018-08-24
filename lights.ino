@@ -28,7 +28,7 @@ void setupLights() {
 
   // TODO: oops. i wired the leds to the 3.3v pin instead of to the USB pin and now we pull too much
   //FastLED.setMaxPowerInVoltsAndMilliamps(checkBatteryVoltage(), 50);
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 50);
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 100);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
@@ -277,46 +277,14 @@ void updateLightsForConfiguring(const CompassMode *compass_mode, const CompassMo
 // TODO: change this to take an argument so we can (while debugging) print who the caller is
 void updateLights(int debug_int) {
   static Orientation last_orientation = ORIENTED_PORTRAIT;
-  static Orientation current_orientation;
   static CompassMode compass_mode = COMPASS_FRIENDS;
   static unsigned long last_frame = 0;
-
-  // decrease overall brightness if battery is low
-  // TODO: how often should we do this?
-  EVERY_N_SECONDS(300) {
-    checkBattery(&g_battery_status);
-
-    // TODO: set a floor on these
-    switch (g_battery_status) {
-    case BATTERY_DEAD:
-      // TODO: use map_float(quadwave8(millis()), 0, 256, 0.3, 0.5);
-      // TODO: maybe add a red led to a strip of 8 LEDs?
-      FastLED.setBrightness(default_brightness * .5);
-      break;
-    case BATTERY_LOW:
-      FastLED.setBrightness(default_brightness * .75);
-      break;
-    case BATTERY_OK:
-      FastLED.setBrightness(default_brightness * .90);
-      break;
-    case BATTERY_FULL:
-      // TODO: different light pattern instead?
-      FastLED.setBrightness(default_brightness);
-      break;
-    }
-  }
-
-  /*
-  EVERY_N_SECONDS(10) {
-    // TODO: print peer location data
-  }
-  */
 
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
     // TODO: maybe the bug was actually below here. i hard coded network lights and didn't get a crash
-    getOrientation(&current_orientation);
-    switch (current_orientation) {
+    // TODO: now i'm thinking that getOrientation wakes up the sensor which draws too much power
+    switch (g_current_orientation) {
     case ORIENTED_UP:
       // if we did any configuring, next_compass_mode will be set to the desired compass_moe
       compass_mode = next_compass_mode;
@@ -364,10 +332,9 @@ void updateLights(int debug_int) {
       break;
     }
 
-    last_orientation = current_orientation;
+    last_orientation = g_current_orientation;
     // TODO: maybe the bug was actually above here
 
-    // TODO: i doubt this is related to the crash at all, but i'm stumped    /*
     #ifdef DEBUG
         // debugging lights
 
