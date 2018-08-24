@@ -26,9 +26,9 @@ void setupLights() {
   // we don't need to leave room for the charger because we have a separate (faster) charger attached
   //FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 500 - 125 - 30 - 100 - 50);
 
-  // TODO: oops. i wired the leds to the 3.3v pin instead of to the USB pin and now we pull too much
+  // TODO V2: wire the lights up with power separate from the regulator
   //FastLED.setMaxPowerInVoltsAndMilliamps(checkBatteryVoltage(), 50);
-  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 100);
+  FastLED.setMaxPowerInVoltsAndMilliamps(3.3, 200);
 
   FastLED.addLeds<LED_CHIPSET, LED_DATA>(leds, num_LEDs).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(default_brightness);
@@ -282,8 +282,7 @@ void updateLights(int debug_int) {
 
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    // TODO: maybe the bug was actually below here. i hard coded network lights and didn't get a crash
-    // TODO: now i'm thinking that getOrientation wakes up the sensor which draws too much power
+    // TODO: maybe a bug is actually below here.
     switch (g_current_orientation) {
     case ORIENTED_UP:
       // if we did any configuring, next_compass_mode will be set to the desired compass_moe
@@ -311,12 +310,12 @@ void updateLights(int debug_int) {
       break;
     case ORIENTED_USB_DOWN:
       // TODO: re-enable this once i figure out pointers
-      //updateLightsForConfiguring(&compass_mode, &COMPASS_PLACES, &last_orientation, &current_orientation);
+      //updateLightsForConfiguring(&compass_mode, &COMPASS_PLACES, &last_orientation, &g_current_orientation);
       updateLightsForHanging();
       break;
     case ORIENTED_USB_UP:
       // TODO: re-enable this once i figure out pointers
-      //updateLightsForConfiguring(&compass_mode, &COMPASS_FRIENDS, &last_orientation, &current_orientation);
+      //updateLightsForConfiguring(&compass_mode, &COMPASS_FRIENDS, &last_orientation, &g_current_orientation);
       updateLightsForHanging();
       break;
     case ORIENTED_PORTRAIT:
@@ -333,7 +332,6 @@ void updateLights(int debug_int) {
     }
 
     last_orientation = g_current_orientation;
-    // TODO: maybe the bug was actually above here
 
     #ifdef DEBUG
         // debugging lights

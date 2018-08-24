@@ -4,7 +4,6 @@
 // TODO: change this so that location shift and color shift are different values
 // todo: this is kind of a cheater way to circle. maybe track the 3 bars separately so it doesn't look like it stutters
 // when the color changes
-// TODO: this pattern was drawing too much power while we were using the radio
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
@@ -31,33 +30,13 @@ void networkedLights() {
       // TODO: use a color pallet?
       // TODO: this spreads the whole rainbow across all 4. do we want to change color slower than that?
       // TODO: do something with saturation, too?
-      int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
-      // TODO: cycle brightness instead of doing fixed full so that the flicker is less
-      // TODO: or blend?
-      leds[i] = CHSV(color_value, 230, 128);
+
+      // TODO: without the constrain, it sometimes crashed. it shouldn't be needed if i did the map right
+      // TODO: i think maybe changing the type to byte would be a better fix since -1 or 256 should wrap
+      int color_value = constrain(map(network_i, 0, network_LEDs - 1, 0, 255), 0, 255);
+
+      // TODO: add or blend instead of set?
+      leds[i] = CHSV(color_value, 230, 200);
     }
   }
 }
-
-/*
-// stretched rainbow pattern where the start is moved around
-void networkedLights2() {
-  static const int network_LEDs = num_LEDs * num_peers;
-
-
-  // chunk the time up such that every led gets an equal amount of time as the origin?
-  origin_id = network_ms / (origin_frames * 1000/frames_per_second) % network_LEDs;
-
-  ...
-}
-
-// r, g, and b heading down the length at different speeds. use blending
-
-// r, g, and b heading down the length at the same speed
-
-// breathing in sync, but with different colors
-
-// pattern with only half the lights on
-
-// TODO: if battery low add a red light to the status bar. if battery dead, add 2 read lights on the status bar
-*/
