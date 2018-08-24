@@ -4,7 +4,7 @@
 // TODO: change this so that location shift and color shift are different values
 // todo: this is kind of a cheater way to circle. maybe track the 3 bars separately so it doesn't look like it stutters
 // when the color changes
-// TODO: this pattern is drawing too much power while we are using the radio
+// TODO: this pattern was drawing too much power while we were using the radio
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
@@ -34,7 +34,7 @@ void networkedLights() {
       int color_value = map(network_i, 0, network_LEDs - 1, 0, 255);
       // TODO: cycle brightness instead of doing fixed full so that the flicker is less
       // TODO: or blend?
-      leds[i] = CHSV(color_value, 230, 200);
+      leds[i] = CHSV(color_value, 230, 128);
     }
   }
 }
