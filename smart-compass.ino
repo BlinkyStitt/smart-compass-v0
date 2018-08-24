@@ -136,7 +136,7 @@ int next_status_bar_id = 0;
 
 elapsedMillis network_ms = 0;
 
-int g_network_offset = 125 + 425;  // TODO: tune this. probably put it on the SD. tx takes 125ms
+int g_network_offset = 125 + 225;  // TODO: tune this. probably put it on the SD. tx takes 125ms.
 
 BatteryStatus g_battery_status = BATTERY_FULL;
 
