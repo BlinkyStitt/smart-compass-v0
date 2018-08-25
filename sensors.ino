@@ -52,22 +52,34 @@ void setupSensor() {
 
 void sensorReceive() {
   // TODO: this is definitely our culprit for the last of the crashes! if we wake up the sensor during radio tx or rx, it crashes
-  // TODO: i don't know how to make sure we don't do it during tx though!
+  // TODO: i don't know how to make sure we don't do it during rx though since that could happen at any time
 
-  // the above if should have caught this already, but just in case
-  // TODO: lights are bright and the radio is drawing full power?
+  // TODO: proper SPI transaction handling?
+  // if we try to read the sensor during transmit, it crashes
   if (rf95.mode() == RH_RF95_MODE_TX) {
     return;
   }
 
-  // TODO: is this the right mode? its the only one that had rx in it, but we are still crashing on receive so I think not
-  if (rf95.mode() == RH_RF95_MODE_RXCONTINUOUS) {
+  // if we try to read the sensor during radio receive, it crashes
+  if (rf95.available()) {
     return;
   }
 
-  DEBUG_PRINTLN(F("Reading sensor..."));
+  // TODO: maybe the crash is an interrupt issue. turn them off briefly
+  noInterrupts();
+
+  DEBUG_PRINT(F("Reading sensor... "));
+  // TODO: it sometimes crashes here. i think its a combination of power draw from lights, gps, radio, and sensor and SPI
   lsm.read();
+  DEBUG_PRINTLN("Done!");
+
+  DEBUG_PRINT(F("Parsing sensor... "));
+  // TODO: it sometimes crashes here. i think its a combination of power draw from lights, gps, radio, and sensor and SPI
   lsm.getEvent(&accel, &mag, &gyro, &temp);
+  DEBUG_PRINTLN("Done!");
+
+  // TODO: maybe the crash is an issue with interrupts. turn them back on after handling sensor data
+  interrupts();
 }
 
 void getOrientation(Orientation *o) {
@@ -85,7 +97,7 @@ void getOrientation(Orientation *o) {
     return;
   }
   // TODO: tune this
-  next_update = millis() + 200;
+  next_update = millis() + 300;
 
   sensorReceive();
 

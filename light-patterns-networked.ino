@@ -3,7 +3,6 @@
 // time based pattern spread out across everyone's LEDs
 // TODO: change this so that location shift and color shift are different values
 // todo: this is kind of a cheater way to circle. maybe track the 3 bars separately so it doesn't look like it stutters
-// when the color changes
 void networkedLights() {
   static const int network_LEDs = num_LEDs * num_peers;
   static const int peer_shift = my_peer_id * num_LEDs;
