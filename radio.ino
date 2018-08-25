@@ -298,9 +298,9 @@ void radioTransmit(const int pid) {
 
   DEBUG_PRINT(F("Time to transmit data from "));
   DEBUG_PRINT(my_peer_id);
-  DEBUG_PRINT(F(" about "));
+  DEBUG_PRINT(" about ");
   DEBUG_PRINT(pid);
-  DEBUG_PRINTLN(F("..."));
+  DEBUG_PRINTLN("...");
 
   /*
   // TODO: this is causing it to hang. does my module not have this? do I need to configure another pin?
@@ -343,8 +343,7 @@ void radioTransmit(const int pid) {
   if (tx_compass_location) {
     encodeCompassMessage(&ostream, &compass_messages[pid], time_now);
   } else {
-    //encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
-    DEBUG_PRINTLN(F("Compass pin code distabled!"));
+    encodePinMessage(&ostream, &compass_pins[tx_pin_id], time_now);
   }
 
   // we used to update lights here because encoding can be slow, but we want minimal time between encode and tx
@@ -403,8 +402,7 @@ void radioTransmit(const int pid) {
 
     DEBUG_PRINTLN(F("Last transmit time updated."));
   } else {
-    // TODO: re-enable this
-    //compass_pins[tx_pin_id].transmitted = true;
+    compass_pins[tx_pin_id].transmitted = true;
 
     DEBUG_PRINTLN(F("Pin marked as transmitted."));
   }
@@ -679,7 +677,6 @@ void receiveLocationMessage(SmartCompassLocationMessage *message) {
 
 }
 
-/*
 void receivePinMessage(SmartCompassPinMessage *message) {
   static uint8_t calculated_hash[NETWORK_HASH_SIZE];
 
@@ -755,4 +752,3 @@ void receivePinMessage(SmartCompassPinMessage *message) {
   // send this when it is our time to transmit
   compass_pins[compass_pin_id].transmitted = false;
 }
-*/

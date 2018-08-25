@@ -192,7 +192,6 @@ void updateLightsForLoading() {
 }
 
 // TODO: pointers here?
-/*
 void updateLightsForConfiguring(const CompassMode *compass_mode, const CompassMode *configure_mode,
                                 const Orientation *last_orientation, const Orientation *current_orientation) {
   static elapsedMillis configure_ms = 0;
@@ -274,7 +273,6 @@ void updateLightsForConfiguring(const CompassMode *compass_mode, const CompassMo
 
   return;
 }
-*/
 
 // TODO: change this to take an argument so we can (while debugging) print who the caller is
 void updateLights(int debug_int) {
@@ -284,7 +282,7 @@ void updateLights(int debug_int) {
 
   // update the led array every frame
   EVERY_N_MILLISECONDS(1000 / frames_per_second) {
-    // TODO: maybe a bug is actually somwhere in this case.
+    // TODO: maybe a bug is actually below here.
     switch (g_current_orientation) {
     case ORIENTED_UP:
       // if we did any configuring, next_compass_mode will be set to the desired compass_moe
@@ -332,9 +330,6 @@ void updateLights(int debug_int) {
       updateLightsForClock();
       break;
     }
-
-    // TODO: debugging
-    //fill_solid(leds, num_LEDs, CRGB::White);
 
     last_orientation = g_current_orientation;
 

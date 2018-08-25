@@ -25,8 +25,7 @@
 #include "smart-compass.pb.h"
 #include "types.h"
 
-// TODO: tune this
-#define MAX_PINS 4
+#define MAX_PINS 12
 
 // TODO: was 77, but i think we need higher to keep the power usage down
 #define LED_FADE_RATE 77
@@ -109,6 +108,7 @@ long last_transmitted[max_peers] = {0};
 
 bool config_setup, sd_setup, sensor_setup = false;
 
+// TODO: these are getting overridden! i don't think these are declared how i need. i should be using pointers
 CompassPin compass_pins[MAX_PINS];
 
 int distance_sorted_compass_pin_ids[MAX_PINS];
@@ -355,8 +355,7 @@ void loop() {
     }
   }
 
-  // TODO: i think this is causing a crash if it happens in combination with the wrong other things
-  // TODO: delaying
+  // TODO: i think is causing a crash
   getOrientation(&g_current_orientation);
 
   if (config_setup) {
