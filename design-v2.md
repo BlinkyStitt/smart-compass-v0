@@ -39,11 +39,12 @@ The inspected Rust source is commit `ae307cd3cb528d252d02918566aee40fb1383243`. 
 | `musical-lights-core/src/compass.rs` | Haversine distance and bearing calculations, with tests for cardinal bearings, nearby points, poles, and date-line crossings. | Reuse the mathematics and test cases. The existing API accepts `f32` coordinates and adds its declination argument to the geographic bearing. Do not use that sign convention implicitly in this project. |
 | `musical-lights-core/src/orientation.rs` | A defined device frame and orientation classification from gravity or quaternions. | Reuse the frame definition and tests. Orientation classification alone does not supply a compass heading. |
 | `musical-adafruit-sparkle-idf/src/main.rs` | RMT output, microphone capture, shared loudness processing, and inactive peer/sensor state. | Reuse the ESP-IDF build pattern, RMT ownership, and audio pipeline. Its active display has 400 pixels in a 20 by 20 net. Sensor UART setup is commented out. |
+| `musical-adafruit-sparkle-idf/src/light_profile.rs`, `src/bin/light-check.rs`, and `validation/lights/profile.py` | The active renderer keeps linear colors through brightness mapping, then uses `LedResponse::encode()` for per-channel inverse response and white balance. The current default is explicitly unmeasured. The bench binary and generator support measured profiles. | Retain this output contract for every mode. Give the disc and ring separate response profiles and calibration records. Adapt the bench binary and generator to the two outputs; do not copy the 400-pixel net profile as a measurement of either display. |
 | `musical-adafruit-sparkle-idf/src/light_patterns/fibonacci_layout.rs` | Arrays for 256 pixel positions, angles, and radii. | Reuse after physical index and orientation checks. Its X coordinates are mirrored relative to the published Pixelblaze map. Establish one front-view convention. |
 | `musical-adafruit-sparkle-idf/src/light_patterns/compass.rs` | A loading check followed by a hue pattern. | Write the actual compass renderer. The current function does not display peer bearings. |
 | `musical-lights-core/src/gps.rs`, `radio.rs`, and `lights/networked.rs` | A time alias, a radio TODO, and an empty networked-pattern module. | These are not completed GPS, mesh, or pattern-synchronization implementations. |
 | `musical-adafruit-sparkle-embassy` | A 256-pixel output example, sensor initialization, and an SX1262 radio stub. | Use it as a hardware reference. Keep ESP-IDF as the single Sparkle firmware platform for this project. |
-| Arduino GPS, radio, compass, and pattern files | NMEA setup, RF95 exchange at 915 MHz, peer colors, networked patterns, and notes about timing and power failures. | Retain useful behavior and test scenarios. Do not copy the saved-pin database or the all-peers retransmission schedule. |
+| Arduino GPS, radio, compass, and pattern files | NMEA setup, RF95 exchange at 915 MHz, peer colors, an active peer-indexed pattern, automatic battery brightness reduction, and notes about timing and power failures. | Retain peer-indexed composition and battery reduction/recovery as specified below. Do not copy the saved-pin database or the all-peers retransmission schedule. |
 
 The Arduino Fritzing files identify a Feather M0 RFM9x radio board, GPS FeatherWing, motion sensor, and SD hardware. The Rust STM32 manifest and probe runner target STM32F411CE. Its notes also mention Discovery hardware. The actual board must settle that mismatch.
 
@@ -159,13 +160,54 @@ Compass north can work without a GPS fix. In that state, show magnetic north and
 
 ### Patterns
 
-Provide a small first set: spiral rainbow, rotating spokes, radial waves, and microphone-reactive pulses. Use the disc's XY and polar coordinates for geometry. Make the outer ring part of each composition.
+Provide a small first set: spiral rainbow, rotating spokes, radial waves, a rainbow shared across peers, and microphone-reactive pulses. Use the disc's XY and polar coordinates for geometry. Make the outer ring part of each composition.
 
 Reuse the production `LoudnessMeter`, `VisualGain`, and time-based display state for audio patterns. Map the shared analysis output onto this disc's geometry. The existing twenty-row net layout does not define the new rendering. Do not replace loudness with independent FFT gains or reset analysis at LED frame boundaries.
 
 Start microphone capture when entering an audio pattern. Stop and release it when leaving audio patterns. Plain patterns work if capture fails. Show a failure cue instead of presenting invented audio activity.
 
 Shared-time geometric patterns use a common phase from GPS time when available. After time loss, continue from a monotonic holdover clock. A later time correction adjusts phase smoothly. Local microphone response remains local; it does not make separate microphones synchronize.
+
+#### Composition across peers
+
+Retain the active Arduino `networkedLights()` behavior: each device shows a different section of one combined pattern. Shared time controls motion; a stable peer slot controls which section the device shows. Matching time alone must not make every device show the same section. [Prototype pattern](https://github.com/BlinkyStitt/smart-compass-v0/blob/b79be3acf77d0a7e6d13b9dadb4fde4d3abdad96/light-patterns-networked.ino).
+
+Sort the configured roster by numeric peer ID. A device's zero-based position in that roster is its pattern slot `k`; the configured roster length is `N`. STM32 sends `k`, `N`, and the roster revision in its snapshots. Never derive these values from the currently reachable peers. An absent device leaves its section empty, so other devices do not jump to new colors or positions.
+
+For this pattern, define one local path: disc indices 0 through 255, followed by ring pixels in clockwise order from the mounted top. Let `L` be that device's disc-plus-ring pixel count and `j` its pixel's index along this path. Use the common preset's cycle period and time origin to calculate `phase(t)` in full cycles:
+
+```text
+u = fract((k + j / L) / N + phase(t))
+color = shared_pattern(u)
+```
+
+Use fractional arithmetic for `j / L`. With four configured peers, slot 1 shows the second quarter of the pattern. If that peer is absent, the other three keep their quarters. Devices with different ring counts still receive equal pattern sections; their pixel counts only change the sampling within a section. For equal `L`, the static mapping equals `(k * L + j) / (N * L)`, which retains the prototype's peer-indexed strip composition.
+
+Every participant must use the same roster revision, preset, cycle period, and time origin. Provision them together. A deliberate roster change starts a new composition revision. Rebooting or losing a radio peer must not change the slot. If roster identity is missing, mark the shared pattern unavailable and keep local patterns available. Do not assign an arbitrary slot.
+
+## LED response calibration
+
+Keep all disc and ring colors in linear sRGB through composition and brightness mapping. This includes navigation markers, status cues, plain patterns, and microphone-reactive patterns. Sparkle applies each output's `LedResponse::encode()` once to convert the final linear intent to RGB bytes, including per-channel inverse response, white balance, and the output drive cap. The driver then applies that output's channel order. Do not add a second gamma or white-balance pass.
+
+Use this output sequence for both displays:
+
+```text
+linear composition
+  -> user brightness * battery factor * permitted power scale
+  -> output-specific LedResponse::encode(linear_color, drive_cap)
+  -> output-specific channel order
+  -> RMT output
+```
+
+Select the permitted power scale from the estimated current of the encoded disc and ring frames before writing either output. If a candidate exceeds the budget, reduce the linear scale and encode a new candidate from the unchanged linear composition. Never feed encoded bytes back through the response curve. This keeps normal dimming in linear light while enforcing the current limit on the actual proposed drive bytes.
+
+Own the profiles in the new Sparkle application's deployment module. Keep one microphone input calibration and separate disc and ring LED response functions. Reuse the shared `LedResponse` type. Extend `validation/lights/profile.py` to generate the named LED profiles from separate measurements. Keep each profile's LED identity, supply voltage, diffuser arrangement, measurement method, and measured/unmeasured state with the deployment data. Configuration references those profile identities; it does not maintain a second copy of the response curves.
+
+Before measurement, use `LedResponse::default()` independently for each display and report it as unmeasured. A measured disc profile does not calibrate the ring. Reject an invalid measured profile instead of silently treating it as valid. Channel-order tests, current-limit measurements, and optical response measurements establish different properties.
+
+Adapt `light-check` to address the disc and ring separately with their actual pixel counts, pins, and channel orders. Retain red, green, blue, and white ramps plus timed pulses. Apply the operational drive caps and total current budget during the full-display checks. The current generator requires at least 17 strictly increasing measured points per channel over drive 0 through 255, plus measured white-balance factors. Obtain those full-range data with a suitable, current-limited small-pixel fixture; do not drive the whole disc and ring at full white to satisfy the generator. Measure the installed optical arrangement before claiming calibrated displayed color.
+
+Compilation of `light-check` does not run it, flash it, or establish calibration. Retain measured input data and meaningful generated deployment profiles with the implementation. Test monotonic response, correct profile selection, black output, drive caps, and one response application. The current shared tests provide a starting point. See the existing [LED response implementation](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/musical-lights-core/src/lights/color_correction.rs), [bench program](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/musical-adafruit-sparkle-idf/src/bin/light-check.rs), and [profile generator](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/validation/lights/profile.py).
 
 ## Controls and status
 
@@ -294,7 +336,7 @@ Reuse Postcard serialization, CRC-16/IBM-SDLC, COBS, and a zero delimiter from t
 | Message | Direction | Purpose |
 | --- | --- | --- |
 | Hello | Both | Protocol version, firmware identity, boot session, and capabilities. |
-| StateSnapshot | STM32 to Sparkle | Local fix, calibrated heading and quality, complete bounded peer set, sensor health, power state, source sample ages, and UTC clock anchor with uncertainty. |
+| StateSnapshot | STM32 to Sparkle | Local fix, calibrated heading and quality, complete bounded peer set, pattern slot/count/roster revision, sensor health, battery state/factor/sample age, source sample ages, and UTC clock anchor with uncertainty. |
 | InputEvent | STM32 to Sparkle | Ordered button event with event ID. |
 | InputAck | Sparkle to STM32 | Highest contiguous input-event ID applied in the current STM32 session. |
 | Command | Sparkle to STM32 | Validated configuration or calibration request with command ID. |
@@ -345,6 +387,31 @@ Start bench work with a low current limit and dim output. A brightness percentag
 
 STM32 reads an appropriate battery gauge or a calibrated supply measurement. Do not reuse the old ten-bit ADC/divider formula without matching the hardware. A USB power bank's regulated 5 V output does not reveal its remaining cell charge; use a real gauge if a remaining-charge display is required.
 
+### Automatic battery output reduction
+
+Retain automatic battery dimming and recovery. STM32 classifies battery state from the selected pack's measurement profile. Sparkle applies the resulting factor to the user's linear brightness before each display's LED response encoding. Apply the same factor to the disc, ring, and status cues in every mode. Keep the user's requested brightness unchanged so recovery can restore it.
+
+| State | Output factor | Prototype voltage reference |
+| --- | --- | --- |
+| Full | 100% | At least 4.1 V. |
+| OK | 90% | At least 3.7 V, below 4.1 V. |
+| Low | 75% | At least 3.3 V, below 3.7 V. |
+| Critical | 50% | Below 3.3 V; the Arduino name is `BATTERY_DEAD`. |
+
+The voltage column records [the prototype battery measurements](https://github.com/BlinkyStitt/smart-compass-v0/blob/b79be3acf77d0a7e6d13b9dadb4fde4d3abdad96/battery.ino); it is not an approved threshold set for the new supply. Retain the state/factor policy. In v2, the factors scale linear light intent rather than already encoded LED bytes. Never apply these cell-voltage thresholds to a regulated 5 V input or assume that they fit another battery chemistry.
+
+Before implementation, the selected battery profile must define three ordered reduction thresholds, a higher recovery threshold for each boundary, valid measurement limits, and a separate shutdown threshold. Express them in the gauge's calibrated state-of-charge units or in measured loaded pack voltage. Derive the values from the actual pack and regulator limits and the measured discharge curve. Record the numeric values and measurement units with that profile. The battery hardware remains open, so these new hardware-specific values remain a required decision before battery acceptance.
+
+Sample at about 1 Hz. As initial timing targets, require five seconds continuously below a reduction threshold before reducing a state, and thirty seconds above its recovery threshold before increasing a state. Clear the pending transition if its condition stops holding. A brief voltage rise after dimming or ending radio transmission must not restore full output. A validated shutdown condition takes priority without waiting for the dimming delay.
+
+Send the classified state, factor, measurement age, and profile revision in STM32 snapshots. Sparkle changes the applied factor over at most one second and restores only the most recent user brightness, subject to the current limit. Brightness changes during Low or Critical still retain the battery factor. Do not reduce GPS or radio service as a side effect of display dimming.
+
+Before the first valid battery state, or after battery data become older than two seconds, cap the battery factor at 50% and show unknown power state. Keep a stronger existing reduction. A recovered valid reading must satisfy the recovery delay before increasing output. Display blanking and hardware shutdown still override the factor.
+
+The 50% Critical level does not permit operation below the pack's safe limit. At the selected shutdown threshold, blank both displays and perform the defined power shutdown while hardware cell protection remains active. Verify reduction, delayed recovery, stale measurement handling, and shutdown with the final supply hardware.
+
+### Supply and enclosure acceptance
+
 Battery chemistry, pack size, regulator, charging arrangement, and desired runtime remain physical design choices. Calculate runtime from usable watt-hours and measured average watts. Do not select a pack from LED count alone. Include peak-current tests and low-load power-bank behavior.
 
 Route LED current separately from sensor returns and UART ground. Use rated connectors, strain relief, suitable branch protection, and supply decoupling near each load. Review USB connection and back-power behavior with both programming cables connected.
@@ -361,8 +428,8 @@ Use versioned settings with bounds and an integrity check. Invalid settings sele
 
 | Owner | Persistent values |
 | --- | --- |
-| STM32 | Device/group identity, group key, peer roster and colors, radio profile, calibration, boot counter, and sensor hardware profile. |
-| Sparkle | Display mounting, ring geometry and channel order, current budgets, brightness, map range/orientation, pattern choice, and local audio calibration. |
+| STM32 | Device/group identity, group key, peer roster/revision and colors, radio profile, sensor calibration, battery measurement profile and reduction/recovery/shutdown thresholds, boot counter, and sensor hardware profile. |
+| Sparkle | Display mounting, ring geometry and channel order, current budgets, user brightness, map range/orientation, pattern preset and cycle, LED response profile identities, and local audio calibration. |
 
 Provision through the wired Sparkle console. Sparkle forwards STM32-owned changes over the command protocol. Return validation errors and read back the effective settings. Atomic writes must survive power loss. Do not erase active configuration before its replacement is valid.
 
@@ -396,14 +463,14 @@ Reuse the STM32 UART and sensor code selectively. Replace its incomplete entry-p
 
 ## Implementation and acceptance sequence
 
-1. **Confirm hardware and contracts.** Identify the actual STM32 board, radio, GPS, sensor, ring, and supply. Complete the pin table. Fix packet widths, coordinate conventions, freshness policy, and power limits. Produce a reviewed wiring diagram.
-2. **Bring up the two displays.** Flash only the new Sparkle application. Verify each disc index, ring direction, channel order, mounting transform, dim startup, and total current limiting. Show synthetic markers at all cardinal directions.
+1. **Confirm hardware and contracts.** Identify the actual STM32 board, radio, GPS, sensor, ring, and supply. Complete the pin table. Fix packet widths, coordinate conventions, freshness policy, power limits, and numeric battery thresholds with hysteresis. Produce a reviewed wiring diagram.
+2. **Bring up the two displays.** Flash only the new Sparkle application. Verify each disc index, ring direction, channel order, mounting transform, dim startup, and total current limiting. Adapt `light-check` and profile generation for both outputs. Verify unmeasured status until each output has its own accepted measurements. Show synthetic markers at all cardinal directions.
 3. **Connect the boards.** Implement Hello, snapshots, input events, commands, and heartbeat. Verify partial UART reads, corrupt frames, disconnects, independent resets, version mismatch, and bounded queues. Synthetic input remains explicitly a bench source.
 4. **Complete sensor and GPS acquisition.** Use real GPS and calibrated sensor readings. Verify capture age, no-fix behavior, tilt compensation, declination sign, and heading quality in the enclosure. Confirm radio service cannot block sensor reads.
 5. **Exchange direct peer reports.** Use at least two real radios. Verify authentication, no-fix reports, duplicate rejection, origin restart, sample expiry, and measured airtime. Demonstrate map and compass modes with real positions.
 6. **Complete bounded relay.** Use at least three devices in a controlled topology where the endpoint cannot receive the origin directly. Verify hop limits, duplicate suppression, source-age preservation, relay limits, and recovery after a relay leaves.
-7. **Complete patterns and controls.** Validate plain and audio patterns, microphone lifecycle, mode changes, brightness, blanking, and shared-time holdover. Confirm all navigation services continue in pattern mode.
-8. **Run combined and field acceptance.** Exercise bright permitted patterns, radio TX/RX, GPS acquisition, sensor fusion, control input, and both displays together. Measure power, thermal behavior, queue/stack headroom, radio delivery, and heading disturbance. Then test walking peers and body-obstructed antennas outdoors.
+7. **Complete patterns and controls.** Validate plain, peer-indexed, and audio patterns, microphone lifecycle, mode changes, brightness, blanking, and shared-time holdover. Confirm stable pattern slots when a peer leaves or restarts, including devices with different ring counts. Confirm all navigation services continue in pattern mode.
+8. **Run combined and field acceptance.** Exercise bright permitted patterns, radio TX/RX, GPS acquisition, sensor fusion, control input, and both displays together. Measure power, thermal behavior, queue/stack headroom, radio delivery, and heading disturbance. Verify battery reduction and recovery with the selected thresholds. Measure and validate each installed LED response profile. Then test walking peers and body-obstructed antennas outdoors.
 
 ### Required automated checks
 
@@ -413,11 +480,17 @@ Test the actual protocol boundary: fixed byte fixtures, every read split, malfor
 
 Test peer expiry without receive traffic, local GPS expiry, link loss, marker overlap, off-scale peers, missing accuracy, and power-limit enforcement for both displays together. Test command retries without duplicate writes. Run shared-core tests across the affected feature matrix and locked builds for both new firmwares.
 
+Test peer-indexed composition with a fixed roster, missing peers, noncontiguous IDs, device restarts, deliberate roster revisions, and different ring counts. For equal pixel counts, compare the normalized slot mapping with the prototype's combined-strip mapping. Do not let live peer count change composition slots.
+
+Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, shutdown priority, and both displays together. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
+
 ### Required physical evidence
 
 | Area | Acceptance evidence |
 | --- | --- |
 | LED mapping | Every pixel index matches the front-view map; red, green, blue, north, and ring direction checks pass. |
+| LED response | Disc and ring have separate measured profiles for their installed optical arrangements, or explicit unmeasured status. Ramps and pulses use the correct output profile; generated values match the retained measurement data. |
+| Shared patterns | At least two devices show different, correct sections of one timed pattern. Removing or restarting a third configured peer leaves the remaining slots unchanged. |
 | Navigation geometry | Known cardinal placements appear in the correct sector in both map orientations and compass mode. |
 | Heading | Initial target is within 10 degrees on a nonmagnetic fixture, including approximately 30-degree tilt. Radio and LED load changes must stay within that total target. Log the actual errors. |
 | Position | Display uncertainty from the receiver or show it as unknown. Compare walking peer separations with an independent reference; do not claim better accuracy than the measurements support. |
@@ -425,6 +498,7 @@ Test peer expiry without receive traffic, local GPS expiry, link loss, marker ov
 | Radio | Record payload, modulation, antenna, topology, delivery ratio, and sample age for direct and relayed cases. Measure the four-device group first, then the eight-device capacity target. |
 | Timing | Measure 50-frame/s display operation and sensor continuity under combined load. Capture missed frames and overflows rather than relying on an average FPS counter. |
 | Power | No brownout at the permitted LED limit during peak TX and GPS acquisition. Measured current and component temperatures remain within the selected hardware ratings. |
+| Battery dimming | The selected hardware's recorded thresholds produce 100%/90%/75%/50% factors on both displays, with hysteresis and delayed recovery. Load changes do not cause oscillation. User brightness survives reduction/recovery, and the safe shutdown limit takes priority. |
 | Recovery | Either board can restart alone. GPS/radio/sensor faults have visible states and bounded recovery. Navigation never displays stale state as fresh after restart. |
 | Persistence | Power-cycle after walking and exchanging peers. No coordinates or saved locations return from storage. Settings and calibration do return. |
 
@@ -440,6 +514,8 @@ Local tests establish software behavior. CI establishes builds and automated che
 | Sensor assembly | Current code uses LSM9DS1. Confirm the breakout, mounting axes, readiness pins, and physical separation from current paths. |
 | Ring construction | Diameter, density, count, protocol, color order, and bend direction determine geometry, frame time, current, and enclosure size. |
 | Supply and runtime | Choose pack, regulator, current rating, charging method, and runtime target using combined-load measurements. |
+| Battery thresholds | The pack and gauge/measurement circuit determine numeric reduction, recovery, and shutdown thresholds. Record measured values and units before accepting automatic battery dimming. The prototype voltages are historical references. |
+| Disc and ring response measurements | Keep explicit unmeasured defaults until separate response and white-balance measurements match the selected LEDs, supply, and installed diffusion. Adapt the existing bench and generator tools for both outputs. |
 | Final controls and enclosure | Confirm button placement, carry orientation, diffuser, antenna positions, access, and environmental needs. |
 
 The two-board split, live peer map, Fibonacci256 main display, outer ring, three modes, and exclusion of saved locations are settled. The remaining hardware details must resolve from the actual parts before implementation can establish a final pin map or field performance.
