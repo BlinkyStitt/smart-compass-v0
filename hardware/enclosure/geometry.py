@@ -59,15 +59,31 @@ def ring_radius(count, p):
     return (count * 1000 / p['strip_density'] + p['ring_seam_gap']) / math.tau
 
 
-def ring_windows(inner, outer):
-    # Eight broad windows, joined by bridges between the cardinal markers.
-    paths = []
-    gap = 1.8 / inner
-    for i in range(8):
-        a, b = (i - .5) * math.tau / 8 + gap / 2, (i + .5) * math.tau / 8 - gap / 2
-        paths.append([(outer * math.cos(a + (b - a) * j / 24), outer * math.sin(a + (b - a) * j / 24)) for j in range(25)] + [(inner * math.cos(b - (b - a) * j / 24), inner * math.sin(b - (b - a) * j / 24)) for j in range(25)])
-    return paths
+def ring_pixel(count, index, outward, p):
+    """Return a pixel centre and its radial emission unit vector, front view."""
+    r = ring_radius(count, p)
+    pitch = 1000 / p['strip_density']
+    angle = (p['ring_seam_gap'] / 2 + (index + .5) * pitch) / r
+    ux, uy = math.sin(angle), math.cos(angle)
+    sign = 1 if outward else -1
+    centre_radius = r + sign * (p['strip_thickness'] / 2 + p['ring_led_depth'] / 2)
+    return (centre_radius * ux, centre_radius * uy), (sign * ux, sign * uy)
+
+
+def optical_dimensions(p):
+    inner = ring_radius(p['inner_count'], p)
+    outer = ring_radius(p['outer_count'], p)
+    front = p['case_depth'] - p['front_bezel_thickness'] - p['acrylic_thickness']
+    rear = p['mirror_back_z'] + p['mirror_back_thickness']
+    return {
+        'inner_radius': inner,
+        'outer_radius': outer,
+        'circle_to_inner_led': inner - p['strip_thickness']/2 - p['ring_led_depth'] - p['circle_diameter']/2,
+        'visible_mirror_width': p['mirror_view_outer_radius'] - p['mirror_view_inner_radius'],
+        'mirror_separation': front - rear,
+        'outer_led_clearance': p['edge_diffuser_radius'] - outer - p['strip_thickness']/2 - p['ring_led_depth'],
+    }
 
 
 def mounting_points(p):
-    return [(p['fastener_radius'] * math.cos(math.radians(30 + 60 * i)), p['fastener_radius'] * math.sin(math.radians(30 + 60 * i))) for i in range(6)]
+    return [(p['fastener_radius'] * math.cos(math.radians(p['fastener_phase_deg'] + 60 * i)), p['fastener_radius'] * math.sin(math.radians(p['fastener_phase_deg'] + 60 * i))) for i in range(6)]
