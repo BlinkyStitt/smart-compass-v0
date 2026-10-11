@@ -21,6 +21,7 @@ This preserves the two-board plan already started in `musical-stm32`. The new pr
 | Sensor controller | STM32F411CEU6 BlackPill, using Rust and Embassy; 512 KiB flash and 128 KiB RAM. |
 | Sensor ownership | STM32 reads GPS, accelerometer, gyroscope, magnetometer, and power sensors. It also owns the LoRa radio. |
 | Board connection | A wired, bidirectional 3.3 V UART connection. |
+| Battery ownership | BlackPill reads battery voltage through a divider on PA4 and classifies it. Sparkle applies the factor from each snapshot and uses the unknown-power cap if the measurement or link expires. |
 | Power path | The custom battery supply powers Sparkle Motion. Sparkle Motion powers the BlackPill and its peripheral rail. Charging and protection belong to the provided power hardware. |
 | Map mode | A local map of live peers relative to this device. |
 | Compass mode | North and bearings to live peers, with one selected peer. |
@@ -91,6 +92,8 @@ The full board supplies level-shifted LED outputs, a microphone, and a separate 
 Connect Sparkle GPIO9 TX to BlackPill PA10 RX, and Sparkle GPIO10 RX to BlackPill PB6 TX. Connect ground. Connect Sparkle's regulated 3.3 V output to BlackPill 3V3 and its peripheral 3.3 V rail. Budget the complete external branch within Sparkle's published 500 mA peak rating. The LED VOUT terminals follow the input voltage; they are not this logic supply. The provided power hardware supplies the voltage required by the fitted LEDs. Pack, charger, and regulator selection are outside this design update. Check the two programming connections during wiring acceptance. [Power and logic pins](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
 
 Give the circle, inner ring, and outer ring separate RMT outputs. Do not daisy-chain their data. A failed data connection on one display must not break either remaining data chain. All three outputs receive the same frame timestamp and power policy.
+
+The full Sparkle Motion has no documented battery-voltage sensing circuit. Plugging the battery supply into its power connector does not connect battery voltage to an ADC. Its exposed GPIO27 analog input uses ADC2 and cannot read while Wi-Fi runs. Select the already available BlackPill ADC rather than adding an I2C ADC or gauge to Sparkle. Battery voltage travels over one sense wire plus the shared ground; classified state travels in the existing snapshots. [Sparkle pins and power inputs](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts), [manufacturer schematics](https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB).
 
 ### STM32
 
@@ -1060,7 +1063,26 @@ Use a conservative unmeasured RGB model during dim bring-up: `I_pixel_mA = 1 + 2
 
 Apply the common power scale to unchanged linear colors, then encode candidate bytes with the output-specific response. Sum all three candidates' estimated current plus the controller reserve. Choose the greatest scale in `[0,1]` that fits the total and branch caps, using 12 bisection steps and a final downward check of the chosen candidate. Never increase above user brightness or the battery factor. If rounding leaves a violation, take at most 12 further halving steps, then use black; if black fails, refuse display operation and report the budget fault. Keep hardware protection active.
 
-STM32 measures the battery through a calibrated sense path to PA4, not through Sparkle's regulated 3.3 V rail. Use the F411 12-bit ADC with VREFINT supply correction, a 480-cycle sample time, and 16 conversions per one-second measurement; use their median. The battery profile supplies `pack_mV = round(adc_pin_mV * gain + offset_mV)` with finite positive gain and a signed offset. The measurement connection and scale remain one hardware fact to record. State-of-charge is unknown unless the provided hardware supplies an actual gauge; voltage is not a percentage display.
+### Battery voltage interface
+
+Use BlackPill PA4 (`ADC1_IN4`) with two divider resistors and a 100 nF filter capacitor. Put these parts beside BlackPill. This is the MVP measurement circuit; it does not require a separate ADC or fuel-gauge module. The battery still powers Sparkle first, and Sparkle still supplies BlackPill's 3.3 V rail.
+
+```text
+Protected, switched battery + -- R_top --+-- PA4 / ADC1_IN4
+                                        |
+                                   R_bottom and 100 nF
+                                      in parallel
+                                        |
+Battery - / shared ground --------------+-- BlackPill GND
+```
+
+Take the sense voltage after battery protection and the physical power switch, but before any boost/buck regulator. Never bypass the pack's protection. A single series resistor does not scale a high battery voltage; both divider resistors are required. Do not use Sparkle's regulated 3.3 V output as the measurement source. A regulated USB power-bank output also cannot indicate cell discharge; if that is the only accessible output, leave battery state Unknown until the supplied hardware provides a usable measurement interface. Do not open or modify a sealed pack as part of this plan.
+
+Select the divider after recording maximum charged voltage, transient allowance, and minimum operating VDDA. Use `V_pin = V_pack * R_bottom/(R_top + R_bottom)` and include resistor tolerances. Keep the worst-case pin voltage below both the ADC input limit and `0.9 * VDDA_min`. Keep the divider's Thevenin resistance at most 10 kohm. Choose resistor power/voltage ratings for the maximum source voltage. A 100 kohm top/10 kohm bottom pair is an arithmetic example only: it gives nominal gain 11 and about 2.18 V at 24 V. These are not fitted values or an assumption about the pack. Record the actual resistor pair and calibrated gain in `SC-BATTERY-THRESHOLDS`.
+
+The sense tap must turn off when the logic supply turns off. Check startup, cutoff, and both programming connections so the sense line cannot power an unpowered MCU through its input protection. If the supplied switch cannot meet that condition, resolve the sense isolation with the power wiring before connecting PA4. This wiring constraint does not add a software-controlled power-off feature. Route the sense wire away from LED supply loops and connect its ground near BlackPill's analog ground return.
+
+Use the F411 12-bit ADC with VREFINT supply correction, a 480-cycle sample time, and a 21 MHz ADC clock from the specified 84 MHz clock divided by four. Leave PA4 in analog mode without pulls. Respect ADC/reference startup times; after power-on wait at least `10 * (R_top || R_bottom) * C` before the first burst. Take 16 conversions spaced at 1 ms and use the midpoint of the two central sorted readings as the median. Sample VREFINT in the same burst and use the device's factory reference calibration. Bound conversion waits; invalid reference data, timeout, saturation, or values outside the installed profile's valid range produce Unknown. The battery profile supplies `pack_mV = round(adc_pin_mV * gain + offset_mV)` with finite positive gain and a signed offset. Publish one measurement each second. State-of-charge stays unknown in this voltage-only MVP; voltage is not a percentage display. [STM32F411 ADC, pin, and reference limits](https://www.st.com/resource/en/datasheet/stm32f411ve.pdf).
 
 ### Automatic battery output reduction
 
@@ -1079,7 +1101,9 @@ Measure at 1 Hz. Require five continuous seconds below the applicable boundary b
 
 Send state, factor, measurement age, and profile revision in every snapshot. Sparkle ramps the applied factor over at most one second. User brightness changes retain the factor. Before a valid reading, or after its age exceeds two seconds, cap the factor at 50% and show unknown power. Keep a stronger existing reduction. On first acquisition, require thirty continuous seconds of valid measurements, then select the initial state using the reduction bands. After stale/invalid data, require thirty continuous seconds of valid measurements before releasing the unknown-state cap. Retain the previous valid classification internally, apply its ordinary reduction/recovery rules during that interval, and restore the factor of the resulting state; never treat missing data as a newly full battery. During that recovery the transmitted state remains Unknown and its factor remains at most 50%.
 
-> TODO: SC-BATTERY-THRESHOLDS — Record the supplied pack's battery-sense connection to PA4, divider/measurement gain and offset, valid measurement range, and three numeric reduction/recovery pairs in mV. Close with reference-meter calibration and loaded discharge/recovery observations. Pack, regulator, charger, and protection selection are not requested here. An absent profile keeps battery state Unknown with the 50% factor; it does not block host tools, protocols, or dim display bring-up.
+STM32 derives radio battery flags from the same classification. Full/OK set none of Low/Critical/Unknown; the other three states set exactly their corresponding flag. Snapshot factors are Full=1000, OK=900, Low=750, Critical=500 per mille; Unknown is at most 500. Reject inconsistent state/factor/health combinations. Sparkle never reclassifies voltage. It adds frame serialization time, the 5 ms RX-service allowance, and local elapsed time to the reported measurement age. Heartbeats and repeated snapshots do not make an old measurement fresh. A UART failure or either-board restart clears the usable measurement and applies the Unknown cap; accepted fresh snapshots restore it only through the classification/recovery rules. Battery profile and thresholds belong to STM32 settings. Sparkle needs no battery measurement driver or extra power-status message.
+
+> TODO: SC-BATTERY-THRESHOLDS — Record pack chemistry/cell count, maximum charged voltage, protected/switched sense point before regulation, physical cutoff/startup behavior, actual PA4 divider resistors and ratings, measurement gain/offset, valid range, and three numeric reduction/recovery pairs in mV. Keep acquisition and threshold settings on BlackPill; Sparkle applies the reported factor. If only regulated USB output is available, record that limitation and retain Unknown until an actual battery measurement source is available. Close the circuit design with its wiring/values; retain reference-meter calibration, loaded discharge/recovery, input-voltage, and unpowered-pin checks in deferred physical acceptance. Pack, regulator, charger, and protection selection are not requested here. An absent profile keeps battery state Unknown with the 50% factor; it does not block host tools, protocols, or dim display bring-up.
 
 ### Power-off behavior
 
@@ -1257,7 +1281,7 @@ Test heading with stopped samples while snapshots continue, exact age/field/tilt
 
 Test peer-indexed composition with a fixed roster, missing peers, noncontiguous IDs, device restarts, deliberate roster revisions, and different ring counts. For equal pixel counts, compare the normalized slot mapping with the prototype's combined-strip mapping. Do not let live peer count change composition slots.
 
-Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, physical power interruption, and all three displays together. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
+Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, physical power interruption, and all three displays together. Test inconsistent battery state/factor/health, stopped ADC sampling with snapshots still running, UART loss, and both board restarts. Sparkle must apply Unknown without deriving a fresh state from old voltage. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
 
 ### Required physical evidence
 
@@ -1294,7 +1318,7 @@ The original register mixed design decisions, implementation work, and physical 
 | SC-SENSOR-HARDWARE | Specified | LSM9DS1 rates/scales/interrupts, explicit units, native calibration, and shared mounting transforms. Final physical mounting belongs to SC-ENCLOSURE. |
 | SC-RING-GEOMETRY | Hardware TODO | Density is fixed at 120 LED/m. Record each ring's actual diameter/length/count/part/order/timing/seam/direction. The inline TODO defines its chase, RGB, and frame-time checks. |
 | SC-POWER-CIRCUIT | Specified | Battery powers Sparkle; Sparkle powers BlackPill. Additional pack/regulator/cutoff selection is removed from the MVP requirements. |
-| SC-BATTERY-THRESHOLDS | Hardware TODO | Record the supplied battery's sense connection, calibrated conversion, and voltage/recovery boundaries. Unknown measurement has a specified fallback. |
+| SC-BATTERY-THRESHOLDS | Hardware TODO | Use BlackPill PA4 with a two-resistor divider and 100 nF filter; record the protected/switched tap, fitted values, calibrated conversion, and voltage/recovery boundaries. Sparkle applies the snapshot factor. Unknown measurement has a specified fallback. |
 | SC-CURRENT-MODEL | Validate on hardware | Start with the stated conservative RGB model and configured caps. Measure idle/controller reserve, encoded-frame current error, peak load, brownout margin, and temperature. |
 | SC-LED-MEASUREMENTS | Validate on hardware | Use separate unmeasured defaults, then adapt light-check/profile generation and retain separate circle/inner-ring/outer-ring optical and white-balance measurements. |
 | SC-HEADING-LIMITS | Validate on hardware | Apply the specified states and limits; measure cardinal, tilt, radio, and LED-load error in the assembled device. |
