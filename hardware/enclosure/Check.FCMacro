@@ -1,0 +1,10 @@
+"""Validate the saved native master and exports without saving any test edits."""
+import importlib
+import os
+from pathlib import Path
+import sys
+source = Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0, str(source))
+import check
+importlib.reload(check)
+check.check()
