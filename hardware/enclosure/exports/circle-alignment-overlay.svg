@@ -1,10 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="231mm" height="231mm" viewBox="-115.5 -115.5 231 231">
+<svg xmlns="http://www.w3.org/2000/svg" width="196mm" height="196mm" viewBox="-98 -98 196 196">
 <title>Print at 100 percent and check 166 mm circle / LED registration</title>
 <desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
 <g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
-<circle cx="0" cy="0" r="115.500000"/>
 <circle cx="0" cy="0" r="83.000000"/>
-<path d="M -50,-110 L 50,-110 M -50,-108 L -50,-112 M 50,-108 L 50,-112"/>
+<path d="M -50,-92 L 50,-92 M -50,-90 L -50,-94 M 50,-90 L 50,-94"/>
 <polygon points="-8.513159,-0.760092 -4.457428,-4.815824 1.597261,-2.293037 -1.263505,3.019814 -7.695146,0.875934"/>
 <polygon points="-22.559479,-4.990060 -17.082731,-9.471036 -15.305429,-9.076080 -13.204658,-2.248574 -17.195813,-0.252997 -22.464159,-4.084521"/>
 <polygon points="-26.923765,-13.775043 -20.808656,-15.186222 -18.305643,-10.537769 -23.415625,-6.356875 -26.592117,-8.800330"/>

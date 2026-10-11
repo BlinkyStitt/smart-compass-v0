@@ -1,0 +1,194 @@
+{
+  "stl_files": [
+    "BatteryStrapSlots.stl",
+    "BoardMounts-01.stl",
+    "BoardMounts-02.stl",
+    "BoardMounts-03.stl",
+    "BoardMounts-04.stl",
+    "BoardMounts-05.stl",
+    "BoardMounts-06.stl",
+    "BoardMounts-07.stl",
+    "BoardMounts-08.stl",
+    "BoardMounts-09.stl",
+    "BoardMounts-10.stl",
+    "BoardMounts-11.stl",
+    "BoardMounts-12.stl",
+    "BoardMounts-13.stl",
+    "BoardMounts-14.stl",
+    "CellBaffle.stl",
+    "CircleBezel.stl",
+    "SeamStraps-01.stl",
+    "SeamStraps-02.stl",
+    "SeamStraps-03.stl",
+    "SeamStraps-04.stl",
+    "SeamStraps-05.stl",
+    "SeamStraps-06.stl",
+    "SeamStraps-07.stl",
+    "SeamStraps-08.stl",
+    "SeamStraps-09.stl",
+    "SeamStraps-10.stl",
+    "SeamStraps-11.stl",
+    "SeamStraps-12.stl",
+    "SeamStraps-13.stl",
+    "SeamStraps-14.stl",
+    "SeamStraps-15.stl",
+    "SeamStraps-16.stl",
+    "OpticalDeckQ1.stl",
+    "OpticalDeckQ2.stl",
+    "OpticalDeckQ3.stl",
+    "OpticalDeckQ4.stl",
+    "BarrelFrameQ1.stl",
+    "BarrelFrameQ2.stl",
+    "BarrelFrameQ3.stl",
+    "BarrelFrameQ4.stl",
+    "RearPlateQ1.stl",
+    "RearPlateQ2.stl",
+    "RearPlateQ3.stl",
+    "RearPlateQ4.stl",
+    "FrontBezelQ1.stl",
+    "FrontBezelQ2.stl",
+    "FrontBezelQ3.stl",
+    "FrontBezelQ4.stl"
+  ],
+  "volumes": [
+    {
+      "name": "BatteryStrapSlots",
+      "volume_cm3": 6.3825,
+      "printed": true
+    },
+    {
+      "name": "BoardMounts",
+      "volume_cm3": 6.6847,
+      "printed": true
+    },
+    {
+      "name": "RearMirror",
+      "volume_cm3": 23.4679,
+      "printed": false
+    },
+    {
+      "name": "FrontMirror",
+      "volume_cm3": 24.6493,
+      "printed": false
+    },
+    {
+      "name": "EdgeDiffuserSeam",
+      "volume_cm3": 4.9311,
+      "printed": false
+    },
+    {
+      "name": "WoodMask",
+      "volume_cm3": 13.8949,
+      "printed": false
+    },
+    {
+      "name": "CellBaffle",
+      "volume_cm3": 20.2245,
+      "printed": true
+    },
+    {
+      "name": "FrontAcrylic",
+      "volume_cm3": 32.4636,
+      "printed": false
+    },
+    {
+      "name": "CircleBezel",
+      "volume_cm3": 6.2097,
+      "printed": true
+    },
+    {
+      "name": "SeamStraps",
+      "volume_cm3": 2.0871,
+      "printed": true
+    },
+    {
+      "name": "OpticalDeckQ1",
+      "volume_cm3": 23.4192,
+      "printed": true
+    },
+    {
+      "name": "OpticalDeckQ2",
+      "volume_cm3": 23.6154,
+      "printed": true
+    },
+    {
+      "name": "OpticalDeckQ3",
+      "volume_cm3": 23.4391,
+      "printed": true
+    },
+    {
+      "name": "OpticalDeckQ4",
+      "volume_cm3": 23.6656,
+      "printed": true
+    },
+    {
+      "name": "BarrelFrameQ1",
+      "volume_cm3": 6.3767,
+      "printed": true
+    },
+    {
+      "name": "BarrelFrameQ2",
+      "volume_cm3": 7.6345,
+      "printed": true
+    },
+    {
+      "name": "BarrelFrameQ3",
+      "volume_cm3": 7.354,
+      "printed": true
+    },
+    {
+      "name": "BarrelFrameQ4",
+      "volume_cm3": 7.6231,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ1",
+      "volume_cm3": 9.1238,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ2",
+      "volume_cm3": 9.0953,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ3",
+      "volume_cm3": 6.3574,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ4",
+      "volume_cm3": 6.0491,
+      "printed": true
+    },
+    {
+      "name": "FrontBezelQ1",
+      "volume_cm3": 4.8111,
+      "printed": true
+    },
+    {
+      "name": "FrontBezelQ2",
+      "volume_cm3": 4.7948,
+      "printed": true
+    },
+    {
+      "name": "FrontBezelQ3",
+      "volume_cm3": 4.8111,
+      "printed": true
+    },
+    {
+      "name": "FrontBezelQ4",
+      "volume_cm3": 4.7948,
+      "printed": true
+    }
+  ],
+  "printed_volume_cm3": 214.5536,
+  "optics_mm": {
+    "inner_radius": 111.88592499360243,
+    "outer_radius": 119.84367214819719,
+    "circle_to_inner_led": 26.735924993602424,
+    "visible_mirror_width": 22.5,
+    "mirror_separation": 11.200000000000003,
+    "outer_led_clearance": 1.5063278518028143
+  }
+}

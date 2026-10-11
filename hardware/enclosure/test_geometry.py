@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import contains, led_centres, mask_cells, ring_radius
+from geometry import contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius
 
 HERE = Path(__file__).resolve().parent
 
@@ -42,8 +42,25 @@ class GeometryTests(unittest.TestCase):
             self.assertAlmostEqual(b, -x)
 
     def test_ring_circumference_includes_one_seam_gap(self):
-        for n in (72, 80):
+        for n in (self.p['inner_count'], self.p['outer_count']):
             self.assertAlmostEqual(math.tau * ring_radius(n, self.p), n*1000/120 + 3)
+
+    def test_inner_emits_toward_circle_and_outer_emits_outward(self):
+        for count,outward in ((self.p['inner_count'],False),(self.p['outer_count'],True)):
+            for i in range(count):
+                (x,y),(nx,ny) = ring_pixel(count,i,outward,self.p)
+                dot = x*nx+y*ny
+                self.assertGreater(dot if outward else -dot,0)
+                self.assertAlmostEqual(math.hypot(nx,ny),1)
+                if i == 0:
+                    self.assertGreater(y,0)
+
+    def test_mirror_gap_and_edge_clearance_have_room(self):
+        d = optical_dimensions(self.p)
+        self.assertGreaterEqual(d['visible_mirror_width'],20)
+        self.assertGreaterEqual(d['circle_to_inner_led'],20)
+        self.assertGreaterEqual(d['mirror_separation'],self.p['strip_width']+.4)
+        self.assertGreaterEqual(d['outer_led_clearance'],.5)
 
     def test_excessive_web_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Web removes LED'):
