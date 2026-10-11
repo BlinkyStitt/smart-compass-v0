@@ -6,7 +6,7 @@ Review update: 2026-10-11.
 
 This document specifies the MVP software and board interfaces. It does not establish firmware or physical-device acceptance. Three hardware facts remain open: the ring specification, battery measurement values, and final mounting. Search for `TODO: SC-` to find them. The completion table separates those facts from specified implementation work and physical validation.
 
-Build a portable display that shows live radio peers, points north and toward friends, and runs light patterns. Use the existing Fibonacci256 as the main display. Add a dense LED ring around it. Sparkle Motion drives both displays. STM32 owns the GPS, motion sensors, magnetometer, radio, and external controls.
+Build a portable display that shows live radio peers, points north and toward friends, and runs light patterns. Use the existing Fibonacci256 as the main display. Add inner and outer rings made from 120 LED/m strips. Sparkle Motion drives all three displays. STM32 owns the GPS, motion sensors, magnetometer, radio, and external controls.
 
 This preserves the two-board plan already started in `musical-stm32`. The new project will reuse useful Rust components. It will have its own firmware entry points and hardware configuration.
 
@@ -14,8 +14,9 @@ This preserves the two-board plan already started in `musical-stm32`. The new pr
 
 | Item | Decision |
 | --- | --- |
-| Main display | The existing Evil Genius Labs Fibonacci256, with 256 pixels. |
-| Outer display | One dense, individually addressable LED ring. Its pixel count follows the finished mechanical design. |
+| Circle | The existing Evil Genius Labs Fibonacci256, with 256 pixels. Use “circle” only for this display. |
+| Inner ring | An individually addressable 120 LED/m strip formed into the inner ring around the circle. |
+| Outer ring | An individually addressable 120 LED/m strip formed into the outer ring. Each ring's exact pixel count follows its fitted length. |
 | Display controller | Full Adafruit Sparkle Motion, using Rust and ESP-IDF. |
 | Sensor controller | STM32F411CEU6 BlackPill, using Rust and Embassy; 512 KiB flash and 128 KiB RAM. |
 | Sensor ownership | STM32 reads GPS, accelerometer, gyroscope, magnetometer, and power sensors. It also owns the LoRa radio. |
@@ -44,7 +45,7 @@ The inspected Rust source is commit `ae307cd3cb528d252d02918566aee40fb1383243`. 
 | `musical-lights-core/src/orientation.rs` | A defined device frame and orientation classification from gravity or quaternions. | Reuse the frame definition and tests. Orientation classification alone does not supply a compass heading. |
 | `musical-lights-core/src/sensor_mount.rs` and `docs/sensor-mounting.md` | Separate validated accelerometer, gyro, and magnetometer mounting transforms, including signed-axis and quaternion forms. Reviewed at Rust commit `c83f772f220e4a695ab50650af81636494aa73ad`. | Apply native-frame calibration first, then each sensor's mounting transform once. Reuse `SensorMount` and `ImuMounts` instead of adding another axis-conversion implementation. |
 | `musical-adafruit-sparkle-idf/src/main.rs` | RMT output, microphone capture, shared loudness processing, and inactive peer/sensor state. | Reuse the ESP-IDF build pattern, RMT ownership, and audio pipeline. Its active display has 400 pixels in a 20 by 20 net. Sensor UART setup is commented out. |
-| `musical-adafruit-sparkle-idf/src/light_profile.rs`, `src/bin/light-check.rs`, and `validation/lights/profile.py` | The active renderer keeps linear colors through brightness mapping, then uses `LedResponse::encode()` for per-channel inverse response and white balance. The current default is explicitly unmeasured. The bench binary and generator support measured profiles. | Retain this output contract for every mode. Give the disc and ring separate response profiles and calibration records. Adapt the bench binary and generator to the two outputs; do not copy the 400-pixel net profile as a measurement of either display. |
+| `musical-adafruit-sparkle-idf/src/light_profile.rs`, `src/bin/light-check.rs`, and `validation/lights/profile.py` | The active renderer keeps linear colors through brightness mapping, then uses `LedResponse::encode()` for per-channel inverse response and white balance. The current default is explicitly unmeasured. The bench binary and generator support measured profiles. | Retain this output contract for every mode. Give the circle, inner ring, and outer ring separate response profiles and calibration records. Adapt the bench binary and generator to the three outputs; do not copy the 400-pixel net profile as a measurement of any display. |
 | `musical-adafruit-sparkle-idf/src/light_patterns/fibonacci_layout.rs` | Arrays for 256 pixel positions, angles, and radii. | Reuse after physical index and orientation checks. Its X coordinates are mirrored relative to the published Pixelblaze map. Establish one front-view convention. |
 | `musical-adafruit-sparkle-idf/src/light_patterns/compass.rs` | A loading check followed by a hue pattern. | Write the actual compass renderer. The current function does not display peer bearings. |
 | `musical-lights-core/src/gps.rs`, `radio.rs`, and `lights/networked.rs` | A time alias, a radio TODO, and an empty networked-pattern module. | These are not completed GPS, mesh, or pattern-synchronization implementations. |
@@ -69,8 +70,9 @@ flowchart LR
     RADIO[LoRa radio] <--> STM
     STM <-->|UART snapshots and commands| ESP[Sparkle Motion ESP-IDF firmware]
     MIC[Built-in microphone] --> ESP
-    ESP --> DISC[Fibonacci256]
-    ESP --> RING[Outer LED ring]
+    ESP --> CIRCLE[Circle: Fibonacci256]
+    ESP --> INNER[Inner ring: 120 LED/m strip]
+    ESP --> OUTER[Outer ring: 120 LED/m strip]
     RADIO <-->|Live peer reports| PEERS[Other devices]
 ```
 
@@ -84,11 +86,11 @@ Each peripheral has one owner. Interrupt handlers record readiness and wake task
 
 ### Sparkle Motion
 
-The full board supplies level-shifted LED outputs, a microphone, and a separate peripheral UART. Assign GPIO21 to the disc, GPIO22 to the ring, and GPIO9 TX/GPIO10 RX to STM32. The microphone uses GPIO25, GPIO26, and GPIO33. Keep USB console access separate from the board link. The terminal outputs and GPIO23 are output-only after level shifting. [Adafruit pinouts](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+The full board supplies level-shifted LED outputs, a microphone, and a separate peripheral UART. Assign GPIO21/SIG1 to the circle, GPIO22/SIG2 to the inner ring, GPIO19/SIG3 to the outer ring, and GPIO9 TX/GPIO10 RX to STM32. The microphone uses GPIO25, GPIO26, and GPIO33. Keep USB console access separate from the board link. The terminal outputs and GPIO23 are output-only after level shifting. [Adafruit pinouts](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
 
 Connect Sparkle GPIO9 TX to BlackPill PA10 RX, and Sparkle GPIO10 RX to BlackPill PB6 TX. Connect ground. Connect Sparkle's regulated 3.3 V output to BlackPill 3V3 and its peripheral 3.3 V rail. Budget the complete external branch within Sparkle's published 500 mA peak rating. The LED VOUT terminals follow the input voltage; they are not this logic supply. The provided power hardware supplies the voltage required by the fitted LEDs. Pack, charger, and regulator selection are outside this design update. Check the two programming connections during wiring acceptance. [Power and logic pins](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
 
-Give the disc and ring separate RMT outputs. A failed disc data connection must not break the ring data chain. Both outputs receive the same frame timestamp and power policy.
+Give the circle, inner ring, and outer ring separate RMT outputs. Do not daisy-chain their data. A failed data connection on one display must not break either remaining data chain. All three outputs receive the same frame timestamp and power policy.
 
 ### STM32
 
@@ -119,15 +121,15 @@ Use a dedicated SPI device wrapper for each chip select. Start all selects inact
 
 ### Display geometry
 
-The linked Fibonacci256 is a 166 mm disc with 256 RGB pixels. Its wire order travels out and back along the board. It is not a rectangular matrix or a simple sequence of points along one spiral. Use a measured index-to-position map. The manufacturer's page includes maps and 5 V connection guidance. [Fibonacci256](https://www.evilgeniuslabs.org/fibonacci256).
+The linked Fibonacci256 is a 166 mm circle with 256 RGB pixels. Its wire order travels out and back along the board. It is not a rectangular matrix or a simple sequence of points along one spiral. Use a measured index-to-position map. The manufacturer's page includes maps and 5 V connection guidance. [Fibonacci256](https://www.evilgeniuslabs.org/fibonacci256).
 
-The existing ESP-IDF README records these panels as WS2812B with GRB channel order. Confirm that with a red, green, and blue test on the actual disc. Confirm the ring separately.
+The existing ESP-IDF README records these panels as WS2812B with GRB channel order. Confirm that with a red, green, and blue test on the actual circle. Confirm each ring separately.
 
-Define the display frame as viewed from the front: X right, Y up, zero angle at the physical top, and positive display bearing clockwise. Store one mounting rotation and ring direction. Never spread orientation offsets through individual patterns.
+Define the display frame as viewed from the front: X right, Y up, zero angle at the physical top, and positive display bearing clockwise. Store one shared mounting rotation and a separate direction for each ring. Each installed ring profile records its seam offset from the physical top. Never spread orientation offsets through individual patterns.
 
-Select ring diameter, LED density, and diffuser together. Estimate count with `N = pi * diameter_m * pixels_per_m`. For example, a 180 mm circle at 144 pixels/m contains about 81 pixels. This is a geometry example, not a selected part. Check the strip's bend direction, seam, wiring access, and actual pitch before fixing the count.
+Both rings use 120 LED/m strips, with a nominal pitch of 8.33 mm. Select each fitted diameter and diffuser together. Estimate each count with `N = pi * diameter_m * 120`, then use the actual integer pixel count after cutting and fitting the strip. For example, an inner-ring diameter of 180 mm gives about 68 pixels, and an outer-ring diameter of 190 mm gives about 72 pixels. These diameters are geometry examples, not selected dimensions. Check each strip's bend direction, seam, wiring access, and actual pitch before fixing the counts.
 
-> TODO: SC-RING-GEOMETRY — Record the fitted ring's diameter, exact pixel count, RGB part/protocol, timing, and channel order. Default the seam to the mounted top and increasing indices clockwise; record a different fitted direction in the display profile. Close this item with an index chase, RGB test, measured frame time, and a mounting sketch. Synthetic geometry can support software work before the ring is fitted.
+> TODO: SC-RING-GEOMETRY — The density is fixed at 120 LED/m for both rings. Record each fitted ring's diameter, cut length, exact pixel count, RGB part/protocol, timing, channel order, seam offset, and direction. Default each seam to the mounted top and increasing indices clockwise. Close this item with separate index chases and RGB tests, measured three-output frame time, and a mounting sketch. Synthetic geometry can support software work before the rings are fitted.
 
 ## Display modes
 
@@ -151,7 +153,7 @@ x = radius * sin(angle)
 y = radius * cos(angle)
 ```
 
-Convert angles to radians for trigonometry. Use the same normalized disc geometry for all map calculations. Rasterize a small spot across nearby physical pixels so a marker moves smoothly through the irregular layout. Keep the center marker visible.
+Convert angles to radians for trigonometry. Use the same normalized circle geometry for all map calculations. Rasterize a small spot across nearby physical pixels so a marker moves smoothly through the irregular layout. Keep the center marker visible.
 
 Peers beyond the selected range use a distinct edge marker. Do not make them look as if they sit exactly at the range boundary. Peers inside the combined position uncertainty form a near-center marker without a precise bearing.
 
@@ -169,11 +171,11 @@ Parse a same-epoch GST sentence if the fitted receiver emits it. For documented 
 
 When markers overlap, show each peer in a stable time sequence at that position. The selected peer gets the specified side ticks. Preserve peer identity through the sequence. Do not blend several colors into a new apparent peer.
 
-The outer ring shows north and the selected peer's relative bearing in heading-up view. In north-up view, ring markers use the same geographic frame as the disc. Reserve short, temporary status cues for mode and range changes; do not permanently remove a direction sector from the ring.
+Both rings show the same angular north and selected-peer cues in heading-up view. In north-up view, ring markers use the same geographic frame as the circle. Reserve short, temporary status cues for mode and range changes; do not permanently remove a direction sector from either ring.
 
 ### Compass
 
-The ring gives the primary north indication and peer directions. The disc shows a broad pointer toward the selected peer. Without a selected valid peer, it shows a north pointer.
+Both rings give the primary north indication and peer directions at the same mounted bearings. The circle shows a broad pointer toward the selected peer. Without a selected valid peer, it shows a north pointer.
 
 Use distinct shapes or rhythms for north, selected peer, other peers, and stale peers. Peer color helps identification, but color is not the only distinction. A selected peer keeps the same color and side-tick timing in map and compass modes.
 
@@ -183,29 +185,29 @@ Compass north can work without a GPS fix. In that state, show magnetic north and
 
 ### Patterns
 
-Provide a small first set: spiral rainbow, rotating spokes, radial waves, a rainbow shared across peers, and microphone-reactive pulses. Use the disc's XY and polar coordinates for geometry. Make the outer ring part of each composition.
+Provide a small first set: spiral rainbow, rotating spokes, radial waves, a rainbow shared across peers, and microphone-reactive pulses. Use the circle's XY and polar coordinates for geometry. Make both rings part of each composition.
 
 #### Preset definitions
 
-Assign preset IDs 0 through 4 in the order below. Default to preset 0. Define `r` as disc radius in `[0, 1]`, `a` as clockwise angle from the top divided by one turn, and `t` as elapsed seconds from pattern entry. Ring pixels use `r = 1` and their mounted angle. `fract(x)` returns `[0, 1)`. `tri(x) = 1 - abs(2 * fract(x) - 1)`.
+Assign preset IDs 0 through 4 in the order below. Default to preset 0. Define `r` as circle radius in `[0, 1]`, `a` as clockwise angle from the top divided by one turn, and `t` as elapsed seconds from pattern entry. For presets 0, 1, 2, and 4, both rings use the same angular function at their own mounted pixel angles; ring pixels use `r = 1`. This keeps the existing perimeter pattern on both rings. Preset 3 uses the ordered path below. `fract(x)` returns `[0, 1)`. `tri(x) = 1 - abs(2 * fract(x) - 1)`.
 
 `rainbow(h)` uses six equal RGB sectors: red, yellow, green, cyan, blue, magenta, then red, with linear interpolation between those linear-sRGB vertices. The maximum channel is 1. All formulas produce linear intent before the common brightness, battery, current-limit, and response stages. There is no additional gamma operation inside a preset.
 
-| ID and preset | Disc function and default timing | Ring function |
+| ID and preset | Circle function and default timing | Function for both rings |
 | --- | --- | --- |
 | 0: Spiral rainbow | `rainbow(fract(a + 2*r - t/8))`; 8 s cycle. | The same function at `r = 1`. |
 | 1: Rotating spokes | `rainbow(fract(a - t/8)) * pow(max(0, cos(2*pi*(3*a - 3*t/8))), 8)`; three spokes, 8 s full color/rotation cycle. | The same function at `r = 1`. |
 | 2: Radial waves | `rainbow(fract(r - t/8)) * (0.1 + 0.9*tri(2*r - t/4))`; 8 s cycle. | The same function at `r = 1`. |
-| 3: Shared rainbow | The composition formula below, with `shared_pattern(u) = rainbow(u)`; 8 s cycle and Unix UTC origin 0. | Continues the local path after disc pixel 255. |
+| 3: Shared rainbow | The composition formula below, with `shared_pattern(u) = rainbow(u)`; 8 s cycle and Unix UTC origin 0. | Inner-ring pixels follow circle pixel 255; outer-ring pixels follow the last inner-ring pixel. |
 | 4: Audio pulse | Let `e = clamp(max(frame.levels), 0, 1)` from the existing 24-band `VisualGain` -> `DisplaySnapshot<24>` pipeline, sampled at the display timestamp. Use `rainbow(fract(a - t/8)) * e * max(0, 1 - abs(r - e)/0.15)`. Silence produces black; audio activity moves a 0.30-radius-wide pulse outward. | Use `rainbow(fract(a - t/8)) * e`; activity changes ring intensity. |
 
-For preset 0 at the top edge (`a=0, r=1`), frames at `t=0, 2, 4` seconds have hues `0, 0.75, 0.5`. For preset 2 at the center, intensity is 0.1 at `t=0` and 1 at `t=2`. For preset 3 with four peers at trusted phase 0, each device's first disc pixel starts at hues `0, 0.25, 0.5, 0.75` respectively. For preset 4, `e=0.25` lights the disc around radius 0.25 and gives the ring 25% linear intensity; `e=0` lights neither output.
+For preset 0 at the top edge (`a=0, r=1`), frames at `t=0, 2, 4` seconds have hues `0, 0.75, 0.5`. For preset 2 at the center, intensity is 0.1 at `t=0` and 1 at `t=2`. For preset 3 with four peers at trusted phase 0, each device's first circle pixel starts at hues `0, 0.25, 0.5, 0.75` respectively. For preset 4, `e=0.25` lights the circle around radius 0.25 and gives both rings 25% linear intensity; `e=0` lights no output.
 
 Local presets reset `t` to zero on entry. Shared rainbow uses the clock state below and never resets trusted phase on a mode change. Pattern cycle configuration may scale a preset's time terms by `default_cycle / configured_cycle`; the permitted configured cycle is 2 through 60 seconds. It cannot change the fixed geometry or audio analysis. Navigation and status cues overlay patterns according to the cue table.
 
-The preset formulas and cue table are the MVP defaults. Physical visual review is a validation task, not an unanswered design decision. Record measured visibility and any accepted revision after rendering them on the actual disc and ring.
+The preset formulas and cue table are the MVP defaults. Physical visual review is a validation task, not an unanswered design decision. Record measured visibility and any accepted revision after rendering them on the actual circle and both rings.
 
-Reuse the production `LoudnessMeter`, `VisualGain`, and time-based display state for audio patterns. Map the shared analysis output onto this disc's geometry. The existing twenty-row net layout does not define the new rendering. Do not replace loudness with independent FFT gains or reset analysis at LED frame boundaries.
+Reuse the production `LoudnessMeter`, `VisualGain`, and time-based display state for audio patterns. Map the shared analysis output onto this circle's geometry. The existing twenty-row net layout does not define the new rendering. Do not replace loudness with independent FFT gains or reset analysis at LED frame boundaries.
 
 Start microphone capture when entering an audio pattern. Stop and release it when leaving audio patterns. Plain patterns work if capture fails. Show a failure cue instead of presenting invented audio activity.
 
@@ -217,7 +219,7 @@ Retain the active Arduino `networkedLights()` behavior: each device shows a diff
 
 Sort the configured roster by numeric peer ID. A device's zero-based position in that roster is its pattern slot `k`; the configured roster length is `N`. STM32 sends `k`, `N`, and the roster revision in its snapshots. Never derive these values from the currently reachable peers. An absent device leaves its section empty, so other devices do not jump to new colors or positions.
 
-For this pattern, define one local path: disc indices 0 through 255, followed by ring pixels in clockwise order from the mounted top. Let `L` be that device's disc-plus-ring pixel count and `j` its pixel's index along this path. Use the common preset's cycle period and time origin to calculate `phase(t)` in full cycles:
+For this pattern, define one local path: circle indices 0 through 255, followed by inner-ring pixels and then outer-ring pixels, each in clockwise order from the mounted top. Use the inverse of each ring's fitted seam/direction transform to obtain physical indices. Let `L = 256 + inner_ring_count + outer_ring_count` be that device's total pixel count and `j` its pixel's index along this path. Use the common preset's cycle period and time origin to calculate `phase(t)` in full cycles:
 
 ```text
 u = fract((k + j / L) / N + phase(t))
@@ -230,9 +232,9 @@ Every participant must use the same roster revision, preset, cycle period, and t
 
 ## LED response calibration
 
-Keep all disc and ring colors in linear sRGB through composition and brightness mapping. This includes navigation markers, status cues, plain patterns, and microphone-reactive patterns. Sparkle applies each output's `LedResponse::encode()` once to convert the final linear intent to RGB bytes, including per-channel inverse response, white balance, and the output drive cap. The driver then applies that output's channel order. Do not add a second gamma or white-balance pass.
+Keep colors for the circle and both rings in linear sRGB through composition and brightness mapping. This includes navigation markers, status cues, plain patterns, and microphone-reactive patterns. Sparkle applies each output's `LedResponse::encode()` once to convert the final linear intent to RGB bytes, including per-channel inverse response, white balance, and the output drive cap. The driver then applies that output's channel order. Do not add a second gamma or white-balance pass.
 
-Use this output sequence for both displays:
+Use this output sequence for all three displays:
 
 ```text
 linear composition
@@ -242,13 +244,13 @@ linear composition
   -> RMT output
 ```
 
-Select the permitted power scale from the estimated current of the encoded disc and ring frames before writing either output. If a candidate exceeds the budget, reduce the linear scale and encode a new candidate from the unchanged linear composition. Never feed encoded bytes back through the response curve. This keeps normal dimming in linear light while enforcing the current limit on the actual proposed drive bytes.
+Select the permitted power scale from the estimated current of the encoded frames for all three outputs before writing any output. If a candidate exceeds the budget, reduce the linear scale and encode a new candidate from the unchanged linear composition. Never feed encoded bytes back through the response curve. This keeps normal dimming in linear light while enforcing the current limit on the actual proposed drive bytes.
 
-Own the profiles in the new Sparkle application's deployment module. Keep one microphone input calibration and separate disc and ring LED response functions. Reuse the shared `LedResponse` type. Extend `validation/lights/profile.py` to generate the named LED profiles from separate measurements. Keep each profile's LED identity, supply voltage, diffuser arrangement, measurement method, and measured/unmeasured state with the deployment data. Configuration references those profile identities; it does not maintain a second copy of the response curves.
+Own the profiles in the new Sparkle application's deployment module. Keep one microphone input calibration and separate circle, inner-ring, and outer-ring LED response functions. Reuse the shared `LedResponse` type. Extend `validation/lights/profile.py` to generate the named LED profiles from separate measurements. Keep each profile's LED identity, supply voltage, diffuser arrangement, measurement method, and measured/unmeasured state with the deployment data. Configuration references those profile identities; it does not maintain a second copy of the response curves.
 
-Before measurement, use `LedResponse::default()` independently for each display and report it as unmeasured. A measured disc profile does not calibrate the ring. Reject an invalid measured profile instead of silently treating it as valid. Channel-order tests, current-limit measurements, and optical response measurements establish different properties.
+Before measurement, use `LedResponse::default()` independently for each display and report it as unmeasured. A measured circle profile does not calibrate either ring. A measured inner-ring profile does not calibrate the outer ring, even when both strips have the same part number. Reject an invalid measured profile instead of silently treating it as valid. Channel-order tests, current-limit measurements, and optical response measurements establish different properties.
 
-Adapt `light-check` to address the disc and ring separately with their actual pixel counts, pins, and channel orders. Retain red, green, blue, and white ramps plus timed pulses. Apply the operational drive caps and total current budget during the full-display checks. The current generator requires at least 17 strictly increasing measured points per channel over drive 0 through 255, plus measured white-balance factors. Obtain those full-range data with a suitable, current-limited small-pixel fixture; do not drive the whole disc and ring at full white to satisfy the generator. Measure the installed optical arrangement before claiming calibrated displayed color.
+Adapt `light-check` to address the circle, inner ring, and outer ring separately with their actual pixel counts, pins, and channel orders. Retain red, green, blue, and white ramps plus timed pulses. Apply the operational drive caps and total current budget during the full-display checks. The current generator requires at least 17 strictly increasing measured points per channel over drive 0 through 255, plus measured white-balance factors. Obtain those full-range data with a suitable, current-limited small-pixel fixture; do not drive the whole circle and both rings at full white to satisfy the generator. Measure the installed optical arrangement before claiming calibrated displayed color.
 
 Compilation of `light-check` does not run it, flash it, or establish calibration. Retain measured input data and meaningful generated deployment profiles with the implementation. Test monotonic response, correct profile selection, black output, drive caps, and one response application. The current shared tests provide a starting point. See the existing [LED response implementation](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/musical-lights-core/src/lights/color_correction.rs), [bench program](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/musical-adafruit-sparkle-idf/src/bin/light-check.rs), and [profile generator](https://github.com/BlinkyStitt/musical-lights-rs/blob/ae307cd3cb528d252d02918566aee40fb1383243/validation/lights/profile.py).
 
@@ -278,7 +280,7 @@ Brightness levels are 5%, 10%, 25%, 50%, and 100% of linear intent. Action hold 
 | Visible Compass, Action short | Next configured peer with a non-expired position, ordered by numeric ID; wrap. If none qualify, clear selection. An uncertain bearing does not prevent selection. |
 | Visible Patterns, Action short | Preset 0 -> 1 -> 2 -> 3 -> 4 -> 0. Skip preset 3 only when roster identity is missing. A microphone fault leaves preset 4 selected, black except for its fault cue. |
 | Visible, Action hold | Advance brightness once. |
-| Visible, Mode hold | Set blanked; send black to both outputs. Keep navigation and radio active. |
+| Visible, Mode hold | Set blanked; send black to all three outputs. Keep navigation and radio active. |
 | Blanked, Mode hold | Clear blanked; restore the same mode, range, preset, and brightness. |
 | Blanked, either short or Action hold | Consume the event; leave the display blank and the UI settings unchanged. |
 | Link unavailable | Retain UI state. Do not invent control input. Apply the link-fault display policy. |
@@ -287,32 +289,32 @@ Factory defaults are Map, 500 m, heading-up, no selected peer, preset 0, 8 s cyc
 
 ### Navigation glyphs and status cues
 
-These are the specified MVP visuals. All lengths use the normalized disc radius. Measure angular distances by the shorter arc. Use an antialiased spot with linear falloff `max(0, 1 - distance/0.06)` around each map coordinate. The center marker is a white spot of radius 0.04. A disc pointer is a white or peer-colored shaft from radius 0.15 to 0.70, half-width 0.035, with a triangular head whose tip is at radius 0.90 and whose base spans +/-12 degrees at radius 0.65.
+These are the specified MVP visuals. Apply every ring glyph and its timing to both rings at the same mounted bearing; sample each ring independently at its actual pixel angles. All lengths use the normalized circle radius. Measure angular distances by the shorter arc. Use an antialiased spot with linear falloff `max(0, 1 - distance/0.06)` around each map coordinate. The center marker is a white spot of radius 0.04. A circle pointer is a white or peer-colored shaft from radius 0.15 to 0.70, half-width 0.035, with a triangular head whose tip is at radius 0.90 and whose base spans +/-12 degrees at radius 0.65.
 
 The eight peer palette entries, in linear RGB, are `(1,.15,0)`, `(0,.4,1)`, `(0,1,.3)`, `(1,0,.6)`, `(.7,.3,1)`, `(1,.7,0)`, `(0,1,1)`, and `(.7,.7,.7)`. White is `(1,1,1)`, amber is `(1,.35,0)`, and magenta is `(1,0,1)`. Use the configured color ID consistently. Shapes and timing carry status independently of hue.
 
 | Cue | Shape, intensity, and timing before common output scaling |
 | --- | --- |
-| True north | White ring segment spanning +/-3 degrees. Steady at 0.35 linear intensity. North disc pointer uses the same intensity. |
-| Selected peer | Ring segment +/-5 degrees and map spot or disc pointer; peak linear intensity 0.50. Add two short side ticks at bearing +/-9 degrees, on for 150 ms each 1.2 s. Keep the main marker steady while fresh. |
+| True north | White ring segment spanning +/-3 degrees. Steady at 0.35 linear intensity. North circle pointer uses the same intensity. |
+| Selected peer | Ring segment +/-5 degrees and map spot or circle pointer; peak linear intensity 0.50. Add two short side ticks at bearing +/-9 degrees, on for 150 ms each 1.2 s. Keep the main marker steady while fresh. |
 | Other peer | Ring segment +/-2 degrees or map spot, steady at peak linear intensity 0.50. |
-| Stale peer | Retain its map glyph or ring segment at the same 0.50 peak, on for 200 ms then off for 800 ms. Never draw the selected disc pointer. |
+| Stale peer | Retain its map glyph or ring segment at the same 0.50 peak, on for 200 ms then off for 800 ms. Never draw the selected circle pointer. |
 | Out of range | Two spots at edge radius 0.95, angles bearing +/-4 degrees; use the peer's ordinary or selected timing. |
-| Known uncertainty includes center | Peer spot on a radius-0.08 center cluster, one peer per 600 ms slot, sorted by ID. No ring direction or selected disc pointer. |
-| Unknown accuracy | Keep the calculated map location. Replace its filled spot with a hollow circle of radius 0.06 and half-width 0.015. On the ring, use two +/-2-degree segments centered at bearing +/-5 degrees, with a dark center. Draw the selected compass arrow as an outline of half-width 0.015, with no filled shaft. Use the same 0.50 peak as a known-accuracy peer. |
-| GPS search | Amber spot circles at radius 0.50 once per 2 s; peer positions and pointers stay hidden when local position is expired. |
+| Known uncertainty includes center | Peer spot on a radius-0.08 center cluster, one peer per 600 ms slot, sorted by ID. No ring direction or selected circle pointer. |
+| Unknown accuracy | Keep the calculated map location. Replace its filled spot with a hollow outline of radius 0.06 and half-width 0.015. On each ring, use two +/-2-degree segments centered at bearing +/-5 degrees, with a dark center. Draw the selected compass arrow as an outline of half-width 0.015, with no filled shaft. Use the same 0.50 peak as a known-accuracy peer. |
+| GPS search | Amber spot orbits at radius 0.50 once per 2 s; peer positions and pointers stay hidden when local position is expired. |
 | Magnetic-only north | Amber north segment, 200 ms on / 800 ms off. No true-bearing peer pointer. |
 | Heading unreliable | Two amber top-edge spots at +/-12 degrees, 150 ms on at 0 and 300 ms of each 2 s cycle. Suppress affected directions; map falls back to north-up. |
 | Radio or microphone fault | Two magenta edge spots, 200 ms on each 4 s cycle. A radio fault leaves valid received positions to age normally. |
 | Link lost | Four amber cardinal ring segments, 200 ms on / 800 ms off. Hide all sensor-derived pointers after the 2 s deadline. |
 | Low / Critical / unknown power | Bottom ring segment +/-8 degrees, amber; Low 200 ms every 4 s, Critical every 1 s, unknown two 100 ms pulses separated by 100 ms every 2 s. |
-| Mode change | One, two, or three white spots at the top of the ring for Map, Compass, or Patterns; show for 600 ms. |
+| Mode change | One, two, or three white spots at the top of each ring for Map, Compass, or Patterns; show for 600 ms. |
 | Range change | One through six white ring groups, equally spaced from the top; 600 ms. |
 | Target lost / input fault | Three amber 100 ms pulses, separated by 100 ms; then resume the current fault/state display. |
 
-At ring counts below the angular glyph resolution, light at least one nearest pixel per segment. If an unknown-accuracy pair collapses to one ring pixel, use two 100 ms on intervals starting at 0 and 200 ms of each 1 s cycle, at the same 0.50 peak. Stale gating still masks the complete glyph. Apply the hollow spot shape to each out-of-range edge spot when accuracy is unknown. Use the same mounted front-view transform for every glyph. For ordinary map spots within 0.12 radius of each other, show one peer for each 600 ms slot, sorted by ID; retain each peer's selected/stale rhythm. The center marker remains visible.
+For each ring independently, at counts below the angular glyph resolution, light at least one nearest pixel per segment. If an unknown-accuracy pair collapses to one ring pixel, use two 100 ms on intervals starting at 0 and 200 ms of each 1 s cycle, at the same 0.50 peak. Stale gating still masks the complete glyph. Apply the hollow spot shape to each out-of-range edge spot when accuracy is unknown. Use the same mounted front-view transform for every glyph. For ordinary map spots within 0.12 radius of each other, show one peer for each 600 ms slot, sorted by ID; retain each peer's selected/stale rhythm. The center marker remains visible.
 
-If north and a peer occupy overlapping ring sectors, alternate north for 300 ms and that peer for 300 ms. More overlapping peers join the stable ID order after north. Do not mix identities into a new color. Apply output priority: user blank, link loss, GPS-search replacement, then navigation/patterns with power/heading/hardware status. For simultaneous routine status cues, show one 600 ms cue window every 2 s in the order power, heading, radio, microphone; rotate through active cues. Status overlays use at most 0.20 linear intensity and temporarily own only their glyph pixels. Mode/range cues wait until the next free cue window and expire after 2 s. A lost-target cue runs once immediately unless blanking or link loss overrides it.
+Determine angular overlap from the specified glyph sectors once and use the same peer/north slot schedule on both rings, even if their pixel counts differ. If north and a peer occupy overlapping ring sectors, alternate north for 300 ms and that peer for 300 ms. More overlapping peers join the stable ID order after north. Do not mix identities into a new color. Apply output priority: user blank, link loss, GPS-search replacement, then navigation/patterns with power/heading/hardware status. For simultaneous routine status cues, show one 600 ms cue window every 2 s in the order power, heading, radio, microphone; rotate through active cues. Status overlays use at most 0.20 linear intensity and temporarily own only their glyph pixels. Mode/range cues wait until the next free cue window and expire after 2 s. A lost-target cue runs once immediately unless blanking or link loss overrides it.
 
 Example: with north and the selected peer both at zero degrees, `0..300 ms` shows north and `300..600 ms` shows the peer at intensity 0.50; repeat. Unknown accuracy replaces the peer segment with the paired segments in its slot. Selected side ticks run on their own 1.2 s clock. Stale timing masks the whole peer glyph, including side ticks, without changing the peak. If low power and unreliable heading coexist, the first 600 ms status window shows low power, the window at 2 s shows heading, and the window at 4 s returns to low power. Direction suppression takes effect immediately; it does not wait for a cue window. Blanking suppresses every visual cue.
 
@@ -372,7 +374,7 @@ Validate these specified limits and the 10-degree heading target with the fitted
 
 Provide a host tool at the planned path `smart-compass/tools/calibrate-sensors.py`. The commands below belong to the wired interface specified later. They are implementation requirements, not commands available in the prototype. Keep calibration sample files free of GPS coordinates and UTC position records.
 
-1. Assemble the final sensor, wiring, battery, disc, ring, diffuser, and enclosure. Put the device on a nonmagnetic fixture away from steel and magnetic objects. Use a dim display with radio transmission paused for collection; keep GPS and UART tasks active. Record sensor identity, full-scale settings, axis mapping, mounting revision, and temperature.
+1. Assemble the final sensor, wiring, battery, circle, both rings, diffusers, and enclosure. Put the device on a nonmagnetic fixture away from steel and magnetic objects. Use a dim display with radio transmission paused for collection; keep GPS and UART tasks active. Record sensor identity, full-scale settings, axis mapping, mounting revision, and temperature.
 2. Run `calibration start sensors`. STM32 creates one volatile run ID and marks heading Uncalibrated/Acquiring for this run. The wired host drains timestamped raw accelerometer (`m/s^2`), gyro (`rad/s`), and magnetometer (`microtesla`) samples from the calibration stream. No navigation heading is valid during collection.
 3. Leave the device stationary for 10 s after a 2 s settling period. Collect at least 1000 gyro samples at 100 Hz. Use the mean as gyro bias. Reject the interval if any axis standard deviation exceeds 0.02 rad/s or acceleration magnitude varies by more than 0.05 g.
 4. Hold each of the six native accelerometer axes vertically up, following the host tool's mounting instructions, for 5 s, after 1 s settling. Retain at least 300 stable accelerometer samples per pose. For each axis, derive bias from the midpoint of its positive/negative means and scale from `2*9.80665/(positive_mean-negative_mean)`. This calibration is diagonal; the fixed mounting matrix supplies axis alignment. Reject a scale outside 0.8..1.2 or a corrected stationary norm more than 0.03 g from 1 g.
@@ -841,19 +843,19 @@ Use the same fixed-width L2/L4/L8/F4 encodings as the UART tables. Bool is one b
 | Stored STM | `schema:L2=1`, `generation:L4`, `device_id:L2`, `group_id:L4`, `key_id:L4`, `key:B[32]`, `roster_revision:L4`, `roster:V[8,RosterEntry]`, `radio_profile:L2`, `interval_ms:L4`, `relay_enabled:b`, `sensor_profile:L2`, `mount_revision:L4`, `gps_profile:L2`, `battery_profile:L2`, `calibration:Option<CoefficientRecord>`, `crc:L4`. RosterEntry is ID L2 then color b. | 219 |
 | Write STM | Stored STM order, but replace `key:B[32]` with `key_update:Option<B[32]>`. None retains the installed key and requires unchanged key ID. Some replaces the key. First provisioning requires Some. | 220 |
 | Public STM | Stored STM order, but replace key bytes with `key_present:b`. Never return key bytes or a key hash in settings readback. | 188 |
-| Sparkle | `schema:L2=1`, `generation:L4`, `display_profile:L2`, `rotation_cdeg:L2`, `ring_clockwise:b`, `total_mA:L2`, `reserve_mA:L2`, `disc_mA:L2`, `ring_mA:L2`, `disc_drive_cap:b`, `ring_drive_cap:b`, `mode:b` Map=0/Compass=1/Patterns=2, `blanked:b`, `brightness_percent:b` literal 5/10/25/50/100, `range:b` indices 0..5 for the control table ranges, `orientation:b` HeadingUp=0/NorthUp=1, `selected_peer:Option<L2>`, `preset:b`, `cycle_ms:L4`, `time_origin:L8=0`, `disc_response:L2`, `ring_response:L2`, `audio_profile:L2`, `crc:L4`. | 52 |
+| Sparkle | `schema:L2=1`, `generation:L4`, `display_profile:L2`, `rotation_cdeg:L2`, `inner_ring_clockwise:b`, `outer_ring_clockwise:b`, `total_mA:L2`, `reserve_mA:L2`, `circle_mA:L2`, `inner_ring_mA:L2`, `outer_ring_mA:L2`, `circle_drive_cap:b`, `inner_ring_drive_cap:b`, `outer_ring_drive_cap:b`, `mode:b` Map=0/Compass=1/Patterns=2, `blanked:b`, `brightness_percent:b` literal 5/10/25/50/100, `range:b` indices 0..5 for the control table ranges, `orientation:b` HeadingUp=0/NorthUp=1, `selected_peer:Option<L2>`, `preset:b`, `cycle_ms:L4`, `time_origin:L8=0`, `circle_response:L2`, `inner_ring_response:L2`, `outer_ring_response:L2`, `audio_profile:L2`, `crc:L4`. | 58 |
 
 Write STM generation must equal `expected_generation+1`; first provisioning uses expected 0 and result 1. Reject generation overflow. Resolve key_update, validate the complete settings and installed profiles, then generate the Stored and Public records locally. ReplaceSettings may retain the identical accepted calibration or clear it when sensor identity/mount changes; it cannot introduce different coefficients. Stage/SaveCalibration is the sole path for new coefficients. Saving calibration increments settings generation and calibration revision atomically. ReadSettings returns Public STM; Sparkle console readback returns the Sparkle record's fields. An unprovisioned STM returns NotFound/generation 0, and `config begin stm` creates a generation-0 draft with required fields missing rather than inventing identity or keys.
 
 Public digest is SHA-256 of ASCII `SC-PUBLIC-V1` followed by a zero byte, owner byte STM=0/Sparkle=1, and the complete canonical public record including its CRC. Request digest is SHA-256 of ASCII `SC-REQUEST-V1`, zero byte, client epoch L4, command ID L4, operation b, expected generation L4, and the canonical data vector including its length. Exclude target STM boot so retry after reboot preserves identity. Store request digests internally; do not export them for secret-bearing commands. A public digest intentionally cannot prove that a key was installed; use KeyCheck.
 
-ValidationError field IDs are fixed: 0 whole record; STM 1 device ID, 2 group ID, 3 key ID, 4 key update, 5 roster revision, 6 roster, 7 radio profile, 8 interval, 9 relay enable, 10 sensor profile, 11 mount revision, 12 GPS profile, 13 battery profile, 14 calibration. Sparkle IDs 0x1001..0x1015 follow its field order from display_profile through audio_profile, inclusive. ID 0x1100 denotes schema/version, 0x1101 generation, 0x1102 record CRC, 0x1103 run ID, 0x1104 candidate SHA-256. The existing reason values Range=0/Missing=1/Conflict=2/Integrity=3 remain authoritative. An unsupported operation is ValidationError field 0/reason Range. The fixtures below bind byte layout and integrity; firmware still needs to enforce the semantic settings table.
+ValidationError field IDs are fixed: 0 whole record; STM 1 device ID, 2 group ID, 3 key ID, 4 key update, 5 roster revision, 6 roster, 7 radio profile, 8 interval, 9 relay enable, 10 sensor profile, 11 mount revision, 12 GPS profile, 13 battery profile, 14 calibration. Sparkle IDs 0x1001..0x1019 follow its field order from display_profile through audio_profile, inclusive. ID 0x1100 denotes schema/version, 0x1101 generation, 0x1102 record CRC, 0x1103 run ID, 0x1104 candidate SHA-256. The existing reason values Range=0/Missing=1/Conflict=2/Integrity=3 remain authoritative. An unsupported operation is ValidationError field 0/reason Range. The fixtures below bind byte layout and integrity; firmware still needs to enforce the semantic settings table.
 
 ### Settings, calibration, and operation fixtures
 
 All values here are synthetic. Profile ID 1 denotes the specified development profile; these bytes are not calibration measurements. The coefficient fixture uses sensor/mount/calibration revision 1, 2000 magnetic samples, unknown temperature, zero biases, unit accelerometer scales and magnetic matrix, B0=50 microtesla, holdout RMS=1/max=3 microtesla, solver 1. Its SHA-256 is `310db271410ddac3f280c137b948e6cc048d11ea6499378b7c17f91492eb52e0`.
 
-The settings fixture provisions device 1, group 0x01020304, key ID 1 with the public fixture key, roster revision 1 with only self/color 0, radio/sensor/mount/GPS profile 1, 5000 ms direct reports, absent battery profile 0, no calibration, and generation 1. Public STM substitutes key_present=1. Its public digest is `b5eb54b932906488e5c954ea4d7263310f1f453114984ceabb0c4319809b3363`. The Sparkle fixture has profile IDs 1, no rotation, clockwise ring, current caps total/reserve/disc/ring=2000/500/1000/500 mA, drive caps 128, and the ordinary UI defaults. These caps are fixture values, not a rating of the supplied pack. It is 50 bytes with no selected peer; 52 is the maximum with a selected ID.
+The settings fixture provisions device 1, group 0x01020304, key ID 1 with the public fixture key, roster revision 1 with only self/color 0, radio/sensor/mount/GPS profile 1, 5000 ms direct reports, absent battery profile 0, no calibration, and generation 1. Public STM substitutes key_present=1. Its public digest is `b5eb54b932906488e5c954ea4d7263310f1f453114984ceabb0c4319809b3363`. The Sparkle fixture has profile IDs 1, no rotation, clockwise inner and outer rings, current caps total/reserve/circle/inner/outer=2500/500/1000/500/500 mA, drive caps 128, and the ordinary UI defaults. These caps are fixture values, not a rating of the supplied pack. It is 56 bytes with no selected peer; 58 is the maximum with a selected ID.
 
 CoefficientRecord: record=120
 
@@ -886,13 +888,13 @@ PublicSTM-one-peer: record=47
 01 00 01 00 00 00 01 00 00 00 00 c6 3f ec df
 ```
 
-SparkleSettings-default: record=50
+SparkleSettings-default: record=56
 
 ```text
-01 00 01 00 00 00 01 00 00 00 01 d0 07 f4 01 e8
-03 f4 01 80 80 00 00 19 02 00 00 00 40 1f 00 00
-00 00 00 00 00 00 00 00 01 00 01 00 01 00 ce 3f
-bd d9
+01 00 01 00 00 00 01 00 00 00 01 01 c4 09 f4 01
+e8 03 f4 01 f4 01 80 80 80 00 00 19 02 00 00 00
+40 1f 00 00 00 00 00 00 00 00 00 00 01 00 01 00
+01 00 01 00 df ab 61 e1
 ```
 
 The operation examples use target STM boot/client epoch 1. IDs 2..12 are fixture identities, not a script to run in sequence: Begin ID 3 creates run `0100000003000000`; Stage ID 4 and Save ID 5 refer to that run, with Save expecting settings generation 1. Cancel and preview examples are alternate scenarios. ReplaceSettings ID 2 expects generation 0. KeyCheck ID 8 uses nonce bytes 00..0f, group/key IDs above, and result generation 1. ValidationError returns field 1/reason Range. The one-record batch uses capture time 1000 ms, all three valid bits, acceleration `(0,0,9.80665)`, gyro zero, and magnetic field `(20,0,40)` in SI units; sequence is 1 and overruns are zero. The full eight-record batch maximum is 351 payload/356 wire bytes.
@@ -1036,33 +1038,33 @@ Negative UART fixtures derive from the complete frames above. This makes the cha
 | Heading publication | 20 Hz snapshots | STM32; publish quality and source age with heading. |
 | GPS | 1 Hz position, continuous UART draining | STM32; recover sentence boundaries after overflow or malformed input. |
 | Radio | Five-second self report plus bounded relay work | STM32; interrupt-driven receive and bounded transmit timeout. |
-| Disc and ring | 50 frames/s | Sparkle; latest navigation snapshot, elapsed-time animation. |
+| Circle and both rings | 50 frames/s | Sparkle; latest navigation snapshot, elapsed-time animation. |
 | Audio | Existing continuous 48 kHz analysis in audio patterns | Sparkle; preserve sample continuity and report capture failure. |
 | Power sampling | About 1 Hz | STM32; filter readings and apply hysteresis. |
 
 These are design targets, not measured performance results. Measure task latency, missed samples, frame time, stack high-water marks, and heap use with every subsystem active.
 
-At an assumed 800 kbit/s, RGB output takes about 30 microseconds per pixel before reset/latch time. The disc takes about 7.68 ms. A 144-pixel example ring takes about 4.32 ms. Sequential output totals about 12 ms plus latch and rendering, within a 20 ms frame only if measured overhead fits. Confirm the actual pixel timing and RMT behavior. Parallel channels must not be assumed to transmit in parallel merely because both exist.
+At an assumed 800 kbit/s, RGB output takes about 30 microseconds per pixel before reset/latch time. The circle takes about 7.68 ms. The 68-pixel inner-ring and 72-pixel outer-ring geometry examples take about 2.04 ms and 2.16 ms. Sequential output totals about 11.88 ms plus three latch intervals and rendering, within a 20 ms frame only if measured overhead fits. Recalculate with the fitted counts and actual protocols. Confirm pixel timing and RMT behavior; three channels do not establish parallel transmission.
 
-One RGB frame needs `3 * (256 + ring_count)` bytes. Account separately for linear-color buffers, RMT encoding buffers, audio state, task stacks, protocol buffers, and driver allocations. Use fixed peer and packet storage. Record headroom on the selected STM32 and classic ESP32; do not assume PSRAM.
+One RGB frame needs `3 * (256 + inner_ring_count + outer_ring_count)` bytes; at the per-ring limit of 512, this is 3840 bytes. Account separately for linear-color buffers, RMT encoding buffers, audio state, task stacks, protocol buffers, and driver allocations. Use fixed peer and packet storage. Record headroom on the selected STM32 and classic ESP32; do not assume PSRAM.
 
 A supervisor checks task progress. Use bounded peripheral timeouts and a limited restart policy. A failed GPS, sensor, or radio marks that component unavailable. It does not fabricate data or reset the whole system indefinitely. A watchdog catches a true loss of progress. Preserve a short reset reason and counters without recording coordinates.
 
 ## Power and enclosure
 
-The supplied battery system powers Sparkle Motion. Sparkle Motion powers BlackPill from its regulated 3.3 V output. BlackPill and its GPS, radio, and sensors share that logic rail. Keep its external peak demand within the published 500 mA limit. The provided supply must also match the fitted disc and ring voltage. Sparkle's LED VOUT follows its input; its internal logic regulator does not regulate LED power. This document does not select a battery pack, charger, or additional regulator. [Sparkle power pins](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+The supplied battery system powers Sparkle Motion. Sparkle Motion powers BlackPill from its regulated 3.3 V output. BlackPill and its GPS, radio, and sensors share that logic rail. Keep its external peak demand within the published 500 mA limit. The provided supply must also match the voltage requirements of the circle and both rings. Sparkle's LED VOUT follows its input; its internal logic regulator does not regulate LED power. This document does not select a battery pack, charger, or additional regulator. [Sparkle power pins](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
 
-The Fibonacci manufacturer gives 60 mA per pixel as a theoretical full-white maximum: 15.36 A for the disc alone. Sparkle's nominal 5 A power path cannot provide that. Set one total budget and separate branch caps before bright operation. Subtract controller, GPS, sensor, and peak radio demand before allocating LED current. [Fibonacci256 power guidance](https://www.evilgeniuslabs.org/fibonacci256).
+The Fibonacci manufacturer gives 60 mA per pixel as a theoretical full-white maximum: 15.36 A for the circle alone. Sparkle's nominal 5 A power path cannot provide that. Set one total budget and separate branch caps before bright operation. Subtract controller, GPS, sensor, and peak radio demand before allocating LED current. [Fibonacci256 power guidance](https://www.evilgeniuslabs.org/fibonacci256).
 
 Use a conservative unmeasured RGB model during dim bring-up: `I_pixel_mA = 1 + 20*(R+G+B)/255` for encoded bytes, including the black idle allowance. Use a configured controller reserve of at least 500 mA. Before any frame, ensure the total and each branch budget can cover their idle loads. If they cannot, refuse display operation and report the invalid budget. Starting branch and total caps come from the supplied hardware ratings; do not infer them from brightness percentage. Replace the provisional model only with measured values that still bound the observed current. Model validation, brownout tests, and temperature checks are acceptance tasks rather than unknown algorithms.
 
-Apply the common power scale to unchanged linear colors, then encode candidate bytes with the output-specific response. Sum both candidates' estimated current plus the controller reserve. Choose the greatest scale in `[0,1]` that fits the total and branch caps, using 12 bisection steps and a final downward check of the chosen candidate. Never increase above user brightness or the battery factor. If rounding leaves a violation, take at most 12 further halving steps, then use black; if black fails, refuse display operation and report the budget fault. Keep hardware protection active.
+Apply the common power scale to unchanged linear colors, then encode candidate bytes with the output-specific response. Sum all three candidates' estimated current plus the controller reserve. Choose the greatest scale in `[0,1]` that fits the total and branch caps, using 12 bisection steps and a final downward check of the chosen candidate. Never increase above user brightness or the battery factor. If rounding leaves a violation, take at most 12 further halving steps, then use black; if black fails, refuse display operation and report the budget fault. Keep hardware protection active.
 
 STM32 measures the battery through a calibrated sense path to PA4, not through Sparkle's regulated 3.3 V rail. Use the F411 12-bit ADC with VREFINT supply correction, a 480-cycle sample time, and 16 conversions per one-second measurement; use their median. The battery profile supplies `pack_mV = round(adc_pin_mV * gain + offset_mV)` with finite positive gain and a signed offset. The measurement connection and scale remain one hardware fact to record. State-of-charge is unknown unless the provided hardware supplies an actual gauge; voltage is not a percentage display.
 
 ### Automatic battery output reduction
 
-Retain automatic battery dimming and recovery. STM32 owns classification; Sparkle applies its factor to the user's linear brightness before each display's LED response encoding. Apply the same factor to disc, ring, and status cues in every mode. Keep the requested brightness unchanged.
+Retain automatic battery dimming and recovery. STM32 owns classification; Sparkle applies its factor to the user's linear brightness before each display's LED response encoding. Apply the same factor to circle, both rings, and status cues in every mode. Keep the requested brightness unchanged.
 
 | State | Output factor | Arduino single-cell reference |
 | --- | --- | --- |
@@ -1089,9 +1091,9 @@ A physical power interruption uses the atomic storage recovery rules. Test that 
 
 Route LED current separately from sensor returns and UART ground. Use rated connectors, strain relief, and supply decoupling. Check actual logic-rail peak current and both programming connections. Measure total current, temperature, and brownout margin with peak TX and GPS acquisition at the configured LED limit. Calculate runtime from measured average watts and the supplied pack's usable watt-hours; do not set a new runtime requirement without a requested target.
 
-Place the GPS antenna toward open sky, separate the radio antenna from supply wiring, and keep the magnetometer away from LED current loops and magnetic parts. Test the intended carry position. Give the disc and ring separate diffusion zones. Keep USB, SWD, buttons, and power control accessible.
+Place the GPS antenna toward open sky, separate the radio antenna from supply wiring, and keep the magnetometer away from LED current loops and magnetic parts. Test the intended carry position. Give the circle and both rings separate diffusion zones. Keep USB, SWD, buttons, and power control accessible.
 
-> TODO: SC-ENCLOSURE — Record the final sensor transforms and mount revision, carry orientation, ring/disc mounting, antenna placement, button access, diffusion, and service access. Close with a mounting drawing and assembled heading/load, thermal, and visual checks. Use the canonical X-right/Y-top/Z-out body frame for software fixtures until final mounting is recorded.
+> TODO: SC-ENCLOSURE — Record the final sensor transforms and mount revision, carry orientation, circle/inner-ring/outer-ring mounting, antenna placement, button access, diffusion, and service access. Close with a mounting drawing and assembled heading/load, thermal, and visual checks. Use the canonical X-right/Y-top/Z-out body frame for software fixtures until final mounting is recorded.
 
 ## Configuration and storage
 
@@ -1100,7 +1102,7 @@ Use versioned settings with bounds and an integrity check. Invalid settings sele
 | Owner | Persistent values |
 | --- | --- |
 | STM32 | Device/group identity, group key, peer roster/revision and colors, radio profile, sensor calibration, battery measurement profile and reduction/recovery thresholds, boot counter, and sensor hardware profile. |
-| Sparkle | Display mounting, ring geometry and channel order, current budgets, user brightness, map range/orientation, pattern preset and cycle, LED response profile identities, and local audio calibration. |
+| Sparkle | Display mounting, separate inner/outer ring geometry and channel orders, current budgets, user brightness, map range/orientation, pattern preset and cycle, LED response profile identities, and local audio calibration. |
 
 Provision through the wired Sparkle console. Sparkle forwards STM32-owned changes over the command protocol. Return validation errors and read back the effective settings. Atomic writes must survive power loss. Do not erase active configuration before its replacement is valid.
 
@@ -1128,13 +1130,13 @@ Use the Sparkle USB serial console at 115200 baud, 8N1, with newline-terminated 
 | `calibration keepalive <run-id>` | Renew the active lease through operation 9; host sends at least every 5 s. |
 | `calibration stage <run-id> <record-hex>` | Upload the 120-byte candidate as 240 hex digits through StageCalibration; validate before volatile preview. |
 | `calibration read <run-id>` | Return diagnostic candidate Heading through operation 10, including its candidate digest. This does not enable navigation heading. |
-| `calibration load <run-id> off` / `white` | Preview only: restore ordinary rendering or show a temporary white test frame on both outputs, subject to all current/battery caps. Release the override on Save/Cancel, timeout, or restart. |
+| `calibration load <run-id> off` / `white` | Preview only: restore ordinary rendering or show a temporary white test frame on all three outputs, subject to all current/battery caps. Release the override on Save/Cancel, timeout, or restart. |
 | `calibration preview <run-id> <candidate-file>` | Host tool validates and uploads a candidate; firmware applies it only in volatile preview. The file path is resolved by the host tool, not firmware. |
 | `calibration save <run-id> <candidate-sha256>` / `calibration cancel <run-id>` | Save or discard the candidate through the command protocol. |
 
 Provide one pyserial host program at planned path `smart-compass/tools/provision.py`, plus the calibration solver at `smart-compass/tools/calibrate-sensors.py`. Both use the same console client and binary codec. The host consumes `calibration preview <run-id> <candidate-file>`, validates the file, then sends `calibration stage` with its canonical bytes. Firmware never interprets a host file path. Stage switches collection to preview, restores the normal radio schedule, and removes the 5% collection cap; all normal battery/current caps remain. Candidate Heading comes from the same calibrated estimator, before the calibration-active navigation mask. Snapshots/radio still mark heading unavailable until Save/Cancel and normal recovery.
 
-After stream-on, send newline-delimited JSON events `{"event":"calibration","wire":"<base64 complete CalibrationBatch frame>"}` between normal responses. The base64 contains the UART envelope, CRC, COBS, and zero delimiter, so the host can verify exactly the same frame. Console output is bounded to 1024 bytes per line; sample events cannot contain positions. Config readback uses at most 376 hex characters for Public STM or 104 for Sparkle, so its metadata and record fit this bound. The host prints named fields after decoding; firmware does not emit an unbounded JSON expansion of calibration arrays. The host checks batch boot/run/sequence/overrun fields, then writes only native sensor samples to CSV. An eight-batch console queue drops and reports overflow instead of blocking Sparkle rendering. Every stream/keepalive command receives its ordinary JSON response. Logs keep the separate `log:` prefix. The calibration host owns console input while active and releases stream/white overrides on exit.
+After stream-on, send newline-delimited JSON events `{"event":"calibration","wire":"<base64 complete CalibrationBatch frame>"}` between normal responses. The base64 contains the UART envelope, CRC, COBS, and zero delimiter, so the host can verify exactly the same frame. Console output is bounded to 1024 bytes per line; sample events cannot contain positions. Config readback uses at most 376 hex characters for Public STM or 116 for Sparkle, so its metadata and record fit this bound. The host prints named fields after decoding; firmware does not emit an unbounded JSON expansion of calibration arrays. The host checks batch boot/run/sequence/overrun fields, then writes only native sensor samples to CSV. An eight-batch console queue drops and reports overflow instead of blocking Sparkle rendering. Every stream/keepalive command receives its ordinary JSON response. Logs keep the separate `log:` prefix. The calibration host owns console input while active and releases stream/white overrides on exit.
 
 Secret entry requires the host client: use `getpass` without echo, then send the 64 hex digits only in the console's secret-input prompt state. Firmware never echoes that input, adds it to history, or logs parse errors with contents. Timeout after 60 s or cancellation clears the key buffer and returns to ordinary commands. Clear host buffers after sending where supported; do not claim that Python guarantees erasure of every immutable copy. The key must never appear in shell arguments or saved configuration exports.
 
@@ -1177,18 +1179,19 @@ All committed settings records have `schema_version:u16 = 1`, a nonzero monotoni
 | STM `gps.profile_id` | Required `u16`; fixes receiver, NMEA epoch rules, accuracy conversion, PPS pairing, and measured timing bound. |
 | STM `battery.profile_id` | Installed `u16` or zero for absent; fixes measurement source, units, valid range, three ordered reduction thresholds, three higher recovery thresholds, valid pack limits and measurement calibration. Numeric thresholds remain `SC-BATTERY-THRESHOLDS`. An absent profile leaves battery state Unknown; it does not disable the device. |
 | STM protected journal fields | Boot counter, input epoch/next ID/queue, command high-water/history, and calibration revision are firmware-owned. `config set` cannot edit or erase them. |
-| Sparkle `display.profile_id` | Required `u16`; fixes disc layout, ring count 1..512, separate outputs, pixel timing, channel orders RGB/RBG/GRB/GBR/BRG/BGR, and current-model identities. RGB only in v1; RGBW needs an explicit redesign. |
-| Sparkle `display.rotation_cdeg` / `display.ring_clockwise` | `u16` 0..35999, default 0; bool default true. One front-view transform. |
+| Sparkle `display.profile_id` | Required `u16`; fixes circle layout, inner and outer strip density at 120 LED/m, each ring count 1..512 and seam offset, three separate outputs, pixel timing, channel orders RGB/RBG/GRB/GBR/BRG/BGR, and current-model identities. RGB only in v1; RGBW needs an explicit redesign. |
+| Sparkle `display.rotation_cdeg` | `u16` 0..35999, default 0; one shared front-view rotation. |
+| Sparkle `display.inner_ring_clockwise` / `display.outer_ring_clockwise` | Separate bools, default true; combine each with its installed seam offset and the shared rotation. |
 | Sparkle `power.total_mA` / `power.reserve_mA` | Required `u16` values; total must fit every component in the actual supply path, including Sparkle's nominal 5 A limit. Reserve must cover measured controller/GPS/radio peak demand and be below total. |
-| Sparkle `power.disc_mA` / `power.ring_mA` | Required `u16` branch caps; positive sum must not exceed total minus reserve. Reject absent current models or impossible budgets. |
-| Sparkle `power.disc_drive_cap` / `power.ring_drive_cap` | `u8` 1..255, default 128 for dim bench bring-up; still subject to the measured current limit. |
+| Sparkle `power.circle_mA` / `power.inner_ring_mA` / `power.outer_ring_mA` | Required `u16` branch caps; positive sum must not exceed total minus reserve. Reject absent current models or impossible budgets. |
+| Sparkle `power.circle_drive_cap` / `power.inner_ring_drive_cap` / `power.outer_ring_drive_cap` | `u8` 1..255, default 128 for dim bench bring-up; still subject to the measured current limit. |
 | Sparkle `ui.mode` / `ui.blanked` | enum Map/Compass/Patterns, default Map; bool default false. Persist through the atomic UI record. |
 | Sparkle `ui.brightness_percent` | enum 5/10/25/50/100, default 25. Same values as controls. |
 | Sparkle `ui.map_range_m` / `ui.map_orientation` | enum 100/250/500/1000/2000/5000, default 500; enum HeadingUp/NorthUp, default HeadingUp. |
 | Sparkle `ui.selected_peer_id` | Optional configured `u16`, default none. Never stores the peer's fix. |
 | Sparkle `pattern.preset` / `pattern.cycle_ms` | `u8` 0..4, default 0; `u32` 2000..60000, default 8000. Shared preset cycle and origin must match every device. |
 | Sparkle `pattern.time_origin_utc_ms` | `u64`, fixed 0 in v1; not an editable arbitrary local epoch. |
-| Sparkle `led.disc_profile_id` / `led.ring_profile_id` | Separate installed `u16` IDs, initially explicit unmeasured defaults. Reject missing or invalid measured profiles. |
+| Sparkle `led.circle_profile_id` / `led.inner_ring_profile_id` / `led.outer_ring_profile_id` | Separate installed `u16` IDs, initially explicit unmeasured defaults. Reject missing or invalid measured profiles. |
 | Sparkle `audio.input_profile_id` | Installed `u16` identity for one microphone calibration; unmeasured default allowed with explicit status. No independent frequency gain settings. |
 
 Configuration generation, coefficient integrity, and public digest must describe the actual committed record. Compute the public digest over a canonical redacted record that includes `key_id` but excludes key bytes; it proves agreement on public settings, not disclosure or correctness of a secret. Key provisioning must also verify a public-test challenge/response between group devices before field use.
@@ -1230,13 +1233,13 @@ Reuse the STM32 UART and sensor code selectively. Replace its incomplete entry-p
 ## Implementation and acceptance sequence
 
 1. **Implement the specified contracts.** Use the BlackPill/Sparkle pin map, LSM9DS1 and RF95 profiles, NMEA/PPS policy, codecs, calibration stream, and journal rules in this document. Port its independently checked fixtures before connecting boards. Record ring, battery-measurement, and mounting facts when available; they do not block host tools, protocol work, or synthetic rendering. Commission current budgets before bright operation.
-2. **Bring up the two displays.** Flash only the new Sparkle application. Verify each disc index, ring direction, channel order, mounting transform, dim startup, and total current limiting. Adapt `light-check` and profile generation for both outputs. Verify unmeasured status until each output has its own accepted measurements. Show synthetic markers at all cardinal directions.
+2. **Bring up the three displays.** Flash only the new Sparkle application. Verify each circle index, both ring counts/directions, each channel order, mounting transform, dim startup, and total current limiting. Adapt `light-check` and profile generation for all three outputs. Verify unmeasured status until each output has its own accepted measurements. Show synthetic markers at all cardinal directions.
 3. **Connect the boards.** Implement Hello, snapshots, input events, commands, and heartbeat. Verify partial UART reads, corrupt frames, disconnects, independent resets, version mismatch, and bounded queues. Synthetic input remains explicitly a bench source.
 4. **Complete sensor and GPS acquisition.** Use real GPS and calibrated sensor readings. Verify capture age, no-fix behavior, tilt compensation, declination sign, and heading quality in the enclosure. Confirm radio service cannot block sensor reads.
 5. **Exchange direct peer reports.** Use at least two real radios. Verify authentication, no-fix reports, duplicate rejection, origin restart, sample expiry, and measured airtime. Demonstrate map and compass modes with real positions.
 6. **Complete bounded relay.** Use at least three devices in a controlled topology where the endpoint cannot receive the origin directly. Verify hop limits, duplicate suppression, source-age preservation, relay limits, and recovery after a relay leaves.
 7. **Complete patterns and controls.** Validate plain, peer-indexed, and audio patterns, microphone lifecycle, mode changes, brightness, blanking, and shared-time holdover. Confirm stable pattern slots when a peer leaves or restarts, including devices with different ring counts. Confirm all navigation services continue in pattern mode.
-8. **Run combined and field acceptance.** Exercise bright permitted patterns, radio TX/RX, GPS acquisition, sensor fusion, control input, and both displays together. Measure power, thermal behavior, queue/stack headroom, radio delivery, and heading disturbance. Verify battery reduction and recovery with the selected thresholds. Measure and validate each installed LED response profile. Then test walking peers and body-obstructed antennas outdoors.
+8. **Run combined and field acceptance.** Exercise bright permitted patterns, radio TX/RX, GPS acquisition, sensor fusion, control input, and all three displays together. Measure power, thermal behavior, queue/stack headroom, radio delivery, and heading disturbance. Verify battery reduction and recovery with the selected thresholds. Measure and validate each installed LED response profile. Then test walking peers and body-obstructed antennas outdoors.
 
 ### Required automated checks
 
@@ -1244,7 +1247,7 @@ Test navigation with independent reference vectors: cardinal directions, short d
 
 Test the actual protocol boundary: fixed byte fixtures, every read split, malformed COBS, bad CRC/tag, truncation, oversized frames, unsupported versions, invalid IDs, stale/future timestamps, boot-counter transitions, duplicates, and queue saturation. Assert that a malformed frame cannot contaminate the next valid one. Verify every assigned radio flag, every forbidden flag combination, unknown accuracy, zero coordinates, and reserved-bit rejection. Verify maximum-size snapshots and measured per-direction bandwidth with command/calibration traffic.
 
-Test peer expiry without receive traffic, local GPS expiry, link loss, marker overlap, off-scale peers, missing accuracy, and power-limit enforcement for both displays together. Test the uncertainty sum, its exact equality boundary, and unknown-accuracy approximate placement/pointers in both navigation modes, equal peak intensity, known-radius suppression, and exact coincident coordinates. Run shared-core tests across the affected feature matrix and locked builds for both new firmwares.
+Test peer expiry without receive traffic, local GPS expiry, link loss, marker overlap, off-scale peers, missing accuracy, and power-limit enforcement for all three displays together. Test the uncertainty sum, its exact equality boundary, and unknown-accuracy approximate placement/pointers in both navigation modes, equal peak intensity, known-radius suppression, and exact coincident coordinates. Run shared-core tests across the affected feature matrix and locked builds for both new firmwares.
 
 Inject power loss at every input-journal and command-transaction boundary on both boards. Cover the applied-brightness/lost-ACK example, an STM32 restart with pending events, a full 32-event queue, input epoch mismatch, cache eviction, a completed write with lost result, generation conflict, aborted calibration, corrupt storage, and secret-key reconciliation. Check flash state as well as returned ACKs; two successful in-memory retries do not prove restart behavior.
 
@@ -1254,14 +1257,14 @@ Test heading with stopped samples while snapshots continue, exact age/field/tilt
 
 Test peer-indexed composition with a fixed roster, missing peers, noncontiguous IDs, device restarts, deliberate roster revisions, and different ring counts. For equal pixel counts, compare the normalized slot mapping with the prototype's combined-strip mapping. Do not let live peer count change composition slots.
 
-Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, physical power interruption, and both displays together. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
+Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, physical power interruption, and all three displays together. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
 
 ### Required physical evidence
 
 | Area | Acceptance evidence |
 | --- | --- |
-| LED mapping | Every pixel index matches the front-view map; red, green, blue, north, and ring direction checks pass. |
-| LED response | Disc and ring have separate measured profiles for their installed optical arrangements, or explicit unmeasured status. Ramps and pulses use the correct output profile; generated values match the retained measurement data. |
+| LED mapping | Every pixel index matches the front-view map; red, green, blue, north, and separate inner/outer ring direction checks pass. |
+| LED response | Circle and both rings have separate measured profiles for their installed optical arrangements, or explicit unmeasured status. Ramps and pulses use the correct output profile; generated values match the retained measurement data. |
 | Shared patterns | At least two devices show different, correct sections of one timed pattern. Removing or restarting a third configured peer leaves the remaining slots unchanged. |
 | Navigation geometry | Known cardinal placements appear in the correct sector in both map orientations and compass mode. |
 | Heading | Initial target is within 10 degrees on a nonmagnetic fixture, including approximately 30-degree tilt. Radio and LED load changes must stay within that total target. Log the actual errors. |
@@ -1270,10 +1273,10 @@ Test every battery reduction and recovery boundary, hysteresis, both delay timer
 | Radio | Record payload, modulation, antenna, topology, delivery ratio, and sample age for direct and relayed cases. Measure the four-device group first, then the eight-device capacity target. |
 | Timing | Measure 50-frame/s display operation and sensor continuity under combined load. Capture missed frames and overflows rather than relying on an average FPS counter. |
 | Power | No brownout at the permitted LED limit during peak TX and GPS acquisition. Measured current and component temperatures remain within the selected hardware ratings. |
-| Battery dimming | The selected hardware's recorded thresholds produce 100%/90%/75%/50% factors on both displays, with hysteresis and delayed recovery. Load changes do not cause oscillation. User brightness survives reduction/recovery, and the provided power protection remains responsible for safe power-off. |
+| Battery dimming | The selected hardware's recorded thresholds produce 100%/90%/75%/50% factors on all three displays, with hysteresis and delayed recovery. Load changes do not cause oscillation. User brightness survives reduction/recovery, and the provided power protection remains responsible for safe power-off. |
 | Power connection and interruption | Verify battery-to-Sparkle-to-BlackPill wiring, logic-rail peak current, programming connections, and restart after physical power interruption. Verify storage recovery separately. Firmware dimming/blanking is not full power-off. |
 | Calibration and clock | Retain an accepted enclosure calibration dataset/solver report and cardinal/tilt/load errors. Measure clock drift and pairwise shared-pattern phase error through acquisition, holdover, and recovery. |
-| Controls and visuals | Review all button states, preset samples, cue timing, overlap handling, approximate unknown-accuracy glyphs at unchanged peak intensity, and blanking on the actual disc and ring. Record accepted values rather than treating these initial visuals as approved. |
+| Controls and visuals | Review all button states, preset samples, cue timing, overlap handling, approximate unknown-accuracy glyphs at unchanged peak intensity, and blanking on the actual circle and both rings. Record accepted values rather than treating these initial visuals as approved. |
 | Recovery | Either board can restart alone. GPS/radio/sensor faults have visible states and bounded recovery. Navigation never displays stale state as fresh after restart. |
 | Persistence | Power-cycle after walking and exchanging peers. No coordinates or saved locations return from storage. Settings and calibration do return. |
 
@@ -1289,11 +1292,11 @@ The original register mixed design decisions, implementation work, and physical 
 | SC-RADIO-HARDWARE | Specified | RF95/SX1276, profile 1, antenna band, modulation/power, 59-byte application packet plus four driver bytes, and calculated eight-device relay budget. Measure delivery and airtime. |
 | SC-GPS-ACCURACY | Specified | Existing MTK NMEA/PPS interface; unknown accuracy permits approximate navigation. GST conversion is optional and modeled; HDOP remains diagnostic. Test receiver captures. |
 | SC-SENSOR-HARDWARE | Specified | LSM9DS1 rates/scales/interrupts, explicit units, native calibration, and shared mounting transforms. Final physical mounting belongs to SC-ENCLOSURE. |
-| SC-RING-GEOMETRY | Hardware TODO | Record actual ring diameter/count/part/order/timing. The inline TODO defines its chase, RGB, and frame-time checks. |
+| SC-RING-GEOMETRY | Hardware TODO | Density is fixed at 120 LED/m. Record each ring's actual diameter/length/count/part/order/timing/seam/direction. The inline TODO defines its chase, RGB, and frame-time checks. |
 | SC-POWER-CIRCUIT | Specified | Battery powers Sparkle; Sparkle powers BlackPill. Additional pack/regulator/cutoff selection is removed from the MVP requirements. |
 | SC-BATTERY-THRESHOLDS | Hardware TODO | Record the supplied battery's sense connection, calibrated conversion, and voltage/recovery boundaries. Unknown measurement has a specified fallback. |
 | SC-CURRENT-MODEL | Validate on hardware | Start with the stated conservative RGB model and configured caps. Measure idle/controller reserve, encoded-frame current error, peak load, brownout margin, and temperature. |
-| SC-LED-MEASUREMENTS | Validate on hardware | Use separate unmeasured defaults, then adapt light-check/profile generation and retain separate disc/ring optical and white-balance measurements. |
+| SC-LED-MEASUREMENTS | Validate on hardware | Use separate unmeasured defaults, then adapt light-check/profile generation and retain separate circle/inner-ring/outer-ring optical and white-balance measurements. |
 | SC-HEADING-LIMITS | Validate on hardware | Apply the specified states and limits; measure cardinal, tilt, radio, and LED-load error in the assembled device. |
 | SC-CALIBRATION-TOOL | Specified | Python solver, collection steps, explicit units, 24-bin coverage, 120-byte coefficients, transport, candidate preview, save/cancel, and rejection behavior. Implement and test them. |
 | SC-CLOCK-CHARACTERIZATION | Validate on hardware | PPS is allocated. Measure epoch association, uncertainty, drift, holdover, and pairwise phase against the specified bounds. |
@@ -1323,4 +1326,4 @@ The original register mixed design decisions, implementation work, and physical 
 | Clock behavior | Startup/acquisition, PPS input, trust/uncertainty, holdover/expiry, slew, discontinuity fades, and phase target. Hardware timing remains unmeasured. |
 | Wired provisioning | Commands/responses, canonical records, validation, safe secret entry, stream transfer, key test, atomic apply/save, and forwarding/restart outcomes. |
 
-The original three review points also remain explicit: peer-indexed composition uses stable configured slots; both displays use battery factors and recovery; each display applies its own LED response exactly once. No saved-location behavior returns.
+The original three review points also remain explicit: peer-indexed composition uses stable configured slots; all three displays use battery factors and recovery; each display applies its own LED response exactly once. No saved-location behavior returns.
