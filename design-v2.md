@@ -22,6 +22,7 @@ This preserves the two-board plan already started in `musical-stm32`. The new pr
 | Sensor ownership | STM32 reads GPS, accelerometer, gyroscope, magnetometer, and power sensors. It also owns the LoRa radio. |
 | Board connection | A wired, bidirectional 3.3 V UART connection. |
 | Battery ownership | BlackPill reads battery voltage through a divider on PA4 and classifies it. Sparkle applies the factor from each snapshot and uses the unknown-power cap if the measurement or link expires. |
+| Mechanical use | A large round necklace pendant, inspired by Flavor Flav, that Bryan can lift and hold face up to read the map. |
 | Power path | The custom battery supply powers Sparkle Motion. Sparkle Motion powers the BlackPill and its peripheral rail. Charging and protection belong to the provided power hardware. |
 | Map mode | A local map of live peers relative to this device. |
 | Compass mode | North and bearings to live peers, with one selected peer. |
@@ -130,9 +131,21 @@ The existing ESP-IDF README records these panels as WS2812B with GRB channel ord
 
 Define the display frame as viewed from the front: X right, Y up, zero angle at the physical top, and positive display bearing clockwise. Store one shared mounting rotation and a separate direction for each ring. Each installed ring profile records its seam offset from the physical top. Never spread orientation offsets through individual patterns.
 
-Both rings use 120 LED/m strips, with a nominal pitch of 8.33 mm. Select each fitted diameter and diffuser together. Estimate each count with `N = pi * diameter_m * 120`, then use the actual integer pixel count after cutting and fitting the strip. For example, an inner-ring diameter of 180 mm gives about 68 pixels, and an outer-ring diameter of 190 mm gives about 72 pixels. These diameters are geometry examples, not selected dimensions. Check each strip's bend direction, seam, wiring access, and actual pitch before fixing the counts.
+Both rings use 120 LED/m strips. Use integer LED counts to define a provisional layout, then replace its dimensions with measurements. The first CAD layout uses 72 LEDs for the inner ring and 80 for the outer ring. These are selected planning values; they are not fitted counts or approved cut lengths.
 
-> TODO: SC-RING-GEOMETRY — The density is fixed at 120 LED/m for both rings. Record each fitted ring's diameter, cut length, exact pixel count, RGB part/protocol, timing, channel order, seam offset, and direction. Default each seam to the mounted top and increasing indices clockwise. Close this item with separate index chases and RGB tests, measured three-output frame time, and a mounting sketch. Synthetic geometry can support software work before the rings are fitted.
+| Part | Provisional count | Nominal strip length | Zero-gap pitch-line diameter | CAD pitch-line diameter with 3 mm seam gap |
+| --- | --- | --- | --- | --- |
+| Circle | 256 | Existing PCB | 166 mm PCB diameter. | Not applicable. |
+| Inner ring | 72 | 600.0 mm | 191.0 mm. | 191.9 mm. |
+| Outer ring | 80 | 666.7 mm | 212.2 mm. | 213.2 mm. |
+
+For pitch `p = 1000/120` mm, nominal cut length is `L = N*p`. With measured cut length `L_actual` and an intentional seam gap `g`, the fitted pitch-line diameter is `(L_actual + g)/pi`. The table separates the zero-gap arithmetic from the provisional 3 mm seam-gap CAD layout. Ring diameter refers to the strip pitch line, not the printed carrier outside, diffuser opening, or finished case. Record those dimensions separately. With the 3 mm seam gaps, the provisional layout leaves about 13.0 mm radially between the circle edge and inner pitch line, and 10.6 mm between ring pitch lines. Both values must also accommodate baffles, strip thickness, connectors, and tolerances.
+
+Do not assume that an ordinary straight flexible strip can bend sideways into a flat, front-facing ring. The proposed carrier wraps each strip around a cylindrical wall in its permitted bend plane, with LEDs facing inward into a separate annular light channel. A white angled reflector directs light toward the front annular diffuser. This is an optical layout proposal; the actual strip and its bend rules still control the carrier. Keep the strip stationary in the enclosure: repeated flexing can damage solder joints. [Strip mounting guidance](https://learn.adafruit.com/adafruit-neopixel-uberguide/neopixel-strips).
+
+Measure strip width, thickness/coating, actual pitch, cut interval, permitted bend direction/radius, and solder-pad clearance before making the carrier. If cuts must contain several LEDs, choose a compatible count and recompute the diameters. Provide separate top seam pockets with a provisional 3 mm end gap and rear wire exits; the final gap enters the fitted circumference calculation. Leave enough slack to unplug either ring without pulling its pads. Measure the first LED center relative to the seam and retain the actual pitch/angles in each installed profile; do not spread the seam gap across every pixel as if the ring were uniformly spaced. Preserve the physical-top rendering convention through the installed seam/direction transforms.
+
+> TODO: SC-RING-GEOMETRY — The density is fixed at 120 LED/m for both rings. Start CAD at 72 inner/80 outer LEDs: zero-gap pitch-line diameters 191.0/212.2 mm, or 191.9/213.2 mm with the provisional 3 mm seam gaps. Keep this TODO open until Bryan measures the strips and fit. Record strip width/thickness/bend/cut rules and each fitted ring's pitch-line/carrier/diffuser diameters, cut length, exact pixel count, RGB part/protocol, timing, channel order, seam offset, and direction. Default each seam to the mounted top and increasing indices clockwise. Close this geometry item with measured dimensions/counts and a mounting/section drawing. Keep index chases, RGB tests, and three-output frame-time checks in the deferred physical acceptance list. Synthetic geometry can support software work before the rings are fitted.
 
 ## Display modes
 
@@ -1047,7 +1060,7 @@ Negative UART fixtures derive from the complete frames above. This makes the cha
 
 These are design targets, not measured performance results. Measure task latency, missed samples, frame time, stack high-water marks, and heap use with every subsystem active.
 
-At an assumed 800 kbit/s, RGB output takes about 30 microseconds per pixel before reset/latch time. The circle takes about 7.68 ms. The 68-pixel inner-ring and 72-pixel outer-ring geometry examples take about 2.04 ms and 2.16 ms. Sequential output totals about 11.88 ms plus three latch intervals and rendering, within a 20 ms frame only if measured overhead fits. Recalculate with the fitted counts and actual protocols. Confirm pixel timing and RMT behavior; three channels do not establish parallel transmission.
+At an assumed 800 kbit/s, RGB output takes about 30 microseconds per pixel before reset/latch time. The circle takes about 7.68 ms. The provisional 72-pixel inner ring and 80-pixel outer ring take about 2.16 ms and 2.40 ms. Sequential output totals about 12.24 ms plus three latch intervals and rendering, within a 20 ms frame only if measured overhead fits. Recalculate with the fitted counts and actual protocols. Confirm pixel timing and RMT behavior; three channels do not establish parallel transmission.
 
 One RGB frame needs `3 * (256 + inner_ring_count + outer_ring_count)` bytes; at the per-ring limit of 512, this is 3840 bytes. Account separately for linear-color buffers, RMT encoding buffers, audio state, task stacks, protocol buffers, and driver allocations. Use fixed peer and packet storage. Record headroom on the selected STM32 and classic ESP32; do not assume PSRAM.
 
@@ -1115,9 +1128,40 @@ A physical power interruption uses the atomic storage recovery rules. Test that 
 
 Route LED current separately from sensor returns and UART ground. Use rated connectors, strain relief, and supply decoupling. Check actual logic-rail peak current and both programming connections. Measure total current, temperature, and brownout margin with peak TX and GPS acquisition at the configured LED limit. Calculate runtime from measured average watts and the supplied pack's usable watt-hours; do not set a new runtime requirement without a requested target.
 
-Place the GPS antenna toward open sky, separate the radio antenna from supply wiring, and keep the magnetometer away from LED current loops and magnetic parts. Test the intended carry position. Give the circle and both rings separate diffusion zones. Keep USB, SWD, buttons, and power control accessible.
+### Necklace enclosure and mounting concept
 
-> TODO: SC-ENCLOSURE — Record the final sensor transforms and mount revision, carry orientation, circle/inner-ring/outer-ring mounting, antenna placement, button access, diffusion, and service access. Close with a mounting drawing and assembled heading/load, thermal, and visual checks. Use the canonical X-right/Y-top/Z-out body frame for software fixtures until final mounting is recorded.
+Use a large round pendant inspired by Flavor Flav, with the circle centered and two illuminated rings around it. It hangs facing outward and Bryan can lift it into a face-up reading position. Keep mode selection manual. A hanging, nearly vertical display exceeds the current heading tilt limit: heading-up navigation becomes unavailable and Map uses north-up. Lifting it face up permits heading acquisition under the ordinary quality/recovery rules. Do not infer a forward body heading from a vertical display-top vector. Pattern mode continues while hanging.
+
+Start the CAD envelope at **226 mm outside diameter and 45 mm total depth**, excluding necklace hardware and any external antenna. These are provisional layout dimensions, not measured fit or production dimensions. Keep the outline round; put suspension fittings behind the top rim. Use a front light carrier and a removable rear electronics tray so changes to the battery or boards do not require replacing the optical parts.
+
+| Assembly area | Proposed construction and placement |
+| --- | --- |
+| Front bezel | Opaque printed frame with a physical-top alignment mark. Retain a separate circle diffuser and two annular diffusers with rear-accessible retainers. Do not hide perimeter circle pixels behind an unmeasured lip. |
+| Circle mounting | Use the existing PCB holes and nonmagnetic M3 standoffs after measuring the hole pattern. Support the PCB and keep screw loads off LEDs and solder pads. Provide rear access to both supply headers and data. The published board is 166 mm diameter and 1.6 mm thick; component and connector heights still need measurement. |
+| Ring carrier | Two independent cylindrical strip supports, annular light channels, opaque separation walls, and removable diffusers. Start printed walls at 2.4 mm, assembly clearance at 0.5 mm per mating side, and LED-to-diffuser clearance at 8 mm; these are adjustable CAD inputs. Use a white reflector inside each channel and opaque material between channels. Keep the cut seam accessible behind the top rim. |
+| Rear tray | Screw-removable tray with keyed board pockets and connector clearance volumes. Put Sparkle, radio electronics, and the supplied battery toward the lower half to keep most weight low. Restrain the battery mechanically without using PCB connectors as supports. Keep its pocket adjustable until its actual envelope is measured. |
+| Suspension | Two rear load-bearing attachment points near 10 and 2 o'clock, tied into the carrier/rim, not the PCB or lid. The necklace load bypasses boards and wiring. Provide a lower soft rear spacer to limit rocking against the chest and a hand grip at the lower rim. Use nonmagnetic attachment hardware near sensors. |
+| Motion/magnetic sensor | Keyed, rigid upper-left rear pocket with printed X/Y/Z references; maximize separation from the lower power electronics and battery. Reserve an initial 30 mm keep-out from power inductors, high-current connectors, and magnetic hardware where the measured envelopes permit it. This is a placement target, not a proved magnetic clearance. Record the actual shared mounting transforms and mount revision. |
+| GPS | Upper rear pocket with plastic above the antenna and no battery or copper plane over it. Start with a removable antenna wedge whose normal lies halfway between body +Y and +Z, to compromise between hanging and face-up use. Keep its angle adjustable for the fitted antenna. |
+| Radio antenna | Separate peripheral mounting and strain relief, away from the GPS aperture and magnetometer. Use the fitted antenna's documented ground-plane/keep-out requirements. Reserve its actual connector and bend volume before cutting the shell. |
+| Controls and service | Mode and Action on opposite lower side edges, recessed against accidental chest contact but reachable while holding the pendant. Put Sparkle USB access at the bottom and BlackPill SWD/reset behind a removable service cover. Keep power-control access and unplug space visible in CAD. Give the microphone a short front/side acoustic opening. |
+| Wiring and ventilation | Rear wire channels with separate low-current sensor/UART routing and paired LED supply/return paths. Route top ring seam leads down the power side, away from the sensor pocket. Add strain relief before every board connector. Use rear/perimeter vents with opaque light baffles; do not seal the LED volume into an unventilated printed shell. |
+
+The manufacturer shows a separate acrylic diffuser, nylon M3 standoffs, and a removable rear plate, and identifies heat problems with a closed case. Reuse those mounting ideas while designing this larger carrier. Its 3 mm acrylic is a starting diffuser thickness, not an optical result for these rings. [Fibonacci256 enclosure and board details](https://www.evilgeniuslabs.org/fibonacci256).
+
+### CAD tool and model handoff
+
+Recommend **FreeCAD** for the enclosure master. Its parametric solid modeling, dimension constraints, drawings, and Python API fit an assembly that will change after physical measurement. Use named parameters so changing ring counts, strip width, battery size, or board mounting points updates the related pockets and clearances. This is a proposed tool choice; this documentation update does not install CAD software or create a fitted CAD model. [Official FreeCAD project](https://github.com/FreeCAD/FreeCAD).
+
+OpenSCAD is a useful alternative for a script-defined ring carrier and printable parts. It provides configurable solid geometry and STL output. For the complete pendant, FreeCAD is the recommended master so Bryan can inspect and edit individual parts and measured constraints visually. Keep one authoritative geometry model; do not maintain independent FreeCAD and OpenSCAD copies. [OpenSCAD modeling approach](https://openscad.org/about.html).
+
+Use planned path `smart-compass/hardware/enclosure/` for the native `.FCStd` master and its dimensions/measurement notes. Derive STEP assembly/part exports, printable STL/3MF parts as supported by the selected exporter, and dimensioned PDF/SVG drawings from that master. Exports never become a second source of dimensions. Put unknown component outlines in clearly named placeholder bodies rather than presenting them as measured CAD imports. Reuse manufacturer board drawings/models when available, with the source and hardware revision recorded. [Sparkle Motion hardware downloads](https://learn.adafruit.com/adafruit-sparkle-motion/downloads).
+
+The CAD parameter sheet must include circle diameter/thickness/hole centers and component heights; both rings' count, measured pitch/cut length, seam gap, bend plane, width/thickness, carrier diameter and diffuser aperture; board/battery/antenna envelopes and connector unplug volumes; wall thickness, mating clearances, diffuser thickness/gap, ventilation, suspension spacing, and sensor transforms. Record estimated part masses and center of mass, then replace them with assembled measurements during bring-up. Label each input Published, Provisional, or Measured. A provisional ring count does not turn its derived diameter into a measured value.
+
+Build the future CAD in this order: front-view layout and section drawing; measured or placeholder component volumes; separate optical carrier/bezel/diffusers; rear tray and service openings; suspension and routing; then interference checks and manufacturing exports. A section through both ring channels must show the allowed strip bend and light path. The current task stops at this documented mechanical concept; physical checks remain deferred below.
+
+> TODO: SC-ENCLOSURE — Measure the actual board holes/heights, strip envelopes, battery and connector/antenna volumes; update the provisional 226 x 45 mm round-pendant layout in CAD. Record final shared sensor transforms/mount revision, hanging and handheld orientation, circle/ring mounting, diffuser dimensions, suspension and controls, and service access. Close the design item with native CAD, dimensioned assembly/section drawings, and an assembly sequence. Keep physical fit, magnetic, thermal, and visual evidence in the deferred acceptance list. Use the canonical X-right/Y-top/Z-out body frame for software fixtures until final mounting is recorded.
 
 ## Configuration and storage
 
@@ -1283,11 +1327,15 @@ Test peer-indexed composition with a fixed roster, missing peers, noncontiguous 
 
 Test every battery reduction and recovery boundary, hysteresis, both delay timers, user brightness changes while dimmed, invalid/stale measurements, physical power interruption, and all three displays together. Test inconsistent battery state/factor/health, stopped ADC sampling with snapshots still running, UART loss, and both board restarts. Sparkle must apply Unknown without deriving a fresh state from old voltage. Test that LED response and white balance apply once, that each output uses its own profile, and that current limiting evaluates encoded candidates without reapplying response to encoded bytes. Retain explicit unmeasured status and reject malformed measured data.
 
-### Required physical evidence
+### Required physical evidence (deferred)
+
+Retain these checks for hardware bring-up. They are deferred from the current design work; no physical test, measurement campaign, or calibration dataset is required in this update. The validation rows below remain open evidence tasks.
 
 | Area | Acceptance evidence |
 | --- | --- |
 | LED mapping | Every pixel index matches the front-view map; red, green, blue, north, and separate inner/outer ring direction checks pass. |
+| Mechanical fit and optics | Measure the circle holes/heights, strip bend/cut limits, ring seams, component clearances, and finished dimensions. Check that the channels and separate diffusers fit without strip strain, masked edge pixels, or excessive light leakage. Confirm that each board and ring can be removed through the documented assembly sequence. |
+| Necklace and handheld use | Record assembled mass, center of mass, suspension attachment/retention checks, hanging stability, skin-contact temperature, button/USB access, and comfort while walking. Lift the pendant face up and verify the grip, cable slack, GPS reception, and north-up/heading-up transitions. Keep suspension loads off the PCBs and connectors. |
 | LED response | Circle and both rings have separate measured profiles for their installed optical arrangements, or explicit unmeasured status. Ramps and pulses use the correct output profile; generated values match the retained measurement data. |
 | Shared patterns | At least two devices show different, correct sections of one timed pattern. Removing or restarting a third configured peer leaves the remaining slots unchanged. |
 | Navigation geometry | Known cardinal placements appear in the correct sector in both map orientations and compass mode. |
@@ -1298,6 +1346,7 @@ Test every battery reduction and recovery boundary, hysteresis, both delay timer
 | Timing | Measure 50-frame/s display operation and sensor continuity under combined load. Capture missed frames and overflows rather than relying on an average FPS counter. |
 | Power | No brownout at the permitted LED limit during peak TX and GPS acquisition. Measured current and component temperatures remain within the selected hardware ratings. |
 | Battery dimming | The selected hardware's recorded thresholds produce 100%/90%/75%/50% factors on all three displays, with hysteresis and delayed recovery. Load changes do not cause oscillation. User brightness survives reduction/recovery, and the provided power protection remains responsible for safe power-off. |
+| Battery measurement circuit | Compare PA4 measurements with a reference meter across the supplied pack's loaded voltage range. Check the divider's maximum input, reference correction, cutoff/startup, and both programming connections. The sense line must not power an unpowered board. Record the fitted values and calibration. |
 | Power connection and interruption | Verify battery-to-Sparkle-to-BlackPill wiring, logic-rail peak current, programming connections, and restart after physical power interruption. Verify storage recovery separately. Firmware dimming/blanking is not full power-off. |
 | Calibration and clock | Retain an accepted enclosure calibration dataset/solver report and cardinal/tilt/load errors. Measure clock drift and pairwise shared-pattern phase error through acquisition, holdover, and recovery. |
 | Controls and visuals | Review all button states, preset samples, cue timing, overlap handling, approximate unknown-accuracy glyphs at unchanged peak intensity, and blanking on the actual circle and both rings. Record accepted values rather than treating these initial visuals as approved. |
@@ -1316,7 +1365,7 @@ The original register mixed design decisions, implementation work, and physical 
 | SC-RADIO-HARDWARE | Specified | RF95/SX1276, profile 1, antenna band, modulation/power, 59-byte application packet plus four driver bytes, and calculated eight-device relay budget. Measure delivery and airtime. |
 | SC-GPS-ACCURACY | Specified | Existing MTK NMEA/PPS interface; unknown accuracy permits approximate navigation. GST conversion is optional and modeled; HDOP remains diagnostic. Test receiver captures. |
 | SC-SENSOR-HARDWARE | Specified | LSM9DS1 rates/scales/interrupts, explicit units, native calibration, and shared mounting transforms. Final physical mounting belongs to SC-ENCLOSURE. |
-| SC-RING-GEOMETRY | Hardware TODO | Density is fixed at 120 LED/m. Record each ring's actual diameter/length/count/part/order/timing/seam/direction. The inline TODO defines its chase, RGB, and frame-time checks. |
+| SC-RING-GEOMETRY | Hardware TODO | Density is fixed at 120 LED/m. Use provisional 72/80 LEDs and nominal 191.0/212.2 mm pitch-line diameters; record each ring's measured dimensions/count/part/order/timing/seam/direction before closing the TODO. Close the geometry with measurements/drawings; retain chase, RGB, and frame-time checks in deferred acceptance. |
 | SC-POWER-CIRCUIT | Specified | Battery powers Sparkle; Sparkle powers BlackPill. Additional pack/regulator/cutoff selection is removed from the MVP requirements. |
 | SC-BATTERY-THRESHOLDS | Hardware TODO | Use BlackPill PA4 with a two-resistor divider and 100 nF filter; record the protected/switched tap, fitted values, calibrated conversion, and voltage/recovery boundaries. Sparkle applies the snapshot factor. Unknown measurement has a specified fallback. |
 | SC-CURRENT-MODEL | Validate on hardware | Start with the stated conservative RGB model and configured caps. Measure idle/controller reserve, encoded-frame current error, peak load, brownout margin, and temperature. |
@@ -1330,7 +1379,7 @@ The original register mixed design decisions, implementation work, and physical 
 | SC-DURABLE-STORAGE | Specified | One Sparkle NVS blob; dual-sector STM checkpoints, commit words, rollover, corruption rules, ID caches, and restart recovery. Test actual power interruption and wear. |
 | SC-PROVISIONING-TOOL | Specified | Wired commands, one host client, secret prompt, stream events, key challenge, generation checks, and lost-result reconciliation. Implement the tools. |
 | SC-VISUAL-ACCEPTANCE | Validate on hardware | Use the stated controls, patterns, glyphs, equal peer peaks, overlap/timing, and priority defaults. Record physical visibility and accepted revisions. |
-| SC-ENCLOSURE | Hardware TODO | Record final mounting transforms, carry orientation, antennas, diffusion, controls, and mechanical/service access. |
+| SC-ENCLOSURE | Hardware TODO | Large round necklace/handheld pendant, provisional 226 x 45 mm envelope, removable optical/rear assemblies, two suspension points, sensor/antenna placement, and FreeCAD handoff are specified. Measure component envelopes and finish native CAD/drawings and mounting transforms. |
 
 ### Review coverage
 
