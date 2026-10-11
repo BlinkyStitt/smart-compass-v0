@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+*.FCStd1
+*.FCStd.*
+smart-compass.*.FCStd
+*.FCBak

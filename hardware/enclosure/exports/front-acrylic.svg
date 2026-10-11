@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="231mm" height="231mm" viewBox="-115.5 -115.5 231 231">
+<title>Front acrylic - 3 mm nominal</title>
+<desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
+<g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
+<circle cx="0" cy="0" r="115.500000"/>
+<circle cx="96.128820" cy="55.500000" r="1.700000"/>
+<circle cx="0.000000" cy="111.000000" r="1.700000"/>
+<circle cx="-96.128820" cy="55.500000" r="1.700000"/>
+<circle cx="-96.128820" cy="-55.500000" r="1.700000"/>
+<circle cx="-0.000000" cy="-111.000000" r="1.700000"/>
+<circle cx="96.128820" cy="-55.500000" r="1.700000"/>
+</g></svg>

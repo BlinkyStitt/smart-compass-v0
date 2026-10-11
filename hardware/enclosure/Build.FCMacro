@@ -1,0 +1,12 @@
+"""Run from the FreeCAD Macro menu, or pass this file to FreeCADCmd."""
+import importlib
+import os
+from pathlib import Path
+import sys
+
+# Set SC_CAD_DIR only when a FreeCAD build does not expose the macro file path.
+source = Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0, str(source))
+import build
+importlib.reload(build)
+build.build()
