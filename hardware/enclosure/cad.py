@@ -20,21 +20,30 @@ MANIFEST = CAD + '/exports-manifest.json'
 INPUTS = (
     'justfile',
     *(CAD + '/' + name for name in (
-        'cad.py', 'build.py', 'check.py', 'geometry.py', 'animate.py',
-        'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro', 'Animate.FCMacro',
+        'cad.py', 'build.py', 'check.py', 'geometry.py',
+        'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
         'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
-        'test_geometry.py', 'test_cad.py',
+        'test_geometry.py', 'test_cad.py', 'demo_export.py',
+    )),
+    *('demo/' + name for name in (
+        'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
+        'sleeve.gdshader', 'cell.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
+        'diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),
 )
 FIXED_EXPORTS = frozenset('''
 amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
-diffusers.png edge-diffuser.svg edge.png electronics-overview.png electronics.png
-exploded-overview.png exploded.gif exploded.png front-acrylic.svg front-mirror.svg
+diffusers.png edge-diffuser.svg edge.png electronics.png
+exploded.png front-acrylic.svg front-mirror.svg
 front.png halo-ring-diffuser.svg inner-ring-diffuser.svg outer-black-acrylic.svg
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
-'''.split())
-GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json'}
+amulet.glb scene.json single-sheet-section.svg lighting-demo.mp4
+infinity-rainbow.gif infinity-pulse.gif infinity-colour.gif
+'''.split()) | frozenset(f'demo-{view}-{light}.png'
+                        for view in ('front', 'steep', 'edge', 'rear')
+                        for light in ('night', 'indoor', 'overcast', 'sun'))
+GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb'}
 
 
 class CadError(Exception):
@@ -209,8 +218,9 @@ def publish(root, staged, original, tools):
 def rebuild(root):
     freecad = shutil.which('freecad') or '/Applications/FreeCAD.app/Contents/Resources/bin/freecad'
     ffmpeg, ffprobe = shutil.which('ffmpeg'), shutil.which('ffprobe')
-    if not Path(freecad).is_file() or not (ffmpeg and ffprobe):
-        raise CadError('Install the build tools: brew install just ffmpeg; brew install --cask freecad')
+    godot = shutil.which('godot')
+    if not Path(freecad).is_file() or not (ffmpeg and ffprobe and godot):
+        raise CadError('Install the build tools: brew install just ffmpeg; brew install --cask freecad godot')
     with build_lock(root), tempfile.TemporaryDirectory(prefix='smart-compass-cad-') as temporary:
         source = Snapshot(root)
         staged = Snapshot(Path(temporary))
@@ -226,9 +236,11 @@ def rebuild(root):
                         '-p', 'test_*.py', '-v'], cwd=staged.root, check=True)
         version = native_stage(freecad, directory, 'build')
         native_stage(freecad, directory, 'check')
-        print('CAD: render and verify all animations', flush=True)
-        subprocess.run([sys.executable, str(directory / 'animate.py')], check=True)
+        native_stage(freecad, directory, 'demo')
+        print('CAD: validate and capture interactive lighting comparisons', flush=True)
+        subprocess.run([sys.executable, str(staged.root / 'demo/run.py'), 'capture'], check=True)
         tools = {'freecad': version}
+        tools['godot'] = subprocess.check_output([godot, '--version'], text=True).strip()
         for name, executable in (('ffmpeg', ffmpeg), ('ffprobe', ffprobe)):
             tools[name] = subprocess.check_output([executable, '-version'], text=True).splitlines()[0]
         publish(root, staged, original, tools)

@@ -13,6 +13,18 @@ cad-check:
 cad-tests:
     python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
 
+# Verify canonical assets, then launch the interactive optical preview.
+demo:
+    python3 demo/run.py launch
+
+# Check runtime GLB import, controls, LED metadata and Metal ray optics.
+demo-check:
+    python3 demo/run.py check
+
+# Measure the actual 1280 x 720 scene on this machine.
+demo-benchmark:
+    python3 demo/run.py benchmark
+
 # Enable the tracked commit hook in this checkout.
 install-hooks:
     git config --local core.hooksPath .githooks
