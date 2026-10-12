@@ -42,7 +42,7 @@ def check(build=False):
     godot('--editor', '--import', '--quit', headless=True)
     extra = ['--build-validation'] if build else []
     godot('--', '--check', *extra, headless=True, marker='DEMO SCENE PASS')
-    with tempfile.TemporaryDirectory(prefix='amulet-optics-') as tmp:
+    with tempfile.TemporaryDirectory(prefix='amulet-optics-', dir=ROOT.parent) as tmp:
         reference = Path(tmp)/'reference.json'
         optics = json.loads((ROOT/cad.EXPORTS/'scene.json').read_text())['optics']
         reference.write_text(json.dumps(cases(optics)))
@@ -52,7 +52,7 @@ def check(build=False):
 def capture():
     check(build=True)
     output = ROOT/cad.EXPORTS
-    with tempfile.TemporaryDirectory(prefix='amulet-capture-') as tmp:
+    with tempfile.TemporaryDirectory(prefix='amulet-capture-', dir=ROOT.parent) as tmp:
         frames = Path(tmp)
         godot('--', '--capture', str(frames), '--build-validation', marker='DEMO CAPTURE PASS')
         for view in VIEWS:
@@ -60,11 +60,11 @@ def capture():
                 command = ['ffmpeg', '-y', '-loglevel', 'error']
                 filters = []
                 for row, on in enumerate(('on','off')):
-                    for version in range(3):
-                        index = row*3+version
+                    for version in range(2):
+                        index = row*2+version
                         command += ['-i', str(frames/f'{view}-light{light}-{on}-v{version}.png')]
                         filters.append(f"[{index}:v]scale=640:360[v{index}]")
-                filters.append(''.join(f'[v{i}]' for i in range(6))+'xstack=inputs=6:layout=0_0|640_0|1280_0|0_360|640_360|1280_360[out]')
+                filters.append(''.join(f'[v{i}]' for i in range(4))+'xstack=inputs=4:layout=0_0|640_0|0_360|640_360[out]')
                 subprocess.run(command+['-filter_complex',';'.join(filters),'-map','[out]','-frames:v','1',str(output/f'demo-{view}-{name}.png')],check=True)
         subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/'movie-%04d.png'),
                         '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'amulet-demo.mp4')],check=True)
@@ -81,7 +81,7 @@ def capture():
     for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
-        size=(800,450) if name.endswith('.gif') else ((1920,720) if name in CAPTURES else (1280,720))
+        size=(800,450) if name.endswith('.gif') else (1280,720)
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
             seconds=52 if name=='amulet-demo.mp4' else 12

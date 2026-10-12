@@ -14,7 +14,7 @@ import Part
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, wood_bottom
 
 
 def check():
@@ -27,34 +27,38 @@ def check():
     centres = led_centres(layout, p)
     cells = mask_cells(centres, p['mask_edge_radius'], p['mask_web'])
     build.check_model(b, centres, cells)
-    wood_bottom = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['wood_thickness']
-    assert math.isclose(doc.WoodMask.Shape.BoundBox.ZMin, wood_bottom, abs_tol=1e-7), 'Master retained an exploded wood placement'
+    wood_z = wood_bottom(p)
+    assert math.isclose(doc.WoodMask.Shape.BoundBox.ZMin, wood_z, abs_tol=1e-7), 'Master retained an exploded wood placement'
     assert doc.getObject('CellBaffle') is None, 'A second full cell grid remains in the model'
     led_top = doc.CircleLEDs.Shape.BoundBox.ZMax
-    assert .2-1e-7 <= wood_bottom-led_top <= .5+1e-7, 'Wood grid leaves an excessive light-leak gap or touches LEDs'
+    assert .5-1e-7 <= wood_z-led_top <= .8+1e-7, 'Wood grid leaves an excessive light-leak gap or touches LEDs'
     assert math.isclose(doc.WoodMask.Shape.BoundBox.ZLength,p['wood_thickness'],abs_tol=1e-7)
     for i in range(3):
         foot = doc.getObject(f'CircleRimFoot{i}')
         assert foot in b.parts and len(foot.Shape.Solids) == 1
         assert math.isclose(foot.Shape.BoundBox.ZMin,p['circle_back_z']+p['circle_pcb_thickness'],abs_tol=1e-7)
-        assert math.isclose(foot.Shape.BoundBox.ZMax,wood_bottom,abs_tol=1e-7)
+        assert math.isclose(foot.Shape.BoundBox.ZMax,wood_z,abs_tol=1e-7)
         assert foot.Shape.common(doc.CircleLEDs.Shape).Volume < 1e-7, 'Rim spacer touches an LED body'
-        tops = [f for f in foot.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_bottom) < 1e-7]
-        bases = [f for f in doc.WoodMask.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_bottom) < 1e-7]
+        tops = [f for f in foot.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_z) < 1e-7]
+        bases = [f for f in doc.WoodMask.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_z) < 1e-7]
         assert sum(top.common(base).Area for top in tops for base in bases) >= 1.5, 'Rim spacer misses the wood grid rim'
-    assert math.isclose(doc.FrontAcrylic.Shape.BoundBox.ZMin, wood_bottom+p['wood_thickness'], abs_tol=1e-7)
-    assert math.isclose(doc.CircleBezel.Shape.BoundBox.ZMax, p['case_depth'], abs_tol=1e-7)
-    for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
-        quarters = [doc.getObject(prefix+f'Q{i}') for i in range(1,5)]
-        assert all(q in b.parts for q in quarters), 'Quarter missing from manufactured parts'
-        assert not App.GuiUp or not doc.getObject(prefix).Visibility, 'Unsplit construction copy visible'
-    assert doc.FrontBezel in b.parts and len(doc.FrontBezel.Shape.Solids) == 1, 'Black acrylic border must be one connected sheet part'
-    assert doc.FrontBezel.Material.startswith('Opaque black acrylic sheet')
-    assert not any(doc.getObject(f'FrontBezelQ{i}') for i in range(1,5)), 'Black acrylic border must not have printed quarter seams'
-    assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMin,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)
-    assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMax,p['case_depth'],abs_tol=1e-7)
-    border_circles = sorted({(round(edge.Curve.Center.x,6),round(edge.Curve.Center.y,6),round(edge.Curve.Radius,6)) for edge in doc.FrontBezel.Shape.Edges if hasattr(edge.Curve,'Radius')})
-    assert doc.RearPlate not in b.parts and len(doc.RearPlate.Shape.Solids) == 1
+    assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZMin,p['front_plane_z'],abs_tol=1e-7)
+    assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZLength,p['acrylic_thickness'],abs_tol=1e-7)
+    assert math.isclose(p['front_plane_z']-doc.WoodMask.Shape.BoundBox.ZMax,p['wood_to_sheet_gap'],abs_tol=1e-7)
+    for name in ('OpticalDeck','BarrelFrame','RearPlate','FrontSheet'):
+        obj=doc.getObject(name)
+        assert obj in b.parts and len(obj.Shape.Solids)==1
+    assert not any(doc.getObject(n) for n in ('SeamStraps','CircleBezel','FrontBezel','FrontAcrylic','FrontMirror'))
+    assert not any(doc.getObject(prefix+f'Q{i}') for prefix in ('OpticalDeck','BarrelFrame','RearPlate') for i in range(1,5))
+    for i,(x,y) in enumerate(mounting_points(p)):
+        assert math.isclose(doc.getObject(f'FrontStop{i}').Shape.BoundBox.ZMax,p['case_depth'],abs_tol=1e-7)
+        assert not doc.FrontSheet.Shape.isInside(App.Vector(x+3.1,y,p['front_plane_z']+.5),1e-7,True)
+        # The rear can pass the optical-stack nuts without releasing them.
+        assert doc.RearPlate.Shape.common(Part.makeCylinder(4,4,App.Vector(x,y,-1))).Volume<1e-7
+    for x,y in rear_mounting_points(p):
+        ray=Part.makeLine(App.Vector(x,y,-4),App.Vector(x,y,10))
+        assert not any(ray.common(obj.Shape).Length>1e-7 for obj in b.parts), 'Rear screw path blocked'
+    assert doc.RearPlate in b.parts and len(doc.RearPlate.Shape.Solids) == 1
     assert doc.RearPlate.Material.startswith('Printed PETG')
     assert math.isclose(doc.RearPlate.Shape.BoundBox.ZMin,0,abs_tol=1e-7)
     # Unreinforced skin is thin; integral ribs and bolt lands are thicker.
@@ -90,7 +94,7 @@ def check():
         leds = doc.getObject(name+'LEDs')
         assert band.Shape.BoundBox.ZMin < leds.Shape.BoundBox.ZMin
         assert band.Shape.BoundBox.ZMax > leds.Shape.BoundBox.ZMax
-    assert math.isclose(doc.FrontMirror.Shape.BoundBox.ZMin-doc.RearMirror.Shape.BoundBox.ZMax,d['mirror_separation'],abs_tol=1e-7)
+    assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZMin-doc.RearMirror.Shape.BoundBox.ZMax,d['mirror_separation'],abs_tol=1e-7)
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin <= doc.OuterLEDs.Shape.BoundBox.ZMin
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax >= doc.OuterLEDs.Shape.BoundBox.ZMax
     assert doc.EdgeDiffuserSeam.Material.startswith('Black LED-diffusing acrylic'), 'Curved outside wall must use black acrylic'
@@ -102,8 +106,8 @@ def check():
         assert doc.EdgeDiffuserSeam.Visibility, 'Outside acrylic diffuser is hidden'
         assert doc.EdgeDiffuserSeam.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Black acrylic diffuser must show LEDs through its translucent CAD display'
     assert math.isclose(doc.OuterStripSeam.Shape.BoundBox.Center.z,doc.EdgeDiffuserSeam.Shape.BoundBox.Center.z,abs_tol=1e-7), 'Outer strip is not centered in the outside surface'
-    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin,p['rear_thickness'],abs_tol=1e-7)
-    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)
+    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin,p['edge_bottom_z'],abs_tol=1e-7)
+    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax,p['front_plane_z'],abs_tol=1e-7)
     assert not any(doc.getObject(name) for name in ('ButtonActuator0','SparkleUSBPowerPort','RadioPort','PowerSwitchPort')), 'Exposed side pegs or windows returned'
     # Rear skin stays closed except for covered vent/control/service passages.
     assert doc.RearPlate.Shape.isInside(App.Vector(0,-95,p['rear_skin_thickness']/2),1e-7,True)
@@ -131,22 +135,26 @@ def check():
     for r in (p['mirror_view_inner_radius']+.1,p['mirror_view_outer_radius']-.1):
         for i in range(12):
             a = i*math.tau/12
-            point = App.Vector(r*math.cos(a),r*math.sin(a),p['case_depth']-p['front_bezel_thickness']/2)
+            point = App.Vector(r*math.cos(a),r*math.sin(a),p['front_plane_z']-.05)
             assert not any(obj.Shape.isInside(point,1e-7,True) for obj in b.parts), 'Mirror view is masked by a manufactured part'
-    wood_z = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['wood_thickness']/2
+    wood_mid = wood_bottom(p)+p['wood_thickness']/2
     for x, y in centres:
-        assert not doc.WoodMask.Shape.isInside(App.Vector(x,y,wood_z), 1e-7, True), 'LED centre blocked by native wood'
+        assert not doc.WoodMask.Shape.isInside(App.Vector(x,y,wood_mid), 1e-7, True), 'LED centre blocked by native wood'
     for x,y in centres:
-        ray = Part.makeLine(App.Vector(x,y,led_top),App.Vector(x,y,doc.FrontAcrylic.Shape.BoundBox.ZMin))
-        assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontAcrylic'), 'Opaque part blocks a circle pixel'
-    # Check room for each tongue to move inward far enough to release its bead.
-    # This is geometric clearance, not a flex/strength simulation.
-    for i in range(3):
-        angle = math.radians(120*i)
-        released = doc.getObject(f'CircleClip{i}').Shape.copy()
-        released.translate(App.Vector(-p['circle_clip_release_travel']*math.cos(angle),-p['circle_clip_release_travel']*math.sin(angle),0))
-        for obj in (doc.OpticalFrame,doc.CirclePCB,doc.WoodMask,doc.FrontAcrylic,*(doc.getObject(f'CircleRimFoot{j}') for j in range(3))):
-            assert not released.common(obj.Shape).Solids, 'No snap release clearance: '+obj.Name
+        ray = Part.makeLine(App.Vector(x,y,led_top),App.Vector(x,y,doc.FrontSheet.Shape.BoundBox.ZMin))
+        assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontSheet'), 'Opaque part blocks a circle pixel'
+    # Front service sequence: lift sheet, grid/spacers, sleeves and rear mirror.
+    # Check actual translated solids through the complete axial exit path.
+    for name in ('HaloDiffuser','InnerDiffuser','RearMirror','WoodMask','CirclePCB'):
+        shape=doc.getObject(name).Shape
+        for lift in (.1,.5,1,2,4,8,16,32):
+            lifted=shape.copy()
+            lifted.translate(App.Vector(0,0,lift))
+            assert lifted.common(doc.OpticalFrame.Shape).Volume<1e-6, 'Frame blocks front removal: '+name
+    for drop in (.1,.5,1,2,4,8,16,32):
+        moved=doc.RearPlate.Shape.copy()
+        moved.translate(App.Vector(0,0,-drop))
+        assert moved.common(doc.OpticalFrame.Shape).Volume<1e-6, 'Frame blocks rear removal'
     assert len(doc.BoardMounts.Shape.Solids) == 16, 'Missing board rail/standoff/power-board support'
     assert doc.BoardMounts not in b.parts, 'Mounts must be integral with the rear'
     for i,(x,y) in enumerate(battery_centres(p)):
@@ -158,8 +166,8 @@ def check():
     assert doc.powerComponents.Shape.BoundBox.ZMax < p['mirror_back_z']-p['strip_wall']-.5
     # GUI triangulation can shrink a circular bounding box. Compare laser
     # radii with exact BRep circles, not the display mesh's approximate bounds.
-    front_mirror_radii = sorted({edge.Curve.Radius for edge in doc.FrontMirror.Shape.Edges if hasattr(edge.Curve,'Radius')})
-    assert len(front_mirror_radii) == 2
+    sheet_circles=sorted({(round(e.Curve.Center.x,6),round(e.Curve.Center.y,6),round(e.Curve.Radius,6)) for e in doc.FrontSheet.Shape.Edges if hasattr(e.Curve,'Radius')})
+    mirror_outline=Part.makeCompound([e.copy() for f in doc.RearMirror.Shape.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-p['mirror_back_z'])<1e-7 for e in f.Edges])
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
     doc.recompute()
@@ -173,20 +181,20 @@ def check():
         points = [tuple(map(float, pair.split(','))) for pair in node.attrib['points'].split()]
         assert len(points) == len(cell)
         assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
-    acrylic = ET.parse(HERE / 'exports/front-acrylic.svg')
-    assert len(acrylic.findall('.//s:circle',ns)) == 1
-    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-mirror.svg','rear-mirror.svg','edge-diffuser.svg'):
-        ET.parse(HERE / 'exports' / filename)
+    acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
+    assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
+    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg'):
+        ET.parse(HERE/'exports'/filename)
     edge_template = ET.parse(HERE/'exports/edge-diffuser.svg').getroot()
     assert math.isclose(float(edge_template.attrib['width'].removesuffix('mm')),edge_template_width,abs_tol=1e-5)
     assert math.isclose(float(edge_template.attrib['height'].removesuffix('mm')),edge_template_height,abs_tol=1e-5)
-    front_mirror = ET.parse(HERE/'exports/front-mirror.svg')
-    radii = [float(c.attrib['r']) for c in front_mirror.findall('.//s:circle',ns)]
-    assert len(radii)==2 and math.isclose(min(radii),p['mirror_inner_radius'])
-    assert all(math.isclose(a,b,abs_tol=1e-5) for a,b in zip(sorted(radii),front_mirror_radii)), 'Laser radii differ from exact native mirror circles'
-    border = ET.parse(HERE/'exports/outer-black-acrylic.svg')
-    cut_circles = sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in border.findall('.//s:circle',ns))
-    assert len(cut_circles) == 8 and cut_circles == border_circles, 'Black acrylic cut paths differ from native outline or six bolt holes'
+    cut_circles=sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in acrylic.findall('.//s:circle',ns))
+    assert cut_circles==sheet_circles, 'Front cut paths differ from native outline/locating holes'
+    for polygon in ET.parse(HERE/'exports/rear-mirror.svg').findall('.//s:polygon',ns):
+        points=[tuple(map(float,pair.split(','))) for pair in polygon.attrib['points'].split()]
+        for a,b in zip(points,points[1:]+points[:1]):
+            mid=Part.Vertex(App.Vector((a[0]+b[0])/2,(a[1]+b[1])/2,p['mirror_back_z']))
+            assert mid.distToShape(mirror_outline)[0] <= .021, 'Laser mirror path exceeds chord tolerance'
     assert not (HERE/'exports/rear-clear-acrylic.svg').exists(), 'Superseded acrylic rear laser file remains'
     for name,dim in cavity_diffusers(p).items():
         template = ET.parse(HERE/'exports'/(name.lower()+'-ring-diffuser.svg')).getroot()
@@ -202,10 +210,10 @@ def check():
     wood_volume = next(v['volume_cm3'] for v in manifest['volumes'] if v['name']=='WoodMask')
     assert math.isclose(mass['wood_g'],round(wood_volume*p['wood_density_g_cm3'],1),abs_tol=1e-7)
     assert abs(mass['mechanical_subset_g']-sum(mass[k] for k in ('printed_petg_g','acrylic_g','wood_g'))) <= .2
-    assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontBezel'), 'Black acrylic border cannot be a printed part'
-    assert not any(name.startswith('FrontBezel') for name in manifest['stl_files']), 'Superseded printed border STL remains'
-    assert all(v['printed'] for v in manifest['volumes'] if v['name'].startswith('RearPlateQ'))
-    assert len([name for name in manifest['stl_files'] if name.startswith('RearPlateQ')]) == 4, 'Missing printed rear quarter'
+    assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontSheet')
+    assert len(manifest['stl_files'])==13, 'Unexpected printed assembly part count'
+    assert all(name+'.stl' in manifest['stl_files'] for name in ('OpticalDeck','BarrelFrame','RearPlate'))
+    assert not any('Q1' in name or name.startswith(('SeamStraps','CircleBezel','FrontBezel')) for name in manifest['stl_files'])
     assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
     assert not any('Diffuser' in name for name in manifest['stl_files']), 'Acrylic diffuser cannot be a printed part'
     assert len([name for name in manifest['stl_files'] if name.startswith('NecklaceLink')]) == 2
@@ -217,7 +225,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'wood_thickness':2}, {'wood_thickness':5.2}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
+    for changes in ({'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

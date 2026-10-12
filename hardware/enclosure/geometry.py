@@ -73,7 +73,7 @@ def ring_pixel(count, index, outward, p):
 def optical_dimensions(p):
     inner = ring_radius(p['inner_count'], p)
     outer = ring_radius(p['outer_count'], p)
-    front = p['case_depth'] - p['front_bezel_thickness'] - p['acrylic_thickness']
+    front = p['front_plane_z']
     rear = p['mirror_back_z'] + p['mirror_back_thickness']
     return {
         'inner_radius': inner,
@@ -83,7 +83,7 @@ def optical_dimensions(p):
         'mirror_separation': front - rear,
         'outer_led_clearance': p['edge_diffuser_radius'] - outer - p['strip_thickness']/2 - p['ring_led_depth'],
         'halo_radius': ring_radius(p['halo_count'], p),
-        'edge_height': p['case_depth'] - p['front_bezel_thickness'] - p['edge_bottom_z'],
+        'edge_height': p['front_plane_z'] - p['edge_bottom_z'],
         'outer_strip_centre_z': strip_bottom('Outer', p) + p['strip_width']/2,
         'diffuser_gap': cavity_diffusers(p)['Inner']['inner']-cavity_diffusers(p)['Halo']['outer'],
     }
@@ -92,7 +92,7 @@ def optical_dimensions(p):
 def strip_bottom(name, p):
     """Centre the outer row in the side diffuser; mirror rows share one Z."""
     if name == 'Outer':
-        return (p['edge_bottom_z'] + p['case_depth'] - p['front_bezel_thickness'] - p['strip_width']) / 2
+        return (p['edge_bottom_z'] + p['front_plane_z'] - p['strip_width']) / 2
     return p['strip_bottom_z']
 
 
@@ -117,6 +117,15 @@ def cavity_diffusers(p):
     inner_face = ring_radius(p['inner_count'],p)-p['strip_thickness']/2-p['ring_led_depth']
     thickness,gap = p['ring_diffuser_thickness'],p['ring_diffuser_led_gap']
     bottom = p['mirror_back_z']+p['mirror_back_thickness']+p['ring_diffuser_end_gap']
-    top = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['ring_diffuser_end_gap']
+    top = p['front_plane_z']-p['ring_diffuser_end_gap']
     return {'Halo':{'inner':halo_face+gap,'outer':halo_face+gap+thickness,'bottom':bottom,'height':top-bottom},
             'Inner':{'inner':inner_face-gap-thickness,'outer':inner_face-gap,'bottom':bottom,'height':top-bottom}}
+
+
+def rear_mounting_points(p):
+    """Rear-cover screws are independent of the six optical-stack bolts."""
+    return [(112.5*math.cos(math.radians(0+60*i)),112.5*math.sin(math.radians(0+60*i))) for i in range(6)]
+
+
+def wood_bottom(p):
+    return p['front_plane_z']-p['wood_to_sheet_gap']-p['wood_thickness']

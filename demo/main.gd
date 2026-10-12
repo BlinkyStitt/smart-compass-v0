@@ -1,7 +1,7 @@
 extends Node3D
 
 const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
-const FINISHES = ["Current assembly", "One sheet • full mirror", "One sheet • clear centre"]
+const FINISHES = ["Selected • clear centre", "Comparison • full mirror"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const COUNTS = [256, 64, 84, 90]
 var metadata: Dictionary
@@ -284,7 +284,7 @@ func _sync_slider(slider,value):
 func _set_finish(value):
 	finish = value
 	for part in metadata.parts:
-		meshes[part.name].visible = part.variant == "common" or part.variant == ("current" if finish == 0 else "proposal")
+		meshes[part.name].visible = true
 	_update_optics()
 
 func _update_optics():
@@ -397,14 +397,13 @@ func _run_checks():
 	_reset()
 	var saved_time=pattern_time
 	var saved_position=camera.position
-	for value in range(3):
+	for value in range(FINISHES.size()):
 		_set_finish(value)
 		assert(pattern_time==saved_time and camera.position==saved_position)
 		assert(meshes.RearMirror.visible)
-		assert(meshes.WoodMask.visible==(value==0))
-		assert(meshes.ProposalWood.visible==(value!=0))
+		assert(meshes.WoodMask.visible and meshes.FrontCentre.visible)
 		assert(meshes.HaloDiffuser.visible and meshes.InnerDiffuser.visible)
-		assert(meshes.CircleBezel.visible==(value==0))
+		assert(meshes.OpticalDeck.visible and meshes.BarrelFrame.visible and meshes.RearPlate.visible)
 	for value in range(4):
 		_set_lighting(value)
 		assert(environment.tonemap_exposure==1.0)
@@ -474,7 +473,7 @@ func _capture():
 			for on in [true,false]:
 				groups=[on,on,on,on]
 				_update_colours()
-				for version in range(3):
+				for version in range(FINISHES.size()):
 					_set_finish(version)
 					caption.text="%s | %s | LEDs %s" % [FINISHES[version],LIGHTING[light],"on" if on else "off"]
 					await _settle()
@@ -492,13 +491,13 @@ func _capture():
 			pattern_time=16.0*frame/576.0
 		elif frame<864:
 			var local_frame=frame-576
-			_set_finish(local_frame/96)
+			_set_finish(local_frame/144)
 			_set_lighting(1)
-			_sweep(float(local_frame%96)/96.0,60.0)
-			pattern_time=16.0*float(local_frame%96)/96.0
+			_sweep(float(local_frame%144)/144.0,60.0)
+			pattern_time=16.0*float(local_frame%144)/144.0
 		else:
 			var local_frame=frame-864
-			_set_finish(2)
+			_set_finish(0)
 			_set_lighting(local_frame/96)
 			_sweep(float(local_frame%96)/96.0,60.0)
 			pattern_time=16.0*float(local_frame%96)/96.0
@@ -525,7 +524,7 @@ func _capture():
 			_update_colours()
 			await _settle()
 			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [style,frame]))==OK)
-	print("DEMO CAPTURE PASS: 96 matched stills, 1248 movie frames and 1152 gradient loop frames")
+	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames and 1152 gradient loop frames")
 	get_tree().quit()
 
 func _benchmark():
@@ -536,7 +535,7 @@ func _benchmark():
 		pattern_time+=1.0/60
 		await get_tree().process_frame
 	var result=[]
-	for version in range(3):
+	for version in range(FINISHES.size()):
 		_set_finish(version)
 		for frame in range(30): await get_tree().process_frame
 		var samples=[]

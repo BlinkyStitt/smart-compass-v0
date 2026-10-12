@@ -64,8 +64,8 @@ class GeometryTests(unittest.TestCase):
 
     def test_outer_row_stays_centered_when_case_depth_changes(self):
         for depth in (35,45,48,52):
-            p = dict(self.p,case_depth=depth)
-            rear,front = p['edge_bottom_z'],depth-p['front_bezel_thickness']
+            p = dict(self.p,front_plane_z=depth)
+            rear,front = p['edge_bottom_z'],depth
             self.assertAlmostEqual(strip_bottom('Outer',p)+p['strip_width']/2,(rear+front)/2)
             self.assertEqual(strip_bottom('Inner',p),p['strip_bottom_z'])
             self.assertEqual(strip_bottom('Halo',p),p['strip_bottom_z'])
@@ -81,8 +81,9 @@ class GeometryTests(unittest.TestCase):
         bands = cavity_diffusers(self.p)
         halo_face = ring_radius(self.p['halo_count'],self.p)+self.p['strip_thickness']/2+self.p['ring_led_depth']
         inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
-        self.assertAlmostEqual(bands['Halo']['inner']-halo_face,.5)
-        self.assertAlmostEqual(inner_face-bands['Inner']['outer'],.5)
+        self.assertAlmostEqual(bands['Halo']['inner']-halo_face,self.p['ring_diffuser_led_gap'])
+        self.assertAlmostEqual(inner_face-bands['Inner']['outer'],self.p['ring_diffuser_led_gap'])
+        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-.25,.5)
         self.assertGreaterEqual(bands['Inner']['inner']-bands['Halo']['outer'],18)
         for band in bands.values():
             self.assertLess(band['bottom'],self.p['strip_bottom_z'])

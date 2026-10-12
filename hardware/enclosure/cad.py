@@ -23,7 +23,7 @@ INPUTS = (
         'cad.py', 'build.py', 'check.py', 'geometry.py',
         'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
         'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
-        'test_geometry.py', 'test_cad.py', 'demo_export.py',
+        'test_geometry.py', 'test_cad.py', 'demo_export.py', 'slicing.py', 'print-settings.ini',
     )),
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
@@ -34,11 +34,11 @@ INPUTS = (
 FIXED_EXPORTS = frozenset('''
 amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
 diffusers.png edge-diffuser.svg edge.png electronics.png
-exploded.png front-acrylic.svg front-mirror.svg
-front.png halo-ring-diffuser.svg inner-ring-diffuser.svg outer-black-acrylic.svg
+exploded.png front-sheet.svg front-coating.svg
+front.png halo-ring-diffuser.svg inner-ring-diffuser.svg
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
-amulet.glb scene.json single-sheet-section.svg lighting-demo.mp4
+amulet.glb scene.json lighting-demo.mp4
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
@@ -221,7 +221,7 @@ def rebuild(root):
     godot = shutil.which('godot')
     if not Path(freecad).is_file() or not (ffmpeg and ffprobe and godot):
         raise CadError('Install the build tools: brew install just ffmpeg; brew install --cask freecad godot')
-    with build_lock(root), tempfile.TemporaryDirectory(prefix='smart-compass-cad-') as temporary:
+    with build_lock(root), tempfile.TemporaryDirectory(prefix='smart-compass-cad-', dir=root.parent) as temporary:
         source = Snapshot(root)
         staged = Snapshot(Path(temporary))
         original = {}
@@ -236,10 +236,12 @@ def rebuild(root):
                         '-p', 'test_*.py', '-v'], cwd=staged.root, check=True)
         version = native_stage(freecad, directory, 'build')
         native_stage(freecad, directory, 'check')
+        import slicing
+        slicer_version = slicing.check(staged.root, fresh=False)
         native_stage(freecad, directory, 'demo')
         print('CAD: validate and capture interactive lighting comparisons', flush=True)
         subprocess.run([sys.executable, str(staged.root / 'demo/run.py'), 'capture'], check=True)
-        tools = {'freecad': version}
+        tools = {'freecad': version, 'prusaslicer': slicer_version}
         tools['godot'] = subprocess.check_output([godot, '--version'], text=True).strip()
         for name, executable in (('ffmpeg', ffmpeg), ('ffprobe', ffprobe)):
             tools[name] = subprocess.check_output([executable, '-version'], text=True).splitlines()[0]
