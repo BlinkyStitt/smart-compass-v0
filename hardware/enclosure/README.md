@@ -1,8 +1,10 @@
 # Round compass pendant
 
-Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The editable model now uses **250 mm outside diameter × 35 mm body depth**, down from 45 mm. Rear vent guards add 2.85 mm; modeled depth is **37.85 mm** before screw heads and necklace fittings. A removable **PETG rear** uses a **1 mm skin**, **1.6 mm wide × 2 mm high ribs**, thicker clamp lands, and integral mounts. Remove it to show the electronics. Clear filament will normally look translucent; opaque PETG also works. The inner strip faces the Fibonacci circle. A 64-pixel circle halo faces outward into the mirror gap. One outer LED row sits at the center of the broad black LED-diffusing acrylic side wall. The front border also stays black acrylic.
+Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The editable model now uses **250 mm outside diameter × 40 mm body depth**. Rear vent guards add 2.85 mm; modeled depth is **42.85 mm** before screw heads and necklace fittings. A removable **PETG rear** uses a **1 mm skin**, **1.6 mm wide × 2 mm high ribs**, thicker clamp lands, and integral mounts. Remove it to show the electronics. Clear filament will normally look translucent; opaque PETG also works. The inner strip faces the Fibonacci circle. A 64-pixel circle halo faces outward into the mirror gap. One outer LED row sits at the center of the broad black LED-diffusing acrylic side wall. The front border also stays black acrylic.
 
-Two separate pockets now fit conservative **Adafruit 328 pack envelopes, 50.5 × 60.5 × 7.9 mm each**. A separate power-board envelope fits beside them. Connect only one pack at a time. These packs do not establish six-hour bright runtime; see [sourced battery options and energy limits](battery-options.md). Sparkle retains 1 mm nominal component clearance below the circle. The mirror keeps its 11.2 mm separation.
+One padded, two-strap pocket fits a protected **80 × 65 × 20 mm factory 1S 10 Ah LiPo pack**. A separate **Pololu 5 V boost** fits beside it. The target is **four hours of bright animated patterns**, with a provisional **1.25 A total 5 V cap**. Runtime and apparent brightness remain unmeasured. USB power banks are excluded. See [sourced battery options and power limits](battery-options.md). Sparkle has 6 mm nominal component clearance below the circle. The mirror keeps its 11.2 mm separation.
+
+An optional belt pack removes the battery's **190 g** from the neck. A reinforced, capped rear cable entry reserves the external lead route along the necklace. The current master shows the internal pack and blanking plug; remove the pack and fit the selected gland for external use. The belt carrier and final cable hardware remain design/fit TODOs.
 
 The infinity mirror occupies the annular gap around the circle. The circle keeps its shaped wood mask and central acrylic diffuser. Dimensions remain provisional. Physical checks stay deferred in [design-v2.md](../../design-v2.md).
 
@@ -24,6 +26,7 @@ The infinity mirror occupies the annular gap around the circle. The circle keeps
 | `exports/outer-black-acrylic.svg` | One-piece opaque black outer front border: outer/inner circles and six M3 clearance holes. |
 | `exports/front-mirror.svg`, `rear-mirror.svg` | Nominal annular acrylic outlines. The rear mirror includes a top wire notch. |
 | `exports/edge-diffuser.svg` | Nominal flat forming reference for the black acrylic curved side wall; allow for forming and trim after forming. |
+| `exports/halo-ring-diffuser.svg`, `inner-ring-diffuser.svg` | Nominal flat forming references for the curved acrylic bands over the radial LED faces. Heat-form, cool, then trim. |
 | `exports/circle-alignment-overlay.svg` | Print at 100%. Check the 166 mm outline, 100 mm scale, and LED centres. The 196 mm sheet fits A4. Disable fit-to-page. Do not laser-cut this inspection overlay. |
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Native CAD views. These show geometry, not simulated light. |
@@ -37,21 +40,22 @@ Body coordinates are X right, Y top, and Z toward the front viewer. Rear Z=0. Th
 | PETG rear skin; clamp/seal lands; ribs | 0–1; 0–2; 1–3 |
 | Four rear vent guards | -2.85–0 |
 | Rear service cover and gasket | -1.70–0 |
-| Two separate battery envelopes; reserved fit/strap tops | 3.5–11.4; 13.9 |
+| Protected LiPo envelope; reserved fit/strap top | 3.5–23.5; 26 |
 | Controller/sensor PCB lower faces | 6 |
-| Sparkle component envelope top; clearance below circle | 21; 1 |
-| Thin annular optical floor | 17.65–19 |
-| Rear mirror; reflecting surface at its front | 19–20.5 |
-| Halo and inward strip bodies, 10 mm wide | 21.1–31.1 |
-| Outside strip body, centered at Z=17.6 | 12.6–22.6 |
-| Circle edge seat, sloping underside | 18.5–22 |
-| Circle PCB | 22–23.6 |
-| Circle LED packages | 23.6–26.6 |
-| Circle baffle; three rim feet extend to PCB | 26.8–29.7; feet 23.6–26.8 |
-| Circle wood | 29.7–31.7 |
-| Central diffuser and separate two-way mirror annulus | 31.7–33.2 |
-| Black acrylic outer front border and printed circle snap rim | 33.2–35; tongues reach 27.2 |
-| Black acrylic curved side wall | 2–33.2 |
+| Sparkle component envelope top; clearance below circle | 21; 6 |
+| Thin annular optical floor | 22.65–24 |
+| Rear mirror; reflecting surface at its front | 24–25.5 |
+| Halo and inward strip bodies, 10 mm wide | 26.1–36.1 |
+| Curved halo and inward acrylic diffusers | 25.6–36.6 |
+| Outside strip body, centered at Z=20.1 | 15.1–25.1 |
+| Circle edge seat, sloping underside | 23.5–27 |
+| Circle PCB | 27–28.6 |
+| Circle LED packages | 28.6–31.6 |
+| Circle baffle; three rim feet extend to PCB | 31.8–34.7; feet 28.6–31.8 |
+| Circle wood | 34.7–36.7 |
+| Central diffuser and separate two-way mirror annulus | 36.7–38.2 |
+| Black acrylic outer front border and printed circle snap rim | 38.2–40; tongues reach 32.2 |
+| Black acrylic curved side wall | 2–38.2 |
 
 The circle has one opening per pixel. Its inset Voronoi cells follow the published Fibonacci map, with a nominal 1.6 mm wood web. A matching opaque baffle separates the light below the wood. The wood sits directly behind the central diffuser. Neither part extends across the mirror gap.
 
@@ -73,17 +77,40 @@ The rear mirror carries full mirror film on its front surface; the partly reflec
 
 The circle appears as an island. Its load travels through the hidden seat and annular floor behind the mirror. The halo carrier wall is nominally 1.21 mm thick. The front snap rim is **3 mm wide**, with outside radius 85 mm. A **0.5 mm radial gap** separates it from the front mirror. Three 6 mm long, nominal 0.6 mm snap tongues retain the face without visible screw bosses. The outward halo lights the island's edge and mirror repetitions. It does not put another strip on the circle's front. Snap fit, release force, light leakage, and the perceived floating effect require later physical checks.
 
-The **curved outside wall is black LED-diffusing acrylic**, with no mirror film. It surrounds the body behind the black acrylic front border. Nominal dimensions are **246 mm inside diameter, 250 mm outside diameter, 2 mm wall thickness, and 31.2 mm height**. The outer LED row centers at **Z=17.6 mm**, about **1.0 mm behind the wall**. Its carrier continues across the optical floor's height, outside the floor radius. The structural barrel stays behind the LEDs. Keep a single top seam and seal it and both lips with removable clear tape.
+Each mirror-cavity ring now has a **curved acrylic diffuser over its LED faces**. Both bands use provisional **1 mm diffusing acrylic**, **0.5 mm LED clearance**, **11 mm height**, and a **1 mm top seam** aligned with the strip seam. The halo band spans radii **88.01–89.01 mm**; the inward band spans **108.24–109.24 mm**. This leaves **19.23 mm of radial cavity between the bands**, while the front mirror opening remains 25 mm wide. Wood stays over the Fibonacci circle only.
+
+The flat forming references are **555.13 × 11 mm** for the halo and **682.21 × 11 mm** for the inner ring. These are neutral-line dimensions, not proven final blanks. Heat-form each band, let it cool, then trim it to the native radii. Three small clear removable adhesive pads locate each band on the rear mirror, with 0.1 mm end gaps below and above. Remove the front mirror annulus to replace a band. Stock, diffusion finish, forming, pad adhesion to the mirror film, and retention remain physical fit tasks. Adafruit's 2.6 mm black sheet is not the specified 1 mm stock.
+
+The **curved outside wall is black LED-diffusing acrylic**, with no mirror film. It surrounds the body behind the black acrylic front border. Nominal dimensions are **246 mm inside diameter, 250 mm outside diameter, 2 mm wall thickness, and 36.2 mm height**. The outer LED row centers at **Z=20.1 mm**, about **1.0 mm behind the wall**. Its carrier continues across the optical floor's height, outside the floor radius. The structural barrel stays behind the LEDs. Keep a single top seam and seal it and both lips with removable clear tape.
 
 Use a light-transmitting black diffuser grade so the LEDs remain visible through the dark wall. Ordinary opaque black acrylic would block them. [Adafruit's black LED-diffusion acrylic](https://www.adafruit.com/product/4594) is an example of this material type; its listed 2.6 mm thickness is not the selected 2 mm CAD stock. **The 2 mm thickness remains provisional.** Measure the chosen sheet and revise `edge_diffuser_radius` and `edge_diffuser_thickness` in the saved master before rebuilding. The wall must retain at least 0.5 mm LED clearance and fit beneath the front border.
 
-Heat-form the wall to a cylindrical sleeve using the selected material supplier's process. Do not treat it as the former flexible PET wrap. `edge-diffuser.svg` gives a nominal **778.1 × 31.2 mm forming reference** at the wall's mid-thickness radius, with a 1 mm end gap. Allow for the actual forming process, then trim and fit the cooled sleeve; this is not a validated final blank size. Forming, seam retention, RGB transmission and full-height diffusion remain under `SC-ENCLOSURE`. CAD views show the unlit black surface, not simulated light.
+Heat-form the wall to a cylindrical sleeve using the selected material supplier's process. Do not treat it as the former flexible PET wrap. `edge-diffuser.svg` gives a nominal **778.1 × 36.2 mm forming reference** at the wall's mid-thickness radius, with a 1 mm end gap. Allow for the actual forming process, then trim and fit the cooled sleeve; this is not a validated final blank size. Forming, seam retention, RGB transmission and full-height diffusion remain under `SC-ENCLOSURE`. CAD views show the unlit black surface, not simulated light.
 
 **TODO: SC-RING-GEOMETRY — Measure cut intervals, length, width, coating/thickness, LED depth, bend limits, pads and fitted seams for the 64/84/90 strips. Replace provisional pitch diameters 170.7/223.8/239.7 mm. Keep at least 20 mm clear mirror view and center the outside row. Record each output's part, protocol, order, timing, seam and direction.**
 
 ## Low mass and home printing
 
 The model uses thin printed supports and sheet optics. The generated [parts manifest](exports/parts.json) records solid volume; this is not slicer mass or finished pendant mass. The PETG rear uses a **1 mm continuous skin**, **1.6 × 2 mm ribs**, a **2 mm perimeter seal land**, and **2 mm clamp/control/vent lands**. Integral battery walls and board feet add local depth. The normal rear view is opaque; remove the cover to show the electronics. Clear PETG is an option for a translucent view, not optical clarity.
+
+### Current weight estimate
+
+The 40 mm model gives the following **partial estimates**, rounded to the nearest gram. The build regenerates `mass_estimate` in [parts.json](exports/parts.json) from the native solid volumes. Use PETG density 1.27 g/cm³ from the [Prusament data sheet](https://www.prusa3d.com/file/3464616/prusament-petg-technical-data-sheet.pdf) and acrylic density 1.19 g/cm³ from the [ACRYLITE data sheet](https://www.acrylite.co/files/content/acrylite.co/documents/product-information/ACRYLITE-cast-Physical-Properties.pdf). These are material assumptions, not measurements of the selected stock or a slicer result.
+
+| Included parts | Estimated mass |
+| --- | ---: |
+| All printed parts, treated as solid PETG | 257 g |
+| All acrylic optics, curved diffusers and black border | 205 g |
+| Printed parts plus acrylic | **462 g** |
+| Candidate LiPo pack, supplier value | 190 g |
+| Pendant with internal pack, included parts only | **652 g** |
+| Pendant with belt pack, included parts only | **462 g** |
+
+Both pendant figures exclude wood, mirror films, boards, LED strips, wires, fasteners, gland or plug, seals, battery straps and necklace. The external option moves 190 g to the belt; it does not remove that mass from the total carried load. Its cable and belt carrier add further mass. The assembled pendant will be heavier than these partial estimates.
+
+Report these two pendant estimates after each geometry or battery change. At manufacture, replace the printed estimate with the selected slicer's material estimate, then weigh the complete pendant, necklace and belt assembly separately. Record the result before setting the final suspension load tests. Physical weighing remains deferred under `SC-ENCLOSURE`.
+
+### Print construction
 
 The deck, lower barrel and rear each split into four quarters. Rear ribs cross their butt seams; four **12 × 18 × 1 mm exterior lap straps** join the rear quarters. Their 1 mm projection stays within the existing vent-guard envelope. Bond and seal each subassembly on a flat jig. Keep the rear-to-frame joint removable. Board feet, battery pockets and hatch posts print with the rear, so these mounts need no acrylic adhesive joint.
 
@@ -95,7 +122,7 @@ Start with a 0.4 mm nozzle and 0.2 mm layers. The 1.35 mm wall target is approxi
 
 ## Electronics, battery, and suspension
 
-The removable printed rear holds Sparkle Motion, BlackPill, GPS, IMU, RF95, the divider, and a **23 × 45 × 10 mm power-board fit reference**. Sparkle stays at **(47,20) mm**; its component top at Z=21 leaves **1 mm below the circle**. The divider stays at (5,20). Sparkle uses published Rev D holes. Other boards use rails and straps. Their feet now merge into the rear skin and ribs. Component boxes remain provisional clearance references, and native checks include them.
+The removable printed rear holds Sparkle Motion, BlackPill, GPS, IMU, RF95, the divider, and a **15.2 × 40.6 × 4.6 mm Pololu U3V70F5 boost envelope** at **(72,-28) mm**. Sparkle stays at **(47,20) mm**; its component top at Z=21 leaves **6 mm below the circle**. The divider stays at (5,20). Sparkle uses published Rev D holes. Other boards use rails and straps. Their feet merge into the rear skin and ribs. Component boxes remain provisional clearance references, and native checks include them.
 
 The rear has a **249 mm outside diameter** and four sealed print seams. Six M3 bolts clamp its reinforced lands. The 38 × 18 mm service opening and M2 posts remain. Larger **16 × 8 mm rear clearances** surround the two **12 × 4 mm rounded webbing slots** in independent suspension brackets. Two covered 6.6 mm access holes reach the brackets' separate M3 anchors. Seal these holes after service. The rear carries electronics but does not carry necklace load.
 
@@ -117,7 +144,9 @@ Bond and seal all quarter seams. Use removable clear tape around the rear/side-s
 
 These vents provide breathing and pressure equalization; they do not establish enough cooling for bright patterns. The Fibonacci manufacturer reports closed-enclosure heat problems. Measure heat with the intended current cap later. Sound pickup through the covered case also needs a check. The model has no tested dust or IP rating. [Burning Man dust/electrical guidance](https://burningman.org/black-rock-city/preparation/camping-tips/electrical-safety/), [membrane vent guidance](https://www.gore.com/products/protective-adhesive-vents-electronic-outdoor-enclosures).
 
-The battery pockets hold two separate Adafruit 328 fit envelopes, with individual 10 mm straps, padding lands, lead exits and **2.5 mm top reserve**. A power board fits to their right. See [battery-options.md](battery-options.md) for dimensions, supplied-part differences, charger/boost limits, and the one-connected-pack policy. The six-hour bright-pattern target remains open; these internal packs cannot satisfy the current conservative idle-power model for six hours. Keep the power cap and final supply as explicit hardware decisions. Sparkle supplies BlackPill; PA4 measures the selected protected/switched battery before regulation.
+The **82 × 67 mm clear battery pocket** holds the protected LiPo fit candidate at **(0,-33) mm**. Two 10 mm straps, insulating padding, a left lead exit and **2.5 mm top reserve** retain it. The 84 × 69 mm cradle prints with the rear. See [battery-options.md](battery-options.md) for the sourced pack, discharge path, external charging, Adafruit comparison and four-hour energy budget. Connect one factory pack at a time and disconnect it for charging. Sparkle supplies BlackPill; PA4 measures the protected/switched raw pack before the boost. Final divider values, fuse, switch, connector and capacitor fit remain TODOs.
+
+The external-battery entry sits at **(43,84) mm**. It has a provisional **12 mm through-bore**, **20 mm diameter × 2 mm sealing land**, and a gasketed blanking-plug envelope for internal use. It stays on the rear, inside the outline and clear of the boards. [Adafruit PG-7 gland 762](https://www.adafruit.com/product/762) is the fit reference: listed 11.5 mm screw end and 3.0–4.3 mm cable jacket range. Measure its full body, nut, seal and jacket before fitting. Replace the blank with the gland only when the cable is installed. Route the lead up the right necklace branch and down to a belt carrier; use separate cable restraints and a shoulder service loop. The cable must carry no necklace load. Actual gland projection, bend clearance and snag-release behavior remain deferred fit tasks.
 
 ## Durable, repairable necklace mounts
 
@@ -132,15 +161,15 @@ The independent screw keeps each bracket attached when the six case bolts and re
 
 ## Assembly sequence
 
-1. Measure the circle, strips, sheets and supplied battery/power parts. Set the master and rebuild. Cut the circle wood/diffuser, annular mirrors and black acrylic front border. Apply laser kerf once in CAM. Heat-form the side diffuser and trim after cooling.
+1. Measure the circle, strips, sheets and supplied battery/power parts. Set the master and rebuild. Cut the circle wood/diffuser, annular mirrors and black acrylic front border. Apply laser kerf once in CAM. Cut and heat-form the outside, inner and halo acrylic diffusers, then trim after cooling.
 2. Print deck, barrel and rear quarters, seam straps, baffle, circle rim, two suspension brackets, four vent guards and service cover. The rear quarters include the board mounts, pockets and hatch posts. Inspect pilots, slot bridges, ribs and continuous skin paths in the slicer.
 3. Bond each set of quarters as a separate subassembly. Bond the rear's exterior lap straps, then seal all seams. Do not glue the rear to the barrel. Keep the deck removable from the barrel for captive-nut repair.
 4. Fit two M3 nuts in the open-front barrel pockets. Fit webbing/rings to each bracket. Seat and secure the brackets with their separate M3 screws. Check washers, screw length and bracket-to-frame bearing surfaces.
-5. Fit boards, individually padded packs and straps to the rear. Cap the disconnected spare connector. Retain wiring and the USB extension with enough service slack. Fit controls, vent patches, guards, hatch gasket and cover. Select a safe power source before connecting LEDs; the modeled small boost is not a final full-display supply.
-6. Fit the rear mirror, inward strip and outward halo. Fit the outside strip centered in its broad diffuser. Route leads rearward and seal optical wire gaps.
+5. Fit the boards, boost, padded protected LiPo pack and both straps to the rear. Keep pack protection intact. Fit the rated connector, fuse, physical switch and decoupling before connecting LEDs. Retain wiring and the USB service extension with enough slack. Fit controls, vent patches, guards, hatch gasket and cover. Fit the battery-entry blank, or the selected cable gland for an external pack. Disconnect and remove the pack for external charging.
+6. Fit the rear mirror, inward strip and outward halo. Locate their curved acrylic bands on the clear removable pads, leaving LED and end clearances. Fit the outside strip centered in its broad diffuser. Route leads rearward and seal optical wire gaps.
 7. Fit circle PCB, baffle, wood and central diffuser. Engage the three tested snap tongues. Fit the front two-way annulus and black acrylic outside wall/front border.
 8. Fit the complete rear subassembly and six M3 through-bolts with washers. Select actual lengths and engagement. Seal lips, rear joint, quarter seams, webbing clearances, anchor access holes and fastener penetrations. Keep clearances sealed to the brackets without trapping webbing.
-9. Support the pendant when opening it. Remove the six body bolts and lift the rear with its electronics; the two independent screws retain the brackets. Do not pull on wire slack. Physical fit, suspension, dust, optics, heat, magnetic and six-hour runtime checks remain deferred.
+9. Support the pendant when opening it. Remove the six body bolts and lift the rear with its electronics; the two independent screws retain the brackets. Do not pull on wire slack. Physical fit, suspension, dust, optics, heat, magnetic and four-hour runtime checks remain deferred.
 
 ## Edit and rebuild
 
@@ -169,4 +198,4 @@ python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
 - [WeAct V3.1 hardware](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/tree/master/Hardware): nominal BlackPill envelope.
 - [FreeCAD 1.1.4](https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4): native model runtime.
 
-**TODO: SC-ENCLOSURE — Measure component revisions, circle registration, rim contacts, battery, controls, strips, and sheet materials, including PETG skin/rib paths, rear seam bonds/seals, bracket/slot finish, webbing/rings and repair hardware, black acrylic stock thickness, side-wall forming and bolt clamping. Finish GPS angle, internal antenna strain relief, USB extension, wiring retention, snap fit, mirror flatness/retention, black side-wall seam retention, RGB transmission and full-height uniformity, membrane part/adhesive, rear seals and mounting transforms. Keep physical printing, assembly, load, dust, optical, thermal, magnetic, and six-hour runtime evidence deferred. CAD checks do not establish those results.**
+**TODO: SC-ENCLOSURE — Measure component revisions, circle registration, rim contacts, battery, controls, strips, and sheet materials, including PETG skin/rib paths, rear seam bonds/seals, bracket/slot finish, webbing/rings and repair hardware, black acrylic stock thickness, side-wall forming and bolt clamping. Finish GPS angle, internal antenna strain relief, USB extension, wiring retention, snap fit, mirror flatness/retention, black side-wall seam retention, RGB transmission and full-height uniformity, membrane part/adhesive, rear seals and mounting transforms. Keep physical printing, assembly, load, dust, optical, thermal, magnetic, and four-hour runtime evidence deferred. CAD checks do not establish those results.**

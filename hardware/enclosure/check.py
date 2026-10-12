@@ -14,7 +14,7 @@ import Part
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
-from geometry import battery_centres, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions
 
 
 def check():
@@ -50,6 +50,10 @@ def check():
     assert not doc.RearPlate.Shape.isInside(App.Vector(15,-95,(p['rear_skin_thickness']+p['rear_thickness'])/2),1e-7,True)
     assert doc.RearPlate.Shape.isInside(App.Vector(40,-80,p['rear_skin_thickness']+p['rear_rib_height']/2),1e-7,True)
     assert doc.RearPlate.Shape.isInside(App.Vector(121,0,p['rear_thickness']-.1),1e-7,True)
+    port_x,port_y = p['external_port_x'],p['external_port_y']
+    assert not doc.RearPlate.Shape.isInside(App.Vector(port_x,port_y,p['rear_thickness']/2),1e-7,True), 'External power entry is blocked'
+    assert doc.RearPlate.Shape.isInside(App.Vector(port_x+p['external_port_diameter']/2+1,port_y,p['rear_thickness']-.1),1e-7,True), 'External power entry needs its reinforced sealing land'
+    assert doc.ExternalPowerBlank in b.hardware, 'Unused battery entry needs a modeled blanking plug'
     assert doc.CirclePCB.Shape.BoundBox.ZMin-doc.sparkleComponents.Shape.BoundBox.ZMax >= 1-1e-7, 'Sparkle needs at least 1 mm circle clearance'
     assert doc.InnerLEDs.EmissionDirection == 'Radially inward toward circle'
     assert doc.OuterLEDs.EmissionDirection == 'Radially outward'
@@ -59,6 +63,17 @@ def check():
     assert len(doc.OuterLEDs.Shape.Solids) == p['outer_count']
     d = optical_dimensions(p)
     assert d['visible_mirror_width'] >= 20
+    assert d['diffuser_gap'] >= 18
+    for name,dim in cavity_diffusers(p).items():
+        band = doc.getObject(name+'Diffuser')
+        assert band in b.parts and band.Material.startswith('Diffusing acrylic')
+        radii = sorted({edge.Curve.Radius for edge in band.Shape.Edges if hasattr(edge.Curve,'Radius')})
+        assert len(radii)==2 and math.isclose(radii[0],dim['inner']) and math.isclose(radii[1],dim['outer'])
+        assert math.isclose(band.Shape.BoundBox.ZMin,dim['bottom'])
+        assert math.isclose(band.Shape.BoundBox.ZLength,dim['height'])
+        leds = doc.getObject(name+'LEDs')
+        assert band.Shape.BoundBox.ZMin < leds.Shape.BoundBox.ZMin
+        assert band.Shape.BoundBox.ZMax > leds.Shape.BoundBox.ZMax
     assert math.isclose(doc.FrontMirror.Shape.BoundBox.ZMin-doc.RearMirror.Shape.BoundBox.ZMax,d['mirror_separation'],abs_tol=1e-7)
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin <= doc.OuterLEDs.Shape.BoundBox.ZMin
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax >= doc.OuterLEDs.Shape.BoundBox.ZMax
@@ -154,6 +169,11 @@ def check():
     cut_circles = sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in border.findall('.//s:circle',ns))
     assert len(cut_circles) == 8 and cut_circles == border_circles, 'Black acrylic cut paths differ from native outline or six bolt holes'
     assert not (HERE/'exports/rear-clear-acrylic.svg').exists(), 'Superseded acrylic rear laser file remains'
+    for name,dim in cavity_diffusers(p).items():
+        template = ET.parse(HERE/'exports'/(name.lower()+'-ring-diffuser.svg')).getroot()
+        width = math.tau*(dim['inner']+dim['outer'])/2-p['ring_diffuser_seam_gap']
+        assert math.isclose(float(template.attrib['width'].removesuffix('mm')),width,abs_tol=1e-5)
+        assert math.isclose(float(template.attrib['height'].removesuffix('mm')),dim['height'],abs_tol=1e-5)
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
@@ -162,6 +182,7 @@ def check():
     assert all(v['printed'] for v in manifest['volumes'] if v['name'].startswith('RearPlateQ'))
     assert len([name for name in manifest['stl_files'] if name.startswith('RearPlateQ')]) == 4, 'Missing printed rear quarter'
     assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
+    assert not any('Diffuser' in name for name in manifest['stl_files']), 'Acrylic diffuser cannot be a printed part'
     assert len([name for name in manifest['stl_files'] if name.startswith('NecklaceLink')]) == 2
     assert set(manifest['stl_files']) == {f.name for f in (HERE/'exports').glob('*.stl')}
     for filename in manifest['stl_files']:
@@ -171,7 +192,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
+    for changes in ({'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

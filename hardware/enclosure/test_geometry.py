@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, strip_bottom
+from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, strip_bottom
 
 HERE = Path(__file__).resolve().parent
 
@@ -76,6 +76,17 @@ class GeometryTests(unittest.TestCase):
         halo_face = r+self.p['strip_thickness']/2+self.p['ring_led_depth']
         inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
         self.assertGreaterEqual(inner_face-halo_face,20)
+
+    def test_diffusers_keep_led_clearance_and_an_open_mirror_cavity(self):
+        bands = cavity_diffusers(self.p)
+        halo_face = ring_radius(self.p['halo_count'],self.p)+self.p['strip_thickness']/2+self.p['ring_led_depth']
+        inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
+        self.assertAlmostEqual(bands['Halo']['inner']-halo_face,.5)
+        self.assertAlmostEqual(inner_face-bands['Inner']['outer'],.5)
+        self.assertGreaterEqual(bands['Inner']['inner']-bands['Halo']['outer'],18)
+        for band in bands.values():
+            self.assertLess(band['bottom'],self.p['strip_bottom_z'])
+            self.assertGreater(band['bottom']+band['height'],self.p['strip_bottom_z']+self.p['strip_width'])
 
     def test_excessive_web_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Web removes LED'):

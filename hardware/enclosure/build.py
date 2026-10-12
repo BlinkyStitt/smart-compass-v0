@@ -17,7 +17,7 @@ import Sketcher
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom
 
 
 class Builder:
@@ -31,7 +31,7 @@ class Builder:
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
         self.keys = [k for k in p if not k.startswith('_')]
-        scalar = {'battery_count', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency'}
+        scalar = {'battery_count', 'battery_mass_g', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency'}
         for row, key in enumerate(self.keys, 2):
             self.sheet.set(f'A{row}', key)
             value = int(p[key]) if isinstance(p[key], bool) else p[key]
@@ -289,7 +289,12 @@ def build():
     rear_cuts += [b.cylinder(f'RearHatchHole{i}',1.2,rear+12,-1,x,hatch_y) for i,x in enumerate(hatch_screws)]
     rear_cuts += [b.box(f'RearEyeClearance{i}',16,8,rear+12,x-8,58,-1) for i,x in enumerate((-82,82))]
     rear_cuts += [b.cylinder(f'RearAnchorAccess{i}',3.3,rear+12,-1,side*97,48) for i,side in enumerate((-1,1))]
+    # A reinforced, capped cable entry supports a belt battery without an open
+    # side window. Actual gland thread, jacket and strain relief need fit checks.
+    rear_cuts.append(b.cylinder('ExternalPowerBore','Parameters.external_port_diameter/2',rear+12,-1,p['external_port_x'],p['external_port_y']))
+    rear_cuts.append(b.cylinder('ExternalPowerNutClearance','Parameters.external_port_diameter/2+2.25 mm',rear+12,rear,p['external_port_x'],p['external_port_y']))
     rear_items = [rear_blank,b.annulus('RearSealRim',119,p['case_diameter']/2-p['fit_clearance'],0,E('rear_thickness'))]
+    rear_items.append(b.cylinder('ExternalPowerLand',10,E('rear_thickness'),0,p['external_port_x'],p['external_port_y']))
     for i,(x,y) in enumerate(points+vent_points+control_points+[(x,hatch_y) for x in hatch_screws]):
         r = 10 if (x,y) in vent_points else 8 if (x,y) in control_points else 6
         rear_items.append(b.cylinder(f'RearClampLand{i}',r,E('rear_thickness'),0,x,y))
@@ -321,8 +326,8 @@ def build():
     b.add(gasket,'Manufactured','Service hatch gasket - nominal compressed outline',(.3,.3,.3),material='Nonprinted closed-cell foam; material/compression TODO')
 
     carrier_items = []
-    # Separate padded pockets: carry two packs, connect only one, cap each
-    # spare connector. Never join packs electrically to obtain more capacity.
+    # Restrain one protected factory LiPo pack without altering its cell wiring.
+    # Exchange a carried spare with power off; never parallel separate packs.
     bw,bl = p['battery_width'],p['battery_length']
     cradles = []
     for i,(bx,by) in enumerate(battery_centres(p)):
@@ -330,18 +335,18 @@ def build():
         cavity = b.box(f'BatteryCradleCavity{i}',bw+2,bl+2,rear+7,bx-bw/2-1,by-bl/2-1,rear+1)
         cradle = b.cut(f'BatteryCradle{i}',outer,cavity)
         relief = b.box(f'BatteryFloorRelief{i}',bw-4,bl-4,rear+1,bx-bw/2+2,by-bl/2+2,p['rear_skin_thickness'])
-        slots = [b.box(f'BatteryStrapSlot{i}{j}',12,4,2,bx-6,y,rear+1) for j,y in enumerate((by-bl/2-2,by+bl/2-2))]
-        wire_exit = b.box(f'BatteryWireExit{i}',8,5,5,bx+8,by+bl/2-1,rear+1)
+        slots = [b.box(f'BatteryStrapSlot{i}{j}{k}',12,4,2,x-6,y,rear+1) for j,x in enumerate((bx-bw/3,bx+bw/3)) for k,y in enumerate((by-bl/2-2,by+bl/2-2))]
+        wire_exit = b.box(f'BatteryWireExit{i}',5,10,5,bx-bw/2-3,by-5,rear+1)
         cradles.append(b.cut(f'BatteryPocket{i}',cradle,[relief,wire_exit]+slots))
         battery = b.box(f'BatteryEnvelope{i}',E('battery_width'),E('battery_length'),E('battery_height'),bx-bw/2,by-bl/2,rear+1.5)
-        b.add(battery,'Electronics',f'Adafruit 328 pack {i+1} - conservative 50.5 x 60.5 x 7.9 mm envelope',(.26,.36,.48),30)
-        battery.addProperty('App::PropertyString','ElectricalStatus').ElectricalStatus = 'Only one pack connected to one boost at a time; spare capped and disconnected. No six-hour bright runtime claim.'
+        b.add(battery,'Electronics',f'Protected 1S LiPo pack {i+1} - BatterySpace CU-MM109 nominal {bw:g} x {bl:g} x {p["battery_height"]:g} mm',(.26,.36,.48),30)
+        battery.addProperty('App::PropertyString','ElectricalStatus').ElectricalStatus = 'Protected factory 1S 10 Ah LiPo fit candidate; separate Pololu 5 V boost, provisional 1.25 A total output cap. Disconnect for external charging. Four-hour bright runtime requires measured capacity, patterns, transients and heat.'
         reserve = b.box(f'BatteryHeadroom{i}',bw+2,bl+2,2.5,bx-bw/2-1,by-bl/2-1,rear+1.5+p['battery_height'])
         b.add(reserve,'Optics',f'Pack {i+1} - 2 mm fit/headroom plus 0.5 mm strap reserve',(.85,.55,.18),80)
     cradle = b.compound('BatteryPockets',cradles)
     rear_items += cradles
 
-    for key, label, color in [('sparkle', 'Sparkle Motion Rev D', (.12, .35, .20)), ('blackpill', 'BlackPill V3.1', (.08, .10, .13)), ('gps', 'GPS FeatherWing placeholder', (.16, .35, .20)), ('imu', 'LSM9DS1 breakout placeholder', (.15, .36, .20)), ('radio', 'RF95 carrier placeholder', (.20, .32, .22)), ('sense', 'Battery divider board placeholder', (.32, .26, .16)), ('power', 'PowerBoost 1000C envelope - capped bring-up candidate', (.12,.35,.20))]:
+    for key, label, color in [('sparkle', 'Sparkle Motion Rev D', (.12, .35, .20)), ('blackpill', 'BlackPill V3.1', (.08, .10, .13)), ('gps', 'GPS FeatherWing placeholder', (.16, .35, .20)), ('imu', 'LSM9DS1 breakout placeholder', (.15, .36, .20)), ('radio', 'RF95 carrier placeholder', (.20, .32, .22)), ('sense', 'BlackPill PA4 raw-pack divider board placeholder', (.32, .26, .16)), ('power', 'Pololu U3V70F5 fixed 5 V boost envelope', (.12,.35,.20))]:
         x, y, w, l = [p[key + '_' + suffix] for suffix in ('x', 'y', 'width', 'length')]
         if key == 'sparkle':
             for i, (dx, dy) in enumerate(sparkle_holes):
@@ -369,6 +374,11 @@ def build():
     back = b.cut('RearPlate',reinforced,rear_cuts+suspension)
     b.add(back,'Manufactured','02 Removable PETG rear - thin skin, ribs and integral mounts',(.20,.22,.25),material='Printed PETG; 1 mm skin, 1.6 x 2 mm ribs; 2 mm clamp/seal lands; integral supports')
     split_printed_part(b,back)
+    plug_r = p['external_port_diameter']/2
+    plug = b.fuse('ExternalPowerBlank',[b.cylinder('PowerBlankHead',plug_r+2,1,-1,p['external_port_x'],p['external_port_y']),
+                                      b.cylinder('PowerBlankStem',plug_r-.25,rear+3,-1,p['external_port_x'],p['external_port_y']),
+                                      b.cylinder('PowerBlankNut',plug_r+2,2,rear,p['external_port_x'],p['external_port_y'])])
+    b.add(plug,'Electronics','External battery entry - gasketed blanking plug fit reference; replace with cable gland',(.20,.22,.25))
     for i, ((x,y),name) in enumerate(zip(control_points,('Mode','Action','Physical power'))):
         body = b.cylinder(f'RearButtonBody{i}',4,6,0,x,y)
         flange = b.cylinder(f'RearButtonFlange{i}',6,1.5,rear,x,y)
@@ -412,6 +422,21 @@ def build():
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('case_depth')+'-'+E('front_bezel_thickness')+'-'+E('edge_bottom_z'))
     edge = b.cut('EdgeDiffuserSeam', edge, b.box('EdgeDiffuserGap', 1, 4, depth, -.5, p['edge_diffuser_radius']-1, 0))
     b.add(edge, 'Manufactured', '07 Black acrylic curved outside wall - centered outer LED row', (.025,.025,.025), material='Black LED-diffusing acrylic; nominal 2 mm heat-formed sleeve, no mirror film; stock, forming and transmission TODO')
+
+    # Curved bands diffuse the radial emitting faces. They do not cover the
+    # flat front mirror annulus or replace the Fibonacci wood face.
+    for name,d in cavity_diffusers(p).items():
+        band = b.annulus(name+'DiffuserBlank',d['inner'],d['outer'],d['bottom'],d['height'])
+        seam = b.box(name+'DiffuserGap',p['ring_diffuser_seam_gap'],p['ring_diffuser_thickness']+2,d['height'],-p['ring_diffuser_seam_gap']/2,d['inner']-1,d['bottom'])
+        band = b.cut(name+'Diffuser',band,seam)
+        b.add(band,'Manufactured',name+' curved acrylic diffuser - radial light face',(.84,.88,.91),35,material='Diffusing acrylic; 1 mm nominal formed band; stock, finish, forming and retention TODO')
+        # Three thin clear adhesive pads locate the band on the rear mirror.
+        # They remain accessible after lifting the front annulus; no glue on LEDs.
+        r = (d['inner']+d['outer'])/2
+        for i in range(3):
+            angle = math.radians(30+120*i)
+            pad = b.cylinder(f'{name}DiffuserPad{i}',.75,E('ring_diffuser_end_gap'),E('mirror_back_z')+'+'+E('mirror_back_thickness'),r*math.cos(angle),r*math.sin(angle))
+            b.add(pad,'Manufactured',name+f' diffuser clear removable adhesive pad {i+1}',(.85,.88,.90),70,material='Nonprinted clear removable adhesive; 0.1 mm nominal; mirror-film adhesion TODO')
 
     # Cell baffle and wood share exactly the same XY opening sketch.
     openings = b.profile('FibonacciApertures', cells, wood_expr, E('wood_thickness'))
@@ -543,6 +568,10 @@ def split_printed_part(b, obj):
 def validate_parameters(p):
     if not (0 < p['assumed_efficiency'] <= 1):
         raise ValueError('Efficiency must lie in (0,1]')
+    if p['battery_mass_g'] <= 0:
+        raise ValueError('Battery mass must be positive')
+    if not 10 <= p['external_port_diameter'] <= 14 or math.hypot(p['external_port_x'],p['external_port_y'])+10 >= p['case_diameter']/2-p['fit_clearance']:
+        raise ValueError('External battery entry needs a bore within its reinforced rear land')
     for key in ('halo_count', 'inner_count', 'outer_count'):
         if int(p[key]) != p[key] or not 1 <= p[key] <= 512:
             raise ValueError('Ring counts must be integers in 1..512')
@@ -565,12 +594,16 @@ def validate_parameters(p):
     wood_z = p['case_depth'] - p['front_bezel_thickness'] - p['acrylic_thickness'] - p['wood_thickness']
     if led_top + .2 >= wood_z:
         raise ValueError('No light-baffle gap below the wood')
-    if p['rear_thickness'] + 1.5 + p['battery_height'] + 1 >= p['circle_back_z']:
-        raise ValueError('Battery leaves less than 1 mm rear PCB clearance')
+    if p['rear_thickness']+1.5+p['battery_height']+2.5+1 > p['circle_back_z']:
+        raise ValueError('Battery fit/headroom and strap leave less than 1 mm circle PCB clearance')
     for x,y in battery_centres(p):
         if math.hypot(abs(x)+p['battery_width']/2+2,abs(y)+p['battery_length']/2+2) >= p['case_diameter']/2-p['shell_wall']:
             raise ValueError('Battery cradle is outside the shell')
     optics = optical_dimensions(p)
+    if p['ring_diffuser_thickness'] <= 0 or p['ring_diffuser_led_gap'] < .5 or not .05 <= p['ring_diffuser_end_gap'] <= .2 or not .5 <= p['ring_diffuser_seam_gap'] <= p['ring_seam_gap']:
+        raise ValueError('Ring diffusers need positive stock, LED/end clearances and a small top seam')
+    if optics['diffuser_gap'] < 18:
+        raise ValueError('Curved diffusers leave less than 18 mm of radial mirror cavity')
     if optics['visible_mirror_width'] < 20 or optics['circle_to_inner_led'] < 20:
         raise ValueError('Infinity annulus requires at least 20 mm visible width and circle-to-LED gap')
     if p['mirror_view_inner_radius'] < p['circle_retainer_outer_radius']:
@@ -602,8 +635,8 @@ def validate_parameters(p):
         raise ValueError('Vent needs a membrane sealing land and clearance below its guard')
     if optics['inner_radius'] + p['strip_thickness']/2 + p['strip_wall'] >= p['fastener_radius']-p['post_radius']:
         raise ValueError('Perimeter posts intrude into the front mirror seat')
-    if p['rear_thickness']+1.5+p['battery_height']+2.5+.5 > p['mirror_back_z']-p['strip_wall']:
-        raise ValueError('Battery fit/headroom and strap leave less than 0.5 mm optical-floor clearance')
+    # Actual 3D collision checks determine floor/seat clearance. A pack wholly
+    # inside the central opening can extend above the annular floor plane.
 
 
 def check_partition(parent, children):
@@ -687,8 +720,11 @@ def check_model(b, centres, cells):
             start = App.Vector(x+nx*(b.p['ring_led_depth']/2+.05),y+ny*(b.p['ring_led_depth']/2+.05),strip_bottom(name,b.p)+b.p['strip_width']/2)
             sign = 1 if outward else -1
             end = App.Vector(sign*nx*end_radius,sign*ny*end_radius,start.z)
-            if Part.makeLine(start,end).common(b.doc.OpticalFrame.Shape).Length > .01:
+            ray = Part.makeLine(start,end)
+            if ray.common(b.doc.OpticalFrame.Shape).Length > .01:
                 raise ValueError(f'Opaque frame blocks {name} pixel {i}')
+            if name != 'Outer' and ray.common(b.doc.getObject(name+'Diffuser').Shape).Length < b.p['ring_diffuser_thickness']-.01:
+                raise ValueError(f'Curved diffuser does not cover {name} pixel {i}')
     print('CAD geometry checks: connected parts, no product/LED collisions, inward and outward light paths clear',flush=True)
 
 
@@ -701,7 +737,7 @@ def export_files(b, centres, cells):
     import MeshPart
     mesh_names = []
     volumes = []
-    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane'))}
+    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HatchGasket','HaloDiffuser','InnerDiffuser'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloDiffuserPad','InnerDiffuserPad'))}
     for obj in b.parts:
         volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted})
         if obj.Name in nonprinted:
@@ -725,7 +761,17 @@ def export_files(b, centres, cells):
         if Path(name).name != name or not name.endswith('.stl'):
             raise ValueError('Invalid generator-owned STL name: '+name)
         (out/name).unlink(missing_ok=True)
-    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(sum(o.Shape.Volume/1000 for o in b.parts if o.Name not in nonprinted),4),'optics_mm':optical_dimensions(b.p)},indent=2)+'\n')
+    printed_volume = sum(v['volume_cm3'] for v in volumes if v['printed'])
+    acrylic_names = {'FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HaloDiffuser','InnerDiffuser'}
+    acrylic_volume = sum(v['volume_cm3'] for v in volumes if v['name'] in acrylic_names)
+    mechanical_mass = printed_volume*1.27+acrylic_volume*1.19
+    mass = {'basis':'CAD solid volume with PETG 1.27 and acrylic 1.19 g/cm3; not slicer or measured finished mass',
+            'excludes':'Wood, films, electronics, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier',
+            'printed_petg_g':round(printed_volume*1.27,1),'acrylic_g':round(acrylic_volume*1.19,1),
+            'mechanical_subset_g':round(mechanical_mass,1),'candidate_pack_g':b.p['battery_mass_g'],
+            'internal_pack_subset_g':round(mechanical_mass+b.p['battery_mass_g'],1),
+            'external_pack_pendant_subset_g':round(mechanical_mass,1)}
+    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(printed_volume,4),'optics_mm':optical_dimensions(b.p),'mass_estimate':mass},indent=2)+'\n')
     svg_files(b.p, cells, out)
     section_drawing(b, out)
     if App.GuiUp:
@@ -782,6 +828,10 @@ def svg_files(p, cells, out):
     width = math.tau*(p['edge_diffuser_radius']+p['edge_diffuser_thickness']/2)-1
     height = p['case_depth']-p['front_bezel_thickness']-p['edge_bottom_z']
     (out/'edge-diffuser.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.6f}mm" height="{height:.6f}mm" viewBox="0 0 {width:.6f} {height:.6f}"><title>Black LED-diffusing acrylic side wall; {p["edge_diffuser_thickness"]:g} mm nominal; forming reference</title><desc>Nominal neutral-line development with 1 mm top seam. Allow for the selected acrylic forming process and trim after forming; this is not a proven final blank size. No mirror film.</desc><path fill="none" stroke="#ff0000" stroke-width="0.08" d="M 0,0 H {width:.6f} V {height:.6f} H 0 Z"/></svg>\n')
+    for name,d in cavity_diffusers(p).items():
+        width = math.tau*(d['inner']+d['outer'])/2-p['ring_diffuser_seam_gap']
+        height = d['height']
+        (out/(name.lower()+'-ring-diffuser.svg')).write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.6f}mm" height="{height:.6f}mm" viewBox="0 0 {width:.6f} {height:.6f}"><title>{name} ring curved acrylic diffuser; {p["ring_diffuser_thickness"]:g} mm nominal</title><desc>Neutral-line forming reference with {p["ring_diffuser_seam_gap"]:g} mm top seam; heat-form to the native radii, cool and trim. Stock and process remain provisional. No wood or mirror film.</desc><path fill="none" stroke="#ff0000" stroke-width="0.08" d="M 0,0 H {width:.6f} V {height:.6f} H 0 Z"/></svg>\n')
     # The inspection overlay never enters a laser cut file.
     overlay = [outline, '<path d="M -50,-92 L 50,-92 M -50,-90 L -50,-94 M 50,-90 L 50,-94"/>'] + polygons + [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="0.5"/>' for x,y in led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()),p)]
     (out / 'circle-alignment-overlay.svg').write_text(document(overlay, 'Print at 100 percent and check 166 mm circle / LED registration',98))
