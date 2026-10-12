@@ -67,6 +67,10 @@ def check():
     for name,dim in cavity_diffusers(p).items():
         band = doc.getObject(name+'Diffuser')
         assert band in b.parts and band.Material.startswith('Diffusing acrylic')
+        if App.GuiUp:
+            assert band.Visibility, 'Curved acrylic diffuser is hidden: '+name
+            assert band.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Curved acrylic diffuser needs the translucent CAD display: '+name
+            assert all(math.isclose(c,t,abs_tol=1e-6) for c,t in zip(band.ViewObject.ShapeColor[:3],build.DIFFUSER_TINT)), 'Curved acrylic diffuser needs the shared dark tint: '+name
         radii = sorted({edge.Curve.Radius for edge in band.Shape.Edges if hasattr(edge.Curve,'Radius')})
         assert len(radii)==2 and math.isclose(radii[0],dim['inner']) and math.isclose(radii[1],dim['outer'])
         assert math.isclose(band.Shape.BoundBox.ZMin,dim['bottom'])
@@ -82,8 +86,9 @@ def check():
     edge_template_width = math.tau*(doc.EdgeDiffuserOuter.Radius.Value+doc.EdgeDiffuserInner.Radius.Value)/2-1
     edge_template_height = doc.EdgeDiffuserSeam.Shape.BoundBox.ZLength
     if App.GuiUp:
-        assert all(c < .06 for c in doc.EdgeDiffuserSeam.ViewObject.ShapeColor[:3]), 'Outside wall still displays a pale finish'
-        assert doc.EdgeDiffuserSeam.ViewObject.Transparency == 0, 'Black CAD finish must not display the old transparent side cover'
+        assert all(math.isclose(c,t,abs_tol=1e-6) for c,t in zip(doc.EdgeDiffuserSeam.ViewObject.ShapeColor[:3],build.DIFFUSER_TINT)), 'Outside acrylic diffuser needs the shared dark tint'
+        assert doc.EdgeDiffuserSeam.Visibility, 'Outside acrylic diffuser is hidden'
+        assert doc.EdgeDiffuserSeam.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Black acrylic diffuser must show LEDs through its translucent CAD display'
     assert math.isclose(doc.OuterStripSeam.Shape.BoundBox.Center.z,doc.EdgeDiffuserSeam.Shape.BoundBox.Center.z,abs_tol=1e-7), 'Outer strip is not centered in the outside surface'
     assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin,p['rear_thickness'],abs_tol=1e-7)
     assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)

@@ -30,6 +30,7 @@ The infinity mirror occupies the annular gap around the circle. The circle keeps
 | `exports/circle-alignment-overlay.svg` | Print at 100%. Check the 166 mm outline, 100 mm scale, and LED centres. The 196 mm sheet fits A4. Disable fit-to-page. Do not laser-cut this inspection overlay. |
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Native CAD views. These show geometry, not simulated light. |
+| `exports/diffusers.png` | All three cylindrical acrylic sleeves and their LED strips, isolated at assembled positions. The front mirror and frame are hidden for inspection. |
 
 ## Light stack and ring directions
 
@@ -85,7 +86,11 @@ The **curved outside wall is black LED-diffusing acrylic**, with no mirror film.
 
 Use a light-transmitting black diffuser grade so the LEDs remain visible through the dark wall. Ordinary opaque black acrylic would block them. [Adafruit's black LED-diffusion acrylic](https://www.adafruit.com/product/4594) is an example of this material type; its listed 2.6 mm thickness is not the selected 2 mm CAD stock. **The 2 mm thickness remains provisional.** Measure the chosen sheet and revise `edge_diffuser_radius` and `edge_diffuser_thickness` in the saved master before rebuilding. The wall must retain at least 0.5 mm LED clearance and fit beneath the front border.
 
-Heat-form the wall to a cylindrical sleeve using the selected material supplier's process. Do not treat it as the former flexible PET wrap. `edge-diffuser.svg` gives a nominal **778.1 × 36.2 mm forming reference** at the wall's mid-thickness radius, with a 1 mm end gap. Allow for the actual forming process, then trim and fit the cooled sleeve; this is not a validated final blank size. Forming, seam retention, RGB transmission and full-height diffusion remain under `SC-ENCLOSURE`. CAD views show the unlit black surface, not simulated light.
+Heat-form the wall to a cylindrical sleeve using the selected material supplier's process. Do not treat it as the former flexible PET wrap. `edge-diffuser.svg` gives a nominal **778.1 × 36.2 mm forming reference** at the wall's mid-thickness radius, with a 1 mm end gap. Allow for the actual forming process, then trim and fit the cooled sleeve; this is not a validated final blank size. Forming, seam retention, RGB transmission and full-height diffusion remain under `SC-ENCLOSURE`.
+
+All three cylindrical acrylic sleeves use the **same dark tint and 60% FreeCAD display transparency** so their LED references remain visible. Specify light-transmitting dark acrylic for the halo, inward ring and outside wall. This display setting does not specify measured light transmission, haze or diffusion. The flat black front border remains opaque. The halo and inward sleeves sit below the front mirror; use [the isolated diffuser view](exports/diffusers.png) to inspect their coverage without that sheet hiding them.
+
+In FreeCAD, expand **Manufactured parts** and select **Halo curved acrylic diffuser**, **Inner curved acrylic diffuser** or **07 Black acrylic curved outside wall**. Their **View → Transparency** values must each read **60**. Select **06 Front two-way mirror annulus** and press Space to hide it temporarily when inspecting the cavity bands; press Space again to restore it.
 
 **TODO: SC-RING-GEOMETRY — Measure cut intervals, length, width, coating/thickness, LED depth, bend limits, pads and fitted seams for the 64/84/90 strips. Replace provisional pitch diameters 170.7/223.8/239.7 mm. Keep at least 20 mm clear mirror view and center the outside row. Record each output's part, protocol, order, timing, seam and direction.**
 
