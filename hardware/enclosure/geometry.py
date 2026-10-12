@@ -97,3 +97,14 @@ def strip_bottom(name, p):
 
 def mounting_points(p):
     return [(p['fastener_radius'] * math.cos(math.radians(p['fastener_phase_deg'] + 60 * i)), p['fastener_radius'] * math.sin(math.radians(p['fastener_phase_deg'] + 60 * i))) for i in range(6)]
+
+
+def battery_centres(p):
+    """Separate interchangeable packs, never a combined electrical pack."""
+    return [(p['battery_x'] + (i-(p['battery_count']-1)/2)*p['battery_spacing'], p['battery_y']) for i in range(int(p['battery_count']))]
+
+
+def necklace_anchors(p, side):
+    eye = (side*82, 62)
+    primary = min(mounting_points(p), key=lambda point: math.dist(point, eye))
+    return eye, primary, (side*97, 48)

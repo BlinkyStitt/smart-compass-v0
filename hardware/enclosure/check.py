@@ -14,7 +14,7 @@ import Part
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
-from geometry import led_centres, mask_cells, mounting_points, optical_dimensions
+from geometry import battery_centres, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions
 
 
 def check():
@@ -32,7 +32,7 @@ def check():
     assert math.isclose(doc.CellBaffle.Shape.BoundBox.ZMax, wood_bottom, abs_tol=1e-7), 'Master retained an exploded baffle placement'
     assert math.isclose(doc.FrontAcrylic.Shape.BoundBox.ZMin, wood_bottom+p['wood_thickness'], abs_tol=1e-7)
     assert math.isclose(doc.CircleBezel.Shape.BoundBox.ZMax, p['case_depth'], abs_tol=1e-7)
-    for prefix in ('OpticalDeck','BarrelFrame'):
+    for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
         quarters = [doc.getObject(prefix+f'Q{i}') for i in range(1,5)]
         assert all(q in b.parts for q in quarters), 'Quarter missing from manufactured parts'
         assert not App.GuiUp or not doc.getObject(prefix).Visibility, 'Unsplit construction copy visible'
@@ -42,15 +42,14 @@ def check():
     assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMin,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)
     assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMax,p['case_depth'],abs_tol=1e-7)
     border_circles = sorted({(round(edge.Curve.Center.x,6),round(edge.Curve.Center.y,6),round(edge.Curve.Radius,6)) for edge in doc.FrontBezel.Shape.Edges if hasattr(edge.Curve,'Radius')})
-    assert doc.RearPlate in b.parts and len(doc.RearPlate.Shape.Solids) == 1
-    assert doc.RearPlate.Material.startswith('Clear acrylic sheet')
-    assert not any(doc.getObject(f'RearPlateQ{i}') for i in range(1,5)), 'Clear rear must be one sheet without printed seams'
+    assert doc.RearPlate not in b.parts and len(doc.RearPlate.Shape.Solids) == 1
+    assert doc.RearPlate.Material.startswith('Printed PETG')
     assert math.isclose(doc.RearPlate.Shape.BoundBox.ZMin,0,abs_tol=1e-7)
-    assert math.isclose(doc.RearPlate.Shape.BoundBox.ZMax,p['rear_thickness'],abs_tol=1e-7)
-    rear_circles = sorted({(round(edge.Curve.Center.x,6),round(edge.Curve.Center.y,6),round(edge.Curve.Radius,6)) for edge in doc.RearPlate.Shape.Edges if hasattr(edge.Curve,'Radius')})
-    rear_lines = {tuple(sorted((round(v.Point.x,6),round(v.Point.y,6)) for v in edge.Vertexes)) for edge in doc.RearPlate.Shape.Edges if isinstance(edge.Curve,Part.Line) and all(abs(v.Point.z)<1e-7 for v in edge.Vertexes)}
-    if App.GuiUp:
-        assert doc.RearPlate.ViewObject.Transparency >= 80, 'Rear cover does not show the internals'
+    # Unreinforced skin is thin; integral ribs and bolt lands are thicker.
+    assert doc.RearPlate.Shape.isInside(App.Vector(15,-95,p['rear_skin_thickness']/2),1e-7,True)
+    assert not doc.RearPlate.Shape.isInside(App.Vector(15,-95,(p['rear_skin_thickness']+p['rear_thickness'])/2),1e-7,True)
+    assert doc.RearPlate.Shape.isInside(App.Vector(40,-80,p['rear_skin_thickness']+p['rear_rib_height']/2),1e-7,True)
+    assert doc.RearPlate.Shape.isInside(App.Vector(121,0,p['rear_thickness']-.1),1e-7,True)
     assert doc.CirclePCB.Shape.BoundBox.ZMin-doc.sparkleComponents.Shape.BoundBox.ZMax >= 1-1e-7, 'Sparkle needs at least 1 mm circle clearance'
     assert doc.InnerLEDs.EmissionDirection == 'Radially inward toward circle'
     assert doc.OuterLEDs.EmissionDirection == 'Radially outward'
@@ -75,15 +74,21 @@ def check():
     assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)
     assert not any(doc.getObject(name) for name in ('ButtonActuator0','SparkleUSBPowerPort','RadioPort','PowerSwitchPort')), 'Exposed side pegs or windows returned'
     # Rear skin stays closed except for covered vent/control/service passages.
-    assert doc.RearPlate.Shape.isInside(App.Vector(0,-95,p['rear_thickness']/2),1e-7,True)
+    assert doc.RearPlate.Shape.isInside(App.Vector(0,-95,p['rear_skin_thickness']/2),1e-7,True)
     for i in range(4):
         membrane = doc.getObject(f'VentMembrane{i}')
         hole = doc.getObject(f'VentHole{i}')
         assert math.isclose(membrane.Shape.BoundBox.ZMax,0,abs_tol=1e-7)
         assert membrane.Shape.BoundBox.XLength > hole.Shape.BoundBox.XLength+4
         assert doc.getObject(f'VentGuard{i}') in b.parts
-    for x in (-82,82):
-        eye_path = Part.makeLine(App.Vector(x,62,-3),App.Vector(x,62,p['rear_thickness']+6.1))
+    for side in (-1,1):
+        (x,y),primary,secondary = necklace_anchors(p,side)
+        link = doc.getObject('NecklaceLink'+str(0 if side==-1 else 1))
+        assert math.isclose(link.Shape.BoundBox.ZLength,p['necklace_link_thickness'],abs_tol=1e-7)
+        assert len(link.Shape.Solids) == 1
+        screw_path = Part.makeLine(App.Vector(*secondary,-4),App.Vector(*secondary,p['rear_thickness']+p['necklace_link_thickness']+6.1))
+        assert not any(screw_path.common(obj.Shape).Length > 1e-7 for obj in b.parts), 'Independent necklace anchor screw is blocked'
+        eye_path = Part.makeLine(App.Vector(x,62,-3),App.Vector(x,62,p['rear_thickness']+p['necklace_link_thickness']+.1))
         assert not any(eye_path.common(obj.Shape).Length > 1e-7 for obj in b.parts), 'A cover blocks a necklace eye'
     for x,y in mounting_points(p):
         bolt_path = Part.makeLine(App.Vector(x,y,-4),App.Vector(x,y,p['case_depth']+1))
@@ -108,8 +113,15 @@ def check():
         released.translate(App.Vector(-p['circle_clip_release_travel']*math.cos(angle),-p['circle_clip_release_travel']*math.sin(angle),0))
         for obj in (doc.OpticalFrame,doc.CirclePCB,doc.CellBaffle,doc.WoodMask,doc.FrontAcrylic):
             assert not released.common(obj.Shape).Solids, 'No snap release clearance: '+obj.Name
-    assert len(doc.BoardMounts.Shape.Solids) == 14, 'Missing board rail/standoff'
-    assert math.isclose(doc.BatteryEnvelope.Shape.BoundBox.ZLength, p['battery_height'], abs_tol=1e-7)
+    assert len(doc.BoardMounts.Shape.Solids) == 16, 'Missing board rail/standoff/power-board support'
+    assert doc.BoardMounts not in b.parts, 'Mounts must be integral with the rear'
+    for i,(x,y) in enumerate(battery_centres(p)):
+        cell = doc.getObject(f'BatteryEnvelope{i}')
+        assert math.isclose(cell.Shape.BoundBox.ZLength,p['battery_height'],abs_tol=1e-7)
+        assert math.isclose(cell.Shape.BoundBox.Center.x,x,abs_tol=1e-7)
+        assert math.isclose(cell.Shape.BoundBox.Center.y,y,abs_tol=1e-7)
+        assert doc.RearPlate.Shape.common(cell.Shape).Volume < 1e-7
+    assert doc.powerComponents.Shape.BoundBox.ZMax < p['mirror_back_z']-p['strip_wall']-.5
     # GUI triangulation can shrink a circular bounding box. Compare laser
     # radii with exact BRep circles, not the display mesh's approximate bounds.
     front_mirror_radii = sorted({edge.Curve.Radius for edge in doc.FrontMirror.Shape.Edges if hasattr(edge.Curve,'Radius')})
@@ -117,7 +129,7 @@ def check():
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
     doc.recompute()
-    assert math.isclose(doc.BatteryEnvelope.Shape.BoundBox.ZLength, p['battery_height']-1, abs_tol=1e-7)
+    assert math.isclose(doc.BatteryEnvelope0.Shape.BoundBox.ZLength, p['battery_height']-1, abs_tol=1e-7)
     App.closeDocument(doc.Name)  # Do not save this test edit.
     ns = {'s':'http://www.w3.org/2000/svg'}
     wood = ET.parse(HERE / 'exports/wood-fibonacci-mask.svg')
@@ -141,21 +153,15 @@ def check():
     border = ET.parse(HERE/'exports/outer-black-acrylic.svg')
     cut_circles = sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in border.findall('.//s:circle',ns))
     assert len(cut_circles) == 8 and cut_circles == border_circles, 'Black acrylic cut paths differ from native outline or six bolt holes'
-    rear = ET.parse(HERE/'exports/rear-clear-acrylic.svg')
-    cut_circles = sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in rear.findall('.//s:circle',ns))
-    assert len(cut_circles) == 18 and cut_circles == rear_circles, 'Clear rear paths differ from native outline or holes'
-    rects = rear.findall('.//s:rect',ns)
-    assert len(rects) == 1
-    x,y,w,h = [float(rects[0].attrib[k]) for k in ('x','y','width','height')]
-    corners = [(x,y),(x+w,y),(x+w,y+h),(x,y+h)]
-    assert {tuple(sorted((a,b))) for a,b in zip(corners,corners[1:]+corners[:1])} == rear_lines, 'Rear service opening differs from native cut paths'
+    assert not (HERE/'exports/rear-clear-acrylic.svg').exists(), 'Superseded acrylic rear laser file remains'
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
     assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontBezel'), 'Black acrylic border cannot be a printed part'
     assert not any(name.startswith('FrontBezel') for name in manifest['stl_files']), 'Superseded printed border STL remains'
-    assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='RearPlate'), 'Clear rear cannot be a printed part'
-    assert not any(name.startswith('RearPlate') for name in manifest['stl_files']), 'Superseded printed rear STL remains'
+    assert all(v['printed'] for v in manifest['volumes'] if v['name'].startswith('RearPlateQ'))
+    assert len([name for name in manifest['stl_files'] if name.startswith('RearPlateQ')]) == 4, 'Missing printed rear quarter'
+    assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
     assert len([name for name in manifest['stl_files'] if name.startswith('NecklaceLink')]) == 2
     assert set(manifest['stl_files']) == {f.name for f in (HERE/'exports').glob('*.stl')}
     for filename in manifest['stl_files']:
@@ -165,7 +171,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
+    for changes in ({'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
