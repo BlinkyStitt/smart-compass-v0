@@ -10,10 +10,25 @@ The infinity mirror occupies the annular gap around the circle. The circle uses 
 
 ![Exploded assembly](exports/exploded.png)
 
-[Watch the 34-second CAD demo](exports/amulet-demo.mp4), or open the looping
-[rotation](exports/turntable.gif) and [exploded animation](exports/exploded.gif).
-The [labelled exploded diagram](exports/exploded-overview.png) and
-[electronics close-up](exports/electronics-overview.png) support inspection.
+[Watch the 26-second Godot lighting demo](exports/amulet-demo.mp4), or open the
+looping [Godot front sweep](exports/turntable.gif). These show animated LEDs and
+mirror reflections. The [exploded drawing](exports/exploded.png) and
+[electronics close-up](exports/electronics.png) show CAD geometry.
+
+## Interactive lighting and single-sheet comparison
+
+Run `just demo` for the Godot preview. It shows animated LEDs, mirror paths and
+adjustable viewing conditions. Compare the current assembly with a continuous
+front sheet that has either full mirror coating or a clear centre. The proposed
+mounts and finishes remain preview geometry until you select a finish. The saved
+FreeCAD master and manufacturing exports still define the current assembly.
+
+See the [demo controls, optical assumptions, proposed assembly sequence and mass
+comparison](../../demo/README.md). Open the [matched indoor comparison](exports/demo-front-indoor.png)
+and [proposed section](exports/single-sheet-section.svg). `just demo-check` checks
+import and optics. `just cad` now also regenerates the canonical GLB, scene
+metadata and all fixed lighting comparisons. Install Godot with
+`brew install --cask godot` before rebuilding.
 
 ## Model and exports
 
@@ -36,10 +51,11 @@ The [labelled exploded diagram](exports/exploded-overview.png) and
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Assembly views. These show geometry, not simulated light. |
 | `exports/diffusers.png` | All three cylindrical acrylic sleeves and their LED strips, isolated at assembled positions. The front mirror and frame are hidden for inspection. |
-| `exports/amulet-demo.mp4` | 1600 × 1200, 24 fps, H.264 demo: 0–12 s complete rotation; 12–28 s explosion, rotation and reassembly; 28–34 s labelled electronics spread. |
-| `exports/turntable.gif`, `exploded.gif` | Looping 800 × 600 animations at 12 fps. |
-| `exports/turntable-poster.png`, `exploded-overview.png`, `electronics-overview.png` | Full-size inspection images from the animation scene. |
-| `animate.py`, `Animate.FCMacro` | Reproduce the animation from the saved native model with FreeCAD and FFmpeg. |
+| `exports/amulet-demo.mp4` | Godot, 1280 × 720, 24 fps: 0–12 s animated front sweep; 12–18 s matching finish comparisons; 18–26 s four lighting presets. |
+| `exports/turntable.gif` | Godot front sweep, 800 × 450, 12 fps, with animated LEDs and mirror reflections. |
+| `exports/infinity-rainbow.gif`, `infinity-pulse.gif`, `infinity-colour.gif` | Eight-second blinking loops, with moving side-to-front views; 800 × 450 at 12 fps. |
+| `exports/turntable-poster.png` | 1280 × 720 frame from the Godot scene. |
+| `../../demo/run.py`, `../../demo/main.gd` | Reproduce all demo videos in Godot; Godot draws the labels; FFmpeg encodes the frames. |
 | `cad.py`, `Run.FCMacro` | Rebuild and check all outputs in temporary storage before copying them back. |
 | `exports-manifest.json` | SHA-256 hashes of the saved model, build sources and all exports from the last complete build. |
 
@@ -49,7 +65,7 @@ Install the tools with Homebrew:
 
 ```sh
 brew install just ffmpeg
-brew install --cask freecad
+brew install --cask freecad godot
 ```
 
 Save and close `smart-compass.FCStd` in FreeCAD. From the repository root, run:
@@ -62,7 +78,8 @@ just cad-check
 `just cad` reads parameter values from the saved model's spreadsheet. It copies
 the inputs to a temporary directory, runs the host tests, rebuilds the native
 model and geometry exports, checks the saved model in a separate FreeCAD process,
-then renders and checks every PNG, GIF and MP4. It checks the complete export
+then uses Godot to render the lighting comparisons and all demo video frames.
+It checks the resulting PNG, GIF and MP4 files. It checks the complete export
 inventory and copies the results back only after these steps pass. It writes
 the freshness manifest last. A failed build leaves the saved model and exports
 in place. A failure during copying makes the freshness check fail until the
@@ -92,24 +109,24 @@ The macros remain useful for inspection, but a macro run alone does not update
 every output or the freshness manifest. Use `just cad` before committing CAD
 changes. There is no file-save watcher: finish and close the model before a build.
 
-## Render the demo separately
+## Render the lighting demo
 
-For a preview from the saved model, run
-`python3 hardware/enclosure/animate.py --preview --output /path/to/previews`.
-Omit `--preview` for the complete demo. This command does not certify a complete
-CAD rebuild; use `just cad` to update the tracked outputs and freshness manifest.
+Use `just cad` to regenerate all tracked outputs and the freshness manifest.
+All demo movies and animated GIFs now use the Godot scene, LED patterns and
+mirror shaders. FreeCAD generates the assembled geometry and static engineering
+views. It does not render the demo videos.
 
-The renderer copies the visible manufactured parts, electronics and LED
-references into a separate FreeCAD display document. It preserves the saved
-materials, including the three dark transparent sleeves. It checks that the
-master's hash stays unchanged, then checks media dimensions, durations, frame
-counts and full decoding. Temporary frames stay outside the repository.
+The GLB exporter reads assembled positions from the saved native model. It
+checks the native model hash before and after export. Godot produces the
+front sweep, finish comparisons, lighting sequence and labels; FFmpeg encodes
+those frames. The workflow checks media dimensions, durations, frame
+counts and full decoding. Temporary frames stay outside the repository. On a
+low-space system, set `TMPDIR` to a writable volume before running `just cad`.
 
-Exploded offsets illustrate the parts; they do not define assembly travel or
-service clearance. The electronics view shows the model's board footprints and
-battery envelope. Wiring and fastener models remain unfinished. These images
-show CAD geometry, rather than running firmware, LED emission, mirror
-reflections or measured optical transmission.
+The static exploded offsets illustrate parts. They do not establish service
+clearance. The electronics view shows board footprints and battery envelopes.
+The optical preview uses adjustable assumptions; it does not establish measured
+transmission, brightness, physical fit or thermal performance.
 
 ## Light stack and ring directions
 

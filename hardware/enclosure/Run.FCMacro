@@ -18,6 +18,9 @@ try:
     elif stage == 'check':
         import check
         check.check()
+    elif stage == 'demo':
+        import demo_export
+        demo_export.export()
     else:
         raise ValueError('Unknown CAD stage: ' + stage)
     Path(os.environ['SC_CAD_RESULT']).write_text(json.dumps({

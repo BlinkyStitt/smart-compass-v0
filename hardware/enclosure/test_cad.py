@@ -43,7 +43,9 @@ class CadWorkflowTests(unittest.TestCase):
     def test_source_and_export_changes_fail(self):
         paths = (cad.MASTER, cad.CAD + '/build.py', cad.CAD + '/fibonacci256-layout.json',
                  cad.EXPORTS + '/front.png', cad.EXPORTS + '/amulet-demo.mp4',
-                 cad.EXPORTS + '/Part.stl')
+                 cad.EXPORTS + '/Part.stl', 'demo/main.gd',
+                 cad.EXPORTS + '/amulet.glb', cad.EXPORTS + '/scene.json',
+                 cad.EXPORTS + '/demo-front-indoor.png')
         for path in paths:
             with self.subTest(path=path):
                 original = self.snapshot.read(path)

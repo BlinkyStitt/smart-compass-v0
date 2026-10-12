@@ -1420,3 +1420,19 @@ The original register mixed design decisions, implementation work, and physical 
 | Wired provisioning | Commands/responses, canonical records, validation, safe secret entry, stream transfer, key test, atomic apply/save, and forwarding/restart outcomes. |
 
 The original three review points also remain explicit: peer-indexed composition uses stable configured slots; all four displays use battery factors and recovery; each display applies its own LED response exactly once. No saved-location behavior returns.
+
+### Interactive front-sheet evaluation
+
+The [Godot design preview](demo/README.md) compares the current front with two
+finishes on one continuous 250 × 1.5 mm sheet: full mirror coating, or a clear
+centre with a mirrored annulus. Both use a black masked rim, revised locating
+seats and compression stops at the six existing body-fastener positions. The
+preview preserves the 11.2 mm mirror gap and retains the rear mirror, all three
+curved sleeves and the single wood grid. It does not replace the authoritative
+CAD until the finish is selected.
+
+The preview includes fixed LED-on/off comparisons under four relative lighting
+conditions. Its transmission, reflection, diffusion and brightness values are
+assumptions. Keep the existing `SC-ENCLOSURE` physical checks for coating,
+brightness, diffusion, measured stock, clearances, clamp-load isolation, fit,
+strength, dust and thermal behaviour. GPU and CAD checks do not close those tasks.
