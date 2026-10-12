@@ -39,7 +39,7 @@ front.png halo-ring-diffuser.svg inner-ring-diffuser.svg outer-black-acrylic.svg
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
 amulet.glb scene.json single-sheet-section.svg lighting-demo.mp4
-infinity-rainbow.gif infinity-pulse.gif infinity-colour.gif
+infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))

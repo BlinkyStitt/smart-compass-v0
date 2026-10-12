@@ -31,18 +31,17 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 
 ## Looping animations
 
-[Rainbow and centre pulse](../hardware/enclosure/exports/infinity-rainbow.gif) ·
-[White infinity pulse](../hardware/enclosure/exports/infinity-pulse.gif) ·
-[Colour infinity pulse](../hardware/enclosure/exports/infinity-colour.gif)
+[Spiral rainbow](../hardware/enclosure/exports/infinity-rainbow.gif) ·
+[Ocean gradient](../hardware/enclosure/exports/infinity-ocean.gif) ·
+[Sunset gradient](../hardware/enclosure/exports/infinity-sunset.gif)
 
 Each sixteen-second loop moves from a 65° side view through the front, across to
 the other side and back. Camera position, velocity and LED state join at the
-loop boundary. The swing runs at half its original speed; LED blink and colour
-rates stay unchanged. The rainbow loop shows the centre and all rings. The white and
-colour loops isolate the cavity rings so the centre cannot hide the repeated
-reflections. They use night light, a 0.46 m distance, fixed exposure 1, and assumed
-sleeve diffusion 0.65 for all three loops. Their peak emission scale is 6;
-rainbow peaks at 2. These are illustration settings, not measurements.
+loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
+colour cycles per camera sweep. Emission scale stays at 2: no pulsing, blackout
+intervals or abrupt colour changes. Each loop shows the centre and all three
+rings, with night light, a 0.46 m distance, fixed exposure 1, and assumed sleeve
+diffusion 0.65. These are illustration settings, not measurements.
 
 The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
 rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
@@ -55,7 +54,7 @@ rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
   0.5, 1, 2, 5 or 10 m. The status shows distance from the orbit target, angles,
   pattern time, frame rate and central diffusion.
 - Select spiral rainbow, rotating spokes, radial waves, solid R/G/B, white or
-  a single-pixel chase through all 494 LEDs. Pause stops pattern time. The four
+  a single-pixel chase, ocean gradient or sunset gradient through all 494 LEDs. Pause stops pattern time. The four
   switches control the circle, halo, inward ring and outward ring separately.
 - Select night, indoor, overcast or bright sun. Ambient intensity and light
   direction remain adjustable. Exposure stays at 1 unless you move its slider.
@@ -207,7 +206,7 @@ the same surface profile on all three rings.
 `just cad` rebuilds the native model, validates CAD, exports the GLB and metadata,
 checks the demo, and captures all three finishes under all four lights with LEDs
 on and off. It repeats front, 72° steep, edge and rear views. It combines the 96
-matched renders into 16 labelled comparison sheets, plus the Godot demo, comparison video, sweep GIF and three blinking GIFs, and
+matched renders into 16 labelled comparison sheets, plus the Godot demo, comparison video, sweep GIF and three moving gradient GIFs, and
 decodes every output. FreeCAD supplies geometry and static engineering views;
 Godot is the sole demo video renderer. The freshness manifest includes the demo sources and
 outputs. The staged commit hook checks the same inventory. A stale or missing

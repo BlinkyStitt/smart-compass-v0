@@ -14,7 +14,7 @@ from reference import cases
 
 VIEWS = ('front', 'steep', 'edge', 'rear')
 LIGHTS = ('night', 'indoor', 'overcast', 'sun')
-BLINKS = tuple(f'infinity-{style}.gif' for style in ('rainbow', 'pulse', 'colour'))
+GRADIENTS = tuple(f'infinity-{style}.gif' for style in ('rainbow', 'ocean', 'sunset'))
 CAPTURES = tuple(f'demo-{view}-{light}.png' for view in VIEWS for light in LIGHTS)
 
 
@@ -73,12 +73,12 @@ def capture():
         subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'amulet-demo.mp4'),'-t','24',
                         '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                         '-loop','0',str(output/'turntable.gif')],check=True)
-        for style in ('rainbow','pulse','colour'):
-            subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'blink-{style}-%04d.png'),
+        for style in ('rainbow','ocean','sunset'):
+            subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'gradient-{style}-%04d.png'),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(output/f'infinity-{style}.gif')],check=True)
         shutil.copyfile(frames/'movie-0000.png',output/'turntable-poster.png')
-    for name in (*CAPTURES,*BLINKS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png'):
+    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else ((1920,720) if name in CAPTURES else (1280,720))
@@ -87,7 +87,7 @@ def capture():
             seconds=52 if name=='amulet-demo.mp4' else 12
             assert int(probe['nb_frames'])==seconds*24 and abs(float(probe['duration'])-seconds)<.01
         if name.endswith('.gif'):
-            seconds=16 if name in BLINKS else 24
+            seconds=16 if name in GRADIENTS else 24
             assert int(probe['nb_frames'])==seconds*12 and abs(float(probe['duration'])-seconds)<.1
             assert b'NETSCAPE2.0\x03\x01\x00\x00' in file.read_bytes(), 'GIF must repeat forever'
         subprocess.run(['ffmpeg','-v','error','-xerror','-i',str(file),'-f','null','-'],check=True)
