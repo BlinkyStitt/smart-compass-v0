@@ -34,10 +34,6 @@
     "SeamStraps-10.stl",
     "SeamStraps-11.stl",
     "SeamStraps-12.stl",
-    "SeamStraps-13.stl",
-    "SeamStraps-14.stl",
-    "SeamStraps-15.stl",
-    "SeamStraps-16.stl",
     "OpticalDeckQ1.stl",
     "OpticalDeckQ2.stl",
     "OpticalDeckQ3.stl",
@@ -49,11 +45,7 @@
     "RearPlateQ1.stl",
     "RearPlateQ2.stl",
     "RearPlateQ3.stl",
-    "RearPlateQ4.stl",
-    "FrontBezelQ1.stl",
-    "FrontBezelQ2.stl",
-    "FrontBezelQ3.stl",
-    "FrontBezelQ4.stl"
+    "RearPlateQ4.stl"
   ],
   "volumes": [
     {
@@ -162,13 +154,18 @@
       "printed": false
     },
     {
+      "name": "FrontBezel",
+      "volume_cm3": 19.2119,
+      "printed": false
+    },
+    {
       "name": "CircleBezel",
       "volume_cm3": 2.9224,
       "printed": true
     },
     {
       "name": "SeamStraps",
-      "volume_cm3": 1.7847,
+      "volume_cm3": 1.3311,
       "printed": true
     },
     {
@@ -230,29 +227,9 @@
       "name": "RearPlateQ4",
       "volume_cm3": 19.3152,
       "printed": true
-    },
-    {
-      "name": "FrontBezelQ1",
-      "volume_cm3": 4.8111,
-      "printed": true
-    },
-    {
-      "name": "FrontBezelQ2",
-      "volume_cm3": 4.7948,
-      "printed": true
-    },
-    {
-      "name": "FrontBezelQ3",
-      "volume_cm3": 4.8111,
-      "printed": true
-    },
-    {
-      "name": "FrontBezelQ4",
-      "volume_cm3": 4.7948,
-      "printed": true
     }
   ],
-  "printed_volume_cm3": 239.8409,
+  "printed_volume_cm3": 220.1754,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,

@@ -388,7 +388,7 @@ def build():
     b.add(acrylic, 'Manufactured', '09 Central acrylic - wood lies directly behind it', (.80, .88, .92), 80, material='1.5 mm LED diffuser acrylic; actual transmission unknown')
     bezel = b.annulus('BezelBlank', E('mirror_view_outer_radius'), E('case_diameter') + '/2', E('case_depth') + '-' + E('front_bezel_thickness'), E('front_bezel_thickness'))
     bezel = b.cut('FrontBezel', bezel, holes('BezelHole', depth - p['front_bezel_thickness'], p['front_bezel_thickness']))
-    b.add(bezel, 'Manufactured', '10 Outer bezel - captures mirror and edge diffuser', (.15, .17, .20), material='Printed polymer')
+    b.add(bezel, 'Manufactured', '10 Outermost front border - one-piece black acrylic ring', (.025, .025, .025), material='Opaque black acrylic sheet; nominal 1.8 mm; measure stock and set front_bezel_thickness')
     clamp = b.annulus('CircleBezelBlank', E('circle_retainer_inner_radius'), E('circle_retainer_outer_radius'), E('case_depth')+'-'+E('front_bezel_thickness'), E('front_bezel_thickness'))
     clips = []
     for i in range(3):
@@ -409,7 +409,7 @@ def build():
     # Bond the butt joints with flat lap straps. Each subassembly stays
     # removable; no strap bridges the frame-to-rear service joint.
     straps = []
-    for prefix,r,z,width in [('Rear',radius-3,rear,2),('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6),('Bezel',outer_r-1,depth-p['front_bezel_thickness']-p['splice_thickness'],6)]:
+    for prefix,r,z,width in [('Rear',radius-3,rear,2),('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6)]:
         for i in range(4):
             strap = b.box(f'{prefix}Splice{i}', width, 14, p['splice_thickness'], r-width/2, -7, z)
             strap.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0,0,1), i*90)).multiply(strap.Placement)
@@ -439,7 +439,6 @@ def build():
         split_printed_part(b,piece)
     b.hide(frame)
     split_printed_part(b, back)
-    split_printed_part(b, bezel)
 
     doc.recompute()
     # Keep all tools in one hidden construction group, with top-level products visible.
@@ -558,7 +557,7 @@ def check_model(b, centres, cells):
             raise ValueError(obj.Name + ' is not one connected manufactured part: '+repr([(round(s.Volume,4),str(s.BoundBox)) for s in obj.Shape.Solids]))
     if len(centres) != 256 or len(cells) != 256:
         raise ValueError('Circle mask must preserve 256 LED apertures')
-    for prefix in ('OpticalDeck','BarrelFrame','RearPlate','FrontBezel'):
+    for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
         check_partition(b.doc.getObject(prefix),[b.doc.getObject(prefix+f'Q{i}') for i in range(1,5)])
     check_partition(b.doc.OpticalFrame,[b.doc.OpticalDeck,b.doc.BarrelFrame])
     # Intersections of separate manufactured parts and hardware are defects.
@@ -601,11 +600,13 @@ def check_model(b, centres, cells):
 def export_files(b, centres, cells):
     out = HERE / 'exports'
     out.mkdir(exist_ok=True)
+    manifest_path = out / 'parts.json'
+    previous_meshes = set(json.loads(manifest_path.read_text())['stl_files']) if manifest_path.exists() else set()
     Part.export(b.parts + b.hardware + [b.doc.CircleLEDs, b.doc.HaloLEDs, b.doc.InnerLEDs, b.doc.OuterLEDs], str(out / 'smart-compass.step'))
     import MeshPart
     mesh_names = []
     volumes = []
-    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','EdgeDiffuserSeam','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane'))}
+    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane'))}
     for obj in b.parts:
         volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted})
         if obj.Name in nonprinted:
@@ -625,7 +626,9 @@ def export_files(b, centres, cells):
             MeshPart.meshFromShape(Shape=shape,LinearDeflection=.08,AngularDeflection=.15,Relative=False).write(str(out/name))
             mesh_names.append(name)
     # Remove superseded generator-owned STL outputs, never user-created files.
-    for name in ('OpticalFrame.stl','RearPlate.stl','FrontBezel.stl','BoardMounts.stl'):
+    for name in previous_meshes - set(mesh_names):
+        if Path(name).name != name or not name.endswith('.stl'):
+            raise ValueError('Invalid generator-owned STL name: '+name)
         (out/name).unlink(missing_ok=True)
     (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(sum(o.Shape.Volume/1000 for o in b.parts if o.Name not in nonprinted),4),'optics_mm':optical_dimensions(b.p)},indent=2)+'\n')
     svg_files(b.p, cells, out)
@@ -666,6 +669,9 @@ def svg_files(p, cells, out):
     polygons = ['<polygon points="' + ' '.join(f'{x:.6f},{y:.6f}' for x,y in poly) + '"/>' for poly in cells]
     (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Circle wood mask - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
     (out / 'front-acrylic.svg').write_text(document([outline], f'Central diffuser acrylic - {p["acrylic_thickness"]:g} mm nominal'))
+    border = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>', f'<circle cx="0" cy="0" r="{p["mirror_view_outer_radius"]:.6f}"/>']
+    border += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{p["fastener_hole_radius"]:.6f}"/>' for x,y in mounting_points(p)]
+    (out/'outer-black-acrylic.svg').write_text(document(border,f'Outermost front border - opaque black acrylic, {p["front_bezel_thickness"]:g} mm nominal; six M3 clearance holes',p['case_diameter']/2))
     inner_r = ring_radius(p['inner_count'],p)
     rear_outer = inner_r+p['strip_thickness']/2
     front_outer = rear_outer+p['strip_wall']-p['fit_clearance']/2
@@ -701,7 +707,7 @@ def export_previews(b, out):
     # A real exploded placement, saved only in the preview, never in the master.
     moved = []
     for obj in b.parts:
-        offset = 65 if obj.Name.startswith('FrontBezelQ') or obj.Name=='CircleBezel' else {'FrontAcrylic':50,'FrontMirror':50,'WoodMask':35,'CellBaffle':20}.get(obj.Name,0)
+        offset = 65 if obj.Name in {'FrontBezel','CircleBezel'} else {'FrontAcrylic':50,'FrontMirror':50,'WoodMask':35,'CellBaffle':20}.get(obj.Name,0)
         if not offset:
             continue
         moved.append((obj, obj.Placement))
