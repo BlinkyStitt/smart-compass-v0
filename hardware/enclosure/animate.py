@@ -183,7 +183,6 @@ def render(frames, output, preview=False):
             painter = QtGui.QPainter(picture)
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
             painter.fillRect(0, 0, WIDTH, 112, QtGui.QColor('white'))
-            painter.fillRect(0, HEIGHT - 55, WIDTH, 55, QtGui.QColor('white'))
             painter.setPen(QtGui.QColor('#14232e'))
             font = QtGui.QFont('Helvetica')
             font.setPixelSize(37)
@@ -196,8 +195,6 @@ def render(frames, output, preview=False):
             painter.drawText(46, 91, subtitle)
             font.setPixelSize(19)
             painter.setFont(font)
-            painter.drawText(46, HEIGHT - 21,
-                             'NATIVE CAD  |  Provisional fit  |  Materials and light transmission are not simulated')
             inverse = view.getCameraOrientation().inverted()
             eye = App.Vector(*tuple(camera.position.getValue()))
 
@@ -274,7 +271,7 @@ def render(frames, output, preview=False):
             pose(App.Rotation(App.Vector(0, 1, 0), 14 * math.sin(t * math.tau)),
                  App.Vector(-40, 3, 0), 345)
             frame(path, 'ELECTRONICS AND BATTERY',
-                  'Native board footprints and pack envelope  |  Components and wiring remain fit references',
+                  'Board footprints and battery envelope',
                   labels=True)
 
         frames.mkdir(parents=True, exist_ok=True)

@@ -34,7 +34,7 @@ The [labelled exploded diagram](exports/exploded-overview.png) and
 | `exports/halo-ring-diffuser.svg`, `inner-ring-diffuser.svg` | Nominal flat forming references for the curved acrylic bands over the radial LED faces. Heat-form, cool, then trim. |
 | `exports/circle-alignment-overlay.svg` | Print at 100%. Check the 166 mm outline, 100 mm scale, and LED centres. The 196 mm sheet fits A4. Disable fit-to-page. Do not laser-cut this inspection overlay. |
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
-| `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Native CAD views. These show geometry, not simulated light. |
+| `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Assembly views. These show geometry, not simulated light. |
 | `exports/diffusers.png` | All three cylindrical acrylic sleeves and their LED strips, isolated at assembled positions. The front mirror and frame are hidden for inspection. |
 | `exports/amulet-demo.mp4` | 1600 × 1200, 24 fps, H.264 demo: 0–12 s complete rotation; 12–28 s explosion, rotation and reassembly; 28–34 s labelled electronics spread. |
 | `exports/turntable.gif`, `exploded.gif` | Looping 800 × 600 animations at 12 fps. |
