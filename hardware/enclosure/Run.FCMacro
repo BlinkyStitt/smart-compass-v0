@@ -1,0 +1,29 @@
+"""Isolated build/check process for cad.py. Do not run in an editing session."""
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+
+import FreeCAD as App
+from PySide import QtCore
+
+source = Path(os.environ['SC_CAD_DIR'])
+sys.path.insert(0, str(source))
+try:
+    stage = os.environ['SC_CAD_STAGE']
+    if stage == 'build':
+        import build
+        build.build()
+    elif stage == 'check':
+        import check
+        check.check()
+    else:
+        raise ValueError('Unknown CAD stage: ' + stage)
+    Path(os.environ['SC_CAD_RESULT']).write_text(json.dumps({
+        'stage': stage, 'freecad_version': App.Version(),
+    }))
+except Exception:
+    traceback.print_exc()
+finally:
+    QtCore.QTimer.singleShot(0, QtCore.QCoreApplication.quit)
