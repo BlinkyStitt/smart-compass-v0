@@ -1,6 +1,6 @@
 # Round compass pendant
 
-Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The editable model now uses **250 mm outside diameter × 45 mm depth**, for the optical body. Rear vent guards add 2.85 mm; modeled depth is 47.85 mm before screw heads and necklace fittings. The inner strip faces the Fibonacci circle. A new 64-pixel circle halo faces outward into the mirror gap. One outer LED row sits at the center of a broad diffuser that covers almost the whole outside depth.
+Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The editable model now uses **250 mm outside diameter × 45 mm depth**, for the optical body. Rear vent guards add 2.85 mm; modeled depth is 47.85 mm before screw heads and necklace fittings. The inner strip faces the Fibonacci circle. A new 64-pixel circle halo faces outward into the mirror gap. One outer LED row sits at the center of a black LED-diffusing acrylic side wall that covers almost the whole outside depth. The front border also stays black acrylic.
 
 The infinity mirror occupies the annular gap around the circle. The circle keeps its shaped wood mask and central acrylic diffuser. Dimensions remain provisional. Physical checks stay deferred in [design-v2.md](../../design-v2.md).
 
@@ -21,7 +21,7 @@ The infinity mirror occupies the annular gap around the circle. The circle keeps
 | `exports/front-acrylic.svg` | Nominal central diffuser outline. |
 | `exports/outer-black-acrylic.svg` | One-piece opaque black outer front border: outer/inner circles and six M3 clearance holes. |
 | `exports/front-mirror.svg`, `rear-mirror.svg` | Nominal annular acrylic outlines. The rear mirror includes a top wire notch. |
-| `exports/edge-diffuser.svg` | Flat cutting template for the wrapped PET side band. Use a knife or a process approved for the selected sheet. |
+| `exports/edge-diffuser.svg` | Nominal flat forming reference for the black acrylic curved side wall; allow for forming and trim after forming. |
 | `exports/circle-alignment-overlay.svg` | Print at 100%. Check the 166 mm outline, 100 mm scale, and LED centres. The 196 mm sheet fits A4. Disable fit-to-page. Do not laser-cut this inspection overlay. |
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Native CAD views. These show geometry, not simulated light. |
@@ -48,7 +48,7 @@ Body coordinates are X right, Y top, and Z toward the front viewer. Rear Z=0. Th
 | Circle wood | 39.7–41.7 |
 | Central diffuser and separate two-way mirror annulus | 41.7–43.2 |
 | Black acrylic outer front border and printed circle snap rim | 43.2–45; tongues reach 37.2 |
-| Full-height wrapped side diffuser | 1.6–43.2 |
+| Black acrylic curved side wall | 1.6–43.2 |
 
 The circle has one opening per pixel. Its inset Voronoi cells follow the published Fibonacci map, with a nominal 1.6 mm wood web. A matching opaque baffle separates the light below the wood. The wood sits directly behind the central diffuser. Neither part extends across the mirror gap.
 
@@ -70,13 +70,17 @@ The rear mirror carries full mirror film on its front surface; the partly reflec
 
 The circle appears as an island. Its load travels through the hidden seat and annular floor behind the mirror. The halo carrier wall is nominally 1.21 mm thick. The front snap rim is **3 mm wide**, with outside radius 85 mm. A **0.5 mm radial gap** separates it from the front mirror. Three 6 mm long, nominal 0.6 mm snap tongues retain the face without visible screw bosses. The outward halo lights the island's edge and mirror repetitions. It does not put another strip on the circle's front. Snap fit, release force, light leakage, and the perceived floating effect require later physical checks.
 
-The outer row centers at **Z=22.4 mm** behind a **41.6 mm tall frosted side wrap**, bounded by the 1.6 mm rear skin and 1.8 mm front bezel. The structural barrel sits behind the strip. No button peg or service window interrupts the outside surface. The nominal 0.5 mm PET sheet wraps at 123.5 mm inside radius. Seal its top seam and both lips with removable clear tape. The LED package fronts remain about 1.5 mm behind it. This gives a broad external surface; it does not establish equal brightness across its full height. Frost, transmission, hot spots, and reflected light need an optical sample.
+The **curved outside wall is black LED-diffusing acrylic**, with no mirror film. It surrounds the body behind the black acrylic front border. Nominal dimensions are **246 mm inside diameter, 250 mm outside diameter, 2 mm wall thickness, and 41.6 mm height**. The outer LED row centers at **Z=22.4 mm**, about **1.0 mm behind the wall**. The structural barrel stays behind the LEDs. Keep a single top seam and seal it and both lips with removable clear tape.
+
+Use a light-transmitting black diffuser grade so the LEDs remain visible through the dark wall. Ordinary opaque black acrylic would block them. [Adafruit's black LED-diffusion acrylic](https://www.adafruit.com/product/4594) is an example of this material type; its listed 2.6 mm thickness is not the selected 2 mm CAD stock. **The 2 mm thickness remains provisional.** Measure the chosen sheet and revise `edge_diffuser_radius` and `edge_diffuser_thickness` in the saved master before rebuilding. The wall must retain at least 0.5 mm LED clearance and fit beneath the front border.
+
+Heat-form the wall to a cylindrical sleeve using the selected material supplier's process. Do not treat it as the former flexible PET wrap. `edge-diffuser.svg` gives a nominal **778.1 × 41.6 mm forming reference** at the wall's mid-thickness radius, with a 1 mm end gap. Allow for the actual forming process, then trim and fit the cooled sleeve; this is not a validated final blank size. Forming, seam retention, RGB transmission and full-height diffusion remain under `SC-ENCLOSURE`. CAD views show the unlit black surface, not simulated light.
 
 **TODO: SC-RING-GEOMETRY — Measure cut intervals, length, width, coating/thickness, LED depth, bend limits, pads and fitted seams for the 64/84/90 strips. Replace provisional pitch diameters 170.7/223.8/239.7 mm. Keep at least 20 mm clear mirror view and center the outside row. Record each output's part, protocol, order, timing, seam and direction.**
 
 ## Low mass and home printing
 
-The model uses thin printed supports and sheet optics. The generated [parts manifest](exports/parts.json) records current printed solid volume; this is not slicer mass or finished pendant mass. A continuous **1.6 mm rear skin** replaces the open lattice to reduce dust entry. The case keeps **1.35 mm inner/outer strip and barrel walls**, a **1.8 mm printed circle rim**, **2 mm wood**, and **1.5 mm central acrylic/mirrors**. The outer front border is a separate 1.8 mm nominal black acrylic sheet. The rear vent guards and service cover also use 1.35 mm skins. The battery cradle retains its open center inside the covered body.
+The model uses thin printed supports and sheet optics. The generated [parts manifest](exports/parts.json) records current printed solid volume; this is not slicer mass or finished pendant mass. A continuous **1.6 mm rear skin** replaces the open lattice to reduce dust entry. The case keeps **1.35 mm inner/outer strip and barrel walls**, a **1.8 mm printed circle rim**, **2 mm wood**, and **1.5 mm central acrylic/mirrors**. The outer front border is a separate 1.8 mm nominal black acrylic sheet; the curved side wall uses 2 mm nominal black LED-diffusing acrylic. The rear vent guards and service cover also use 1.35 mm skins. The battery cradle retains its open center inside the covered body.
 
 The optical deck and lower barrel print as separate levels. Each level and the rear support split into four quarters. The deck prints floor-down; a 45-degree underside supports the circle seat. The baffle exports face-down with its feet up. The circle rim exports face-down with its snap tongues up; vent guards export roof-down. Their butt seams use separate bonded splice straps; the barrel straps follow the inner wall. The black acrylic front border cuts as one piece. Assemble and bond each printed set on a flat surface. Keep adhesive off optics, strip pads, bolt holes, and the removable rear joint. The whole rear cover still separates from the frame for service. These are provisional bonded joints; the CAD does not establish suspension strength.
 
@@ -114,14 +118,14 @@ Two integral 6 mm necklace eyes remain at X=±82 mm, Y=62 mm. Six perimeter M3 b
 
 ## Assembly sequence
 
-1. Check the circle overlay and measured sheets/strips. Set the outer border's stock thickness in the master and rebuild. Cut the one-piece black acrylic ring from `outer-black-acrylic.svg`; apply laser kerf once in CAM. Print and inspect a snap-fit coupon before the full circle rim.
+1. Check the circle overlay and measured sheets/strips. Set both acrylic border and side-wall stock dimensions in the master and rebuild. Form the side wall and trim its seam after cooling. Cut the one-piece black acrylic ring from `outer-black-acrylic.svg`; apply laser kerf once in CAM. Print and inspect a snap-fit coupon before the full circle rim.
 2. Print the quarters, seam straps, baffle, snap rim, cradle, board mounts, four vent guards, and service cover. Inspect bed fit, layer paths, beads and screw pilots.
 3. Bond each set of deck, barrel and rear quarters as separate subassemblies. Seal the rear/barrel seams. Keep the rear-to-body joint removable.
 4. Fit board mounts, the insulated battery and straps. Retain wiring and the USB extension. Fit actual controls under the rear membranes; install the hatch gasket and cover.
 5. Apply the selected vent patches to prepared rear lands. Bond guard feet outside their adhesive lands. Keep both guard ends open.
 6. Fit the rear mirror, reflective face forward. Fit the inward strip and outward circle halo between the mirrors. Fit the outside strip at the center of its carrier. Route all top-seam leads rearward and seal the optical lead gaps.
 7. Fit the circle on its hidden seat, then the baffle, wood and central diffuser. Check actual packages and pads. Engage the three snap tongues; do not force an untested fit.
-8. Fit the front two-way annulus, reflective face rearward. Wrap the broad side diffuser. Fit the one-piece black acrylic outer border and six M3 through-bolts with flat washers under their heads. Select actual length for the 45 mm body, washers/nuts and engagement. Check sheet clamping during physical fit. Seal sheet seams, lips, rear joint and fastener penetrations with removable clear tape.
+8. Fit the front two-way annulus, reflective face rearward. Fit the formed black acrylic side wall around the centered outer row. Fit the one-piece black acrylic outer border and six M3 through-bolts with flat washers under their heads. Select actual length for the 45 mm body, washers/nuts and engagement. Check sheet clamping during physical fit. Seal sheet seams, lips, rear joint and fastener penetrations with removable clear tape.
 9. Fit necklace hardware. Support the face when removing the rear. To service the center, remove the outer face/mirror and release its three snap tongues with a plastic tool. Keep physical fit, suspension, dust, optics, heat, magnetic and six-hour runtime checks deferred.
 
 ## Edit and rebuild
@@ -151,4 +155,4 @@ python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
 - [WeAct V3.1 hardware](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/tree/master/Hardware): nominal BlackPill envelope.
 - [FreeCAD 1.1.4](https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4): native model runtime.
 
-**TODO: SC-ENCLOSURE — Measure component revisions, circle registration, rim contacts, battery, controls, strips, and sheet materials, including black acrylic stock thickness and bolt clamping. Finish GPS angle, internal antenna strain relief, USB extension, wiring retention, snap fit, mirror flatness/retention, broad-sheet fit/uniformity, membrane part/adhesive, rear seals and mounting transforms. Keep physical printing, assembly, load, dust, optical, thermal, magnetic, and six-hour runtime evidence deferred. CAD checks do not establish those results.**
+**TODO: SC-ENCLOSURE — Measure component revisions, circle registration, rim contacts, battery, controls, strips, and sheet materials, including black acrylic stock thickness, side-wall forming and bolt clamping. Finish GPS angle, internal antenna strain relief, USB extension, wiring retention, snap fit, mirror flatness/retention, black side-wall seam retention, RGB transmission and full-height uniformity, membrane part/adhesive, rear seals and mounting transforms. Keep physical printing, assembly, load, dust, optical, thermal, magnetic, and six-hour runtime evidence deferred. CAD checks do not establish those results.**

@@ -53,6 +53,13 @@ def check():
     assert math.isclose(doc.FrontMirror.Shape.BoundBox.ZMin-doc.RearMirror.Shape.BoundBox.ZMax,d['mirror_separation'],abs_tol=1e-7)
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin <= doc.OuterLEDs.Shape.BoundBox.ZMin
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax >= doc.OuterLEDs.Shape.BoundBox.ZMax
+    assert doc.EdgeDiffuserSeam.Material.startswith('Black LED-diffusing acrylic'), 'Curved outside wall must use black acrylic'
+    assert math.isclose(doc.EdgeDiffuserOuter.Radius.Value-doc.EdgeDiffuserInner.Radius.Value,p['edge_diffuser_thickness'],abs_tol=1e-7)
+    edge_template_width = math.tau*(doc.EdgeDiffuserOuter.Radius.Value+doc.EdgeDiffuserInner.Radius.Value)/2-1
+    edge_template_height = doc.EdgeDiffuserSeam.Shape.BoundBox.ZLength
+    if App.GuiUp:
+        assert all(c < .06 for c in doc.EdgeDiffuserSeam.ViewObject.ShapeColor[:3]), 'Outside wall still displays a pale finish'
+        assert doc.EdgeDiffuserSeam.ViewObject.Transparency == 0, 'Black CAD finish must not display the old transparent side cover'
     assert math.isclose(doc.OuterStripSeam.Shape.BoundBox.Center.z,doc.EdgeDiffuserSeam.Shape.BoundBox.Center.z,abs_tol=1e-7), 'Outer strip is not centered in the outside surface'
     assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZLength >= .9*p['case_depth']
     assert not any(doc.getObject(name) for name in ('ButtonActuator0','SparkleUSBPowerPort','RadioPort','PowerSwitchPort')), 'Exposed side pegs or windows returned'
@@ -113,6 +120,9 @@ def check():
     assert len(acrylic.findall('.//s:circle',ns)) == 1
     for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-mirror.svg','rear-mirror.svg','edge-diffuser.svg'):
         ET.parse(HERE / 'exports' / filename)
+    edge_template = ET.parse(HERE/'exports/edge-diffuser.svg').getroot()
+    assert math.isclose(float(edge_template.attrib['width'].removesuffix('mm')),edge_template_width,abs_tol=1e-5)
+    assert math.isclose(float(edge_template.attrib['height'].removesuffix('mm')),edge_template_height,abs_tol=1e-5)
     front_mirror = ET.parse(HERE/'exports/front-mirror.svg')
     radii = [float(c.attrib['r']) for c in front_mirror.findall('.//s:circle',ns)]
     assert len(radii)==2 and math.isclose(min(radii),p['mirror_inner_radius'])
@@ -133,7 +143,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'battery_width':500}, {'battery_x':200}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':42}, {'edge_diffuser_radius':121}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
+    for changes in ({'battery_width':500}, {'battery_x':200}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':42}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
