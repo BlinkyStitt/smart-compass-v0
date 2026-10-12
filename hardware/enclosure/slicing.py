@@ -25,8 +25,10 @@ def check(root, fresh=True):
     inventory=json.loads((root/cad.EXPORTS/'parts.json').read_text())
     basis=inventory['print_basis']
     total=0.0
+    sample_total=0.0
+    sample_names=[sample['file'] for sample in inventory['fit_samples']]
     with tempfile.TemporaryDirectory(prefix='compass-slice-', dir=root.parent) as temporary:
-        for name in inventory['stl_files']:
+        for name in inventory['stl_files']+sample_names:
             output=Path(temporary)/(name+'.gcode')
             x,y=basis['bed_mm']
             command=[executable,'--load',str(directory/'print-settings.ini'),
@@ -43,10 +45,14 @@ def check(root, fresh=True):
             mass=re.search(r'; filament used \[g\] = ([\d.]+)',gcode)
             if not mass or layers<2 or ';TYPE:External perimeter' not in gcode or ';TYPE:Support material' in gcode:
                 raise cad.CadError('Missing or unsupported toolpaths: '+name)
-            total+=float(mass[1])
+            if name in sample_names:
+                sample_total+=float(mass[1])
+            else:
+                total+=float(mass[1])
             print(f'SLICE PASS: {name}, {layers} layers, {mass[1]} g including brim',flush=True)
     version=subprocess.check_output([executable,'--help'],text=True).splitlines()[0]
     print(f'SLICER PASS: {len(inventory["stl_files"])} parts; {total:.2f} g including brims. '
+          f'{len(sample_names)} fit samples, {sample_total:.2f} g separately. '
           'No reported print warnings. Physical printing and fit remain untested.',flush=True)
     return version
 

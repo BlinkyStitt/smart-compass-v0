@@ -48,6 +48,20 @@ def check():
     for name in ('OpticalDeck','BarrelFrame','RearPlate','FrontSheet'):
         obj=doc.getObject(name)
         assert obj in b.parts and len(obj.Shape.Solids)==1
+    # Whole circular products remain full-size single solids, never arc segments.
+    for name in ('OpticalDeck','BarrelFrame','RearPlate'):
+        assert min(doc.getObject(name).Shape.BoundBox.XLength,doc.getObject(name).Shape.BoundBox.YLength)>230
+    joint=p['mirror_back_z']-p['strip_wall']
+    for x,y in mounting_points(p):
+        for name,z,sign in (('OpticalDeck',joint,1),('BarrelFrame',joint,-1),('OpticalDeck',p['case_depth'],-1)):
+            shape=doc.getObject(name).Shape
+            assert not shape.isInside(App.Vector(x+1.85,y,z+sign*.05),1e-7,True), 'Bore entry is square: '+name
+            assert shape.isInside(App.Vector(x+1.85,y,z+sign*.6),1e-7,True), 'Lead-in removed the nominal bore land: '+name
+        assert not doc.OpticalDeck.Shape.isInside(App.Vector(x+2.8,y,p['case_depth']-.1),1e-7,True), 'Collar tip lacks lead-in'
+        assert doc.OpticalDeck.Shape.isInside(App.Vector(x+2.3,y,p['case_depth']-.01),1e-7,True), 'Collar lacks flat washer stop'
+    for x,y in rear_mounting_points(p):
+        assert not doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.05),1e-7,True), 'Rear screw entry lacks lead-in'
+        assert doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.6),1e-7,True)
     assert not any(doc.getObject(n) for n in ('SeamStraps','CircleBezel','FrontBezel','FrontAcrylic','FrontMirror'))
     assert not any(doc.getObject(prefix+f'Q{i}') for prefix in ('OpticalDeck','BarrelFrame','RearPlate') for i in range(1,5))
     for i,(x,y) in enumerate(mounting_points(p)):
@@ -168,6 +182,9 @@ def check():
     # radii with exact BRep circles, not the display mesh's approximate bounds.
     sheet_circles=sorted({(round(e.Curve.Center.x,6),round(e.Curve.Center.y,6),round(e.Curve.Radius,6)) for e in doc.FrontSheet.Shape.Edges if hasattr(e.Curve,'Radius')})
     mirror_outline=Part.makeCompound([e.copy() for f in doc.RearMirror.Shape.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-p['mirror_back_z'])<1e-7 for e in f.Edges])
+    sample_shapes={name:build.fit_sample(doc.getObject(parent).Shape,p) for name,parent in
+                   (('FitDeck.stl','OpticalDeck'),('FitBarrel.stl','BarrelFrame'),('FitRear.stl','RearPlate'))}
+    assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
     doc.recompute()
@@ -183,13 +200,15 @@ def check():
         assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
     acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
     assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
-    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg'):
+    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg','fit-sheet.svg'):
         ET.parse(HERE/'exports'/filename)
     edge_template = ET.parse(HERE/'exports/edge-diffuser.svg').getroot()
     assert math.isclose(float(edge_template.attrib['width'].removesuffix('mm')),edge_template_width,abs_tol=1e-5)
     assert math.isclose(float(edge_template.attrib['height'].removesuffix('mm')),edge_template_height,abs_tol=1e-5)
     cut_circles=sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in acrylic.findall('.//s:circle',ns))
     assert cut_circles==sheet_circles, 'Front cut paths differ from native outline/locating holes'
+    fit_holes=ET.parse(HERE/'exports/fit-sheet.svg').findall('.//s:circle',ns)
+    assert len(fit_holes)==1 and float(fit_holes[0].attrib['r'])==min(c[2] for c in sheet_circles), 'Fit sheet hole differs from actual front'
     for polygon in ET.parse(HERE/'exports/rear-mirror.svg').findall('.//s:polygon',ns):
         points=[tuple(map(float,pair.split(','))) for pair in polygon.attrib['points'].split()]
         for a,b in zip(points,points[1:]+points[:1]):
@@ -217,11 +236,16 @@ def check():
     assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
     assert not any('Diffuser' in name for name in manifest['stl_files']), 'Acrylic diffuser cannot be a printed part'
     assert len([name for name in manifest['stl_files'] if name.startswith('NecklaceLink')]) == 2
-    assert set(manifest['stl_files']) == {f.name for f in (HERE/'exports').glob('*.stl')}
-    for filename in manifest['stl_files']:
+    assert {sample['file'] for sample in manifest['fit_samples']} == set(sample_shapes)
+    all_meshes=set(manifest['stl_files']) | set(sample_shapes)
+    assert all_meshes == {f.name for f in (HERE/'exports').glob('*.stl')}
+    for filename in sorted(all_meshes):
         file = HERE/'exports'/filename
         mesh = Mesh.Mesh(str(file))
         assert mesh.isSolid(), 'STL is not closed: ' + file.name
+        if filename in sample_shapes:
+            assert abs(abs(mesh.Volume)-sample_shapes[filename].Volume)<8, 'Fit STL differs from native cut'
+            assert max(mesh.BoundBox.XLength,mesh.BoundBox.YLength)<60, 'Fit sample is no longer small'
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']

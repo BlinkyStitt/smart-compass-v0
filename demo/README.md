@@ -140,7 +140,7 @@ error for framebuffer quantisation. GPU diffuser checks also verify smooth
 inter-LED light, gentle peaks, continuity at the former package-mask edge, and
 the same surface profile on all three rings.
 
-`just cad` rebuilds the native model, validates CAD, slices all printed parts, exports the GLB and metadata,
+`just cad` rebuilds the native model, validates CAD, slices all printed parts and fit samples, exports the GLB and metadata,
 checks the demo, and captures both finishes under all four lights with LEDs
 on and off. It repeats front, 72° steep, edge and rear views. It combines the 64
 matched renders into 16 labelled comparison sheets, plus the Godot demo, comparison video, sweep GIF and three moving gradient GIFs, and
