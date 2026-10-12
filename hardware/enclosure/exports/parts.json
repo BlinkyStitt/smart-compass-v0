@@ -1,5 +1,10 @@
 {
   "stl_files": [
+    "VentGuard0.stl",
+    "VentGuard1.stl",
+    "VentGuard2.stl",
+    "VentGuard3.stl",
+    "ServiceCover.stl",
     "BatteryStrapSlots.stl",
     "BoardMounts-01.stl",
     "BoardMounts-02.stl",
@@ -52,6 +57,56 @@
   ],
   "volumes": [
     {
+      "name": "VentMembrane0",
+      "volume_cm3": 0.0402,
+      "printed": false
+    },
+    {
+      "name": "VentGuard0",
+      "volume_cm3": 0.66,
+      "printed": true
+    },
+    {
+      "name": "VentMembrane1",
+      "volume_cm3": 0.0402,
+      "printed": false
+    },
+    {
+      "name": "VentGuard1",
+      "volume_cm3": 0.66,
+      "printed": true
+    },
+    {
+      "name": "VentMembrane2",
+      "volume_cm3": 0.0402,
+      "printed": false
+    },
+    {
+      "name": "VentGuard2",
+      "volume_cm3": 0.66,
+      "printed": true
+    },
+    {
+      "name": "VentMembrane3",
+      "volume_cm3": 0.0402,
+      "printed": false
+    },
+    {
+      "name": "VentGuard3",
+      "volume_cm3": 0.66,
+      "printed": true
+    },
+    {
+      "name": "ServiceCover",
+      "volume_cm3": 1.6024,
+      "printed": true
+    },
+    {
+      "name": "HatchGasket",
+      "volume_cm3": 0.176,
+      "printed": false
+    },
+    {
       "name": "BatteryStrapSlots",
       "volume_cm3": 6.3825,
       "printed": true
@@ -62,18 +117,33 @@
       "printed": true
     },
     {
+      "name": "ControlMembrane0",
+      "volume_cm3": 0.1005,
+      "printed": false
+    },
+    {
+      "name": "ControlMembrane1",
+      "volume_cm3": 0.1005,
+      "printed": false
+    },
+    {
+      "name": "ControlMembrane2",
+      "volume_cm3": 0.1005,
+      "printed": false
+    },
+    {
       "name": "RearMirror",
-      "volume_cm3": 23.4679,
+      "volume_cm3": 24.6872,
       "printed": false
     },
     {
       "name": "FrontMirror",
-      "volume_cm3": 24.6493,
+      "volume_cm3": 25.8686,
       "printed": false
     },
     {
       "name": "EdgeDiffuserSeam",
-      "volume_cm3": 4.9311,
+      "volume_cm3": 16.1521,
       "printed": false
     },
     {
@@ -93,72 +163,72 @@
     },
     {
       "name": "CircleBezel",
-      "volume_cm3": 6.2097,
+      "volume_cm3": 2.9224,
       "printed": true
     },
     {
       "name": "SeamStraps",
-      "volume_cm3": 2.0871,
+      "volume_cm3": 1.7847,
       "printed": true
     },
     {
       "name": "OpticalDeckQ1",
-      "volume_cm3": 23.4192,
+      "volume_cm3": 17.47,
       "printed": true
     },
     {
       "name": "OpticalDeckQ2",
-      "volume_cm3": 23.6154,
+      "volume_cm3": 17.6788,
       "printed": true
     },
     {
       "name": "OpticalDeckQ3",
-      "volume_cm3": 23.4391,
+      "volume_cm3": 17.5179,
       "printed": true
     },
     {
       "name": "OpticalDeckQ4",
-      "volume_cm3": 23.6656,
+      "volume_cm3": 17.7318,
       "printed": true
     },
     {
       "name": "BarrelFrameQ1",
-      "volume_cm3": 6.3767,
+      "volume_cm3": 6.9767,
       "printed": true
     },
     {
       "name": "BarrelFrameQ2",
-      "volume_cm3": 7.6345,
+      "volume_cm3": 7.3786,
       "printed": true
     },
     {
       "name": "BarrelFrameQ3",
-      "volume_cm3": 7.354,
+      "volume_cm3": 6.9767,
       "printed": true
     },
     {
       "name": "BarrelFrameQ4",
-      "volume_cm3": 7.6231,
+      "volume_cm3": 7.3786,
       "printed": true
     },
     {
       "name": "RearPlateQ1",
-      "volume_cm3": 9.1238,
+      "volume_cm3": 19.8248,
       "printed": true
     },
     {
       "name": "RearPlateQ2",
-      "volume_cm3": 9.0953,
+      "volume_cm3": 20.7203,
       "printed": true
     },
     {
       "name": "RearPlateQ3",
-      "volume_cm3": 6.3574,
+      "volume_cm3": 19.4184,
       "printed": true
     },
     {
       "name": "RearPlateQ4",
-      "volume_cm3": 6.0491,
+      "volume_cm3": 19.3152,
       "printed": true
     },
     {
@@ -182,13 +252,16 @@
       "printed": true
     }
   ],
-  "printed_volume_cm3": 214.5536,
+  "printed_volume_cm3": 239.8409,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
     "circle_to_inner_led": 26.735924993602424,
-    "visible_mirror_width": 22.5,
+    "visible_mirror_width": 25.0,
     "mirror_separation": 11.200000000000003,
-    "outer_led_clearance": 1.5063278518028143
+    "outer_led_clearance": 1.5063278518028143,
+    "halo_radius": 85.3601011449532,
+    "edge_height": 41.6,
+    "outer_strip_centre_z": 22.400000000000002
   }
 }
