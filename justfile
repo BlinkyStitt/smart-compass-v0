@@ -1,3 +1,6 @@
+# Keep generated work beside this checkout, including CAD, Godot and slicer scratch.
+export TMPDIR := justfile_directory() + "/.."
+
 default:
     @just --list
 
@@ -12,6 +15,10 @@ cad-check:
 # Run the host geometry and build-workflow tests without FreeCAD.
 cad-tests:
     python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
+
+# Slice every current STL with the checked print settings.
+print-check:
+    python3 hardware/enclosure/slicing.py
 
 # Verify canonical assets, then launch the interactive optical preview.
 demo:

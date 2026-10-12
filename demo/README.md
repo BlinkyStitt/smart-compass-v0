@@ -10,20 +10,17 @@ just cad
 just demo
 ```
 
-The preview compares the current assembly with two finishes on one continuous
-250 × 1.5 mm acrylic front. **The saved FreeCAD model still defines the current
-assembly. Select a finish before converting that model or its manufacturing
-exports.** Both proposed finishes use the same mounts and a black masked outer
-rim on the same sheet.
+The saved FreeCAD model now uses the selected clear-centre finish on one
+250 × 1.5 mm sheet. The demo compares that coating with a full-mirror coating on
+the same mechanical assembly. Both have a black masked outer rim.
 
 ![Indoor front comparison](../hardware/enclosure/exports/demo-front-indoor.png)
 
-Columns: current assembly, full mirror coating, clear centre with mirror around
-it. Top row: LEDs on. Bottom row: LEDs off. The view, pattern time, brightness,
+Columns: selected clear centre, alternative full mirror coating. Top row: LEDs on. Bottom row: LEDs off. The view, pattern time, brightness,
 exposure and environment match within each comparison.
 
 [Watch the twelve-second Godot finish comparison](../hardware/enclosure/exports/lighting-demo.mp4).
-Each finish gets the same four-second pattern segment, indoor light and moving
+Each finish gets the same six-second pattern segment, indoor light and moving
 side-to-front camera path.
 The [52-second Godot demo](../hardware/enclosure/exports/amulet-demo.mp4) also
 shows a front-hemisphere sweep and all four lighting presets. All demo movie and GIF
@@ -71,7 +68,7 @@ exposure. For a stationary comparison, pause first.
 
 `hardware/enclosure/exports/amulet.glb` is the only generated scene asset.
 `scene.json` holds part names, exact native bounds, dimensions, mirror planes,
-494 emitting positions and directions, assumptions, and proposed mass values.
+494 emitting positions and directions, assumptions, and current mass estimates.
 The exporter tessellates the saved assembled FreeCAD model in metres, with X
 right, Y up and Z toward the front. It never uses print-bed STL translations.
 Godot loads the GLB at runtime through `GLTFDocument`.
@@ -112,78 +109,18 @@ The four light presets use relative scene intensities, not measured lux. The
 coating, diffusion, fit, strength, dust and thermal tests in the existing
 `SC-ENCLOSURE` physical TODOs.
 
-## Single-sheet assembly proposal
+## Selected mechanical assembly
 
-![Section through a body bolt and centre](../hardware/enclosure/exports/single-sheet-section.svg)
+The [enclosure guide](../hardware/enclosure/README.md) explains the 13 printed
+parts, one-piece clear-centre front, assembly order, print settings and separate
+rear service screws. The [section](../hardware/enclosure/exports/assembly-section.svg)
+comes from the actual saved solids. The old quarter panels, seam straps, centre
+snap rim and separate front acrylic cut files have been removed.
 
-The proposal keeps the reflecting plane at Z=36.7 mm and the mirror separation
-at 11.2 mm. The sheet ends at Z=38.2 mm. The rear mirror and all three curved
-sleeves remain. The outside sleeve ends 1.5 mm lower to fit under the new sheet;
-its LED row stays at its current position.
-
-The four revised optical-deck quarters provide six 8 mm diameter bearing lands.
-Each land has an integral 6 mm outside-diameter collar with the existing 3.4 mm
-M3 clearance bore. The sheet has six 6.4 mm locating holes at the existing
-233 mm bolt circle. The 0.2 mm radial clearance is provisional. The collars end
-at the sheet's front surface and stop the washers. Clamp load runs from the
-washers into the collars, lands, body posts and rear clamp lands.
-
-The continuous sheet replaces the centre snap rim. The concealed circle
-boundary remains under the sheet. The same wood grid sits 0.1 mm lower on three
-shortened rim feet. This leaves a 0.1 mm gap under the sheet and 0.2 mm above the
-LED packages. The sheet limits axial movement without using the wood or LED
-packages as a screw-load path. These small tolerance margins need physical
-checks with measured stock before manufacturing.
-
-Three small lips capture the rear mirror's outer margin beyond the useful
-front aperture. Sleeve shoes replace the six loose adhesive pads. Their supports
-stay behind the sleeve emitting surfaces and below the LED bodies. The continuous
-front provides the upper axial stop. These features belong to the revised deck
-quarters; they do not add another grid or opaque spokes across the mirror view.
-
-Assembly sequence:
-
-1. Print and inspect the four revised optical-deck quarters. Check the six
-   collar heights and their common plane. Do not use screw force to flatten a
-   warped deck or sheet.
-2. Assemble the deck quarters around the rear mirror. Engage its hidden edge
-   under the locating lips. Join the existing deck seams and straps.
-3. Fit the circle PCB on its concealed seat. Fit the halo, inward and outward
-   strips on their existing carriers. Route their leads through the top exits.
-4. Fit the halo and inward sleeves onto their captive lower shoes. Fit the
-   shortened outside sleeve between the rear lip and front seat. Keep all three
-   sleeve seams at the top.
-5. Fit the three shortened circle feet and the single wood grid. Confirm the
-   LED clearance, sheet gap and cell alignment.
-6. Apply the selected coating and the black outer mask to the one sheet. Keep
-   the centre diffusion assumption separate from the coating selection.
-7. Lower the sheet onto its locating collars. Fit broad washers and the six
-   existing body bolts. The washers must stop on the collars. Check that the
-   centre remains free of clamp preload before closing the rear.
-
-The sequence is a geometric proposal. It does not establish tool access,
-snap force, print strength, washer torque, thermal expansion or service life.
-
-| Changed part set | Current | Proposed |
-| --- | ---: | ---: |
-| Flat front acrylic pieces | 3 | 1 |
-| Centre snap rim | 1 | 0 |
-| Loose cavity-sleeve adhesive pads | 6 | 0 |
-| Optical-deck quarters | 4 | 4 revised |
-| Circle rim feet | 3 | 3 shortened |
-| Wood cell grid | 1 | 1, positioned lower |
-| Curved sleeves | 3 | 3; outside sleeve shortened |
-| Rear mirror | 1 | 1 |
-| Total for these sets | 22 | 13 |
-
-The front sheet is about 87.6 g before holes and 87.3 g after the six locating
-holes, versus 92.3 g for the current three front acrylic pieces. With the
-revised mounts and sleeve, the proposed mechanical subtotal is about 443.5 g,
-versus 456.0 g. Both use PETG at 1.27 g/cm³, acrylic at 1.19 g/cm³ and wood at
-0.60 g/cm³. The complete generated subtotal and its terms are in `scene.json`.
-This is a solid-volume estimate. It excludes coating films, electronics, LED
-strips, wiring, fasteners, seals, straps and necklace hardware. The internal
-candidate battery adds 190 g. Fewer alignment operations are the main benefit.
+The rear mirror and all three sleeves remain. Their reflecting gap stays at
+11.2 mm. The outer LED row follows the centre of its revised sleeve. `scene.json`
+records the native LED faces, part bounds, selected finish and mechanical mass.
+The alternate coating changes no geometry, camera, light, brightness or time.
 
 ## Checks and reproducible outputs
 
@@ -203,9 +140,9 @@ error for framebuffer quantisation. GPU diffuser checks also verify smooth
 inter-LED light, gentle peaks, continuity at the former package-mask edge, and
 the same surface profile on all three rings.
 
-`just cad` rebuilds the native model, validates CAD, exports the GLB and metadata,
-checks the demo, and captures all three finishes under all four lights with LEDs
-on and off. It repeats front, 72° steep, edge and rear views. It combines the 96
+`just cad` rebuilds the native model, validates CAD, slices all printed parts, exports the GLB and metadata,
+checks the demo, and captures both finishes under all four lights with LEDs
+on and off. It repeats front, 72° steep, edge and rear views. It combines the 64
 matched renders into 16 labelled comparison sheets, plus the Godot demo, comparison video, sweep GIF and three moving gradient GIFs, and
 decodes every output. FreeCAD supplies geometry and static engineering views;
 Godot is the sole demo video renderer. The freshness manifest includes the demo sources and

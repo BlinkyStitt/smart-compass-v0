@@ -63,18 +63,14 @@ class DemoTests(unittest.TestCase):
         self.assertEqual({node['name'] for node in glb['nodes']},{part['name'] for part in m['parts']})
         # All 256 light contours derive from the one CAD wood grid.
         self.assertEqual(sum(part['role']=='cell' for part in m['parts']),256)
-        proposal=m['proposal']
-        self.assertEqual(len(proposal['fasteners_m']),6)
-        self.assertAlmostEqual(proposal['sheet_thickness_m'],.0015)
-        self.assertAlmostEqual(proposal['mechanical_g'],sum(proposal[k] for k in ('printed_petg_g','acrylic_g','wood_g')))
-        old=json.loads((path/'parts.json').read_text())
+        design=m['design']
+        self.assertEqual(len(design['fasteners_m']),6)
+        self.assertAlmostEqual(design['sheet_thickness_m'],.0015)
+        self.assertEqual(design['printed_part_count'],13)
         volumes={part['name']:part['volume_cm3'] for part in m['parts']}
-        removed=sum(volumes[name] for name in ('FrontAcrylic','FrontMirror','FrontBezel','EdgeDiffuserSeam'))
-        added=sum(volumes[name] for name in ('ProposalCentre','ProposalMirror','ProposalRim','ProposalEdge'))
-        expected=old['mass_estimate']['acrylic_g']+(added-removed)*1.19
-        self.assertAlmostEqual(proposal['acrylic_g'],expected,places=3)
-        self.assertAlmostEqual(proposal['wood_to_sheet_gap_m'],.0001)
-        self.assertAlmostEqual(proposal['wood_to_led_gap_m'],.0002)
+        self.assertAlmostEqual(sum(volumes[n] for n in ('FrontCentre','FrontMirrorCoating','FrontRim')),design['front_sheet_volume_cm3'])
+        self.assertFalse(any(n.startswith('Proposal') for n in volumes))
+
 
 
 if __name__=='__main__':
