@@ -498,7 +498,7 @@ func _capture():
 	_set_lighting(0)
 	distance=0.46
 	for style in ["rainbow","pulse","colour"]:
-		diffusion=0.65 if style=="rainbow" else 0.30
+		diffusion=0.65
 		for frame in range(384):
 			var phase=frame/384.0
 			var seconds=frame/24.0
@@ -515,7 +515,7 @@ func _capture():
 				groups=[false,true,true,false]
 				# Black intervals separate each colour and join the loop cleanly.
 				brightness=6.0*pow(sin(PI*fposmod(seconds,1.0)),4)
-				caption.text="Infinity mirror | %s | assumed diffusion 0.30" % ("white pulse" if style=="pulse" else "colour pulse")
+				caption.text="Infinity mirror | %s | assumed diffusion 0.65" % ("white pulse" if style=="pulse" else "colour pulse")
 			_update_optics()
 			_update_colours()
 			await _settle()
@@ -587,5 +587,39 @@ func _gpu_checks():
 			push_error("GPU/reference mismatch: "+str(sample)+" measured "+str(measured)+" expected "+str(expected))
 			get_tree().quit(1)
 			return
+	# Exercise the shared direct/reflected diffuser on the GPU. Uniform white
+	# must stay smooth between LEDs, with a small local peak and no hard edge.
+	material=ShaderMaterial.new()
+	material.shader=load("res://diffuser_diagnostic.gdshader")
+	material.set_shader_parameter("colours",colour_texture)
+	material.set_shader_parameter("pitch",float(metadata.optics.pitch))
+	material.set_shader_parameter("seam_gap",float(metadata.optics.ring_seam_gap))
+	plane.material_override=material
+	pattern=6
+	groups=[true,true,true,true]
+	_update_colours()
+	var baseline=[]
+	for group in range(1,4):
+		var radius=float(radii[group-1])
+		var led_z=float(metadata.optics.edge_z if group==3 else metadata.optics.strip_z)
+		material.set_shader_parameter("group",group)
+		material.set_shader_parameter("count",COUNTS[group])
+		material.set_shader_parameter("radius",radius)
+		material.set_shader_parameter("led_z",led_z)
+		var readings=[]
+		for offset in [Vector2(0,0),Vector2(0.299,0),Vector2(0.301,0),Vector2(0.5,0),Vector2(0,0.0055)]:
+			var angle=(float(metadata.optics.ring_seam_gap)*0.5+(5.5+offset.x)*float(metadata.optics.pitch))/radius
+			material.set_shader_parameter("sample_point",Vector3(sin(angle)*radius,cos(angle)*radius,led_z+offset.y))
+			await _settle()
+			readings.append(viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear().r)
+		assert(readings[3]>0.90, "Dark gap between diffused LEDs")
+		assert(readings[0]-readings[3]>0.02 and readings[0]-readings[3]<0.10, "LED peaks must be gentle")
+		assert(absf(readings[1]-readings[2])<0.009, "Hard package edge in diffuser")
+		assert(readings[4]>0.65, "Cavity sleeve edge must remain diffused")
+		if baseline.is_empty(): baseline=readings
+		else:
+			for index in range(readings.size()):
+				assert(absf(readings[index]-baseline[index])<0.009, "Ring diffuser profiles differ")
+	print("DEMO GPU DIFFUSER PASS: smooth LED gaps, gentle peaks, continuous edges and matching profiles for all three rings")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()
