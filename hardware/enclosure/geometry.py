@@ -82,7 +82,17 @@ def optical_dimensions(p):
         'visible_mirror_width': p['mirror_view_outer_radius'] - p['mirror_view_inner_radius'],
         'mirror_separation': front - rear,
         'outer_led_clearance': p['edge_diffuser_radius'] - outer - p['strip_thickness']/2 - p['ring_led_depth'],
+        'halo_radius': ring_radius(p['halo_count'], p),
+        'edge_height': p['case_depth'] - p['front_bezel_thickness'] - p['edge_bottom_z'],
+        'outer_strip_centre_z': strip_bottom('Outer', p) + p['strip_width']/2,
     }
+
+
+def strip_bottom(name, p):
+    """Centre the outer row in the side diffuser; mirror rows share one Z."""
+    if name == 'Outer':
+        return (p['edge_bottom_z'] + p['case_depth'] - p['front_bezel_thickness'] - p['strip_width']) / 2
+    return p['strip_bottom_z']
 
 
 def mounting_points(p):

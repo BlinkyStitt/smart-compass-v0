@@ -2,6 +2,6 @@
 <title>Rear mirror annulus - reflective face toward front; top lead notch</title>
 <desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
 <g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
-<circle cx="0" cy="0" r="87.000000"/>
+<circle cx="0" cy="0" r="85.500000"/>
 <path d="M 1.500000,112.025883 A 112.035925,112.035925 0 1 0 -1.500000,112.025883 L -1.500000,108.885925 L 1.500000,108.885925 Z"/>
 </g></svg>
