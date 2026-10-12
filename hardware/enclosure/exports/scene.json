@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "c5ac9b60ea20b5a68cd1aea4e4ea5be6ff51f6e71b3e5a9a1cd6324190a04b1c",
+  "master_sha256": "fe093dc73b04fa84e55eae03238b4fc8675ab09232eb8c4337e6075ef32daa96",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -253,7 +253,7 @@
           0.012
         ]
       ],
-      "volume_cm3": 72.95123311226229
+      "volume_cm3": 72.9451258561436
     },
     {
       "name": "ControlMembrane0",
@@ -481,7 +481,7 @@
           0.0385
         ]
       ],
-      "volume_cm3": 69.75617357951594
+      "volume_cm3": 69.74142066041448
     },
     {
       "name": "BarrelFrame",
@@ -500,7 +500,7 @@
           0.022650000000000003
         ]
       ],
-      "volume_cm3": 35.46787699949589
+      "volume_cm3": 35.459733991337764
     },
     {
       "name": "BatteryEnvelope0",

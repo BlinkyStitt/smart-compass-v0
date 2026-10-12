@@ -87,6 +87,19 @@ class Builder:
                 self.expression(obj, key, value)
         return obj
 
+    def cone(self, name, r0, r1, height, z, x=0, y=0):
+        obj = self.doc.addObject('Part::Cone', name)
+        obj.Radius1, obj.Radius2, obj.Height = r0, r1, height
+        obj.Placement.Base = App.Vector(x,y,z)
+        return obj
+
+    def bore_entries(self, name, points, radius, bottom, top):
+        # 45-degree entries preserve the nominal bore through the bearing land.
+        return [self.cone(f'{name}{i}{side}',r0,r1,.3,z,x,y)
+                for i,(x,y) in enumerate(points)
+                for side,r0,r1,z in (('Bottom',radius+.3,radius,bottom),
+                                    ('Top',radius,radius+.3,top-.3))]
+
     def box(self, name, length, width, height, x, y, z):
         obj = self.doc.addObject('Part::Box', name)
         for key, value in [('Length', length), ('Width', width), ('Height', height)]:
@@ -295,7 +308,9 @@ def build(p=None):
     seats = []
     for i,(x,y) in enumerate(points):
         seats += [b.cylinder(f'FrontLand{i}',4,1.2,front-1.2,x,y),
-                  b.cylinder(f'FrontStop{i}',3,depth-front,front,x,y)]
+                  b.fuse(f'FrontStop{i}',[
+                      b.cylinder(f'FrontStopStem{i}',3,depth-front-.4,front,x,y),
+                      b.cone(f'FrontStopTip{i}',3,2.6,.4,depth-.4,x,y)])]
     # Printable sleeve shoes/keyways lie behind the emitting surfaces. The
     # continuous front traps the sleeves; no fixed lip obstructs mirror removal.
     sleeve_seats, mirror_keys = [], []
@@ -318,7 +333,11 @@ def build(p=None):
     # Only internal wire passages remain. Close optical cavity lead gaps with
     # removable opaque sealant/tape after routing; none opens onto the outside.
     leads = [b.box(name+'LeadExit', p['ring_seam_gap'], 5, 5, -p['ring_seam_gap']/2, r-2.5, p['mirror_back_z']-p['strip_wall']) for name,r in [('Halo',halo_r),('Inner',inner_r),('Outer',outer_r)]]
-    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + suspension + anchor_tools + rear_tools + [b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-.3,radius+1,p['edge_bottom_z'],depth)])
+    frame_entries = []
+    for name,z,h in [('Deck',deck_bottom,depth-deck_bottom),('Barrel',rear,deck_bottom-rear)]:
+        frame_entries += b.bore_entries(name+'BoreEntry',points,p['fastener_hole_radius'],z,z+h)
+    frame_entries += [b.cone(f'RearBossEntry{i}',2,1.7,.3,rear,x,y) for i,(x,y) in enumerate(rear_mounting_points(p))]
+    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + suspension + anchor_tools + rear_tools + frame_entries + [b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-.3,radius+1,p['edge_bottom_z'],depth)])
     b.add(frame, 'Manufactured', '01 Hidden optical support - halo, inward mirror ring, centered outer row', (.15, .17, .20), material='Printed opaque polymer')
 
     # Six full-length bolts retain the optics. Separate screws retain the rear.
@@ -330,6 +349,7 @@ def build(p=None):
     hatch_screws = (hatch_x-21,hatch_x+21)
     rear_cuts = [b.cylinder(f'RearBodyAccess{i}',5,rear+12,-1,x,y) for i,(x,y) in enumerate(points)]
     rear_cuts += [b.cylinder(f'RearHole{i}',1.7,rear+12,-1,x,y) for i,(x,y) in enumerate(rear_mounting_points(p))]
+    rear_cuts += b.bore_entries('RearScrewEntry',rear_mounting_points(p),1.7,0,rear)
     rear_cuts += [b.cylinder(f'VentHole{i}',E('vent_hole_radius'),rear+12,-1,x,y) for i,(x,y) in enumerate(vent_points)]
     rear_cuts += [b.cylinder(f'RearControlBore{i}',4.2,rear+12,-1,x,y) for i,(x,y) in enumerate(control_points)]
     rear_cuts += [b.box('RearServiceOpening',38,18,rear+12,hatch_x-19,hatch_y-9,-1)]
@@ -699,6 +719,13 @@ def check_model(b, centres, cells):
     print('CAD geometry checks: connected parts, no product/LED collisions, inward and outward light paths clear',flush=True)
 
 
+def fit_sample(shape, p):
+    """One common cut contains a body collar, deck joint and rear captive nut."""
+    sample=shape.copy()
+    sample.rotate(App.Vector(),App.Vector(0,0,1),-p['fastener_phase_deg'])
+    return sample.common(Part.makeBox(36,54,p['case_depth']+2,App.Vector(90,-8,-1)))
+
+
 def export_files(b, centres, cells):
     out = HERE / 'exports'
     out.mkdir(exist_ok=True)
@@ -706,6 +733,9 @@ def export_files(b, centres, cells):
     previous_meshes = set(json.loads(manifest_path.read_text())['stl_files']) if manifest_path.exists() else set()
     Part.export(b.parts + b.hardware + [b.doc.CircleLEDs, b.doc.HaloLEDs, b.doc.InnerLEDs, b.doc.OuterLEDs], str(out / 'smart-compass.step'))
     import MeshPart
+    def print_mesh(shape):
+        # Use the same fine circular tessellation for products and fit samples.
+        return MeshPart.meshFromShape(Shape=shape,LinearDeflection=.02,AngularDeflection=.08,Relative=False)
     mesh_names = []
     volumes = []
     nonprinted = {'WoodMask','FrontSheet','RearMirror','EdgeDiffuserSeam','HatchGasket','HaloDiffuser','InnerDiffuser'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloDiffuserPad','InnerDiffuserPad'))}
@@ -725,8 +755,20 @@ def export_files(b, centres, cells):
             if bounds.XLength+2*b.p['print_margin'] > b.p['print_bed_x'] or bounds.YLength+2*b.p['print_margin'] > b.p['print_bed_y']:
                 raise ValueError('Printed part does not fit the configured bed: '+obj.Name)
             name = obj.Name + (f'-{i+1:02}' if len(obj.Shape.Solids)>1 else '') + '.stl'
-            MeshPart.meshFromShape(Shape=shape,LinearDeflection=.08,AngularDeflection=.15,Relative=False).write(str(out/name))
+            print_mesh(shape).write(str(out/name))
             mesh_names.append(name)
+    fit_samples = []
+    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate')):
+        sample = fit_sample(b.doc.getObject(parent).Shape,b.p)
+        if not sample.isValid() or len(sample.Solids)!=1:
+            raise ValueError('Disconnected fit sample: '+name)
+        if parent == 'BarrelFrame':
+            sample.rotate(App.Vector(),App.Vector(1,0,0),180)
+        bb=sample.BoundBox
+        sample.translate(App.Vector(-bb.XMin,-bb.YMin,-bb.ZMin))
+        filename=name+'.stl'
+        print_mesh(sample).write(str(out/filename))
+        fit_samples.append({'file':filename,'source_part':parent,'purpose':'Disposable fit test, not an assembly part'})
     # Remove superseded generator-owned STL outputs, never user-created files.
     for name in previous_meshes - set(mesh_names):
         if Path(name).name != name or not name.endswith('.stl'):
@@ -745,7 +787,7 @@ def export_files(b, centres, cells):
             'mechanical_subset_g':round(mechanical_mass,1),'candidate_pack_g':b.p['battery_mass_g'],
             'internal_pack_subset_g':round(mechanical_mass+b.p['battery_mass_g'],1),
             'external_pack_pendant_subset_g':round(mechanical_mass,1)}
-    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(printed_volume,4),'optics_mm':optical_dimensions(b.p),'mass_estimate':mass,'print_basis':{'bed_mm':[b.p['print_bed_x'],b.p['print_bed_y']],'margin_mm':b.p['print_margin'],'nozzle_mm':.4,'layer_mm':.2,'orientation':'STLs already placed on their intended bed face'}},indent=2)+'\n')
+    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(printed_volume,4),'optics_mm':optical_dimensions(b.p),'mass_estimate':mass,'fit_samples':fit_samples,'print_basis':{'bed_mm':[b.p['print_bed_x'],b.p['print_bed_y']],'margin_mm':b.p['print_margin'],'nozzle_mm':.4,'layer_mm':.2,'orientation':'STLs already placed on their intended bed face'}},indent=2)+'\n')
     svg_files(b, cells, out)
     section_drawing(b, out)
     if App.GuiUp:
@@ -786,6 +828,7 @@ def svg_files(b, cells, out):
     (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Single wood cell grid - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
     sheet_paths = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>']
     sheet_paths += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="3.300000"/>' for x,y in mounting_points(p)]
+    (out/'fit-sheet.svg').write_text(document(['<path d="M -9,-9 H 9 V 9 H -9 Z"/>','<circle cx="0" cy="0" r="3.300000"/>'],'FIT SAMPLE ONLY: 18 mm square in actual front-sheet stock; test on FitDeck collar',9))
     (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 1.5 mm acrylic; six 6.6 mm locating holes',p['case_diameter']/2))
     (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (r,p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: clear centre r<=83; rear-facing two-way mirror 83..110.5; black rim 110.5..125',p['case_diameter']/2))
     inner_r = ring_radius(p['inner_count'],p)

@@ -32,6 +32,10 @@ uses the same mechanical assembly. The saved CAD defines the selected clear-cent
 The three flat front acrylic pieces become one sheet. Integral sleeve shoes
 replace six adhesive locating pads. The single wood cell grid remains; there is
 no second full cell grid. The large printed parts have no glued quarter seams.
+**Keep every main circle whole.** Stack the deck, barrel and rear along their
+axis; do not split any of them into arcs to fit a smaller printer. The checks
+require full-size, connected circular parts. The front sheet and wood grid also
+remain one piece each.
 
 Use a **300 × 300 mm printer or print service**. The 249 mm rear needs at least
 259 mm usable bed width with the specified brim. Do not scale the model to fit a
@@ -66,13 +70,16 @@ it does not select a printer, heater limits or start/end machine code.
 | Infill | 25% gyroid |
 | Necklace brackets | 6 perimeters, 100% rectilinear infill |
 | Brim / separation | 5 / 0.15 mm |
+| First-layer bulge compensation | 0.15 mm; check with fit samples |
 | Outer wall / wall / infill speed | 25 / 35 / 50 mm/s |
 | Bridge / first layer speed | 20 / 20 mm/s |
 | Supports | Off for the checked geometry |
 
 Keep the exported STL orientation. Print the deck floor-down, the barrel
 **deck-joint face down**, the rear skin-down, guards roof-down, and brackets flat.
-The barrel's mounting bosses reach its bed face. The battery strap passages have
+The barrel's mounting bosses reach its bed face. Product and fit-sample STLs
+use 0.02 mm linear mesh deflection for smooth circular outlines. The battery
+strap passages have
 45° roofs with a short central bridge. The deck stays separate from the barrel
 so its broad annular floor never prints as an unsupported ceiling.
 
@@ -86,12 +93,75 @@ Prusa recommends textured or satin surfaces and warns that PETG can bond too
 strongly to smooth PEI. PETG also needs care with bridges and support removal.
 [Prusa PETG guidance](https://help.prusa3d.com/article/petg_2059).
 
-Run `just print-check` to slice every current STL with the checked settings.
+Run `just print-check` to slice every product and fit-sample STL with the checked
+settings.
 The check rejects slicer warnings, empty output and support-dependent paths.
 It uses temporary generic G-code for inspection and deletes it afterwards.
 **Generate final G-code with the real printer profile.** Slicing does not prove
 bed adhesion, layer strength, dimensional fit, or service life. Print and inspect
-one bracket before committing to the large parts.
+the fit samples and one bracket before committing to the large parts.
+
+## Print the fit samples first
+
+Use [FitDeck.stl](exports/FitDeck.stl), [FitBarrel.stl](exports/FitBarrel.stl) and
+[FitRear.stl](exports/FitRear.stl) with the same PETG, nozzle, layers and supplied
+orientations as the full parts. These small samples are exact cuts from the
+current CAD, not independently drawn substitutes. They are test pieces only;
+they do not enter the 13-piece assembly or its mass estimate.
+
+The tall sample with the front collar is the deck. The sample with the sideways
+nut pocket is the barrel. The thin skin is the rear. Stack them in that order,
+with the deck's broad floor on the barrel's broad joint face. Match the large
+body-bolt bore and curved outside walls. The rear's large access hole surrounds
+the body-bolt location; its smaller hole meets the barrel's captive nut.
+
+1. Remove the brim and loose strands. The joint faces must sit flat by hand.
+   A 3 mm screw must slide through each nominal 3.4 mm body bore without cutting
+   a thread in the plastic.
+2. Slide an actual M3 hex nut into the barrel's side pocket. It must seat fully
+   and resist turning. Thread the rear screw by hand without using it to force
+   misaligned parts together. Select screw length for the actual nut/washer stack.
+3. Cut [fit-sheet.svg](exports/fit-sheet.svg) from an offcut of the chosen front
+   stock, using the same laser kerf setting. Its 6.6 mm hole must drop over the
+   collar. Fit the intended soft and metal washers. The metal washer must stop
+   on the printed collar while the soft washer holds the sheet.
+4. Correct first-layer bulge, extrusion or measured fit before the large prints.
+   Keep nominal screw passages and washer stops intact. Do not scale the whole
+   compass to correct a local hole fit.
+
+Body and rear screw entries now have 0.3 mm, 45° lead-ins. Front collar tips taper
+by 0.4 mm and retain a flat washer stop at the original height. These guides help
+parts start square. They do not make a tight joint acceptable. The slicer also
+sets 0.15 mm first-layer compensation. Prusa explains how first-layer bulge can
+change fits and how compensation interacts with the brim; inspect both in the
+slicer. [First-layer compensation](https://help.prusa3d.com/article/elephant-foot-compensation_114487).
+
+Small samples cannot prove roundness or warping across a 250 mm part. Print the
+whole barrel first, then inspect it after cooling. Check its joint face on a flat
+surface and measure the diameter in two perpendicular directions. Keep the brim,
+use a clean PETG-compatible build plate and avoid drafts. Use the chosen printer's
+PETG cooling profile. Do not force a bowed part flat with the body bolts.
+[Prusa warping guidance](https://help.prusa3d.com/article/warping_2011).
+
+## Assemble the whole circles without juggling them
+
+Work with the barrel upright on a flat padded surface. Align the deck's top wire
+exits with the barrel's top exit. Insert two opposite body bolts loosely to guide
+the circles while you check the remaining holes. Keep all six bolts loose until
+they pass freely. Then remove the temporary bolts as needed to install the optics.
+The bolts guide the parts; they must not pull a distorted ring into position.
+
+Dry-fit the rear and its six separate screws before wiring. Load the captive nuts
+with the electronics compartment open. A short screw can hold a loose nut during
+handling. Keep connectors unplugged and add service slack before closing the rear.
+Tack the three tiny rim spacers to the wood grid before installing that grid, so
+you handle one subassembly. Keep the single laser-cut grid aligned to the PCB with
+the supplied registration overlay.
+
+Each curved diffuser remains one continuous band with one top seam. It is not a
+set of arc segments. Have the bands formed to the drawing or form them on a round
+mandrel, then cool and trim. Do not use the LEDs as a forming tool. Test their fit
+before applying mirror film or bonding the strips.
 
 ## Optical stack and load paths
 
@@ -151,7 +221,8 @@ references, not proven final blanks. Match the tint across all three sleeves.
 1. Measure the boards, pack, LED strips and sheet stock. Set the saved spreadsheet.
    Rebuild. Laser-cut the one wood grid, front sheet and keyed rear mirror. Use
    `front-coating.svg` only as a coating map, not a cut file. Apply kerf once in CAM.
-2. Print the 13 pieces in their exported orientations. Check flatness, nut slots,
+2. Pass the small fit-sample checks, then print the 13 pieces in their exported
+   orientations. Check flatness, nut slots,
    strap passages, bores, collars and sleeve seats. Fit-test hardware first.
 3. Load the captive nuts. Fit the two necklace brackets and their independent
    screws. Use washers and full nut engagement. Smooth the rounded webbing slots.
@@ -198,11 +269,13 @@ no tested dust or IP rating.
 
 The saved `Parameters` spreadsheet owns dimensions. `parameters.json` supplies
 initial values. Run `just cad` after editing and closing the master. It rebuilds
-CAD, checks collisions/removal paths and meshes, slices all printed parts, then
+CAD, checks collisions/removal paths and meshes, slices all printed parts and
+fit samples, then
 renders Godot media. It publishes only after all stages pass. `just cad-check`
 and the commit hook reject missing, stale or extra generated outputs.
 
-`exports/parts.json` lists printed pieces, solid volumes, optical dimensions and
+`exports/parts.json` lists assembly pieces, separate fit samples, solid volumes,
+optical dimensions and
 mass terms. `front-sheet.svg` is the sheet cut file. `front-coating.svg` marks
 coating boundaries. `rear-mirror.svg` comes from the keyed native contour, with
 at most 0.02 mm polygon chord error. `assembly-section.svg` cuts actual solids.

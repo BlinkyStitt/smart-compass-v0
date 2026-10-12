@@ -77,7 +77,7 @@
     },
     {
       "name": "RearPlate",
-      "volume_cm3": 72.9512,
+      "volume_cm3": 72.9451,
       "printed": true
     },
     {
@@ -142,16 +142,16 @@
     },
     {
       "name": "OpticalDeck",
-      "volume_cm3": 69.7562,
+      "volume_cm3": 69.7414,
       "printed": true
     },
     {
       "name": "BarrelFrame",
-      "volume_cm3": 35.4679,
+      "volume_cm3": 35.4597,
       "printed": true
     }
   ],
-  "printed_volume_cm3": 189.3912,
+  "printed_volume_cm3": 189.3621,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -176,6 +176,23 @@
     "internal_pack_subset_g": 641.5,
     "external_pack_pendant_subset_g": 451.5
   },
+  "fit_samples": [
+    {
+      "file": "FitDeck.stl",
+      "source_part": "OpticalDeck",
+      "purpose": "Disposable fit test, not an assembly part"
+    },
+    {
+      "file": "FitBarrel.stl",
+      "source_part": "BarrelFrame",
+      "purpose": "Disposable fit test, not an assembly part"
+    },
+    {
+      "file": "FitRear.stl",
+      "source_part": "RearPlate",
+      "purpose": "Disposable fit test, not an assembly part"
+    }
+  ],
   "print_basis": {
     "bed_mm": [
       300.0,
