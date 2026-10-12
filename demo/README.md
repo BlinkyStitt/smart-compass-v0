@@ -22,10 +22,10 @@ Columns: current assembly, full mirror coating, clear centre with mirror around
 it. Top row: LEDs on. Bottom row: LEDs off. The view, pattern time, brightness,
 exposure and environment match within each comparison.
 
-[Watch the six-second Godot finish comparison](../hardware/enclosure/exports/lighting-demo.mp4).
-Each finish gets the same two-second pattern segment, indoor light and moving
+[Watch the twelve-second Godot finish comparison](../hardware/enclosure/exports/lighting-demo.mp4).
+Each finish gets the same four-second pattern segment, indoor light and moving
 side-to-front camera path.
-The [26-second Godot demo](../hardware/enclosure/exports/amulet-demo.mp4) also
+The [52-second Godot demo](../hardware/enclosure/exports/amulet-demo.mp4) also
 shows a front-hemisphere sweep and all four lighting presets. All demo movie and GIF
 frames come from Godot, including their animated LEDs and mirror reflections.
 
@@ -35,16 +35,17 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 [White infinity pulse](../hardware/enclosure/exports/infinity-pulse.gif) ·
 [Colour infinity pulse](../hardware/enclosure/exports/infinity-colour.gif)
 
-Each eight-second loop moves from a 65° side view through the front, across to
+Each sixteen-second loop moves from a 65° side view through the front, across to
 the other side and back. Camera position, velocity and LED state join at the
-loop boundary. The rainbow loop shows the centre and all rings. The white and
+loop boundary. The swing runs at half its original speed; LED blink and colour
+rates stay unchanged. The rainbow loop shows the centre and all rings. The white and
 colour loops isolate the cavity rings so the centre cannot hide the repeated
 reflections. They use night light, a 0.46 m distance, fixed exposure 1, and assumed
 sleeve diffusion 0.30. Their peak emission scale is 6; rainbow peaks at 2 with
 the default diffusion 0.65. These are illustration settings, not measurements.
 
-The twelve-second `turntable.gif` now uses a ±70° front sweep, with one complete
-rainbow cycle and no rear dwell. It also loops without a camera or colour jump.
+The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
+rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
 
 ## Controls
 
