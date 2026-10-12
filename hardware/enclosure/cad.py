@@ -28,7 +28,7 @@ INPUTS = (
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
         'sleeve.gdshader', 'cell.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
-        'diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
+        'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'run.py', 'reference.py', 'test_demo.py',
     )),
 )
 FIXED_EXPORTS = frozenset('''

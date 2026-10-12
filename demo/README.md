@@ -41,8 +41,8 @@ loop boundary. The swing runs at half its original speed; LED blink and colour
 rates stay unchanged. The rainbow loop shows the centre and all rings. The white and
 colour loops isolate the cavity rings so the centre cannot hide the repeated
 reflections. They use night light, a 0.46 m distance, fixed exposure 1, and assumed
-sleeve diffusion 0.30. Their peak emission scale is 6; rainbow peaks at 2 with
-the default diffusion 0.65. These are illustration settings, not measurements.
+sleeve diffusion 0.65 for all three loops. Their peak emission scale is 6;
+rainbow peaks at 2. These are illustration settings, not measurements.
 
 The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
 rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
@@ -88,8 +88,10 @@ colour texture, in the CAD pixel order.
 
 The first three patterns use the formulas in `design-v2.md`, in linear RGB.
 Each circle cell uses its CAD aperture and LED position. A variable Gaussian
-spread approximates the centre diffuser. The sleeve model spreads each LED
-across neighbouring angles and height. It treats the dark acrylic as a
+spread approximates the centre diffuser. One shared sleeve model spreads each LED
+across neighbouring angles and height for both direct and reflected light. It
+uses a continuous surface with gentle LED peaks, without rectangular package
+masks. Mirror attenuation still reduces successive reflected copies. It treats the dark acrylic as a
 transmitting, emitting surface backed by an opaque strip. These are design
 approximations; the demo does not model scattering through an acrylic volume,
 refraction, polarisation, coating angle response, wavelength response, real
@@ -198,7 +200,9 @@ controls, and checks shared patterns and fixed exposure. On the GPU, 105 ray
 cases compare the actual cavity tracing code with an independent unfolded-mirror
 reference. The cases include spacing, attenuation, cutoff, the reflection limit,
 centre obstruction and edge/rear rays. Rendered channels allow 0.009 absolute
-error for framebuffer quantisation.
+error for framebuffer quantisation. GPU diffuser checks also verify smooth
+inter-LED light, gentle peaks, continuity at the former package-mask edge, and
+the same surface profile on all three rings.
 
 `just cad` rebuilds the native model, validates CAD, exports the GLB and metadata,
 checks the demo, and captures all three finishes under all four lights with LEDs
