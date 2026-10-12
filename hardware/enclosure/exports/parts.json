@@ -11,7 +11,9 @@
     "RearPlateQ2.stl",
     "RearPlateQ3.stl",
     "RearPlateQ4.stl",
-    "CellBaffle.stl",
+    "CircleRimFoot0.stl",
+    "CircleRimFoot1.stl",
+    "CircleRimFoot2.stl",
     "CircleBezel.stl",
     "SeamStraps-01.stl",
     "SeamStraps-02.stl",
@@ -187,12 +189,22 @@
     },
     {
       "name": "WoodMask",
-      "volume_cm3": 13.8949,
+      "volume_cm3": 33.3479,
       "printed": false
     },
     {
-      "name": "CellBaffle",
-      "volume_cm3": 20.2245,
+      "name": "CircleRimFoot0",
+      "volume_cm3": 0.0264,
+      "printed": true
+    },
+    {
+      "name": "CircleRimFoot1",
+      "volume_cm3": 0.0264,
+      "printed": true
+    },
+    {
+      "name": "CircleRimFoot2",
+      "volume_cm3": 0.0264,
       "printed": true
     },
     {
@@ -256,7 +268,7 @@
       "printed": true
     }
   ],
-  "printed_volume_cm3": 202.1477,
+  "printed_volume_cm3": 182.0024,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -270,13 +282,15 @@
     "diffuser_gap": 19.225823848649213
   },
   "mass_estimate": {
-    "basis": "CAD solid volume with PETG 1.27 and acrylic 1.19 g/cm3; not slicer or measured finished mass",
-    "excludes": "Wood, films, electronics, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
-    "printed_petg_g": 256.7,
+    "basis": "CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass",
+    "excludes": "Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
+    "printed_petg_g": 231.1,
     "acrylic_g": 204.9,
-    "mechanical_subset_g": 461.6,
+    "wood_density_g_cm3": 0.6,
+    "wood_g": 20.0,
+    "mechanical_subset_g": 456.0,
     "candidate_pack_g": 190.0,
-    "internal_pack_subset_g": 651.6,
-    "external_pack_pendant_subset_g": 461.6
+    "internal_pack_subset_g": 646.0,
+    "external_pack_pendant_subset_g": 456.0
   }
 }

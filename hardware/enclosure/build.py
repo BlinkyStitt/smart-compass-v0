@@ -34,7 +34,7 @@ class Builder:
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
         self.keys = [k for k in p if not k.startswith('_')]
-        scalar = {'battery_count', 'battery_mass_g', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency'}
+        scalar = {'battery_count', 'battery_mass_g', 'wood_density_g_cm3', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency'}
         for row, key in enumerate(self.keys, 2):
             self.sheet.set(f'A{row}', key)
             value = int(p[key]) if isinstance(p[key], bool) else p[key]
@@ -173,9 +173,10 @@ def read_parameters(master):
     return p
 
 
-def build():
+def build(p=None):
     master = HERE / 'smart-compass.FCStd'
-    p = read_parameters(master)
+    if p is None:
+        p = read_parameters(master)
     validate_parameters(p)
     b = Builder(p)
     doc = b.doc
@@ -441,34 +442,29 @@ def build():
             pad = b.cylinder(f'{name}DiffuserPad{i}',.75,E('ring_diffuser_end_gap'),E('mirror_back_z')+'+'+E('mirror_back_thickness'),r*math.cos(angle),r*math.sin(angle))
             b.add(pad,'Manufactured',name+f' diffuser clear removable adhesive pad {i+1}',(.85,.88,.90),70,material='Nonprinted clear removable adhesive; 0.1 mm nominal; mirror-film adhesion TODO')
 
-    # Cell baffle and wood share exactly the same XY opening sketch.
+    # One deep laser-cut wood grid supplies both the face pattern and cell walls.
+    # The acrylic touches its front; three small spacers support its rear rim.
     openings = b.profile('FibonacciApertures', cells, wood_expr, E('wood_thickness'))
     wood = b.cylinder('WoodBlank', 'Parameters.circle_diameter/2', E('wood_thickness'), wood_expr)
     wood = b.cut('WoodMask', wood, openings)
-    b.add(wood, 'Manufactured', '08 Laser-cut wood - 256 Fibonacci cells, circle only', (.53, .32, .13), material='2 mm nominal wood; measure thickness and kerf')
-    baffle_z = p['circle_back_z'] + p['circle_pcb_thickness'] + p['led_height'] + .2
-    baffle_openings = b.profile('BaffleApertures', cells, baffle_z, wood_z - baffle_z)
-    baffle = b.cut('BaffleCells', b.cylinder('BaffleBlank', p['circle_diameter']/2, wood_z - baffle_z, baffle_z), baffle_openings)
+    b.add(wood, 'Manufactured', '08 Laser-cut wood cell grid - face pattern and light dividers', (.53, .32, .13), material='Nominal 3/16-inch plywood, modeled 4.8 mm; seal cell walls opaque; measure stock, kerf and density')
     # Three rim feet hold the PCB down. Select clear positions against the LED
     # package references rather than covering an assumed empty edge sector.
-    feet = []
     top = p['circle_back_z'] + p['circle_pcb_thickness']
     for i in range(3):
         for delta in [0] + [s*d for d in range(1, 41) for s in (-1, 1)]:
             angle = i*120 + delta
-            trial = Part.makeBox(2, 4, baffle_z-top, App.Vector(p['circle_diameter']/2-2, -2, top))
+            trial = Part.makeBox(2, 4, wood_z-top, App.Vector(p['circle_diameter']/2-2, -2, top))
             trial.rotate(App.Vector(), App.Vector(0, 0, 1), angle)
             if trial.common(leds.Shape).Volume < 1e-7:
-                foot = b.box(f'CircleRimFoot{i}', 2, 4, baffle_z-top, p['circle_diameter']/2-2, -2, top)
+                foot = b.box(f'CircleRimFoot{i}', 2, 4, wood_z-top, p['circle_diameter']/2-2, -2, top)
                 foot.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0,0,1), angle)).multiply(foot.Placement)
-                feet.append(foot)
+                b.add(foot, 'Manufactured', f'Circle rim spacer {i+1} - supports wood grid above LED packages', (.12, .12, .13), material='Printed opaque PETG; tack to wood rim for service, not to LEDs; fit and contact TODO')
                 break
         else:
             raise ValueError('No clear PCB rim retention position')
-    baffle = b.fuse('CellBaffle', [baffle] + feet)
-    b.add(baffle, 'Manufactured', '07 Light-isolation baffle - Fibonacci cells and three PCB rim feet', (.12, .12, .13), material='Printed opaque polymer')
     acrylic = b.cylinder('FrontAcrylic', 'Parameters.circle_diameter/2', E('acrylic_thickness'), front_expr)
-    b.add(acrylic, 'Manufactured', '09 Central acrylic - wood lies directly behind it', (.80, .88, .92), 80, material='1.5 mm LED diffuser acrylic; actual transmission unknown')
+    b.add(acrylic, 'Manufactured', '09 Central acrylic diffuser - directly over wood cell grid', (.80, .88, .92), 80, material='1.5 mm LED diffuser acrylic; cell grid contacts rear surface; actual transmission unknown')
     bezel = b.annulus('BezelBlank', E('mirror_view_outer_radius'), E('case_diameter') + '/2', E('case_depth') + '-' + E('front_bezel_thickness'), E('front_bezel_thickness'))
     bezel = b.cut('FrontBezel', bezel, holes('BezelHole', depth - p['front_bezel_thickness'], p['front_bezel_thickness']))
     b.add(bezel, 'Manufactured', '10 Outermost front border - one-piece black acrylic ring', (.025, .025, .025), material='Opaque black acrylic sheet; nominal 1.8 mm; measure stock and set front_bezel_thickness')
@@ -571,8 +567,8 @@ def split_printed_part(b, obj):
 def validate_parameters(p):
     if not (0 < p['assumed_efficiency'] <= 1):
         raise ValueError('Efficiency must lie in (0,1]')
-    if p['battery_mass_g'] <= 0:
-        raise ValueError('Battery mass must be positive')
+    if p['battery_mass_g'] <= 0 or p['wood_density_g_cm3'] <= 0 or not math.isfinite(p['wood_density_g_cm3']):
+        raise ValueError('Battery mass and wood density must be positive and finite')
     if not 10 <= p['external_port_diameter'] <= 14 or math.hypot(p['external_port_x'],p['external_port_y'])+10 >= p['case_diameter']/2-p['fit_clearance']:
         raise ValueError('External battery entry needs a bore within its reinforced rear land')
     for key in ('halo_count', 'inner_count', 'outer_count'):
@@ -590,13 +586,13 @@ def validate_parameters(p):
         raise ValueError('Necklace brackets need 5..6 mm thickness below the optical floor')
     if p['sparkle_rotation'] not in (0, 180):
         raise ValueError('The axis-aligned Sparkle footprint supports rotations 0 or 180 only')
-    for key in ('battery_width', 'battery_length', 'battery_height', 'strip_density', 'mask_web', 'shell_wall', 'rear_thickness', 'strip_wall', 'ring_led_depth', 'print_bed_x', 'print_bed_y'):
+    for key in ('battery_width', 'battery_length', 'battery_height', 'wood_thickness', 'strip_density', 'mask_web', 'shell_wall', 'rear_thickness', 'strip_wall', 'ring_led_depth', 'print_bed_x', 'print_bed_y'):
         if p[key] <= 0 or not math.isfinite(p[key]):
             raise ValueError(key + ' must be finite and positive')
     led_top = p['circle_back_z'] + p['circle_pcb_thickness'] + p['led_height']
     wood_z = p['case_depth'] - p['front_bezel_thickness'] - p['acrylic_thickness'] - p['wood_thickness']
-    if led_top + .2 >= wood_z:
-        raise ValueError('No light-baffle gap below the wood')
+    if not .2-1e-7 <= wood_z-led_top <= .5+1e-7:
+        raise ValueError('Single wood cell grid must end 0.2..0.5 mm above LED packages')
     if p['rear_thickness']+1.5+p['battery_height']+2.5+1 > p['circle_back_z']:
         raise ValueError('Battery fit/headroom and strap leave less than 1 mm circle PCB clearance')
     for x,y in battery_centres(p):
@@ -748,8 +744,8 @@ def export_files(b, centres, cells):
         for i,solid in enumerate(obj.Shape.Solids):
             # Translate each connected part onto Z=0 in its own bed footprint.
             shape = solid.copy()
-            if obj.Name in {'CellBaffle','SeamStraps','CircleBezel'} or obj.Name.startswith('VentGuard'):
-                # Flat face down; baffle feet, snap tongues and guard feet up.
+            if obj.Name in {'SeamStraps','CircleBezel'} or obj.Name.startswith('VentGuard'):
+                # Flat face down; snap tongues and guard feet up.
                 shape.rotate(App.Vector(),App.Vector(1,0,0),180)
             bb = shape.BoundBox
             shape.translate(App.Vector(-bb.XMin,-bb.YMin,-bb.ZMin))
@@ -767,10 +763,13 @@ def export_files(b, centres, cells):
     printed_volume = sum(v['volume_cm3'] for v in volumes if v['printed'])
     acrylic_names = {'FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HaloDiffuser','InnerDiffuser'}
     acrylic_volume = sum(v['volume_cm3'] for v in volumes if v['name'] in acrylic_names)
-    mechanical_mass = printed_volume*1.27+acrylic_volume*1.19
-    mass = {'basis':'CAD solid volume with PETG 1.27 and acrylic 1.19 g/cm3; not slicer or measured finished mass',
-            'excludes':'Wood, films, electronics, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier',
+    wood_volume = sum(v['volume_cm3'] for v in volumes if v['name'] == 'WoodMask')
+    wood_mass = wood_volume*b.p['wood_density_g_cm3']
+    mechanical_mass = printed_volume*1.27+acrylic_volume*1.19+wood_mass
+    mass = {'basis':'CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass',
+            'excludes':'Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier',
             'printed_petg_g':round(printed_volume*1.27,1),'acrylic_g':round(acrylic_volume*1.19,1),
+            'wood_density_g_cm3':b.p['wood_density_g_cm3'],'wood_g':round(wood_mass,1),
             'mechanical_subset_g':round(mechanical_mass,1),'candidate_pack_g':b.p['battery_mass_g'],
             'internal_pack_subset_g':round(mechanical_mass+b.p['battery_mass_g'],1),
             'external_pack_pendant_subset_g':round(mechanical_mass,1)}
@@ -799,7 +798,7 @@ def section_drawing(b, out):
 </g><g font-family="sans-serif" font-size="3.5" fill="#1765a1">
 <text x="-10" y="9">Ø {2*r:g}</text><text x="{r+14}" y="{-depth/2}">{depth:g}</text>
 <text x="{-r}" y="{-depth-13}">Y=0 section • rear Z=0 • front Z={depth:g} • nominal geometry</text>
-<text x="{-r}" y="20">Circle: baffle → {b.p['wood_thickness']:g} mm wood → {b.p['acrylic_thickness']:g} mm acrylic. Rings: inward mirror annulus / outward edge band.</text>
+<text x="{-r}" y="20">Circle: LEDs → single {b.p['wood_thickness']:g} mm wood cell grid → {b.p['acrylic_thickness']:g} mm acrylic.</text>
 </g></svg>'''
     (out / 'assembly-section.svg').write_text(drawing)
 
@@ -811,7 +810,7 @@ def svg_files(p, cells, out):
         return '<svg xmlns="http://www.w3.org/2000/svg" width="%gmm" height="%gmm" viewBox="%g %g %g %g">\n<title>%s</title>\n<desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>\n<g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">\n%s\n</g></svg>\n' % (2*r, 2*r, -r, -r, 2*r, 2*r, description, '\n'.join(paths))
     outline = f'<circle cx="0" cy="0" r="{r:.6f}"/>'
     polygons = ['<polygon points="' + ' '.join(f'{x:.6f},{y:.6f}' for x,y in poly) + '"/>' for poly in cells]
-    (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Circle wood mask - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
+    (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Single wood cell grid - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
     (out / 'front-acrylic.svg').write_text(document([outline], f'Central diffuser acrylic - {p["acrylic_thickness"]:g} mm nominal'))
     border = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>', f'<circle cx="0" cy="0" r="{p["mirror_view_outer_radius"]:.6f}"/>']
     border += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{p["fastener_hole_radius"]:.6f}"/>' for x,y in mounting_points(p)]
@@ -855,7 +854,7 @@ def export_previews(b, out):
     # A real exploded placement, saved only in the preview, never in the master.
     moved = []
     for obj in b.parts:
-        offset = 65 if obj.Name in {'FrontBezel','CircleBezel'} else {'FrontAcrylic':50,'FrontMirror':50,'WoodMask':35,'CellBaffle':20}.get(obj.Name,0)
+        offset = 65 if obj.Name in {'FrontBezel','CircleBezel'} else {'FrontAcrylic':50,'FrontMirror':50,'WoodMask':35}.get(obj.Name,20 if obj.Name.startswith('CircleRimFoot') else 0)
         if not offset:
             continue
         moved.append((obj, obj.Placement))
