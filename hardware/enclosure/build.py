@@ -19,6 +19,9 @@ HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom
 
+DIFFUSER_TRANSPARENCY = 60  # CAD display only; not measured optical transmission.
+DIFFUSER_TINT = (6 / 255,) * 3  # Use the native file's 8-bit RGB precision.
+
 
 class Builder:
     def __init__(self, p):
@@ -421,7 +424,7 @@ def build():
     b.add(mirror, 'Manufactured', '06 Front two-way mirror annulus - visible infinity gap', (.65,.75,.86), 65, material='1.5 mm clear acrylic plus two-way film; reflective surface faces -Z')
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('case_depth')+'-'+E('front_bezel_thickness')+'-'+E('edge_bottom_z'))
     edge = b.cut('EdgeDiffuserSeam', edge, b.box('EdgeDiffuserGap', 1, 4, depth, -.5, p['edge_diffuser_radius']-1, 0))
-    b.add(edge, 'Manufactured', '07 Black acrylic curved outside wall - centered outer LED row', (.025,.025,.025), material='Black LED-diffusing acrylic; nominal 2 mm heat-formed sleeve, no mirror film; stock, forming and transmission TODO')
+    b.add(edge, 'Manufactured', '07 Black acrylic curved outside wall - centered outer LED row', DIFFUSER_TINT, DIFFUSER_TRANSPARENCY, material='Black LED-diffusing acrylic; nominal 2 mm heat-formed sleeve, no mirror film; stock, forming and transmission TODO')
 
     # Curved bands diffuse the radial emitting faces. They do not cover the
     # flat front mirror annulus or replace the Fibonacci wood face.
@@ -429,7 +432,7 @@ def build():
         band = b.annulus(name+'DiffuserBlank',d['inner'],d['outer'],d['bottom'],d['height'])
         seam = b.box(name+'DiffuserGap',p['ring_diffuser_seam_gap'],p['ring_diffuser_thickness']+2,d['height'],-p['ring_diffuser_seam_gap']/2,d['inner']-1,d['bottom'])
         band = b.cut(name+'Diffuser',band,seam)
-        b.add(band,'Manufactured',name+' curved acrylic diffuser - radial light face',(.84,.88,.91),35,material='Diffusing acrylic; 1 mm nominal formed band; stock, finish, forming and retention TODO')
+        b.add(band,'Manufactured',name+' curved acrylic diffuser - radial light face',DIFFUSER_TINT,DIFFUSER_TRANSPARENCY,material='Diffusing acrylic; dark tint; 1 mm nominal formed band; stock, finish, forming and retention TODO')
         # Three thin clear adhesive pads locate the band on the rear mirror.
         # They remain accessible after lifting the front annulus; no glue on LEDs.
         r = (d['inner']+d['outer'])/2
@@ -866,6 +869,19 @@ def export_previews(b, out):
     for obj, pl in moved:
         obj.Placement = pl
     b.doc.recompute()
+    # Isolate all three sleeves and their LEDs at assembled positions so their
+    # radial coverage stays visible without the front mirror or printed frame.
+    products = b.parts+b.hardware+b.references
+    visibility = [(obj,obj.Visibility) for obj in products]
+    diffuser_view = {'HaloDiffuser','InnerDiffuser','EdgeDiffuserSeam','HaloLEDs','InnerLEDs','OuterLEDs','HaloStripSeam','InnerStripSeam','OuterStripSeam'}
+    for obj in products:
+        obj.Visibility = obj.Name in diffuser_view
+    Gui.updateGui()
+    view.viewAxonometric()
+    view.fitAll()
+    view.saveImage(str(out / 'diffusers.png'), 1600, 1200, 'White')
+    for obj,was_visible in visibility:
+        obj.Visibility = was_visible
     # Remove the face/frame in this preview to show the rear's integral ribs,
     # individual battery pockets and electronics. Normal rear view stays opaque.
     hidden = [obj for obj in b.parts+b.hardware+b.references if not (obj.Name.startswith(('RearPlateQ','NecklaceLink','BatteryEnvelope')) or obj in b.hardware and obj.Name != 'CirclePCB' and 'Strip' not in obj.Name)]
