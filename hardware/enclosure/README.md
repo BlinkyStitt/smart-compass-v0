@@ -40,18 +40,64 @@ The [labelled exploded diagram](exports/exploded-overview.png) and
 | `exports/turntable.gif`, `exploded.gif` | Looping 800 × 600 animations at 12 fps. |
 | `exports/turntable-poster.png`, `exploded-overview.png`, `electronics-overview.png` | Full-size inspection images from the animation scene. |
 | `animate.py`, `Animate.FCMacro` | Reproduce the animation from the saved native model with FreeCAD and FFmpeg. |
+| `cad.py`, `Run.FCMacro` | Rebuild and check all outputs in temporary storage before copying them back. |
+| `exports-manifest.json` | SHA-256 hashes of the saved model, build sources and all exports from the last complete build. |
 
-## Rebuild the demo
+## Rebuild all CAD outputs
 
-Run from the repository root on the Mac with Homebrew FreeCAD and FFmpeg:
+Install the tools with Homebrew:
 
 ```sh
-python3 hardware/enclosure/animate.py
+brew install just ffmpeg
+brew install --cask freecad
 ```
 
-Install a missing application with `brew install --cask freecad` or
-`brew install ffmpeg`. Use `--preview` to render only the three inspection
-images. Use `--output /path/to/directory` to put the media elsewhere.
+Save and close `smart-compass.FCStd` in FreeCAD. From the repository root, run:
+
+```sh
+just cad
+just cad-check
+```
+
+`just cad` reads parameter values from the saved model's spreadsheet. It copies
+the inputs to a temporary directory, runs the host tests, rebuilds the native
+model and geometry exports, checks the saved model in a separate FreeCAD process,
+then renders and checks every PNG, GIF and MP4. It checks the complete export
+inventory and copies the results back only after these steps pass. It writes
+the freshness manifest last. A failed build leaves the saved model and exports
+in place. A failure during copying makes the freshness check fail until the
+next successful rebuild. A second build in the same checkout cannot run at the
+same time. If you edit an input during the build, the command stops before it
+copies results back.
+
+`just cad-check` checks file hashes and the export inventory. It needs Python 3,
+but does not start FreeCAD or repeat the geometry/media tests. It detects changes
+to the model, parameters, LED layout, build scripts or outputs. It cannot prove
+physical fit, strength, light quality or runtime. Run `just cad-tests` to repeat
+the host tests without FreeCAD.
+
+Enable the commit check once in each checkout:
+
+```sh
+just install-hooks
+```
+
+The tracked `.githooks/pre-commit` checks the **Git index**. Stage the model,
+build sources, all changed exports and `exports-manifest.json` together. A fresh
+working tree does not make a partially staged CAD change pass. This local hook
+uses `core.hooksPath`; Git does not enable it automatically after a clone.
+Do not replace another hook configuration without checking it first.
+
+The macros remain useful for inspection, but a macro run alone does not update
+every output or the freshness manifest. Use `just cad` before committing CAD
+changes. There is no file-save watcher: finish and close the model before a build.
+
+## Render the demo separately
+
+For a preview from the saved model, run
+`python3 hardware/enclosure/animate.py --preview --output /path/to/previews`.
+Omit `--preview` for the complete demo. This command does not certify a complete
+CAD rebuild; use `just cad` to update the tracked outputs and freshness manifest.
 
 The renderer copies the visible manufactured parts, electronics and LED
 references into a separate FreeCAD display document. It preserves the saved
@@ -220,19 +266,19 @@ The independent screw keeps each bracket attached when the six case bolts and re
 
 Use the Homebrew FreeCAD app at `/Applications/FreeCAD.app`, version **1.1.4** or a compatible later version. The model contains native spreadsheet, sketch, extrusion, primitive, and Boolean objects. It needs no persistent Python feature proxy.
 
-1. Edit `Parameters` in `smart-compass.FCStd` and save.
-2. Run `Build.FCMacro` from FreeCAD's Macro menu. Set `SC_CAD_DIR` to this directory only if the runner does not expose the macro file path.
-3. Inspect the rebuilt assembly and generated outputs. The macro checks connected solids, all 256 cell openings, part/PCB/component-envelope/battery and LED-body collisions, necklace-to-frame contact, and each radial light path. It rejects an obstructed mirror gap or an oversized print part.
+1. Edit `Parameters` in `smart-compass.FCStd`, save, and close the document.
+2. Run `just cad` from the repository root.
+3. Inspect the rebuilt assembly and generated outputs. The build checks connected solids, all 256 cell openings, part/PCB/component-envelope/battery and LED-body collisions, necklace-to-frame contact, and each radial light path. It rejects an obstructed mirror gap or an oversized print part.
 4. Keep the master and its generated exports together. Do not edit STL/SVG copies as a second dimensional source.
 
-The macro closes the saved document and creates its replacement. Some native expressions update immediately; computed cells, ring positions, splitting, and exports require the rebuild. Fix a rejected layout rather than disabling checks.
+Some native expressions update immediately; computed cells, ring positions, splitting, and exports require the rebuild. Fix a rejected layout rather than disabling checks. After the first build, the saved spreadsheet owns parameter values; `parameters.json` supplies seed values.
 
 For a headless build, use `/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd Build.FCMacro` with `SC_CAD_DIR` set. GUI builds also regenerate PNG views. Require `CAD BUILD PASS`; exit code alone does not prove a FreeCAD script succeeded.
 
-Run `Check.FCMacro` to reopen and verify the saved model and exports. It tests a sheet expression without saving that test edit. Save and close any edited master first. Run host geometry checks with:
+For a manual inspection, run `Build.FCMacro` or `Check.FCMacro` from FreeCAD's Macro menu. Set `SC_CAD_DIR` to this directory only if the runner does not expose the macro file path. `Check.FCMacro` reopens and verifies the saved model and exports. It tests a sheet expression without saving that test edit. Save and close any edited master first. Run host geometry and workflow checks with:
 
 ```sh
-python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
+just cad-tests
 ```
 
 ## Sources and remaining measurements
