@@ -32,10 +32,16 @@ def check():
     assert math.isclose(doc.CellBaffle.Shape.BoundBox.ZMax, wood_bottom, abs_tol=1e-7), 'Master retained an exploded baffle placement'
     assert math.isclose(doc.FrontAcrylic.Shape.BoundBox.ZMin, wood_bottom+p['wood_thickness'], abs_tol=1e-7)
     assert math.isclose(doc.CircleBezel.Shape.BoundBox.ZMax, p['case_depth'], abs_tol=1e-7)
-    for prefix in ('OpticalDeck','BarrelFrame','RearPlate','FrontBezel'):
+    for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
         quarters = [doc.getObject(prefix+f'Q{i}') for i in range(1,5)]
         assert all(q in b.parts for q in quarters), 'Quarter missing from manufactured parts'
         assert not App.GuiUp or not doc.getObject(prefix).Visibility, 'Unsplit construction copy visible'
+    assert doc.FrontBezel in b.parts and len(doc.FrontBezel.Shape.Solids) == 1, 'Black acrylic border must be one connected sheet part'
+    assert doc.FrontBezel.Material.startswith('Opaque black acrylic sheet')
+    assert not any(doc.getObject(f'FrontBezelQ{i}') for i in range(1,5)), 'Black acrylic border must not have printed quarter seams'
+    assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMin,p['case_depth']-p['front_bezel_thickness'],abs_tol=1e-7)
+    assert math.isclose(doc.FrontBezel.Shape.BoundBox.ZMax,p['case_depth'],abs_tol=1e-7)
+    border_circles = sorted({(round(edge.Curve.Center.x,6),round(edge.Curve.Center.y,6),round(edge.Curve.Radius,6)) for edge in doc.FrontBezel.Shape.Edges if hasattr(edge.Curve,'Radius')})
     assert doc.InnerLEDs.EmissionDirection == 'Radially inward toward circle'
     assert doc.OuterLEDs.EmissionDirection == 'Radially outward'
     assert doc.HaloLEDs.EmissionDirection == 'Radially outward'
@@ -111,9 +117,14 @@ def check():
     radii = [float(c.attrib['r']) for c in front_mirror.findall('.//s:circle',ns)]
     assert len(radii)==2 and math.isclose(min(radii),p['mirror_inner_radius'])
     assert all(math.isclose(a,b,abs_tol=1e-5) for a,b in zip(sorted(radii),front_mirror_radii)), 'Laser radii differ from exact native mirror circles'
+    border = ET.parse(HERE/'exports/outer-black-acrylic.svg')
+    cut_circles = sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in border.findall('.//s:circle',ns))
+    assert len(cut_circles) == 8 and cut_circles == border_circles, 'Black acrylic cut paths differ from native outline or six bolt holes'
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
+    assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontBezel'), 'Black acrylic border cannot be a printed part'
+    assert not any(name.startswith('FrontBezel') for name in manifest['stl_files']), 'Superseded printed border STL remains'
     assert set(manifest['stl_files']) == {f.name for f in (HERE/'exports').glob('*.stl')}
     for filename in manifest['stl_files']:
         file = HERE/'exports'/filename

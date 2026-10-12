@@ -96,7 +96,7 @@
     "led_map": "Published 8-bit XY map; 79.5 mm centre radius and orientation require a physical alignment check",
     "rings": "64 halo / 84 inward / 90 outward pixels; 120 LED/m; measured cut length, seam, strip width/depth and fit remain TODO",
     "wood": "2 mm nominal wood over circle only; measure strength, thickness and laser kerf",
-    "acrylic": "1.5 mm central diffuser and front two-way annulus; 1.5 mm rear mirror; 0.5 mm wrapped edge diffuser; measure materials/optics",
+    "acrylic": "1.8 mm opaque black acrylic outer front border; 1.5 mm central diffuser/front two-way annulus/rear mirror; 0.5 mm wrapped edge diffuser; measure stock thickness and optics",
     "mirror": "25 mm front annulus; 11.2 mm mirror separation; concealed circle support and outward halo; no optical-performance claim",
     "ventilation": "Four 6 mm rear openings with nominal 16 mm adhesive membrane patches and separate rear guards; select membrane/adhesive and verify heat/dust later",
     "controls": "Rear membrane-covered Mode/Action and latching power button placeholders; service hatch gasket; exact parts/actuation remain TODO"
