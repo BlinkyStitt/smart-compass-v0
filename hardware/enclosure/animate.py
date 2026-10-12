@@ -45,9 +45,9 @@ LAYER_LABELS = {
     'FrontBezel': 'Black acrylic front border',
     'CircleBezel': 'Circle snap rim',
     'FrontAcrylic': 'Central acrylic diffuser',
-    'WoodMask': 'Fibonacci wood mask',
+    'WoodMask': 'Single wood cell grid',
     'FrontMirror': 'Two-way mirror annulus',
-    'CellBaffle': 'Light-isolation baffle',
+    'CircleRimFoot0': 'Three small rim spacers',
     'InnerDiffuser': 'Inner acrylic sleeve',
     'HaloDiffuser': 'Halo acrylic sleeve',
     'HaloLEDs': 'Halo and inward LED strips',
@@ -88,6 +88,8 @@ def explosion_offset(name, centre):
         return (0, 0, 160)
     if name.startswith('InnerDiffuserPad'):
         return (0, 0, 200)
+    if name.startswith('CircleRimFoot'):
+        return (0, 0, 245)
     layers = {
         'ServiceCover': -160, 'HatchGasket': -135,
         'ExternalPowerBlank': -125, 'SeamStraps': -105,
@@ -98,7 +100,7 @@ def explosion_offset(name, centre):
         'HaloStripSeam': 145, 'HaloLEDs': 145,
         'InnerStripSeam': 145, 'InnerLEDs': 145,
         'HaloDiffuser': 175, 'InnerDiffuser': 215,
-        'CellBaffle': 245, 'WoodMask': 295,
+        'WoodMask': 295,
         'FrontMirror': 275, 'FrontAcrylic': 335,
         'FrontBezel': 375, 'CircleBezel': 375,
     }

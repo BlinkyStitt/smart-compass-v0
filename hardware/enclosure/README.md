@@ -6,7 +6,7 @@ One padded, two-strap pocket fits a protected **80 × 65 × 20 mm factory 1S 10 
 
 An optional belt pack removes the battery's **190 g** from the neck. A reinforced, capped rear cable entry reserves the external lead route along the necklace. The current master shows the internal pack and blanking plug; remove the pack and fit the selected gland for external use. The belt carrier and final cable hardware remain design/fit TODOs.
 
-The infinity mirror occupies the annular gap around the circle. The circle keeps its shaped wood mask and central acrylic diffuser. Dimensions remain provisional. Physical checks stay deferred in [design-v2.md](../../design-v2.md).
+The infinity mirror occupies the annular gap around the circle. The circle uses one deep laser-cut wood cell grid directly behind the central acrylic diffuser. The wood defines the face pattern and separates the cells; there is no second full printed grid. Dimensions remain provisional. Physical checks stay deferred in [design-v2.md](../../design-v2.md).
 
 ![Exploded assembly](exports/exploded.png)
 
@@ -26,7 +26,7 @@ The [labelled exploded diagram](exports/exploded-overview.png) and
 | `exports/smart-compass.step` | Assembly in millimetres for another CAD program. |
 | `exports/*.stl` | One connected printed part per file, translated onto Z=0. Four quarters form each optical deck, lower barrel and rear. Rear quarters include their ribs, board mounts, battery pockets and hatch posts. Necklace brackets and seam straps have separate files. |
 | `exports/parts.json` | Generated STL list, solid volumes, and optical dimensions. Volume is not slicer mass or finished pendant mass. |
-| `exports/wood-fibonacci-mask.svg` | Nominal laser paths: 166 mm outline and 256 circle cells. No ring windows. |
+| `exports/wood-fibonacci-mask.svg` | Nominal laser paths for one 4.8 mm wood cell grid: 166 mm outline and 256 cells. No ring windows. |
 | `exports/front-acrylic.svg` | Nominal central diffuser outline. |
 | `exports/outer-black-acrylic.svg` | One-piece opaque black outer front border: outer/inner circles and six M3 clearance holes. |
 | `exports/front-mirror.svg`, `rear-mirror.svg` | Nominal annular acrylic outlines. The rear mirror includes a top wire notch. |
@@ -85,13 +85,19 @@ Body coordinates are X right, Y top, and Z toward the front viewer. Rear Z=0. Th
 | Circle edge seat, sloping underside | 23.5–27 |
 | Circle PCB | 27–28.6 |
 | Circle LED packages | 28.6–31.6 |
-| Circle baffle; three rim feet extend to PCB | 31.8–34.7; feet 28.6–31.8 |
-| Circle wood | 34.7–36.7 |
+| Three small printed rim spacers | 28.6–31.9 |
+| Single wood cell grid | 31.9–36.7 |
 | Central diffuser and separate two-way mirror annulus | 36.7–38.2 |
 | Black acrylic outer front border and printed circle snap rim | 38.2–40; tongues reach 32.2 |
 | Black acrylic curved side wall | 2–38.2 |
 
-The circle has one opening per pixel. Its inset Voronoi cells follow the published Fibonacci map, with a nominal 1.6 mm wood web. A matching opaque baffle separates the light below the wood. The wood sits directly behind the central diffuser. Neither part extends across the mirror gap.
+The circle has one opening per pixel. Its inset Voronoi cells follow the published Fibonacci map, with a nominal 1.6 mm wood web. **One 4.8 mm laser-cut wood grid supplies both the face pattern and the light-dividing walls.** Use nominal 3/16-inch plywood as a stock candidate; measure its actual thickness and set `Parameters.wood_thickness`. Its front touches the acrylic diffuser, and its rear ends 0.3 mm above the nominal LED package tops. The generator requires 0.2–0.5 mm clearance. If the measured stock does not fit, adjust the stack dimensions before rebuilding; do not leave a large open gap under the cell walls.
+
+This follows the **acrylic front → cell grid → LED board** arrangement shown in [Evil Genius Labs' Fibonacci256 Expanding HDR assembly](https://www.evilgeniuslabs.org/fibonacci256-expanding-hdr-pixelblaze#assembly-instructions). We retain laser-cut wood as the grid material. There is no separate printed cell baffle and no extra diffuser film. The grid does not extend across the mirror gap. Use a diffuser finish on the acrylic's rear face and keep its viewer-facing surface smooth. The CAD display does not simulate that finish or establish diffusion quality.
+
+Three independent **2 × 4 × 3.3 mm printed rim spacers** support the wood above the PCB at positions checked against the LED bodies. Tack them to the wood rim with removable adhesive for service; keep adhesive off LED packages. The snap rim clamps the acrylic, wood and spacers onto the PCB's supported perimeter. These spacers do not form a second cell grid. Coat the wood cell walls with an opaque finish to limit transmission through the wood. Keep the decorative front finish visible through the acrylic.
+
+**TODO: SC-ENCLOSURE — Measure plywood thickness and density, laser kerf/taper, minimum intact web, acrylic finish and registration, spacer contact/retention, and the clamped LED clearance. Check cell-to-cell leakage with single-pixel white/R/G/B patterns, then neighboring colors. Check hot spots and edge blur at viewing angles and operating brightness. Physical cutting, fit and optical validation remain deferred.**
 
 The **outermost front border is opaque black acrylic**, without mirror film. It is one sheet ring: **250 mm outside diameter, 221 mm inside diameter, 14.5 mm radial width**, and **1.8 mm nominal thickness**. Six **3.4 mm clearance holes** on a **233 mm bolt circle** match the body bolts. Measure the supplied sheet and set `Parameters.front_bezel_thickness` before rebuilding. This part has no printed quarter seams or splice straps. It captures the mirror's outer edge and the side diffuser's front lip. The mirror remains in the separate 25 mm gap around the circle.
 
@@ -133,18 +139,19 @@ The model uses thin printed supports and sheet optics. The generated [parts mani
 
 ### Current weight estimate
 
-The 40 mm model gives the following **partial estimates**, rounded to the nearest gram. The build regenerates `mass_estimate` in [parts.json](exports/parts.json) from the native solid volumes. Use PETG density 1.27 g/cm³ from the [Prusament data sheet](https://www.prusa3d.com/file/3464616/prusament-petg-technical-data-sheet.pdf) and acrylic density 1.19 g/cm³ from the [ACRYLITE data sheet](https://www.acrylite.co/files/content/acrylite.co/documents/product-information/ACRYLITE-cast-Physical-Properties.pdf). These are material assumptions, not measurements of the selected stock or a slicer result.
+The 40 mm model gives the following **partial estimates**, rounded to the nearest gram. The build regenerates `mass_estimate` in [parts.json](exports/parts.json) from the native solid volumes. Use PETG density 1.27 g/cm³ from the [Prusament data sheet](https://www.prusa3d.com/file/3464616/prusament-petg-technical-data-sheet.pdf) and acrylic density 1.19 g/cm³ from the [ACRYLITE data sheet](https://www.acrylite.co/files/content/acrylite.co/documents/product-information/ACRYLITE-cast-Physical-Properties.pdf). The wood estimate uses an **unmeasured 0.60 g/cm³ density assumption**, editable as `Parameters.wood_density_g_cm3`. Measure the selected plywood density before replacing it. These are material assumptions, not measurements of the selected stock or a slicer result.
 
 | Included parts | Estimated mass |
 | --- | ---: |
-| All printed parts, treated as solid PETG | 257 g |
+| All printed parts, treated as solid PETG | 231 g |
 | All acrylic optics, curved diffusers and black border | 205 g |
-| Printed parts plus acrylic | **462 g** |
+| Single wood grid, provisional density | 20 g |
+| Printed parts plus acrylic and wood | **456 g** |
 | Candidate LiPo pack, supplier value | 190 g |
-| Pendant with internal pack, included parts only | **652 g** |
-| Pendant with belt pack, included parts only | **462 g** |
+| Pendant with internal pack, included parts only | **646 g** |
+| Pendant with belt pack, included parts only | **456 g** |
 
-Both pendant figures exclude wood, mirror films, boards, LED strips, wires, fasteners, gland or plug, seals, battery straps and necklace. The external option moves 190 g to the belt; it does not remove that mass from the total carried load. Its cable and belt carrier add further mass. The assembled pendant will be heavier than these partial estimates.
+Both pendant figures include the wood grid and exclude mirror films, boards, LED strips, wires, fasteners, gland or plug, seals, battery straps and necklace. Replacing the two grids saves about **14 g on a common material basis**, using the same provisional wood density for the old 2 mm face. The previous 462/652 g figures excluded wood; do not compare them directly with this expanded estimate. The external option moves 190 g to the belt; it does not remove that mass from the total carried load. Its cable and belt carrier add further mass. The assembled pendant will be heavier than these partial estimates.
 
 Report these two pendant estimates after each geometry or battery change. At manufacture, replace the printed estimate with the selected slicer's material estimate, then weigh the complete pendant, necklace and belt assembly separately. Record the result before setting the final suspension load tests. Physical weighing remains deferred under `SC-ENCLOSURE`.
 
@@ -152,9 +159,9 @@ Report these two pendant estimates after each geometry or battery change. At man
 
 The deck, lower barrel and rear each split into four quarters. Rear ribs cross their butt seams; four **12 × 18 × 1 mm exterior lap straps** join the rear quarters. Their 1 mm projection stays within the existing vent-guard envelope. Bond and seal each subassembly on a flat jig. Keep the rear-to-frame joint removable. Board feet, battery pockets and hatch posts print with the rear, so these mounts need no acrylic adhesive joint.
 
-The deck prints floor-down with a 45-degree circle-seat underside. Rear quarters print skin-down with ribs/mounts up. The baffle and circle rim export face-down with feet/tongues up; vent guards export roof-down. The black acrylic front border remains one sheet. Inspect any support needed for rail tie slots and battery strap slots.
+The deck prints floor-down with a 45-degree circle-seat underside. Rear quarters print skin-down with ribs/mounts up. The circle rim exports face-down with tongues up; the three rim spacers export flat on their PCB-bearing ends. Vent guards export roof-down. The black acrylic front border remains one sheet. Inspect any support needed for rail tie slots and battery strap slots.
 
-The generator checks every exported STL against a **220 × 220 mm bed**, including 5 mm margin on each side. Each file contains one connected part and starts on the print bed. Keep the exported orientation on the bed. Check the snap beads, guard feet, screw pilots, and short internal wire passages in the slicer. The centre baffle and retainer fit without splitting. The one-piece laser-cut optical sheets remain larger than some print beds; they are not printed parts.
+The generator checks every exported STL against a **220 × 220 mm bed**, including 5 mm margin on each side. Each file contains one connected part and starts on the print bed. Keep the exported orientation on the bed. Check the snap beads, guard feet, screw pilots, and short internal wire passages in the slicer. The centre retainer and small rim spacers fit without splitting. The one-piece laser-cut optical sheets remain larger than some print beds; they are not printed parts.
 
 Start with a 0.4 mm nozzle and 0.2 mm layers. The 1.35 mm wall target is approximately three extrusion paths for a common 0.45 mm line width. Check actual paths in the slicer; nozzle diameter alone does not define wall width. Print necklace brackets flat with at least six perimeters and solid local fill around slots and both screws. Use extra perimeters around case posts and joints. Thin skins need continuous paths, not a low infill setting that removes them. The provisional print basis follows [Prusa's wall guidance](https://help.prusa3d.com/article/modeling-with-3d-printing-in-mind_164135). Use PETG for the rear and suspension brackets, in clear or opaque filament. Select final material from measured temperatures; no heat or strength result is implied. Physical print, joint, and load checks remain deferred.
 
@@ -200,12 +207,12 @@ The independent screw keeps each bracket attached when the six case bolts and re
 ## Assembly sequence
 
 1. Measure the circle, strips, sheets and supplied battery/power parts. Set the master and rebuild. Cut the circle wood/diffuser, annular mirrors and black acrylic front border. Apply laser kerf once in CAM. Cut and heat-form the outside, inner and halo acrylic diffusers, then trim after cooling.
-2. Print deck, barrel and rear quarters, seam straps, baffle, circle rim, two suspension brackets, four vent guards and service cover. The rear quarters include the board mounts, pockets and hatch posts. Inspect pilots, slot bridges, ribs and continuous skin paths in the slicer.
+2. Print deck, barrel and rear quarters, seam straps, three rim spacers, circle rim, two suspension brackets, four vent guards and service cover. The rear quarters include the board mounts, pockets and hatch posts. Inspect pilots, slot bridges, ribs and continuous skin paths in the slicer.
 3. Bond each set of quarters as a separate subassembly. Bond the rear's exterior lap straps, then seal all seams. Do not glue the rear to the barrel. Keep the deck removable from the barrel for captive-nut repair.
 4. Fit two M3 nuts in the open-front barrel pockets. Fit webbing/rings to each bracket. Seat and secure the brackets with their separate M3 screws. Check washers, screw length and bracket-to-frame bearing surfaces.
 5. Fit the boards, boost, padded protected LiPo pack and both straps to the rear. Keep pack protection intact. Fit the rated connector, fuse, physical switch and decoupling before connecting LEDs. Retain wiring and the USB service extension with enough slack. Fit controls, vent patches, guards, hatch gasket and cover. Fit the battery-entry blank, or the selected cable gland for an external pack. Disconnect and remove the pack for external charging.
 6. Fit the rear mirror, inward strip and outward halo. Locate their curved acrylic bands on the clear removable pads, leaving LED and end clearances. Fit the outside strip centered in its broad diffuser. Route leads rearward and seal optical wire gaps.
-7. Fit circle PCB, baffle, wood and central diffuser. Engage the three tested snap tongues. Fit the front two-way annulus and black acrylic outside wall/front border.
+7. Fit the circle PCB, three rim spacers, the single wood cell grid and central diffuser. Engage the three tested snap tongues. Fit the front two-way annulus and black acrylic outside wall/front border.
 8. Fit the complete rear subassembly and six M3 through-bolts with washers. Select actual lengths and engagement. Seal lips, rear joint, quarter seams, webbing clearances, anchor access holes and fastener penetrations. Keep clearances sealed to the brackets without trapping webbing.
 9. Support the pendant when opening it. Remove the six body bolts and lift the rear with its electronics; the two independent screws retain the brackets. Do not pull on wire slack. Physical fit, suspension, dust, optics, heat, magnetic and four-hour runtime checks remain deferred.
 
@@ -230,6 +237,7 @@ python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
 
 ## Sources and remaining measurements
 
+- [Evil Genius Labs Fibonacci256 Expanding HDR assembly](https://www.evilgeniuslabs.org/fibonacci256-expanding-hdr-pixelblaze#assembly-instructions): acrylic front, cell grid and LED board arrangement. The wood grid is our material choice.
 - [Fibonacci256 specifications and map](https://www.evilgeniuslabs.org/fibonacci256): 166 mm circle, 1.6 mm PCB, indexed XY layout. Jason Coon / Evil Genius Labs supplied the map.
 - [Adafruit Sparkle Motion Rev D PCB](https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB): 50.8 × 33.147 mm outline and mounting holes.
 - [Adafruit CAD parts, item 6100](https://github.com/adafruit/Adafruit_CAD_Parts/tree/main/6100%20Sparkle%20Motion): component-envelope reference.

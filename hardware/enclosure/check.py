@@ -29,7 +29,19 @@ def check():
     build.check_model(b, centres, cells)
     wood_bottom = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['wood_thickness']
     assert math.isclose(doc.WoodMask.Shape.BoundBox.ZMin, wood_bottom, abs_tol=1e-7), 'Master retained an exploded wood placement'
-    assert math.isclose(doc.CellBaffle.Shape.BoundBox.ZMax, wood_bottom, abs_tol=1e-7), 'Master retained an exploded baffle placement'
+    assert doc.getObject('CellBaffle') is None, 'A second full cell grid remains in the model'
+    led_top = doc.CircleLEDs.Shape.BoundBox.ZMax
+    assert .2-1e-7 <= wood_bottom-led_top <= .5+1e-7, 'Wood grid leaves an excessive light-leak gap or touches LEDs'
+    assert math.isclose(doc.WoodMask.Shape.BoundBox.ZLength,p['wood_thickness'],abs_tol=1e-7)
+    for i in range(3):
+        foot = doc.getObject(f'CircleRimFoot{i}')
+        assert foot in b.parts and len(foot.Shape.Solids) == 1
+        assert math.isclose(foot.Shape.BoundBox.ZMin,p['circle_back_z']+p['circle_pcb_thickness'],abs_tol=1e-7)
+        assert math.isclose(foot.Shape.BoundBox.ZMax,wood_bottom,abs_tol=1e-7)
+        assert foot.Shape.common(doc.CircleLEDs.Shape).Volume < 1e-7, 'Rim spacer touches an LED body'
+        tops = [f for f in foot.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_bottom) < 1e-7]
+        bases = [f for f in doc.WoodMask.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_bottom) < 1e-7]
+        assert sum(top.common(base).Area for top in tops for base in bases) >= 1.5, 'Rim spacer misses the wood grid rim'
     assert math.isclose(doc.FrontAcrylic.Shape.BoundBox.ZMin, wood_bottom+p['wood_thickness'], abs_tol=1e-7)
     assert math.isclose(doc.CircleBezel.Shape.BoundBox.ZMax, p['case_depth'], abs_tol=1e-7)
     for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
@@ -124,14 +136,16 @@ def check():
     wood_z = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['wood_thickness']/2
     for x, y in centres:
         assert not doc.WoodMask.Shape.isInside(App.Vector(x,y,wood_z), 1e-7, True), 'LED centre blocked by native wood'
-    assert doc.CellBaffle.Shape.common(doc.CircleLEDs.Shape).Volume < 1e-7, 'Retention feet touch an LED body'
+    for x,y in centres:
+        ray = Part.makeLine(App.Vector(x,y,led_top),App.Vector(x,y,doc.FrontAcrylic.Shape.BoundBox.ZMin))
+        assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontAcrylic'), 'Opaque part blocks a circle pixel'
     # Check room for each tongue to move inward far enough to release its bead.
     # This is geometric clearance, not a flex/strength simulation.
     for i in range(3):
         angle = math.radians(120*i)
         released = doc.getObject(f'CircleClip{i}').Shape.copy()
         released.translate(App.Vector(-p['circle_clip_release_travel']*math.cos(angle),-p['circle_clip_release_travel']*math.sin(angle),0))
-        for obj in (doc.OpticalFrame,doc.CirclePCB,doc.CellBaffle,doc.WoodMask,doc.FrontAcrylic):
+        for obj in (doc.OpticalFrame,doc.CirclePCB,doc.WoodMask,doc.FrontAcrylic,*(doc.getObject(f'CircleRimFoot{j}') for j in range(3))):
             assert not released.common(obj.Shape).Solids, 'No snap release clearance: '+obj.Name
     assert len(doc.BoardMounts.Shape.Solids) == 16, 'Missing board rail/standoff/power-board support'
     assert doc.BoardMounts not in b.parts, 'Mounts must be integral with the rear'
@@ -182,6 +196,12 @@ def check():
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
+    assert 'CellBaffle.stl' not in manifest['stl_files'], 'Superseded divider grid exported for printing'
+    assert all(f'CircleRimFoot{i}.stl' in manifest['stl_files'] for i in range(3))
+    mass = manifest['mass_estimate']
+    wood_volume = next(v['volume_cm3'] for v in manifest['volumes'] if v['name']=='WoodMask')
+    assert math.isclose(mass['wood_g'],round(wood_volume*p['wood_density_g_cm3'],1),abs_tol=1e-7)
+    assert abs(mass['mechanical_subset_g']-sum(mass[k] for k in ('printed_petg_g','acrylic_g','wood_g'))) <= .2
     assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontBezel'), 'Black acrylic border cannot be a printed part'
     assert not any(name.startswith('FrontBezel') for name in manifest['stl_files']), 'Superseded printed border STL remains'
     assert all(v['printed'] for v in manifest['volumes'] if v['name'].startswith('RearPlateQ'))
@@ -197,11 +217,11 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
+    for changes in ({'wood_thickness':2}, {'wood_thickness':5.2}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'case_depth':p['case_depth']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}, {'circle_clip_release_travel':.5}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
             pass
         else:
             raise AssertionError('Invalid parameters accepted: ' + repr(changes))
-    print('CAD CHECK PASS: saved native geometry, clear radial light paths, mirror gap, 256 apertures, sheet expression, laser contours, STEP, closed bed-sized STL meshes and invalid-fit rejection', flush=True)
+    print('CAD CHECK PASS: saved native geometry, single wood grid, spacer contact and LED clearance, clear circle/radial light paths, mirror gap, 256 apertures, sheet expression, laser contours, STEP, closed bed-sized STL meshes and invalid-fit rejection', flush=True)
