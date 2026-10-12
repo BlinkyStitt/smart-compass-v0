@@ -135,7 +135,7 @@
     },
     {
       "name": "EdgeDiffuserSeam",
-      "volume_cm3": 16.1521,
+      "volume_cm3": 64.7392,
       "printed": false
     },
     {
@@ -236,7 +236,7 @@
     "circle_to_inner_led": 26.735924993602424,
     "visible_mirror_width": 25.0,
     "mirror_separation": 11.200000000000003,
-    "outer_led_clearance": 1.5063278518028143,
+    "outer_led_clearance": 1.0063278518028143,
     "halo_radius": 85.3601011449532,
     "edge_height": 41.6,
     "outer_strip_centre_z": 22.400000000000002

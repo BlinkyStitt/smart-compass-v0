@@ -356,7 +356,7 @@ def build():
     b.add(mirror, 'Manufactured', '06 Front two-way mirror annulus - visible infinity gap', (.65,.75,.86), 65, material='1.5 mm clear acrylic plus two-way film; reflective surface faces -Z')
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('case_depth')+'-'+E('front_bezel_thickness')+'-'+E('edge_bottom_z'))
     edge = b.cut('EdgeDiffuserSeam', edge, b.box('EdgeDiffuserGap', 1, 4, depth, -.5, p['edge_diffuser_radius']-1, 0))
-    b.add(edge, 'Manufactured', '07 Full-height outside diffuser - centered outer LED row', (.85,.88,.93), 15, material='0.5 mm frosted translucent PET sheet; seal lips/top seam; uniformity unmeasured')
+    b.add(edge, 'Manufactured', '07 Black acrylic curved outside wall - centered outer LED row', (.025,.025,.025), material='Black LED-diffusing acrylic; nominal 2 mm heat-formed sleeve, no mirror film; stock, forming and transmission TODO')
 
     # Cell baffle and wood share exactly the same XY opening sketch.
     openings = b.profile('FibonacciApertures', cells, wood_expr, E('wood_thickness'))
@@ -409,7 +409,7 @@ def build():
     # Bond the butt joints with flat lap straps. Each subassembly stays
     # removable; no strap bridges the frame-to-rear service joint.
     straps = []
-    for prefix,r,z,width in [('Rear',radius-3,rear,2),('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6)]:
+    for prefix,r,z,width in [('Rear',p['edge_diffuser_radius']-1.5,rear,2),('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6)]:
         for i in range(4):
             strap = b.box(f'{prefix}Splice{i}', width, 14, p['splice_thickness'], r-width/2, -7, z)
             strap.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0,0,1), i*90)).multiply(strap.Placement)
@@ -519,6 +519,8 @@ def validate_parameters(p):
         raise ValueError('Strip does not fit between the mirror surfaces')
     if optics['outer_led_clearance'] < .5:
         raise ValueError('Outer LED packages leave less than 0.5 mm diffuser clearance')
+    if p['edge_diffuser_thickness'] <= 0 or p['edge_diffuser_radius']+p['edge_diffuser_thickness'] > p['case_diameter']/2:
+        raise ValueError('Acrylic outside wall must have positive thickness and fit under the front border')
     if p['edge_bottom_z'] != p['rear_thickness'] or optics['edge_height'] < p['case_depth']*.9:
         raise ValueError('Outside diffuser must span the body between the rear and front lips')
     if strip_bottom('Outer',p) < p['rear_thickness'] or strip_bottom('Outer',p)+p['strip_width'] > p['mirror_back_z']-p['strip_wall']:
@@ -686,7 +688,7 @@ def svg_files(p, cells, out):
     (out/'rear-mirror.svg').write_text(document([inner_path,contour],'Rear mirror annulus - reflective face toward front; top lead notch',rear_outer))
     width = math.tau*(p['edge_diffuser_radius']+p['edge_diffuser_thickness']/2)-1
     height = p['case_depth']-p['front_bezel_thickness']-p['edge_bottom_z']
-    (out/'edge-diffuser.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.6f}mm" height="{height:.6f}mm" viewBox="0 0 {width:.6f} {height:.6f}"><title>Wrapped 0.5 mm edge diffuser; nominal 1 mm end gap</title><path fill="none" stroke="#ff0000" stroke-width="0.08" d="M 0,0 H {width:.6f} V {height:.6f} H 0 Z"/></svg>\n')
+    (out/'edge-diffuser.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.6f}mm" height="{height:.6f}mm" viewBox="0 0 {width:.6f} {height:.6f}"><title>Black LED-diffusing acrylic side wall; {p["edge_diffuser_thickness"]:g} mm nominal; forming reference</title><desc>Nominal neutral-line development with 1 mm top seam. Allow for the selected acrylic forming process and trim after forming; this is not a proven final blank size. No mirror film.</desc><path fill="none" stroke="#ff0000" stroke-width="0.08" d="M 0,0 H {width:.6f} V {height:.6f} H 0 Z"/></svg>\n')
     # The inspection overlay never enters a laser cut file.
     overlay = [outline, '<path d="M -50,-92 L 50,-92 M -50,-90 L -50,-94 M 50,-90 L 50,-94"/>'] + polygons + [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="0.5"/>' for x,y in led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()),p)]
     (out / 'circle-alignment-overlay.svg').write_text(document(overlay, 'Print at 100 percent and check 166 mm circle / LED registration',98))
