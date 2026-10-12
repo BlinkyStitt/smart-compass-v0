@@ -10,7 +10,7 @@ The infinity mirror occupies the annular gap around the circle. The circle uses 
 
 ![Exploded assembly](exports/exploded.png)
 
-[Watch the 26-second Godot lighting demo](exports/amulet-demo.mp4), or open the
+[Watch the 52-second Godot lighting demo](exports/amulet-demo.mp4), or open the
 looping [Godot front sweep](exports/turntable.gif). These show animated LEDs and
 mirror reflections. The [exploded drawing](exports/exploded.png) and
 [electronics close-up](exports/electronics.png) show CAD geometry.
@@ -51,9 +51,9 @@ metadata and all fixed lighting comparisons. Install Godot with
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Assembly views. These show geometry, not simulated light. |
 | `exports/diffusers.png` | All three cylindrical acrylic sleeves and their LED strips, isolated at assembled positions. The front mirror and frame are hidden for inspection. |
-| `exports/amulet-demo.mp4` | Godot, 1280 × 720, 24 fps: 0–12 s animated front sweep; 12–18 s matching finish comparisons; 18–26 s four lighting presets. |
+| `exports/amulet-demo.mp4` | Godot, 1280 × 720, 24 fps: 0–24 s animated front sweep; 24–36 s matching finish comparisons; 36–52 s four lighting presets. |
 | `exports/turntable.gif` | Godot front sweep, 800 × 450, 12 fps, with animated LEDs and mirror reflections. |
-| `exports/infinity-rainbow.gif`, `infinity-pulse.gif`, `infinity-colour.gif` | Eight-second blinking loops, with moving side-to-front views; 800 × 450 at 12 fps. |
+| `exports/infinity-rainbow.gif`, `infinity-pulse.gif`, `infinity-colour.gif` | Sixteen-second blinking loops, with moving side-to-front views; 800 × 450 at 12 fps. |
 | `exports/turntable-poster.png` | 1280 × 720 frame from the Godot scene. |
 | `../../demo/run.py`, `../../demo/main.gd` | Reproduce all demo videos in Godot; Godot draws the labels; FFmpeg encodes the frames. |
 | `cad.py`, `Run.FCMacro` | Rebuild and check all outputs in temporary storage before copying them back. |

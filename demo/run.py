@@ -68,9 +68,9 @@ def capture():
                 subprocess.run(command+['-filter_complex',';'.join(filters),'-map','[out]','-frames:v','1',str(output/f'demo-{view}-{name}.png')],check=True)
         subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/'movie-%04d.png'),
                         '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'amulet-demo.mp4')],check=True)
-        subprocess.run(['ffmpeg','-y','-loglevel','error','-ss','12','-i',str(output/'amulet-demo.mp4'),'-t','6',
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-ss','24','-i',str(output/'amulet-demo.mp4'),'-t','12',
                         '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'lighting-demo.mp4')],check=True)
-        subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'amulet-demo.mp4'),'-t','12',
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'amulet-demo.mp4'),'-t','24',
                         '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                         '-loop','0',str(output/'turntable.gif')],check=True)
         for style in ('rainbow','pulse','colour'):
@@ -84,10 +84,10 @@ def capture():
         size=(800,450) if name.endswith('.gif') else ((1920,720) if name in CAPTURES else (1280,720))
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
-            seconds=26 if name=='amulet-demo.mp4' else 6
+            seconds=52 if name=='amulet-demo.mp4' else 12
             assert int(probe['nb_frames'])==seconds*24 and abs(float(probe['duration'])-seconds)<.01
         if name.endswith('.gif'):
-            seconds=8 if name in BLINKS else 12
+            seconds=16 if name in BLINKS else 24
             assert int(probe['nb_frames'])==seconds*12 and abs(float(probe['duration'])-seconds)<.1
             assert b'NETSCAPE2.0\x03\x01\x00\x00' in file.read_bytes(), 'GIF must repeat forever'
         subprocess.run(['ffmpeg','-v','error','-xerror','-i',str(file),'-f','null','-'],check=True)

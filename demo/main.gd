@@ -468,39 +468,39 @@ func _capture():
 	# All movie frames come from the same Godot scene and optical shaders.
 	_reset()
 	groups=[true,true,true,true]
-	for frame in range(624):
-		if frame<288:
+	for frame in range(1248):
+		if frame<576:
 			_set_finish(0)
 			_set_lighting(1)
-			_sweep(frame/288.0)
-			# One complete eight-second rainbow cycle in the 12-second loop.
-			pattern_time=8.0*frame/288.0
-		elif frame<432:
-			var local_frame=frame-288
-			_set_finish(local_frame/48)
+			_sweep(frame/576.0)
+			# Two complete eight-second rainbow cycles in the 24-second loop.
+			pattern_time=16.0*frame/576.0
+		elif frame<864:
+			var local_frame=frame-576
+			_set_finish(local_frame/96)
 			_set_lighting(1)
-			_sweep(float(local_frame%48)/48.0,60.0)
-			pattern_time=8.0*float(local_frame%48)/48.0
+			_sweep(float(local_frame%96)/96.0,60.0)
+			pattern_time=16.0*float(local_frame%96)/96.0
 		else:
-			var local_frame=frame-432
+			var local_frame=frame-864
 			_set_finish(2)
-			_set_lighting(local_frame/48)
-			_sweep(float(local_frame%48)/48.0,60.0)
-			pattern_time=8.0*float(local_frame%48)/48.0
+			_set_lighting(local_frame/96)
+			_sweep(float(local_frame%96)/96.0,60.0)
+			pattern_time=16.0*float(local_frame%96)/96.0
 		caption.text="%s | %s | Godot optical preview" % [FINISHES[finish],LIGHTING[lighting]]
 		_update_camera()
 		_update_colours()
 		await _settle()
 		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
-	# Eight-second GIF loops. All light and camera states are periodic. The
+	# Sixteen-second GIF loops. All light and camera states are periodic. The
 	# mirror-only loops remove centre glare to expose the repeated ring images.
 	_set_finish(0)
 	_set_lighting(0)
 	distance=0.46
 	for style in ["rainbow","pulse","colour"]:
 		diffusion=0.65 if style=="rainbow" else 0.30
-		for frame in range(192):
-			var phase=frame/192.0
+		for frame in range(384):
+			var phase=frame/384.0
 			var seconds=frame/24.0
 			_sweep(phase,65.0)
 			pattern_time=seconds
@@ -520,7 +520,7 @@ func _capture():
 			_update_colours()
 			await _settle()
 			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("blink-%s-%04d.png" % [style,frame]))==OK)
-	print("DEMO CAPTURE PASS: 96 matched stills, 624 movie frames and 576 blinking loop frames")
+	print("DEMO CAPTURE PASS: 96 matched stills, 1248 movie frames and 1152 blinking loop frames")
 	get_tree().quit()
 
 func _benchmark():
