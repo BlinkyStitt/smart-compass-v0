@@ -2,28 +2,15 @@
   "stl_files": [
     "NecklaceLink0.stl",
     "NecklaceLink1.stl",
-    "HatchStandoff0.stl",
-    "HatchStandoff1.stl",
     "VentGuard0.stl",
     "VentGuard1.stl",
     "VentGuard2.stl",
     "VentGuard3.stl",
     "ServiceCover.stl",
-    "BatteryStrapSlots.stl",
-    "BoardMounts-01.stl",
-    "BoardMounts-02.stl",
-    "BoardMounts-03.stl",
-    "BoardMounts-04.stl",
-    "BoardMounts-05.stl",
-    "BoardMounts-06.stl",
-    "BoardMounts-07.stl",
-    "BoardMounts-08.stl",
-    "BoardMounts-09.stl",
-    "BoardMounts-10.stl",
-    "BoardMounts-11.stl",
-    "BoardMounts-12.stl",
-    "BoardMounts-13.stl",
-    "BoardMounts-14.stl",
+    "RearPlateQ1.stl",
+    "RearPlateQ2.stl",
+    "RearPlateQ3.stl",
+    "RearPlateQ4.stl",
     "CellBaffle.stl",
     "CircleBezel.stl",
     "SeamStraps-01.stl",
@@ -34,6 +21,10 @@
     "SeamStraps-06.stl",
     "SeamStraps-07.stl",
     "SeamStraps-08.stl",
+    "SeamStraps-09.stl",
+    "SeamStraps-10.stl",
+    "SeamStraps-11.stl",
+    "SeamStraps-12.stl",
     "OpticalDeckQ1.stl",
     "OpticalDeckQ2.stl",
     "OpticalDeckQ3.stl",
@@ -46,27 +37,12 @@
   "volumes": [
     {
       "name": "NecklaceLink0",
-      "volume_cm3": 1.5098,
+      "volume_cm3": 3.6922,
       "printed": true
     },
     {
       "name": "NecklaceLink1",
-      "volume_cm3": 0.8944,
-      "printed": true
-    },
-    {
-      "name": "RearPlate",
-      "volume_cm3": 95.1361,
-      "printed": false
-    },
-    {
-      "name": "HatchStandoff0",
-      "volume_cm3": 0.0979,
-      "printed": true
-    },
-    {
-      "name": "HatchStandoff1",
-      "volume_cm3": 0.0979,
+      "volume_cm3": 3.1949,
       "printed": true
     },
     {
@@ -120,13 +96,23 @@
       "printed": false
     },
     {
-      "name": "BatteryStrapSlots",
-      "volume_cm3": 6.3825,
+      "name": "RearPlateQ1",
+      "volume_cm3": 15.8011,
       "printed": true
     },
     {
-      "name": "BoardMounts",
-      "volume_cm3": 6.6847,
+      "name": "RearPlateQ2",
+      "volume_cm3": 21.3459,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ3",
+      "volume_cm3": 18.7234,
+      "printed": true
+    },
+    {
+      "name": "RearPlateQ4",
+      "volume_cm3": 18.8196,
       "printed": true
     },
     {
@@ -186,7 +172,7 @@
     },
     {
       "name": "SeamStraps",
-      "volume_cm3": 1.1799,
+      "volume_cm3": 2.0439,
       "printed": true
     },
     {
@@ -211,12 +197,12 @@
     },
     {
       "name": "BarrelFrameQ1",
-      "volume_cm3": 4.0995,
+      "volume_cm3": 4.6269,
       "printed": true
     },
     {
       "name": "BarrelFrameQ2",
-      "volume_cm3": 4.3404,
+      "volume_cm3": 4.8415,
       "printed": true
     },
     {
@@ -230,7 +216,7 @@
       "printed": true
     }
   ],
-  "printed_volume_cm3": 131.7017,
+  "printed_volume_cm3": 199.5041,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
