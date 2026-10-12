@@ -190,6 +190,26 @@ def build():
                      for dx, dy in [(x - 25.4, y - 16.5735) for x in (2.54, 48.26) for y in (2.54, 30.48)]]
     holes = lambda name, z, height: [b.cylinder(f'{name}{i}', E('fastener_hole_radius'), height, z, x, y) for i, (x, y) in enumerate(points)]
 
+    # Each printed eye links directly to the closest body bolt. The clear
+    # rear sheet has larger eye openings and does not carry the necklace load.
+    suspension = []
+    for i,x in enumerate((-82,82)):
+        eye = (x,62)
+        bolt = min(points,key=lambda point: math.dist(point,eye))
+        dx,dy = bolt[0]-x,bolt[1]-62
+        length = math.hypot(dx,dy)
+        nx,ny = -5*dy/length,5*dx/length
+        polygon = [(x+nx,62+ny),(x-nx,62-ny),(bolt[0]-nx,bolt[1]-ny),(bolt[0]+nx,bolt[1]+ny)]
+        link = b.fuse(f'NecklaceLinkBlank{i}',[
+            b.profile(f'NecklaceWeb{i}',[polygon],E('rear_thickness'),3),
+            b.cylinder(f'NecklaceEyePad{i}',8,3,E('rear_thickness'),x,62),
+            b.cylinder(f'NecklaceBoltPad{i}',6,3,E('rear_thickness'),*bolt)])
+        link = b.cut(f'NecklaceLink{i}',link,[
+            b.cylinder(f'NecklaceEye{i}',3,3,E('rear_thickness'),x,62),
+            b.cylinder(f'NecklaceBolt{i}',E('fastener_hole_radius'),3,E('rear_thickness'),*bolt)])
+        b.add(link,'Manufactured',f'Necklace link {i+1} - printed eye to body bolt',(.20,.22,.25),material='Printed polymer; 3 mm plate; direct bolt load path; physical strength TODO')
+        suspension.append(link)
+
     # Annular mirrors surround the circle. The outer strip emits through the
     # open edge band: no opaque barrel lies in front of its LED faces.
     front_expr = E('case_depth') + '-' + E('front_bezel_thickness') + '-' + E('acrylic_thickness')
@@ -232,13 +252,12 @@ def build():
     # Only internal wire passages remain. Close optical cavity lead gaps with
     # removable opaque sealant/tape after routing; none opens onto the outside.
     leads = [b.box(name+'LeadExit', p['ring_seam_gap'], 5, 5, -p['ring_seam_gap']/2, r-2.5, p['mirror_back_z']-p['strip_wall']) for name,r in [('Halo',halo_r),('Inner',inner_r),('Outer',outer_r)]]
-    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-p['front_bezel_thickness']-rear) + clip_pockets + leads)
+    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-p['front_bezel_thickness']-rear) + clip_pockets + leads + suspension)
     b.add(frame, 'Manufactured', '01 Hidden optical support - halo, inward mirror ring, centered outer row', (.15, .17, .20), material='Printed opaque polymer')
 
     # Six full-length M3 bolts and rear nuts clamp the complete stack.
     rear_blank = b.cylinder('RearBlank', E('case_diameter') + '/2-' + E('fit_clearance'), E('rear_thickness'))
-    # A thin continuous rear skin replaces the open lattice. Four membrane
-    # vents are the only breathing paths. Controls and service access move rear.
+    # One laser-cut clear sheet covers the rear. Printed supports stay separate.
     vent_points = [(x,y) for x in (-95,95) for y in (-30,30)]
     control_points = [(-35,100),(35,100),(35,-100)]
     hatch_x,hatch_y = 48,54
@@ -247,16 +266,13 @@ def build():
     rear_cuts += [b.cylinder(f'VentHole{i}',E('vent_hole_radius'),rear+2,-1,x,y) for i,(x,y) in enumerate(vent_points)]
     rear_cuts += [b.cylinder(f'RearControlBore{i}',4.2,rear+2,-1,x,y) for i,(x,y) in enumerate(control_points)]
     rear_cuts += [b.box('RearServiceOpening',38,18,rear+2,hatch_x-19,hatch_y-9,-1)]
-    back = b.cut('RearVentPlate', rear_blank, rear_cuts)
-    hatch_posts = [b.cylinder(f'HatchPost{i}',3,4,rear,x,hatch_y) for i,x in enumerate(hatch_screws)]
-    back = b.fuse('RearWithHatchPosts',[back]+hatch_posts)
-    back = b.cut('RearHatchPilots',back,[b.cylinder(f'HatchPilot{i}',1.1,rear+4,-.1,x,hatch_y) for i,x in enumerate(hatch_screws)])
-    # Lugs are integral with the rear plate. The eye passes through both layers.
-    lugs = [b.box(f'LugBlank{i}', 18, 15, 6, x - 9, 54.5, rear) for i, x in enumerate((-82, 82))]
-    back = b.fuse('RearPlateWithLugs', [back] + lugs)
-    eyes = [b.cylinder(f'LugEye{i}', 3, rear + 7, -0.5, x, 62) for i, x in enumerate((-82, 82))]
-    back = b.cut('RearPlate', back, eyes)
-    b.add(back, 'Manufactured', '02 Covered rear - membrane vents, rear controls, service hatch and necklace eyes', (.20, .22, .25), material='Printed polymer; bond/seal quarter seams; no tested ingress rating')
+    rear_cuts += [b.cylinder(f'RearHatchHole{i}',1.2,rear+2,-1,x,hatch_y) for i,x in enumerate(hatch_screws)]
+    rear_cuts += [b.cylinder(f'RearEyeClearance{i}',4,rear+2,-1,x,62) for i,x in enumerate((-82,82))]
+    back = b.cut('RearPlate',rear_blank,rear_cuts)
+    b.add(back,'Manufactured','02 Clear acrylic rear - one removable laser-cut sheet',(.88,.95,1.0),85,material='Clear acrylic sheet; 2 mm nominal; sealed edges; physical clamping and adhesion TODO')
+    for i,x in enumerate(hatch_screws):
+        post = b.cut(f'HatchStandoff{i}',b.cylinder(f'HatchPost{i}',3,4,E('rear_thickness'),x,hatch_y),b.cylinder(f'HatchPilot{i}',1.1,4,E('rear_thickness'),x,hatch_y))
+        b.add(post,'Manufactured',f'Service cover standoff {i+1} - separate bonded M2 pilot',(.20,.22,.25),material='Printed polymer; acrylic-compatible adhesive TODO')
 
     # Separate stand-off guards protect patches from the chest. Air turns under
     # two open ends, crosses the membrane, then enters the covered case.
@@ -310,7 +326,7 @@ def build():
         b.add(env, 'Optics', label + ' - component clearance envelope', (.85, .55, .18), 70)
     # Small discrete supports are separate printable solids on a single sprue-free export.
     mounts = b.compound('BoardMounts', carrier_items)
-    b.add(mounts, 'Manufactured', '04 Board rails and Sparkle M2.5 standoffs - bond to rear tray', (.20, .22, .25), material='Printed polymer; nonmagnetic screws and 5 mm retention straps')
+    b.add(mounts, 'Manufactured', '04 Board rails and Sparkle M2.5 standoffs - bond to clear rear', (.20, .22, .25), material='Printed polymer; acrylic-compatible adhesive TODO; nonmagnetic screws and 5 mm retention straps')
     battery = b.box('BatteryEnvelope', E('battery_width'), E('battery_length'), E('battery_height'), E('battery_x') + '-' + E('battery_width') + '/2', E('battery_y') + '-' + E('battery_length') + '/2', rear + 1.5)
     b.add(battery, 'Electronics', f'Battery envelope - {bw:g} x {bl:g} x {p["battery_height"]:g} mm PLACEHOLDER', (.26, .36, .48), 30)
     battery.addProperty('App::PropertyString', 'ElectricalStatus').ElectricalStatus = 'No cell topology/BMS/charger/regulator selected. Six-hour animated runtime requires measured watts and usable Wh.'
@@ -409,7 +425,7 @@ def build():
     # Bond the butt joints with flat lap straps. Each subassembly stays
     # removable; no strap bridges the frame-to-rear service joint.
     straps = []
-    for prefix,r,z,width in [('Rear',p['edge_diffuser_radius']-1.5,rear,2),('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6)]:
+    for prefix,r,z,width in [('Frame',(inner_back+p['strip_wall']+outer_wall_low)/2,p['mirror_back_z'],3.6)]:
         for i in range(4):
             strap = b.box(f'{prefix}Splice{i}', width, 14, p['splice_thickness'], r-width/2, -7, z)
             strap.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0,0,1), i*90)).multiply(strap.Placement)
@@ -438,7 +454,6 @@ def build():
         b.hide(tool)
         split_printed_part(b,piece)
     b.hide(frame)
-    split_printed_part(b, back)
 
     doc.recompute()
     # Keep all tools in one hidden construction group, with top-level products visible.
@@ -521,10 +536,12 @@ def validate_parameters(p):
         raise ValueError('Outer LED packages leave less than 0.5 mm diffuser clearance')
     if p['edge_diffuser_thickness'] <= 0 or p['edge_diffuser_radius']+p['edge_diffuser_thickness'] > p['case_diameter']/2:
         raise ValueError('Acrylic outside wall must have positive thickness and fit under the front border')
-    if p['edge_bottom_z'] != p['rear_thickness'] or optics['edge_height'] < p['case_depth']*.9:
+    if p['edge_bottom_z'] != p['rear_thickness'] or optics['edge_height'] < 2*p['strip_width']:
         raise ValueError('Outside diffuser must span the body between the rear and front lips')
-    if strip_bottom('Outer',p) < p['rear_thickness'] or strip_bottom('Outer',p)+p['strip_width'] > p['mirror_back_z']-p['strip_wall']:
-        raise ValueError('Centered outer strip does not fit below the optical floor')
+    # The outer strip sits outside the floor radius. It can span the floor's
+    # height while the uninterrupted carrier behind it supports the strip.
+    if strip_bottom('Outer',p) < p['rear_thickness']+.5 or strip_bottom('Outer',p)+p['strip_width'] > p['case_depth']-p['front_bezel_thickness']-.5:
+        raise ValueError('Centered outer strip does not clear the rear and front lips')
     if not 0 < p['vent_hole_radius'] < p['vent_patch_radius']-2 or p['vent_patch_radius'] > 8 or not 0 < p['vent_patch_thickness'] < 1.5:
         raise ValueError('Vent needs a membrane sealing land and clearance below its guard')
     if optics['inner_radius'] + p['strip_thickness']/2 + p['strip_wall'] >= p['fastener_radius']-p['post_radius']:
@@ -559,7 +576,7 @@ def check_model(b, centres, cells):
             raise ValueError(obj.Name + ' is not one connected manufactured part: '+repr([(round(s.Volume,4),str(s.BoundBox)) for s in obj.Shape.Solids]))
     if len(centres) != 256 or len(cells) != 256:
         raise ValueError('Circle mask must preserve 256 LED apertures')
-    for prefix in ('OpticalDeck','BarrelFrame','RearPlate'):
+    for prefix in ('OpticalDeck','BarrelFrame'):
         check_partition(b.doc.getObject(prefix),[b.doc.getObject(prefix+f'Q{i}') for i in range(1,5)])
     check_partition(b.doc.OpticalFrame,[b.doc.OpticalDeck,b.doc.BarrelFrame])
     # Intersections of separate manufactured parts and hardware are defects.
@@ -576,6 +593,22 @@ def check_model(b, centres, cells):
                 failures.append((a.Name, other.Name, round(volume, 4)))
     if failures:
         raise ValueError('Unintended assembly collisions (mm^3): ' + repr(failures))
+    # Tall component envelopes matter when controllers sit under the circle
+    # opening instead of below the annular floor. Do not check just bare PCBs.
+    for env in [o for o in b.references if o.Name.endswith('Components')]:
+        for obj in b.parts+b.hardware:
+            if env.Shape.common(obj.Shape).Volume > .05:
+                raise ValueError('Component envelope collision: '+env.Name+' / '+obj.Name)
+    for i in range(2):
+        link = b.doc.getObject(f'NecklaceLink{i}')
+        # Solid common excludes a zero-volume bearing interface. Intersect
+        # the coplanar top/bottom faces to measure the actual contact area.
+        z = link.Shape.BoundBox.ZMax
+        tops = [f for f in link.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-z) < 1e-7]
+        seats = [f for f in b.doc.OpticalFrame.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-z) < 1e-7]
+        area = sum(top.common(seat).Area for top in tops for seat in seats)
+        if area < 10:
+            raise ValueError('Necklace link does not bear directly on the body frame')
     for name in ('CircleLEDs','HaloLEDs','InnerLEDs','OuterLEDs'):
         leds = b.doc.getObject(name)
         for obj in b.parts:
@@ -608,7 +641,7 @@ def export_files(b, centres, cells):
     import MeshPart
     mesh_names = []
     volumes = []
-    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','FrontBezel','EdgeDiffuserSeam','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane'))}
+    nonprinted = {'WoodMask','FrontAcrylic','RearMirror','FrontMirror','FrontBezel','RearPlate','EdgeDiffuserSeam','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane'))}
     for obj in b.parts:
         volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted})
         if obj.Name in nonprinted:
@@ -674,6 +707,14 @@ def svg_files(p, cells, out):
     border = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>', f'<circle cx="0" cy="0" r="{p["mirror_view_outer_radius"]:.6f}"/>']
     border += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{p["fastener_hole_radius"]:.6f}"/>' for x,y in mounting_points(p)]
     (out/'outer-black-acrylic.svg').write_text(document(border,f'Outermost front border - opaque black acrylic, {p["front_bezel_thickness"]:g} mm nominal; six M3 clearance holes',p['case_diameter']/2))
+    rear_paths = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2-p["fit_clearance"]:.6f}"/>']
+    rear_holes = [(x,y,p['fastener_hole_radius']) for x,y in mounting_points(p)]
+    rear_holes += [(x,y,p['vent_hole_radius']) for x in (-95,95) for y in (-30,30)]
+    rear_holes += [(x,y,4.2) for x,y in [(-35,100),(35,100),(35,-100)]]
+    rear_holes += [(x,54,1.2) for x in (27,69)] + [(x,62,4) for x in (-82,82)]
+    rear_paths += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{r:.6f}"/>' for x,y,r in rear_holes]
+    rear_paths += ['<rect x="29" y="45" width="38" height="18"/>']
+    (out/'rear-clear-acrylic.svg').write_text(document(rear_paths,f'Clear rear acrylic - {p["rear_thickness"]:g} mm nominal; bolts, covered vents/controls, service opening and eye clearances',p['case_diameter']/2-p['fit_clearance']))
     inner_r = ring_radius(p['inner_count'],p)
     rear_outer = inner_r+p['strip_thickness']/2
     front_outer = rear_outer+p['strip_wall']-p['fit_clearance']/2
@@ -724,7 +765,7 @@ def export_previews(b, out):
         obj.Placement = pl
     b.doc.recompute()
     # Reveal the battery and boards through the back for a clear packaging view.
-    hidden = [obj for obj in b.parts+b.hardware+b.references if not (obj.Name.startswith('RearPlateQ') or obj.Name in {'BatteryStrapSlots','BoardMounts','BatteryEnvelope'} or obj in b.hardware and 'PCB' in obj.Name and obj.Name!='CirclePCB')]
+    hidden = [obj for obj in b.parts+b.hardware+b.references if not (obj.Name in {'RearPlate','BatteryStrapSlots','BoardMounts','BatteryEnvelope'} or obj.Name.startswith('NecklaceLink') or obj in b.hardware and 'PCB' in obj.Name and obj.Name!='CirclePCB')]
     visibility = [(obj,obj.Visibility) for obj in hidden]
     for obj in hidden:
         obj.Visibility = False

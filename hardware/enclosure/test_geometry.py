@@ -63,7 +63,7 @@ class GeometryTests(unittest.TestCase):
         self.assertGreaterEqual(d['outer_led_clearance'],.5)
 
     def test_outer_row_stays_centered_when_case_depth_changes(self):
-        for depth in (45,48,52):
+        for depth in (35,45,48,52):
             p = dict(self.p,case_depth=depth)
             rear,front = p['edge_bottom_z'],depth-p['front_bezel_thickness']
             self.assertAlmostEqual(strip_bottom('Outer',p)+p['strip_width']/2,(rear+front)/2)

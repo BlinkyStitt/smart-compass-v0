@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="249mm" height="249mm" viewBox="-124.5 -124.5 249 249">
+<title>Clear rear acrylic - 2 mm nominal; bolts, covered vents/controls, service opening and eye clearances</title>
+<desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
+<g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
+<circle cx="0" cy="0" r="124.500000"/>
+<circle cx="89.244178" cy="74.884757" r="1.700000"/>
+<circle cx="-20.230013" cy="114.730103" r="1.700000"/>
+<circle cx="-109.474190" cy="39.845347" r="1.700000"/>
+<circle cx="-89.244178" cy="-74.884757" r="1.700000"/>
+<circle cx="20.230013" cy="-114.730103" r="1.700000"/>
+<circle cx="109.474190" cy="-39.845347" r="1.700000"/>
+<circle cx="-95.000000" cy="-30.000000" r="3.000000"/>
+<circle cx="-95.000000" cy="30.000000" r="3.000000"/>
+<circle cx="95.000000" cy="-30.000000" r="3.000000"/>
+<circle cx="95.000000" cy="30.000000" r="3.000000"/>
+<circle cx="-35.000000" cy="100.000000" r="4.200000"/>
+<circle cx="35.000000" cy="100.000000" r="4.200000"/>
+<circle cx="35.000000" cy="-100.000000" r="4.200000"/>
+<circle cx="27.000000" cy="54.000000" r="1.200000"/>
+<circle cx="69.000000" cy="54.000000" r="1.200000"/>
+<circle cx="-82.000000" cy="62.000000" r="4.000000"/>
+<circle cx="82.000000" cy="62.000000" r="4.000000"/>
+<rect x="29" y="45" width="38" height="18"/>
+</g></svg>
