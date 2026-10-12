@@ -85,6 +85,7 @@ def optical_dimensions(p):
         'halo_radius': ring_radius(p['halo_count'], p),
         'edge_height': p['case_depth'] - p['front_bezel_thickness'] - p['edge_bottom_z'],
         'outer_strip_centre_z': strip_bottom('Outer', p) + p['strip_width']/2,
+        'diffuser_gap': cavity_diffusers(p)['Inner']['inner']-cavity_diffusers(p)['Halo']['outer'],
     }
 
 
@@ -108,3 +109,14 @@ def necklace_anchors(p, side):
     eye = (side*82, 62)
     primary = min(mounting_points(p), key=lambda point: math.dist(point, eye))
     return eye, primary, (side*97, 48)
+
+
+def cavity_diffusers(p):
+    """Curved acrylic on the emitting side of both mirror-cavity strips."""
+    halo_face = ring_radius(p['halo_count'],p)+p['strip_thickness']/2+p['ring_led_depth']
+    inner_face = ring_radius(p['inner_count'],p)-p['strip_thickness']/2-p['ring_led_depth']
+    thickness,gap = p['ring_diffuser_thickness'],p['ring_diffuser_led_gap']
+    bottom = p['mirror_back_z']+p['mirror_back_thickness']+p['ring_diffuser_end_gap']
+    top = p['case_depth']-p['front_bezel_thickness']-p['acrylic_thickness']-p['ring_diffuser_end_gap']
+    return {'Halo':{'inner':halo_face+gap,'outer':halo_face+gap+thickness,'bottom':bottom,'height':top-bottom},
+            'Inner':{'inner':inner_face-gap-thickness,'outer':inner_face-gap,'bottom':bottom,'height':top-bottom}}

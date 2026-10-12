@@ -97,22 +97,22 @@
     },
     {
       "name": "RearPlateQ1",
-      "volume_cm3": 15.8011,
+      "volume_cm3": 15.9882,
       "printed": true
     },
     {
       "name": "RearPlateQ2",
-      "volume_cm3": 21.3459,
+      "volume_cm3": 21.5473,
       "printed": true
     },
     {
       "name": "RearPlateQ3",
-      "volume_cm3": 18.7234,
+      "volume_cm3": 16.1168,
       "printed": true
     },
     {
       "name": "RearPlateQ4",
-      "volume_cm3": 18.8196,
+      "volume_cm3": 18.1734,
       "printed": true
     },
     {
@@ -142,7 +142,47 @@
     },
     {
       "name": "EdgeDiffuserSeam",
-      "volume_cm3": 48.5544,
+      "volume_cm3": 56.3355,
+      "printed": false
+    },
+    {
+      "name": "HaloDiffuser",
+      "volume_cm3": 6.1064,
+      "printed": false
+    },
+    {
+      "name": "HaloDiffuserPad0",
+      "volume_cm3": 0.0002,
+      "printed": false
+    },
+    {
+      "name": "HaloDiffuserPad1",
+      "volume_cm3": 0.0002,
+      "printed": false
+    },
+    {
+      "name": "HaloDiffuserPad2",
+      "volume_cm3": 0.0002,
+      "printed": false
+    },
+    {
+      "name": "InnerDiffuser",
+      "volume_cm3": 7.5043,
+      "printed": false
+    },
+    {
+      "name": "InnerDiffuserPad0",
+      "volume_cm3": 0.0002,
+      "printed": false
+    },
+    {
+      "name": "InnerDiffuserPad1",
+      "volume_cm3": 0.0002,
+      "printed": false
+    },
+    {
+      "name": "InnerDiffuserPad2",
+      "volume_cm3": 0.0002,
       "printed": false
     },
     {
@@ -197,26 +237,26 @@
     },
     {
       "name": "BarrelFrameQ1",
-      "volume_cm3": 4.6269,
+      "volume_cm3": 5.9655,
       "printed": true
     },
     {
       "name": "BarrelFrameQ2",
-      "volume_cm3": 4.8415,
+      "volume_cm3": 6.2568,
       "printed": true
     },
     {
       "name": "BarrelFrameQ3",
-      "volume_cm3": 4.1923,
+      "volume_cm3": 5.5309,
       "printed": true
     },
     {
       "name": "BarrelFrameQ4",
-      "volume_cm3": 4.4347,
+      "volume_cm3": 5.85,
       "printed": true
     }
   ],
-  "printed_volume_cm3": 199.5041,
+  "printed_volume_cm3": 202.1477,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -225,7 +265,18 @@
     "mirror_separation": 11.200000000000003,
     "outer_led_clearance": 1.0063278518028143,
     "halo_radius": 85.3601011449532,
-    "edge_height": 31.200000000000003,
-    "outer_strip_centre_z": 17.6
+    "edge_height": 36.2,
+    "outer_strip_centre_z": 20.1,
+    "diffuser_gap": 19.225823848649213
+  },
+  "mass_estimate": {
+    "basis": "CAD solid volume with PETG 1.27 and acrylic 1.19 g/cm3; not slicer or measured finished mass",
+    "excludes": "Wood, films, electronics, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
+    "printed_petg_g": 256.7,
+    "acrylic_g": 204.9,
+    "mechanical_subset_g": 461.6,
+    "candidate_pack_g": 190.0,
+    "internal_pack_subset_g": 651.6,
+    "external_pack_pendant_subset_g": 461.6
   }
 }
