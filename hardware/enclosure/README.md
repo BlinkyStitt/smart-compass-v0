@@ -10,6 +10,11 @@ The infinity mirror occupies the annular gap around the circle. The circle keeps
 
 ![Exploded assembly](exports/exploded.png)
 
+[Watch the 34-second CAD demo](exports/amulet-demo.mp4), or open the looping
+[rotation](exports/turntable.gif) and [exploded animation](exports/exploded.gif).
+The [labelled exploded diagram](exports/exploded-overview.png) and
+[electronics close-up](exports/electronics-overview.png) support inspection.
+
 ## Model and exports
 
 | File | Use |
@@ -31,6 +36,34 @@ The infinity mirror occupies the annular gap around the circle. The circle keeps
 | `exports/assembly-section.svg` | Actual solid section at Y=0 with diameter and depth dimensions. |
 | `exports/front.png`, `assembly.png`, `exploded.png`, `electronics.png`, `edge.png`, `rear.png` | Native CAD views. These show geometry, not simulated light. |
 | `exports/diffusers.png` | All three cylindrical acrylic sleeves and their LED strips, isolated at assembled positions. The front mirror and frame are hidden for inspection. |
+| `exports/amulet-demo.mp4` | 1600 × 1200, 24 fps, H.264 demo: 0–12 s complete rotation; 12–28 s explosion, rotation and reassembly; 28–34 s labelled electronics spread. |
+| `exports/turntable.gif`, `exploded.gif` | Looping 800 × 600 animations at 12 fps. |
+| `exports/turntable-poster.png`, `exploded-overview.png`, `electronics-overview.png` | Full-size inspection images from the animation scene. |
+| `animate.py`, `Animate.FCMacro` | Reproduce the animation from the saved native model with FreeCAD and FFmpeg. |
+
+## Rebuild the demo
+
+Run from the repository root on the Mac with Homebrew FreeCAD and FFmpeg:
+
+```sh
+python3 hardware/enclosure/animate.py
+```
+
+Install a missing application with `brew install --cask freecad` or
+`brew install ffmpeg`. Use `--preview` to render only the three inspection
+images. Use `--output /path/to/directory` to put the media elsewhere.
+
+The renderer copies the visible manufactured parts, electronics and LED
+references into a separate FreeCAD display document. It preserves the saved
+materials, including the three dark transparent sleeves. It checks that the
+master's hash stays unchanged, then checks media dimensions, durations, frame
+counts and full decoding. Temporary frames stay outside the repository.
+
+Exploded offsets illustrate the parts; they do not define assembly travel or
+service clearance. The electronics view shows the model's board footprints and
+battery envelope. Wiring and fastener models remain unfinished. These images
+show CAD geometry, rather than running firmware, LED emission, mirror
+reflections or measured optical transmission.
 
 ## Light stack and ring directions
 

@@ -1,0 +1,21 @@
+"""Batch entry point for animate.py; run animate.py from the terminal."""
+import importlib
+import os
+from pathlib import Path
+import sys
+import traceback
+
+from PySide import QtCore
+
+source = Path(os.environ['SC_CAD_DIR'])
+sys.path.insert(0, str(source))
+try:
+    import animate
+    importlib.reload(animate)
+    animate.render(Path(os.environ['SC_DEMO_FRAMES']),
+                   Path(os.environ['SC_DEMO_OUTPUT']),
+                   preview=os.environ['SC_DEMO_PREVIEW'] == '1')
+except Exception:
+    traceback.print_exc()
+finally:
+    QtCore.QTimer.singleShot(0, QtCore.QCoreApplication.quit)
