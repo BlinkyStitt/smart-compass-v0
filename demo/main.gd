@@ -1,6 +1,6 @@
 extends Node3D
 
-const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase"]
+const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
 const FINISHES = ["Current assembly", "One sheet • full mirror", "One sheet • clear centre"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const COUNTS = [256, 64, 84, 90]
@@ -362,6 +362,8 @@ func _pattern_colour(led,time: float):
 		0: return Color.from_hsv(fposmod(angle+2*radius-time/8,1.0),1,1)
 		1: return Color.from_hsv(fposmod(angle-time/8,1.0),1,1)*pow(maxf(0,cos(TAU*(3*angle-3*time/8))),8)
 		2: return Color.from_hsv(fposmod(radius-time/8,1.0),1,1)*(0.1+0.9*(1-absf(2*fposmod(2*radius-time/4,1.0)-1)))
+		8: return Color.from_hsv(0.55+0.12*sin(TAU*(angle+2*radius-time/8)),1,1)
+		9: return Color.from_hsv(fposmod(0.98+0.14*(0.5+0.5*sin(TAU*(angle+2*radius-time/8))),1),1,1)
 		3: return Color.RED
 		4: return Color.GREEN
 		5: return Color.BLUE
@@ -415,6 +417,19 @@ func _run_checks():
 	var top={"group":1,"position_m":[0.0,0.0795,0.03]}
 	assert(_pattern_colour(top,0).is_equal_approx(Color.RED))
 	assert(_pattern_colour(top,4).is_equal_approx(Color.CYAN))
+	for selection in [0,8,9]:
+		pattern=selection
+		var spatial_change=false
+		var moving_count=0
+		var first=_pattern_colour(metadata.leds[0],0)
+		for led in metadata.leds:
+			var colour=_pattern_colour(led,0)
+			assert(colour.is_equal_approx(_pattern_colour(led,16)), "Gradient loop must close")
+			for t in [0.0,0.5,2.0,4.0,7.5]:
+				assert(is_equal_approx(_pattern_colour(led,t).v,1.0), "Gradient must not pulse or go dark")
+			if not colour.is_equal_approx(first): spatial_change=true
+			if not colour.is_equal_approx(_pattern_colour(led,2)): moving_count+=1
+		assert(spatial_change and moving_count>480, "Gradient must move across all LED groups")
 	pattern=7
 	var white_count=0
 	for led in metadata.leds:
@@ -492,35 +507,25 @@ func _capture():
 		_update_colours()
 		await _settle()
 		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
-	# Sixteen-second GIF loops. All light and camera states are periodic. The
-	# mirror-only loops remove centre glare to expose the repeated ring images.
+	# All 494 LEDs share a moving spatial gradient at constant brightness.
+	# Two eight-second colour cycles close with the slow sixteen-second camera.
 	_set_finish(0)
 	_set_lighting(0)
 	distance=0.46
-	for style in ["rainbow","pulse","colour"]:
-		diffusion=0.65
+	diffusion=0.65
+	brightness=2.0
+	groups=[true,true,true,true]
+	for style in ["rainbow","ocean","sunset"]:
+		pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
+		caption.text="%s gradient | Godot infinity mirror | diffusion 0.65" % style.capitalize()
 		for frame in range(384):
-			var phase=frame/384.0
-			var seconds=frame/24.0
-			_sweep(phase,65.0)
-			pattern_time=seconds
-			var pulse=0.18+0.82*pow(0.5+0.5*cos(TAU*seconds),4)
-			if style=="rainbow":
-				pattern=0
-				groups=[true,true,true,true]
-				brightness=2.0*pulse
-				caption.text="Rainbow pulse | moving Godot preview"
-			else:
-				pattern=6 if style=="pulse" else [3,4,5,6][int(seconds/2.0)%4]
-				groups=[false,true,true,false]
-				# Black intervals separate each colour and join the loop cleanly.
-				brightness=6.0*pow(sin(PI*fposmod(seconds,1.0)),4)
-				caption.text="Infinity mirror | %s | assumed diffusion 0.65" % ("white pulse" if style=="pulse" else "colour pulse")
+			_sweep(frame/384.0,65.0)
+			pattern_time=frame/24.0
 			_update_optics()
 			_update_colours()
 			await _settle()
-			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("blink-%s-%04d.png" % [style,frame]))==OK)
-	print("DEMO CAPTURE PASS: 96 matched stills, 1248 movie frames and 1152 blinking loop frames")
+			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [style,frame]))==OK)
+	print("DEMO CAPTURE PASS: 96 matched stills, 1248 movie frames and 1152 gradient loop frames")
 	get_tree().quit()
 
 func _benchmark():
