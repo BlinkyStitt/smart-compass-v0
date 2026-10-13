@@ -67,6 +67,14 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(len(design['fasteners_m']),6)
         self.assertAlmostEqual(design['sheet_thickness_m'],.0015)
         self.assertEqual(design['printed_part_count'],13)
+        inventory=json.loads((path/'parts.json').read_text())
+        quantities={row['id']:row['installed_quantity'] for row in inventory['components']}
+        expected=sum(quantities[key] for key in ('body_screws','anchor_screws','rear_screws','service_screws',
+                     'M3_nuts','M2_nuts','M3_washers','M2_washers','soft_front_washers'))
+        hardware=[part for part in m['parts'] if part['role']=='hardware']
+        self.assertEqual(len(hardware),expected)
+        self.assertTrue(all(math.isfinite(part['explosion_offset_m']) for part in hardware))
+        self.assertEqual(design['mass_estimate'],inventory['mass_estimate'])
         volumes={part['name']:part['volume_cm3'] for part in m['parts']}
         self.assertAlmostEqual(sum(volumes[n] for n in ('FrontCentre','FrontMirrorCoating','FrontRim')),design['front_sheet_volume_cm3'])
         self.assertFalse(any(n.startswith('Proposal') for n in volumes))

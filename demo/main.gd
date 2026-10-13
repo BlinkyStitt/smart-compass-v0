@@ -127,6 +127,7 @@ func _prepare_explosion():
 			explosion_offsets[name] = Vector3(0, 0, offset)
 	for part in metadata.parts:
 		if part.role == "cell": explosion_offsets[part.name] = Vector3(0, 0, 0.25)
+		if part.role == "hardware": explosion_offsets[part.name] = Vector3(0, 0, part.explosion_offset_m)
 		assert(explosion_offsets.has(part.name), "Assign an exploded layer to " + part.name)
 		assembled_transforms[part.name] = meshes[part.name].transform
 

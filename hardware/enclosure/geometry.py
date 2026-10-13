@@ -108,7 +108,7 @@ def battery_centres(p):
 def necklace_anchors(p, side):
     eye = (side*82, 62)
     primary = min(mounting_points(p), key=lambda point: math.dist(point, eye))
-    return eye, primary, (side*97, 48)
+    return eye, primary, (side*97, 51)
 
 
 def cavity_diffusers(p):

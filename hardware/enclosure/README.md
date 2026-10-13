@@ -59,9 +59,15 @@ battery, board, SWD/reset, nut and wiring access.
 
 ## Print settings and orientation
 
-Load [print-settings.ini](print-settings.ini) in PrusaSlicer, then select the
-**actual printer and its PETG filament preset**. The file supplies print settings;
-it does not select a printer, heater limits or start/end machine code.
+Open the supplied part `.3mf` projects in [exports](exports), then select the
+**actual printer and its PETG filament preset**. The canonical
+[print specification](print-spec.json) generates every product and sample project.
+Each project includes its geometry, orientation and required print settings.
+Bracket projects and `FitSuspensionBracket.3mf` include the solid bracket settings.
+The reference machine has a 300 mm bed, zero heater setpoints, and no start/end
+program. The print service owns temperatures, heater limits and machine commands.
+Do not run the temporary inspection G-code on a printer. See
+[Prusa's 3MF project guidance](https://help.prusa3d.com/article/saving-projects-as-3mf_1773).
 
 | Setting | Starting value |
 | --- | --- |
@@ -97,9 +103,10 @@ Prusa recommends textured or satin surfaces and warns that PETG can bond too
 strongly to smooth PEI. PETG also needs care with bridges and support removal.
 [Prusa PETG guidance](https://help.prusa3d.com/article/petg_2059).
 
-Run `just print-check` to slice every product and fit-sample STL with the checked
-settings.
-The check rejects slicer warnings, empty output and support-dependent paths.
+Run `just print-check` to slice each exact delivered product and sample 3MF.
+The command applies no setting overrides. It checks the embedded project settings
+and the effective G-code settings against the same canonical specification.
+It rejects slicer warnings, empty output and support-dependent paths.
 It uses temporary generic G-code for inspection and deletes it afterwards.
 **Generate final G-code with the real printer profile.** Slicing does not prove
 bed adhesion, layer strength, dimensional fit, or service life. Print and inspect
@@ -107,9 +114,9 @@ the fit samples and one bracket before committing to the large parts.
 
 ## Print the fit samples first
 
-Use [FitDeck.stl](exports/FitDeck.stl), [FitBarrel.stl](exports/FitBarrel.stl),
-[FitRear.stl](exports/FitRear.stl), [FitOptics.stl](exports/FitOptics.stl) and
-[FitService.stl](exports/FitService.stl) with the same PETG, nozzle, layers and supplied
+Use [FitDeck.3mf](exports/FitDeck.3mf), [FitBarrel.3mf](exports/FitBarrel.3mf),
+[FitRear.3mf](exports/FitRear.3mf), [FitOptics.3mf](exports/FitOptics.3mf) and
+[FitService.3mf](exports/FitService.3mf) with the same PETG, nozzle, layers and supplied
 orientations as the full parts. These small samples are exact cuts from the
 current CAD, not independently drawn substitutes. They are test pieces only;
 they do not enter the 13-piece assembly or its mass estimate.
@@ -353,37 +360,101 @@ at most 0.02 mm polygon chord error. `assembly-section.svg` cuts actual solids.
 
 ## Current weight estimate
 
-| Term | CAD estimate |
-| --- | ---: |
-| Printed PETG, solid-volume basis | 254.0 g |
-| Acrylic, including all three sleeves | 194.1 g |
-| Single wood grid | 16.7 g |
-| **Mechanical subtotal** | **464.8 g** |
-| Candidate internal pack | 190.0 g |
-| **Subtotal with pack** | **654.8 g** |
+The [complete build parts list](../../design-v2.md#complete-build-parts-list-and-mass-estimate)
+reports pendant, necklace and total worn mass, with an explicit allowance range.
+The [component inventory](component-inventory.json) supplies the linked parts,
+installed and purchase quantities, mass basis and unresolved fit/supply facts.
+The build generates the same totals in [parts.json](exports/parts.json) and
+Godot scene metadata. Populated boards count once. Only installed strip and wire
+lengths enter worn mass. Brims, fit samples, unused stock, spares and the charger
+do not enter worn mass.
 
-The single front sheet is about 87.3 g after holes, or 87.6 g before holes,
-compared with about 92 g for the previous three front pieces. The previous
-whole-circle design had a 451.5 g mechanical subtotal. The stronger barrel,
-ribs, stops and service mounts increase this to 464.8 g, a 13.3 g change before the added metal fasteners. Fewer assembly pieces and
-replaceable service hardware are the main gains.
+Printed PETG uses net CAD solid volume at 1.27 g/cm³ as a conservative basis;
+its range allows for infill and print variation. Acrylic uses 1.19 g/cm³.
+Wood uses the editable density, nominally 0.60 g/cm³, with a 0.40–0.80 range.
+Slicer material estimates include brims and have a separate label in `parts.json`.
+CAD display bounds can differ slightly from exact circular dimensions. Use the
+nominal cut contours and specified stock for fabrication.
+No physical mass has been measured. Weigh the finished components and assemblies
+before releasing the suspension.
 
-Mass uses PETG 1.27 g/cm³, acrylic 1.19 g/cm³ and an unmeasured wood assumption of
-0.60 g/cm³. Both subtotals exclude films, electronics, LEDs, wiring, fasteners,
-seals, straps, gland and necklace. Slicer estimates use actual infill and include
-brims; they have a different basis. Weigh the finished device. External battery
-use removes the 190 g pack from the pendant; it does not reduce total carried mass.
+## Service inspection and suspension release
 
-Sources: [Fibonacci256 and pixel map](https://www.evilgeniuslabs.org/fibonacci256),
-[Sparkle PCB](https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB),
-[BlackPill hardware](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/tree/master/Hardware),
-[Prusament PETG density](https://www.prusa3d.com/file/3464616/prusament-petg-technical-data-sheet.pdf),
-[ACRYLITE density](https://www.acrylite.co/files/content/acrylite.co/documents/product-information/ACRYLITE-cast-Physical-Properties.pdf).
+Use the selected plain nuts from the inventory: M3 DIN 934, 5.5 mm across flats
+and 2.4 mm thick; M2 DIN 934, 4 mm across flats and 1.6 mm thick. Every captive
+pocket uses **0.4 mm total across-flats allowance and 0.3 mm thickness allowance**.
+Thus M3 pockets are 5.9 mm across flats × 2.7 mm; M2 pockets are 4.4 × 1.9 mm.
+Every loading mouth has the same width and height as its pocket. These are
+starting fit-test dimensions. Do not force a nut or substitute a taller locknut.
+The [selected nut dimensions](component-inventory.json) also define the CAD
+screw, nut and washer envelopes. The M3 washers are 7 mm OD × 3.2 mm ID × 0.55 mm.
+M2 washers are 5 × 2.2 × 0.35 mm. The six soft front retention washers
+are 9 mm OD × 6.2 mm ID, cut from 0.5 mm silicone stock with the
+[washer template](exports/soft-front-washer.svg). Their nominal compressed
+height is 0.3 mm; verify compression force and sheet retention with the fit sample. Check actual hardware before full-size printing.
+
+Print the three additional suspension samples:
+[bracket](exports/FitSuspensionBracket.3mf),
+[frame and captive seat](exports/FitSuspensionFrame.3mf), and
+[rear clearance](exports/FitSuspensionRear.3mf).
+These use the actual right bracket and adjoining model geometry. Assemble them
+with the selected M3 × 45 mm body bolt, M3 × 12 mm anchor screw, nuts and washers.
+Check that washers sit flat, nuts load fully, the rear clears both fasteners,
+and the webbing passes without a sharp lip. The bracket keeps its 5 mm thickness
+and 14 mm web sections. Rounded web transitions add material. Slot lips have
+0.5 mm rounds. An upper hub routes the left primary web above the vent nut; the right
+primary web has a direct clear path.
+Secondary anchors are at (±97,51) mm; all vent mounts stay at their original
+positions. Rear washer access has a 3.8 mm radius. The automated checks include
+nominal hardware collisions and radial nut loading paths.
+
+Keep the main circles whole. The continuous 1 mm rear skin and 1.8 × 2 mm ribs
+remain. Internal foot windows remove plastic under board bearing lips; end ribs,
+tie lands, bearing tops and the outer support walls remain. Quarter-round roots
+join the skin to ribs and clamp lands. The optical deck stays separate. These
+changes reduce abrupt thickness changes; they do not prove that a 250 mm print
+will remain flat. See [Protolabs Network's thickness guidance](https://www.hubs.com/knowledge-base/dfm-tips-for-3d-printed-parts-with-thin-walls/)
+and [Xometry's FDM guidance](https://xometry.pro/en-uk/articles/fdm-design-tips/).
+
+Give the print service these inspection requirements:
+
+- Remove brims and loose material. Reject cracks, lifted edges and incomplete walls.
+- Dry-stack deck, barrel and rear on a flat reference. Joint faces must seat
+  without rocking or a gap greater than 0.3 mm. **Do not use bolts to pull the circles flat.**
+- Check all six collar heights: 38.5 mm from the assembly rear datum, within
+  0.2 mm; check that each washer stops on its collar before it loads the acrylic.
+- Pass the selected screws through every aligned hole by hand. Check all nut
+  loading mouths, full nut seating, flat washer contact and thread engagement.
+- Check the 0.5 mm wood-to-sheet gap, at least 0.5 mm LED-to-wood clearance,
+  11.2 mm nominal mirror separation, sleeve seats and independent rear removal.
+  Reject optical contact, forced fits or a blocked service path.
+
+**Defer compression sleeves in this revision.** A sleeve would need to span the
+full clamped joint. A bracket-only sleeve would leave other plastic in compression;
+full-joint sleeves also conflict with the limited optical-post space. Correct
+bearing surfaces, hardware fit and retention first. See
+[SPIROL's joint design guidance](https://www.spirol.com/assets/files/cmpl-compression-limiter-design-guide-us.pdf).
+
+Keep the existing **100 N per side for 60 seconds** off-body suspension test in
+both hanging and pull-out directions. Test the complete frame, brackets, webbing,
+rings and fasteners. Use the generated **upper total-worn mass bound** until an
+actual mass is available. With `W = mass_kg × 9.81 N`, also test each side at
+`2W` for 24 hours and at `0..3W` for 10,000 repeated cycles at 0.5 Hz. These are
+provisional engineering test targets, not a certified load rating. Record fixture,
+load, ambient temperature and initial fastener positions. Inspect after each test
+for cracks, permanent movement, washer indentation, nut rotation, clamp loss and
+webbing damage; reject any slip, crack or joint gap increase above 0.2 mm. Repeat
+fit and rear-removal checks. Set snag/drop tests after measuring the assembled
+mass and selecting the final necklace fittings.
+
+Physical printing, flatness, static strength, sustained/repeated load and clamp
+retention remain **unverified**. Do not treat CAD or slicing as release evidence.
 
 **SC-ENCLOSURE physical TODOs:** verify actual materials, stock, kerf, circle
 registration, formed sleeves, coating, diffuser uniformity, cell light leakage,
 fit, nut retention, washer compression, sealing, connector access, thermal limits,
 magnetic effects and four-hour runtime. Test complete suspension off-body at the
 existing provisional 100 N per-side static target for 60 seconds in hanging and pull-out
-directions. Set cyclic, snag and drop checks from measured assembled mass.
+directions. Use the sustained/repeated-load procedure above, then repeat with
+measured mass. Set snag and drop checks after measurement.
 These are acceptance targets, not a load rating or proof of a successful print.

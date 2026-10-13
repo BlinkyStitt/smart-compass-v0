@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "6780b3d9eff8c768da5fd98332f85c8025eef52b59b23085e0734433d95c7d81",
+  "master_sha256": "36a87dda8dd68fd8b7412bc7c788090e73339b1a04082c4ee2d64ae7393d26dc",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -15,17 +15,17 @@
       "role": "solid",
       "bounds_m": [
         [
-          -0.1154739682390924,
-          0.03384556877990635,
+          -0.11547405207329854,
+          0.0338476734448385,
           0.002
         ],
         [
           -0.071,
-          0.07299982888656556,
+          0.0729998928670477,
           0.007
         ]
       ],
-      "volume_cm3": 3.6922309819559986
+      "volume_cm3": 3.8515649378756454
     },
     {
       "name": "NecklaceLink1",
@@ -34,17 +34,17 @@
       "role": "solid",
       "bounds_m": [
         [
-          0.07100009371487973,
-          0.04200158408885623,
+          0.07100507882871528,
+          0.045000999302081734,
           0.002
         ],
         [
           0.103,
-          0.08088427815329208,
-          0.007
+          0.08088284175226386,
+          0.007000000000000001
         ]
       ],
-      "volume_cm3": 3.1949193107404446
+      "volume_cm3": 3.0600293551714786
     },
     {
       "name": "VentMembrane0",
@@ -253,7 +253,7 @@
           0.012
         ]
       ],
-      "volume_cm3": 75.00305748962175
+      "volume_cm3": 74.19290403172673
     },
     {
       "name": "ControlMembrane0",
@@ -481,7 +481,7 @@
           0.0385
         ]
       ],
-      "volume_cm3": 69.76182784022869
+      "volume_cm3": 69.76182784028354
     },
     {
       "name": "BarrelFrame",
@@ -500,7 +500,7 @@
           0.022650000000000003
         ]
       ],
-      "volume_cm3": 41.45677699124438
+      "volume_cm3": 41.03127706132544
     },
     {
       "name": "BatteryEnvelope0",
@@ -748,6 +748,1686 @@
         ]
       ],
       "volume_cm3": 2.2499997649961734
+    },
+    {
+      "name": "Body0Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.0864975960900089,
+          0.07213561127797957,
+          -0.005950000000000003
+        ],
+        [
+          0.09199417762336094,
+          0.07763390177898405,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.38936113950428514,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body0Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.0857485283990947,
+          0.07138584439147895,
+          0.0385
+        ],
+        [
+          0.09274417762336094,
+          0.07838366866548467,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306788,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Body1Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.022976594231549418,
+          0.11198095797542,
+          -0.005950000000000003
+        ],
+        [
+          -0.01748001269819738,
+          0.11747924847642448,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.38936113950428525,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body1Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.023725661922463608,
+          0.11123119108891938,
+          0.0385
+        ],
+        [
+          -0.01673001269819738,
+          0.1182290153629251,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306767,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Body2Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11222077185491036,
+          0.03709620144693818,
+          -0.005950000000000003
+        ],
+        [
+          -0.10672419032155832,
+          0.042594491947942674,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.3893611395042851,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body2Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11296983954582455,
+          0.036346434560437575,
+          0.0385
+        ],
+        [
+          -0.10597419032155833,
+          0.04334425883444328,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306788,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Body3Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09199075915671298,
+          -0.07763390177898405,
+          -0.005950000000000003
+        ],
+        [
+          -0.08649417762336094,
+          -0.07213561127797957,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.38936113950428514,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body3Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09273982684762717,
+          -0.07838366866548467,
+          0.0385
+        ],
+        [
+          -0.08574417762336094,
+          -0.07138584439147895,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306785,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Body4Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.017483431164845308,
+          -0.11747924847642449,
+          -0.005950000000000003
+        ],
+        [
+          0.02298001269819734,
+          -0.11198095797542001,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.38936113950428514,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body4Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.016734363473931115,
+          -0.11822901536292511,
+          0.0385
+        ],
+        [
+          0.023730012698197342,
+          -0.11123119108891939,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306767,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Body5Screw",
+      "label": "DIN 912 M3 x 45 - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10672760878820628,
+          -0.04259449194794264,
+          -0.005950000000000003
+        ],
+        [
+          0.11222419032155832,
+          -0.03709620144693815,
+          0.04205
+        ]
+      ],
+      "volume_cm3": 0.38936113950428514,
+      "explosion_offset_m": 0.42
+    },
+    {
+      "name": "Body5Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.1059785410972921,
+          -0.04334425883444325,
+          0.0385
+        ],
+        [
+          0.11297419032155832,
+          -0.036346434560437534,
+          0.039049999999999994
+        ]
+      ],
+      "volume_cm3": 0.016743118047306788,
+      "explosion_offset_m": 0.39
+    },
+    {
+      "name": "Anchor0Screw",
+      "label": "DIN 912 M3 x 12 - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09975,
+          0.04825085474949776,
+          -0.00155
+        ],
+        [
+          -0.09425341846664796,
+          0.05374914525050224,
+          0.01345
+        ]
+      ],
+      "volume_cm3": 0.15609788497524282,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Anchor0Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope006",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.10049564922426624,
+          0.04750108786299714,
+          0.00145
+        ],
+        [
+          -0.0935,
+          0.05449891213700286,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306816,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Anchor0Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09981062103794316,
+          0.04782705617797199,
+          0.010499999999999997
+        ],
+        [
+          -0.09418937896205686,
+          0.054172943822028016,
+          0.0129
+        ]
+      ],
+      "volume_cm3": 0.045908843985365294,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Anchor1Screw",
+      "label": "DIN 912 M3 x 12 - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09425,
+          0.04825085474949776,
+          -0.00155
+        ],
+        [
+          0.09974658153335204,
+          0.05374914525050224,
+          0.01345
+        ]
+      ],
+      "volume_cm3": 0.15609788497524282,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Anchor1Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope007",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09350435077573377,
+          0.04750108786299714,
+          0.00145
+        ],
+        [
+          0.1005,
+          0.05449891213700286,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306816,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Anchor1Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09418937896205684,
+          0.047827056177971984,
+          0.0105
+        ],
+        [
+          0.09981062103794318,
+          0.054172943822028016,
+          0.012900000000000002
+        ]
+      ],
+      "volume_cm3": 0.04590884398536541,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear0Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10975,
+          -0.0027491452505022445,
+          -0.0035499999999999998
+        ],
+        [
+          0.11524658153335204,
+          0.0027491452505022445,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408875,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear0Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope008",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10900435077573377,
+          -0.003498912137002857,
+          -0.00055
+        ],
+        [
+          0.116,
+          0.003498912137002857,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.016743118047306823,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear0Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10932457351945706,
+          -0.00275,
+          0.0055
+        ],
+        [
+          0.11567542648054294,
+          0.00275,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.045908843985365384,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear1Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05350000000000001,
+          0.09467871267524709,
+          -0.0035499999999999998
+        ],
+        [
+          0.05899658153335205,
+          0.10017700317625157,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408877,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear1Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope009",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05275435077573378,
+          0.09392894578874647,
+          -0.00055
+        ],
+        [
+          0.05975000000000001,
+          0.10092677006275219,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.0167431180473068,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear1Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05307457351945707,
+          0.09467785792574934,
+          0.0055
+        ],
+        [
+          0.059425426480542956,
+          0.10017785792574935,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.045908843985365405,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear2Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.058999999999999976,
+          0.0946787126752471,
+          -0.0035499999999999998
+        ],
+        [
+          -0.053503418466647946,
+          0.10017700317625158,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408877,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear2Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope010",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.05974564922426621,
+          0.09392894578874648,
+          -0.00055
+        ],
+        [
+          -0.05274999999999998,
+          0.1009267700627522,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.016743118047306802,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear2Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.05942542648054292,
+          0.09467785792574936,
+          0.0055
+        ],
+        [
+          -0.05307457351945703,
+          0.10017785792574935,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.04590884398536539,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear3Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11525,
+          -0.002749145250502231,
+          -0.0035499999999999998
+        ],
+        [
+          -0.10975341846664796,
+          0.0027491452505022584,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408875,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear3Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope011",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11599564922426624,
+          -0.003498912137002843,
+          -0.00055
+        ],
+        [
+          -0.109,
+          0.0034989121370028707,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.016743118047306823,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear3Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11567542648054294,
+          -0.002749999999999986,
+          0.0055
+        ],
+        [
+          -0.10932457351945706,
+          0.002750000000000014,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.04590884398536538,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear4Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.05900000000000005,
+          -0.10017700317625156,
+          -0.0035499999999999998
+        ],
+        [
+          -0.053503418466648016,
+          -0.09467871267524708,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408877,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear4Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope012",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.05974564922426628,
+          -0.10092677006275218,
+          -0.00055
+        ],
+        [
+          -0.05275000000000005,
+          -0.09392894578874646,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.016743118047306802,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear4Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope006",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.05942542648054299,
+          -0.10017785792574932,
+          0.0055
+        ],
+        [
+          -0.0530745735194571,
+          -0.09467785792574933,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.04590884398536535,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Rear5Screw",
+      "label": "DIN 912 M3 x 10 - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05350000000000001,
+          -0.10017700317625157,
+          -0.0035499999999999998
+        ],
+        [
+          0.05899658153335205,
+          -0.09467871267524709,
+          0.00945
+        ]
+      ],
+      "volume_cm3": 0.14196071803408877,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Rear5Washer",
+      "label": "DIN 125 M3 washer - nominal hardware envelope013",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05275435077573378,
+          -0.10092677006275219,
+          -0.00055
+        ],
+        [
+          0.05975000000000001,
+          -0.09392894578874647,
+          0.0
+        ]
+      ],
+      "volume_cm3": 0.0167431180473068,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Rear5Nut",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope007",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.05307457351945707,
+          -0.10017785792574935,
+          0.0055
+        ],
+        [
+          0.059425426480542956,
+          -0.09467785792574934,
+          0.0079
+        ]
+      ],
+      "volume_cm3": 0.045908843985365405,
+      "explosion_offset_m": 0.0
+    },
+    {
+      "name": "Vent00Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0969,
+          -0.042899409445801555,
+          -0.0056500000000000005
+        ],
+        [
+          -0.09310236184968404,
+          -0.03910059055419845,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763666,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent00Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0974968923030473,
+          -0.04349922295500204,
+          -0.00365
+        ],
+        [
+          -0.0925,
+          -0.038500777044997964,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.005541769440932399,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent00Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.097,
+          -0.04330940107675851,
+          0.0025
+        ],
+        [
+          -0.093,
+          -0.0386905989232415,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137955,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent01Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0969,
+          -0.020899409445801553,
+          -0.0056500000000000005
+        ],
+        [
+          -0.09310236184968404,
+          -0.017100590554198446,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763667,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent01Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0974968923030473,
+          -0.02149922295500204,
+          -0.00365
+        ],
+        [
+          -0.0925,
+          -0.01650077704499796,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.0055417694409323984,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent01Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.097,
+          -0.021309401076758504,
+          0.0025
+        ],
+        [
+          -0.093,
+          -0.016690598923241495,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137962,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent10Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0969,
+          0.017100590554198446,
+          -0.0056500000000000005
+        ],
+        [
+          -0.09310236184968404,
+          0.020899409445801553,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763667,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent10Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0974968923030473,
+          0.01650077704499796,
+          -0.00365
+        ],
+        [
+          -0.0925,
+          0.02149922295500204,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.0055417694409323984,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent10Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.097,
+          0.016690598923241495,
+          0.0025
+        ],
+        [
+          -0.093,
+          0.021309401076758504,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137962,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent11Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0969,
+          0.03910059055419845,
+          -0.0056500000000000005
+        ],
+        [
+          -0.09310236184968404,
+          0.042899409445801555,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763666,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent11Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0974968923030473,
+          0.038500777044997964,
+          -0.00365
+        ],
+        [
+          -0.0925,
+          0.04349922295500204,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.005541769440932399,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent11Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.097,
+          0.0386905989232415,
+          0.0025
+        ],
+        [
+          -0.093,
+          0.04330940107675851,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137955,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent20Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09309999999999999,
+          -0.042899409445801555,
+          -0.0056500000000000005
+        ],
+        [
+          0.09689763815031596,
+          -0.03910059055419845,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763666,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent20Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09250310769695269,
+          -0.04349922295500204,
+          -0.00365
+        ],
+        [
+          0.0975,
+          -0.038500777044997964,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.005541769440932399,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent20Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.093,
+          -0.04330940107675851,
+          0.0025
+        ],
+        [
+          0.097,
+          -0.0386905989232415,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137955,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent21Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09309999999999999,
+          -0.020899409445801553,
+          -0.0056500000000000005
+        ],
+        [
+          0.09689763815031596,
+          -0.017100590554198446,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763667,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent21Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09250310769695269,
+          -0.02149922295500204,
+          -0.00365
+        ],
+        [
+          0.0975,
+          -0.01650077704499796,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.0055417694409323984,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent21Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.093,
+          -0.021309401076758504,
+          0.0025
+        ],
+        [
+          0.097,
+          -0.016690598923241495,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137962,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent30Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope006",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09309999999999999,
+          0.017100590554198446,
+          -0.0056500000000000005
+        ],
+        [
+          0.09689763815031596,
+          0.020899409445801553,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763667,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent30Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope006",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09250310769695269,
+          0.01650077704499796,
+          -0.00365
+        ],
+        [
+          0.0975,
+          0.02149922295500204,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.0055417694409323984,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent30Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope006",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.093,
+          0.016690598923241495,
+          0.0025
+        ],
+        [
+          0.097,
+          0.021309401076758504,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137962,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Vent31Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope007",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09309999999999999,
+          0.03910059055419845,
+          -0.0056500000000000005
+        ],
+        [
+          0.09689763815031596,
+          0.042899409445801555,
+          0.00435
+        ]
+      ],
+      "volume_cm3": 0.04781504018763666,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Vent31Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope007",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.09250310769695269,
+          0.038500777044997964,
+          -0.00365
+        ],
+        [
+          0.0975,
+          0.04349922295500204,
+          -0.0033
+        ]
+      ],
+      "volume_cm3": 0.005541769440932399,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Vent31Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope007",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.093,
+          0.0386905989232415,
+          0.0025
+        ],
+        [
+          0.097,
+          0.04330940107675851,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137955,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Hatch0Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope008",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.023100000000000002,
+          0.052100590554198446,
+          -0.0045
+        ],
+        [
+          0.026897638150315952,
+          0.05589940944580155,
+          0.0055
+        ]
+      ],
+      "volume_cm3": 0.04781504018763663,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Hatch0Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope008",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.02250310769695269,
+          0.05150077704499796,
+          -0.0025
+        ],
+        [
+          0.0275,
+          0.05649922295500204,
+          -0.00215
+        ]
+      ],
+      "volume_cm3": 0.005541769440932396,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Hatch0Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope008",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.023,
+          0.051690598923241494,
+          0.0025
+        ],
+        [
+          0.027,
+          0.056309401076758504,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137962,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "Hatch1Screw",
+      "label": "DIN 912 M2 x 8 - nominal hardware envelope009",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.0691,
+          0.052100590554198446,
+          -0.0045
+        ],
+        [
+          0.07289763815031595,
+          0.05589940944580155,
+          0.0055
+        ]
+      ],
+      "volume_cm3": 0.04781504018763665,
+      "explosion_offset_m": -0.23
+    },
+    {
+      "name": "Hatch1Washer",
+      "label": "DIN 125 M2 washer - nominal hardware envelope009",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.0685031076969527,
+          0.05150077704499796,
+          -0.0025
+        ],
+        [
+          0.0735,
+          0.05649922295500204,
+          -0.00215
+        ]
+      ],
+      "volume_cm3": 0.005541769440932399,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "Hatch1Nut",
+      "label": "NUT203M2-B, DIN 934 A4 black oxide - nominal hardware envelope009",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.069,
+          0.051690598923241494,
+          0.0025
+        ],
+        [
+          0.073,
+          0.056309401076758504,
+          0.0040999999999999995
+        ]
+      ],
+      "volume_cm3": 0.017143702091137955,
+      "explosion_offset_m": -0.1
+    },
+    {
+      "name": "FrontSoftWasher0",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.08474977147787578,
+          0.07038615520947815,
+          0.038200000000000005
+        ],
+        [
+          0.09374417762336094,
+          0.07938335784748549,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.010027963750258594,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher0",
+      "label": "DIN 125 M3 washer - nominal hardware envelope014",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.0857485283990947,
+          0.07138584439147895,
+          0.00145
+        ],
+        [
+          0.09274417762336094,
+          0.07838366866548467,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306816,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut0",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope008",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.08649417762336094,
+          0.07170933004793888,
+          -0.00095
+        ],
+        [
+          0.09199417762336094,
+          0.07806018300902476,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.04590884398536538,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "FrontSoftWasher1",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope001",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.02472441884368253,
+          0.11023150190691856,
+          0.038200000000000005
+        ],
+        [
+          -0.01573001269819738,
+          0.1192287045449259,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.01002796375025858,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher1",
+      "label": "DIN 125 M3 washer - nominal hardware envelope015",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.023725661922463608,
+          0.11123119108891938,
+          0.00145
+        ],
+        [
+          -0.01673001269819738,
+          0.1182290153629251,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306795,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut1",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope009",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.02298001269819738,
+          0.11155467674537929,
+          -0.00095
+        ],
+        [
+          -0.01748001269819738,
+          0.11790552970646517,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.04590884398536537,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "FrontSoftWasher2",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope002",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11396859646704348,
+          0.03534674537843675,
+          0.038200000000000005
+        ],
+        [
+          -0.10497419032155833,
+          0.044343948016444104,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.010027963750258608,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher2",
+      "label": "DIN 125 M3 washer - nominal hardware envelope016",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11296983954582455,
+          0.036346434560437575,
+          0.00145
+        ],
+        [
+          -0.10597419032155833,
+          0.04334425883444328,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306816,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut2",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope010",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.11222419032155832,
+          0.03666992021689748,
+          -0.00095
+        ],
+        [
+          -0.10672419032155832,
+          0.04302077317798337,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.04590884398536536,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "FrontSoftWasher3",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope003",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.0937385837688461,
+          -0.07938335784748549,
+          0.038200000000000005
+        ],
+        [
+          -0.08474417762336094,
+          -0.07038615520947815,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.010027963750258594,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher3",
+      "label": "DIN 125 M3 washer - nominal hardware envelope017",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09273982684762717,
+          -0.07838366866548467,
+          0.00145
+        ],
+        [
+          -0.08574417762336094,
+          -0.07138584439147895,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306813,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut3",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope011",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          -0.09199417762336094,
+          -0.07806018300902476,
+          -0.00095
+        ],
+        [
+          -0.08649417762336094,
+          -0.07170933004793888,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.04590884398536538,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "FrontSoftWasher4",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope004",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.01573560655271219,
+          -0.11922870454492591,
+          0.038200000000000005
+        ],
+        [
+          0.024730012698197343,
+          -0.11023150190691858,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.010027963750258582,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher4",
+      "label": "DIN 125 M3 washer - nominal hardware envelope018",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.016734363473931115,
+          -0.11822901536292511,
+          0.00145
+        ],
+        [
+          0.023730012698197342,
+          -0.11123119108891939,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.016743118047306795,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut4",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope012",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.017480012698197343,
+          -0.11790552970646519,
+          -0.00095
+        ],
+        [
+          0.02298001269819734,
+          -0.1115546767453793,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.045908843985365363,
+      "explosion_offset_m": -0.2
+    },
+    {
+      "name": "FrontSoftWasher5",
+      "label": "Custom silicone front retention washer, compressed envelope - nominal hardware envelope005",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10497978417607316,
+          -0.04434394801644407,
+          0.038200000000000005
+        ],
+        [
+          0.11397419032155832,
+          -0.03534674537843672,
+          0.0385
+        ]
+      ],
+      "volume_cm3": 0.010027963750258608,
+      "explosion_offset_m": 0.37
+    },
+    {
+      "name": "BodyRearWasher5",
+      "label": "DIN 125 M3 washer - nominal hardware envelope019",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.1059785410972921,
+          -0.04334425883444325,
+          0.00145
+        ],
+        [
+          0.11297419032155832,
+          -0.036346434560437534,
+          0.002
+        ]
+      ],
+      "volume_cm3": 0.01674311804730681,
+      "explosion_offset_m": -0.17
+    },
+    {
+      "name": "BodyRearNut5",
+      "label": "NUT203M3, DIN 934 A4 natural - nominal hardware envelope013",
+      "variant": "common",
+      "role": "hardware",
+      "bounds_m": [
+        [
+          0.10672419032155832,
+          -0.04302077317798333,
+          -0.00095
+        ],
+        [
+          0.11222419032155832,
+          -0.03666992021689745,
+          0.00145
+        ]
+      ],
+      "volume_cm3": 0.045908843985365363,
+      "explosion_offset_m": -0.2
     },
     {
       "name": "RearButton0",
@@ -12821,16 +14501,124 @@
     ],
     "printed_part_count": 13,
     "mass_estimate": {
-      "basis": "CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass",
-      "excludes": "Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
-      "printed_petg_g": 254.0,
-      "acrylic_g": 194.1,
-      "wood_density_g_cm3": 0.6,
-      "wood_g": 16.7,
-      "mechanical_subset_g": 464.8,
-      "candidate_pack_g": 190.0,
-      "internal_pack_subset_g": 654.8,
-      "external_pack_pendant_subset_g": 464.8
+      "complete_pendant": {
+        "nominal_g": 959.5,
+        "range_g": [
+          748.8,
+          1190.2
+        ]
+      },
+      "necklace": {
+        "nominal_g": 32.2,
+        "range_g": [
+          19.8,
+          62.0
+        ]
+      },
+      "total_worn": {
+        "nominal_g": 991.7,
+        "range_g": [
+          768.6,
+          1252.2
+        ]
+      },
+      "external_battery_pendant": {
+        "nominal_g": 771.5,
+        "range_g": [
+          569.8,
+          982.1
+        ]
+      },
+      "external_belt_and_lead": {
+        "nominal_g": 290.0,
+        "range_g": [
+          240.0,
+          390.0
+        ]
+      },
+      "external_total_worn": {
+        "nominal_g": 1093.7,
+        "range_g": [
+          829.6,
+          1434.2
+        ]
+      },
+      "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
+      "outstanding_measurements": [
+        "OpticalDeck",
+        "BarrelFrame",
+        "RearPlate",
+        "NecklaceLink0",
+        "NecklaceLink1",
+        "CircleRimFoot0",
+        "CircleRimFoot1",
+        "CircleRimFoot2",
+        "VentGuard0",
+        "VentGuard1",
+        "VentGuard2",
+        "VentGuard3",
+        "ServiceCover",
+        "FrontSheet",
+        "RearMirror",
+        "EdgeDiffuserSeam",
+        "HaloDiffuser",
+        "InnerDiffuser",
+        "wood",
+        "front_coating",
+        "rim_mask",
+        "rear_coating",
+        "wood_finish",
+        "circle",
+        "halo_strip",
+        "inner_strip",
+        "outer_strip",
+        "sparkle",
+        "blackpill",
+        "gps",
+        "imu",
+        "radio",
+        "rf_antenna",
+        "boost",
+        "battery",
+        "sense",
+        "fuse",
+        "power_switch",
+        "buttons",
+        "bulk_cap",
+        "power_connectors",
+        "led_connectors",
+        "logic_connectors",
+        "usb_adapter",
+        "power_wire",
+        "signal_wire",
+        "wire_finish",
+        "body_screws",
+        "anchor_screws",
+        "rear_screws",
+        "service_screws",
+        "M3_nuts",
+        "M2_nuts",
+        "M3_washers",
+        "M2_washers",
+        "sparkle_mount_hardware",
+        "joint_seals",
+        "hatch_gasket",
+        "vents",
+        "control_membranes",
+        "seam_adhesive",
+        "padding",
+        "battery_straps",
+        "board_ties",
+        "blank",
+        "neck_webbing",
+        "wear_loops",
+        "closed_rings",
+        "neck_clasp",
+        "belt_carrier",
+        "belt_cable",
+        "gland",
+        "soft_front_washers"
+      ]
     }
   }
 }
