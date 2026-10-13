@@ -93,12 +93,41 @@ class Builder:
         obj.Placement.Base = App.Vector(x,y,z)
         return obj
 
-    def bore_entries(self, name, points, radius, bottom, top):
+    def bore_entries(self, name, points, radius, bottom, top, top_entry=.3):
         # 45-degree entries preserve the nominal bore through the bearing land.
-        return [self.cone(f'{name}{i}{side}',r0,r1,.3,z,x,y)
+        return [self.cone(f'{name}{i}{side}',r0,r1,abs(r1-r0),z,x,y)
                 for i,(x,y) in enumerate(points)
                 for side,r0,r1,z in (('Bottom',radius+.3,radius,bottom),
-                                    ('Top',radius,radius+.3,top-.3))]
+                                    ('Top',radius,radius+top_entry,top-top_entry))]
+
+    def service_mount(self, name, x, y):
+        """M2 nut slides in from +Y; the 4.4 mm roof bridge retains it axially."""
+        boss = self.fuse(name,[
+            # A flat loading face leaves two full-height cheeks supporting the
+            # pocket roof. A round nose leaves an unsupported crescent.
+            self.box(name+'Stem',7.6,7.2,5.8,x-3.8,y-4.4,0),
+            self.cone(name+'Root',4.6,3.8,.8,self.p['rear_skin_thickness'],x,y)])
+        radius = 4.4/math.sqrt(3)
+        polygon = [(x+radius*math.cos(math.pi/6+j*math.tau/6),y+radius*math.sin(math.pi/6+j*math.tau/6)) for j in range(6)]
+        # Hex flats face the loading direction; allow 0.4 mm across flats and
+        # 0.3 mm over nominal 1.6 mm M2 nut thickness. Test actual hardware.
+        pocket = self.profile(name+'Nut',[polygon],2.4,1.9)
+        entry = self.box(name+'Entry',4.4,5,1.9,x-2.2,y,2.4)
+        bore = self.cylinder(name+'Bore',1.2,10,-1,x,y)
+        return boss, [pocket,entry,bore]
+
+    def top_mark(self, name, y, z, upright=False):
+        """Font-independent TOP strokes, recessed in a non-mating surface."""
+        strokes = [(0,4.2,3,.8),(1.1,0,.8,5),
+                   (4,0,.8,5),(6.2,0,.8,5),(4,0,3,.8),(4,4.2,3,.8),
+                   (8,0,.8,5),(8,4.2,3,.8),(8,2.1,3,.8),(10.2,2.1,.8,2.9)]
+        polygons = [[(x-5.5,v),(x+w-5.5,v),(x+w-5.5,v+h),(x-5.5,v+h)] for x,v,w,h in strokes]
+        # Separate rectangles may overlap: fuse their tools before subtracting.
+        tools = [self.profile(name+str(i),[poly],0,.7 if upright else .4) for i,poly in enumerate(polygons)]
+        mark = self.fuse(name,tools)
+        rotation = App.Rotation(App.Vector(1,0,0),90) if upright else App.Rotation()
+        mark.Placement = App.Placement(App.Vector(0,y,z),rotation)
+        return mark
 
     def box(self, name, length, width, height, x, y, z):
         obj = self.doc.addObject('Part::Box', name)
@@ -264,7 +293,7 @@ def build(p=None):
     outer_wall_low = outer_r-p['strip_thickness']/2-p['strip_wall']
     # The structural barrel is behind the outward strip. The whole exterior
     # between the two narrow lips is a sheet diffuser, not an opaque skirt.
-    shell = b.annulus('Barrel', outer_wall_low, outer_wall_low+p['strip_wall'], E('rear_thickness'), E('mirror_back_z')+'-'+E('strip_wall')+'-'+E('rear_thickness'))
+    shell = b.annulus('Barrel', outer_r-p['strip_thickness']/2-p['structural_wall'], outer_wall_low+p['strip_wall'], E('rear_thickness'), E('mirror_back_z')+'-'+E('strip_wall')+'-'+E('rear_thickness'))
     floor = b.annulus('RingFloor', 'Parameters.circle_diameter/2+0.5 mm', outer_r-p['strip_thickness']/2, E('mirror_back_z') + '-' + E('strip_wall'), E('strip_wall'))
     boundary = b.annulus('CircleBoundary', 'Parameters.circle_diameter/2+1 mm', halo_r-p['strip_thickness']/2, E('mirror_back_z'), E('front_plane_z') + '-' + E('mirror_back_z'))
     seat_blank = b.cylinder('CircleSeatBlank', 'Parameters.circle_diameter/2+1.5 mm', 3.5, E('circle_back_z')+'-3.5 mm')
@@ -281,10 +310,14 @@ def build(p=None):
     posts = [b.cylinder(f'LidPost{i}', E('post_radius'), E('front_plane_z') + '-' + E('rear_thickness'), E('rear_thickness'), x, y) for i, (x, y) in enumerate(points)]
     post_bridges = []
     for i,(x,y) in enumerate(points):
-        rib = b.box(f'PostRearBridge{i}',outer_r-p['strip_thickness']/2-p['fastener_radius']+2,6,p['strip_wall'],p['fastener_radius']-2,-3,rear)
+        rib = b.box(f'PostRearBridge{i}',outer_r-p['strip_thickness']/2-p['fastener_radius']+2,6,p['structural_wall'],p['fastener_radius']-2,-3,rear)
         rib.Placement = App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),math.degrees(math.atan2(y,x)))).multiply(rib.Placement)
         post_bridges.append(rib)
-    frame = b.fuse('FrameBlank', [shell, floor, boundary, ledge] + walls + posts + post_bridges + anchor_bosses)
+    # Offset each root inward: its outside stays behind the outer strip,
+    # and its inside stays outside the rear mirror.
+    root_scale=(p['fastener_radius']-.6)/p['fastener_radius']
+    post_roots = [b.cone(f'PostFloorRoot{i}',3.6,3,.6,p['mirror_back_z'],x*root_scale,y*root_scale) for i,(x,y) in enumerate(points)]
+    frame = b.fuse('FrameBlank', [shell, floor, boundary, ledge] + walls + posts + post_roots + post_bridges + anchor_bosses)
     # Whole barrel prints joint-face-down. Every boss reaches that bed face.
     rear_bosses, rear_tools, rear_clearances = [], [], []
     for i,(x,y) in enumerate(rear_mounting_points(p)):
@@ -309,15 +342,15 @@ def build(p=None):
     for i,(x,y) in enumerate(points):
         seats += [b.cylinder(f'FrontLand{i}',4,1.2,front-1.2,x,y),
                   b.fuse(f'FrontStop{i}',[
-                      b.cylinder(f'FrontStopStem{i}',3,depth-front-.4,front,x,y),
-                      b.cone(f'FrontStopTip{i}',3,2.6,.4,depth-.4,x,y)])]
+                      b.cylinder(f'FrontStopStem{i}',3,depth-front-.15,front,x,y),
+                      b.cone(f'FrontStopTip{i}',3,2.85,.15,depth-.15,x,y)])]
     # Printable sleeve shoes/keyways lie behind the emitting surfaces. The
     # continuous front traps the sleeves; no fixed lip obstructs mirror removal.
     sleeve_seats, mirror_keys = [], []
     for name,d in cavity_diffusers(p).items():
         carrier = halo_r-p['strip_thickness']/2 if name=='Halo' else inner_back+p['strip_wall']
         lo,hi = (carrier-.2,d['outer']) if name=='Halo' else (d['inner'],carrier+.2)
-        cuff_lo,cuff_hi = (d['inner']-1.6,d['inner']-.25) if name=='Halo' else (d['outer']+.25,d['outer']+1.6)
+        cuff_lo,cuff_hi = (d['inner']-p['sleeve_fit_clearance']-p['strip_wall'],d['inner']-p['sleeve_fit_clearance']) if name=='Halo' else (d['outer']+p['sleeve_fit_clearance'],d['outer']+p['sleeve_fit_clearance']+p['strip_wall'])
         for i,angle in enumerate((30,150,270)):
             shoe = b.box(f'{name}Shoe{i}',hi-lo,3.6,d['bottom']-p['mirror_back_z'],lo,-1.8,p['mirror_back_z'])
             cuff_blank = b.annulus(f'{name}CuffBlank{i}',cuff_lo,cuff_hi,d['bottom'],.8)
@@ -335,9 +368,9 @@ def build(p=None):
     leads = [b.box(name+'LeadExit', p['ring_seam_gap'], 5, 5, -p['ring_seam_gap']/2, r-2.5, p['mirror_back_z']-p['strip_wall']) for name,r in [('Halo',halo_r),('Inner',inner_r),('Outer',outer_r)]]
     frame_entries = []
     for name,z,h in [('Deck',deck_bottom,depth-deck_bottom),('Barrel',rear,deck_bottom-rear)]:
-        frame_entries += b.bore_entries(name+'BoreEntry',points,p['fastener_hole_radius'],z,z+h)
+        frame_entries += b.bore_entries(name+'BoreEntry',points,p['fastener_hole_radius'],z,z+h,top_entry=.15 if name=='Deck' else .3)
     frame_entries += [b.cone(f'RearBossEntry{i}',2,1.7,.3,rear,x,y) for i,(x,y) in enumerate(rear_mounting_points(p))]
-    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + suspension + anchor_tools + rear_tools + frame_entries + [b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-.3,radius+1,p['edge_bottom_z'],depth)])
+    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + suspension + anchor_tools + rear_tools + frame_entries + [b.top_mark('DeckTopMark',113,p['mirror_back_z']-.4), b.top_mark('BarrelTopMark',outer_r-p['strip_thickness']/2-p['structural_wall']+.45,10,True), b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-.3,radius+1,p['edge_bottom_z'],depth)])
     b.add(frame, 'Manufactured', '01 Hidden optical support - halo, inward mirror ring, centered outer row', (.15, .17, .20), material='Printed opaque polymer')
 
     # Six full-length bolts retain the optics. Separate screws retain the rear.
@@ -346,7 +379,7 @@ def build(p=None):
     vent_points = [(x,y) for x in (-95,95) for y in (-30,30)]
     control_points = [(-35,100),(35,100),(35,-100)]
     hatch_x,hatch_y = 48,54
-    hatch_screws = (hatch_x-21,hatch_x+21)
+    hatch_screws = (hatch_x-23,hatch_x+23)
     rear_cuts = [b.cylinder(f'RearBodyAccess{i}',5,rear+12,-1,x,y) for i,(x,y) in enumerate(points)]
     rear_cuts += [b.cylinder(f'RearHole{i}',1.7,rear+12,-1,x,y) for i,(x,y) in enumerate(rear_mounting_points(p))]
     rear_cuts += b.bore_entries('RearScrewEntry',rear_mounting_points(p),1.7,0,rear)
@@ -360,6 +393,7 @@ def build(p=None):
     # side window. Actual gland thread, jacket and strain relief need fit checks.
     rear_cuts.append(b.cylinder('ExternalPowerBore','Parameters.external_port_diameter/2',rear+12,-1,p['external_port_x'],p['external_port_y']))
     rear_cuts.append(b.cylinder('ExternalPowerNutClearance','Parameters.external_port_diameter/2+2.25 mm',rear+12,rear,p['external_port_x'],p['external_port_y']))
+    rear_cuts.append(b.top_mark('RearTopMark',112,p['rear_skin_thickness']-.4))
     rear_items = [rear_blank,b.annulus('RearSealRim',119,p['case_diameter']/2-p['fit_clearance'],0,E('rear_thickness'))]
     rear_items.append(b.cylinder('ExternalPowerLand',10,E('rear_thickness'),0,p['external_port_x'],p['external_port_y']))
     for i,(x,y) in enumerate(points+rear_mounting_points(p)+vent_points+control_points+[(x,hatch_y) for x in hatch_screws]):
@@ -374,22 +408,29 @@ def build(p=None):
     ribs.Tool = b.cylinder('RearRibLimit',110,p['rear_skin_thickness']+p['rear_rib_height'])
     rear_items.append(ribs)
     for i,x in enumerate(hatch_screws):
-        post = b.cut(f'HatchStandoff{i}',b.cylinder(f'HatchPost{i}',3,4,E('rear_thickness'),x,hatch_y),b.cylinder(f'HatchPilot{i}',1.1,4,E('rear_thickness'),x,hatch_y))
+        post,tools = b.service_mount(f'HatchStandoff{i}',x,hatch_y)
         rear_items.append(post)
+        rear_cuts += tools
 
-    # Separate stand-off guards protect patches from the chest. Air turns under
-    # two open ends, crosses the membrane, then enters the covered case.
+    # Guards remain separate, roof-down prints. Two screws replace adhesive;
+    # pockets retain replaceable M2 nuts without heat-set inserts or snap tabs.
     for i,(x,y) in enumerate(vent_points):
         patch = b.cylinder(f'VentMembrane{i}',E('vent_patch_radius'),E('vent_patch_thickness'),-p['vent_patch_thickness'],x,y)
         b.add(patch,'Manufactured',f'Vent {i+1} - replaceable adhesive membrane',(.75,.77,.8),material='Nonprinted ePTFE adhesive patch; exact part and adhesion TODO')
-        roof = b.box(f'VentRoof{i}',20,20,p['shell_wall'],x-10,y-10,-p['shell_wall']-1.5)
-        feet = [b.box(f'VentGuardFoot{i}{j}',2,20,1.5,x+dx,y-10,-1.5) for j,dx in enumerate((-10,8))]
-        guard = b.fuse(f'VentGuard{i}',[roof]+feet)
-        b.add(guard,'Manufactured',f'Vent {i+1} - rear guard, two turned air paths',(.20,.22,.25),material='Printed polymer; bond feet to rear; membrane remains replaceable')
-    hatch = b.box('ServiceCoverBlank',46,26,p['shell_wall'],hatch_x-23,hatch_y-13,-p['shell_wall']-.35)
-    hatch = b.cut('ServiceCover',hatch,[b.cylinder(f'HatchCoverHole{i}',1.2,p['shell_wall'],-p['shell_wall']-.35,x,hatch_y) for i,x in enumerate(hatch_screws)])
-    b.add(hatch,'Manufactured','Rear service cover - USB/programming access; two M2 screws',(.20,.22,.25),material='Printed polymer; 0.35 mm compressed closed-cell gasket')
-    gasket = b.cut('HatchGasket',b.box('HatchGasketBlank',46,26,.35,hatch_x-23,hatch_y-13,-.35),[b.box('HatchGasketWindow',38,18,.35,hatch_x-19,hatch_y-9,-.35)]+[b.cylinder(f'HatchGasketHole{i}',1.2,.35,-.35,x,hatch_y) for i,x in enumerate(hatch_screws)])
+        screws = [(x,y-11),(x,y+11)]
+        feet = [b.box(f'VentGuardFoot{i}{j}',8,4,1.5,sx-4,sy-2,-1.5) for j,(sx,sy) in enumerate(screws)]
+        roof = b.box(f'VentRoof{i}',20,28,p['structural_wall'],x-10,y-14,-p['structural_wall']-1.5)
+        guard = b.fuse(f'VentGuardBlank{i}',[roof]+feet)
+        guard = b.cut(f'VentGuard{i}',guard,[b.cylinder(f'VentGuardBore{i}{j}',1.2,5,-4,sx,sy) for j,(sx,sy) in enumerate(screws)])
+        for j,(sx,sy) in enumerate(screws):
+            post,tools = b.service_mount(f'VentMount{i}{j}',sx,sy)
+            rear_items.append(post)
+            rear_cuts += tools
+        b.add(guard,'Manufactured',f'Vent {i+1} - removable two-screw guard',(.20,.22,.25),material='Printed PETG; two M2 screws into replaceable captive nuts; membrane remains accessible')
+    hatch = b.box('ServiceCoverBlank',54,26,p['structural_wall'],hatch_x-27,hatch_y-13,-p['structural_wall']-.35)
+    hatch = b.cut('ServiceCover',hatch,[b.cylinder(f'HatchCoverHole{i}',1.2,p['structural_wall'],-p['structural_wall']-.35,x,hatch_y) for i,x in enumerate(hatch_screws)])
+    b.add(hatch,'Manufactured','Rear service cover - USB/programming access; two M2 captive-nut screws',(.20,.22,.25),material='Printed PETG; replaceable M2 nuts; 0.35 mm compressed closed-cell gasket')
+    gasket = b.cut('HatchGasket',b.box('HatchGasketBlank',54,26,.35,hatch_x-27,hatch_y-13,-.35),[b.box('HatchGasketWindow',38,18,.35,hatch_x-19,hatch_y-9,-.35)]+[b.cylinder(f'HatchGasketHole{i}',1.2,.35,-.35,x,hatch_y) for i,x in enumerate(hatch_screws)])
     b.add(gasket,'Manufactured','Service hatch gasket - nominal compressed outline',(.3,.3,.3),material='Nonprinted closed-cell foam; material/compression TODO')
 
     carrier_items = []
@@ -446,7 +487,7 @@ def build(p=None):
     reinforced = b.fuse('RearReinforcedBlank',rear_items)
     # Remove bracket volumes from tall ribs. Covers never carry suspension load.
     back = b.cut('RearPlate',reinforced,rear_cuts+suspension+rear_clearances)
-    b.add(back,'Manufactured','02 Removable PETG rear - thin skin, ribs and integral mounts',(.20,.22,.25),material='Printed PETG; 1 mm skin, 1.6 x 2 mm ribs; 2 mm clamp/seal lands; integral supports')
+    b.add(back,'Manufactured','02 Removable PETG rear - thin skin, ribs and integral mounts',(.20,.22,.25),material='Printed PETG; 1 mm skin, 1.8 x 2 mm ribs; 2 mm clamp/seal lands; integral supports')
     plug_r = p['external_port_diameter']/2
     plug = b.fuse('ExternalPowerBlank',[b.cylinder('PowerBlankHead',plug_r+2,1,-1,p['external_port_x'],p['external_port_y']),
                                       b.cylinder('PowerBlankStem',plug_r-.25,rear+3,-1,p['external_port_x'],p['external_port_y']),
@@ -487,7 +528,7 @@ def build(p=None):
         b.add(obj, 'Optics', f'{name} ring LED references - {"outward" if outward else "inward"} facing', (.85, .65, .30))
         obj.addProperty('App::PropertyString', 'EmissionDirection').EmissionDirection = 'Radially outward' if outward else 'Radially inward toward circle'
 
-    rear_mirror = b.annulus('RearMirrorBlank', E('mirror_inner_radius'), inner_back-.3, E('mirror_back_z'), E('mirror_back_thickness'))
+    rear_mirror = b.annulus('RearMirrorBlank', E('mirror_inner_radius'), inner_back-p['mirror_fit_clearance'], E('mirror_back_z'), E('mirror_back_thickness'))
     rear_mirror = b.cut('RearMirror',rear_mirror,[b.box('MirrorLeadNotch',E('ring_seam_gap'),6,E('mirror_back_thickness'),-p['ring_seam_gap']/2,inner_r-3,E('mirror_back_z'))]+mirror_keys)
     b.add(rear_mirror, 'Manufactured', '05 Rear mirror annulus - reflective face toward front', (.60,.65,.72), material='1.5 mm acrylic with full mirror film on +Z face')
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('front_plane_z')+'-'+E('edge_bottom_z'))
@@ -580,6 +621,12 @@ def validate_parameters(p):
         raise ValueError('Use one or two separate pack pockets')
     if p['battery_spacing'] < p['battery_width']+4:
         raise ValueError('Battery pockets overlap or leave no lead channel')
+    if not 1.8 <= p['structural_wall'] <= 2.2:
+        raise ValueError('Structural barrel and covers need 1.8..2.2 mm walls')
+    if not .2 <= p['sleeve_fit_clearance'] <= .3 or p['ring_diffuser_led_gap']-p['sleeve_fit_clearance'] < .5-1e-7:
+        raise ValueError('Sleeve fit must preserve at least 0.5 mm LED clearance')
+    if not .3 <= p['mirror_fit_clearance'] <= .5:
+        raise ValueError('Rear mirror needs 0.3..0.5 mm outer radial clearance')
     if not .8 <= p['rear_skin_thickness'] < p['rear_thickness'] or p['rear_rib_width'] < 1.2 or p['rear_rib_height'] < 1:
         raise ValueError('Rear needs a printable skin, thicker clamp lands and structural ribs')
     if p['rear_skin_thickness']+p['rear_rib_height'] > p['rear_thickness']+1:
@@ -726,6 +773,18 @@ def fit_sample(shape, p):
     return sample.common(Part.makeBox(36,54,p['case_depth']+2,App.Vector(90,-8,-1)))
 
 
+def optical_fit_sample(shape):
+    """Exact deck sector containing both sleeve shoes at the 30-degree station."""
+    sample=shape.copy()
+    sample.rotate(App.Vector(),App.Vector(0,0,1),-30)
+    return sample.common(Part.makeBox(34,10,45,App.Vector(82,-5,0)))
+
+
+def service_fit_sample(shape):
+    """Exact rear cut around the left hatch nut and its loading mouth."""
+    return shape.common(Part.makeBox(10,15,8,App.Vector(20,47,0)))
+
+
 def export_files(b, centres, cells):
     out = HERE / 'exports'
     out.mkdir(exist_ok=True)
@@ -758,8 +817,9 @@ def export_files(b, centres, cells):
             print_mesh(shape).write(str(out/name))
             mesh_names.append(name)
     fit_samples = []
-    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate')):
-        sample = fit_sample(b.doc.getObject(parent).Shape,b.p)
+    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate'),('FitOptics','OpticalDeck'),('FitService','RearPlate')):
+        source = b.doc.getObject(parent).Shape
+        sample = optical_fit_sample(source) if name=='FitOptics' else service_fit_sample(source) if name=='FitService' else fit_sample(source,b.p)
         if not sample.isValid() or len(sample.Solids)!=1:
             raise ValueError('Disconnected fit sample: '+name)
         if parent == 'BarrelFrame':

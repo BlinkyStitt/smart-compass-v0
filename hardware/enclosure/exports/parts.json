@@ -32,7 +32,7 @@
     },
     {
       "name": "VentGuard0",
-      "volume_cm3": 0.66,
+      "volume_cm3": 1.0741,
       "printed": true
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "name": "VentGuard1",
-      "volume_cm3": 0.66,
+      "volume_cm3": 1.0741,
       "printed": true
     },
     {
@@ -52,7 +52,7 @@
     },
     {
       "name": "VentGuard2",
-      "volume_cm3": 0.66,
+      "volume_cm3": 1.0741,
       "printed": true
     },
     {
@@ -62,22 +62,22 @@
     },
     {
       "name": "VentGuard3",
-      "volume_cm3": 0.66,
+      "volume_cm3": 1.0741,
       "printed": true
     },
     {
       "name": "ServiceCover",
-      "volume_cm3": 1.6024,
+      "volume_cm3": 2.5109,
       "printed": true
     },
     {
       "name": "HatchGasket",
-      "volume_cm3": 0.176,
+      "volume_cm3": 0.2488,
       "printed": false
     },
     {
       "name": "RearPlate",
-      "volume_cm3": 72.9451,
+      "volume_cm3": 75.0031,
       "printed": true
     },
     {
@@ -97,7 +97,7 @@
     },
     {
       "name": "RearMirror",
-      "volume_cm3": 24.217,
+      "volume_cm3": 24.0627,
       "printed": false
     },
     {
@@ -142,16 +142,16 @@
     },
     {
       "name": "OpticalDeck",
-      "volume_cm3": 69.7414,
+      "volume_cm3": 69.7618,
       "printed": true
     },
     {
       "name": "BarrelFrame",
-      "volume_cm3": 35.4597,
+      "volume_cm3": 41.4568,
       "printed": true
     }
   ],
-  "printed_volume_cm3": 189.3621,
+  "printed_volume_cm3": 200.0025,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -167,14 +167,14 @@
   "mass_estimate": {
     "basis": "CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass",
     "excludes": "Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
-    "printed_petg_g": 240.5,
-    "acrylic_g": 194.3,
+    "printed_petg_g": 254.0,
+    "acrylic_g": 194.1,
     "wood_density_g_cm3": 0.6,
     "wood_g": 16.7,
-    "mechanical_subset_g": 451.5,
+    "mechanical_subset_g": 464.8,
     "candidate_pack_g": 190.0,
-    "internal_pack_subset_g": 641.5,
-    "external_pack_pendant_subset_g": 451.5
+    "internal_pack_subset_g": 654.8,
+    "external_pack_pendant_subset_g": 464.8
   },
   "fit_samples": [
     {
@@ -189,6 +189,16 @@
     },
     {
       "file": "FitRear.stl",
+      "source_part": "RearPlate",
+      "purpose": "Disposable fit test, not an assembly part"
+    },
+    {
+      "file": "FitOptics.stl",
+      "source_part": "OpticalDeck",
+      "purpose": "Disposable fit test, not an assembly part"
+    },
+    {
+      "file": "FitService.stl",
       "source_part": "RearPlate",
       "purpose": "Disposable fit test, not an assembly part"
     }

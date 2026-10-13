@@ -40,7 +40,7 @@ parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
 amulet.glb scene.json lighting-demo.mp4
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
-FitDeck.stl FitBarrel.stl FitRear.stl fit-sheet.svg
+FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
