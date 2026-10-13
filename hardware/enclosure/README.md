@@ -1,10 +1,17 @@
 # Round compass pendant
 
-Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The selected design uses
-one **250 × 1.5 mm acrylic front sheet**, with a clear centre, a two-way mirror
-ring, and a black masked outer rim. The sheet sits at Z=36.7..38.2 mm. Printed
-compression stops end at Z=38.5 mm. Rear vent guards add 3.3 mm before hardware.
-The rear mirror and all three curved diffusers remain separate optical parts.
+Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The front is one
+250 mm clear acrylic sheet with a clear centre, a 25 mm two-way mirror annulus,
+and a black masked rim. Use listed 0.060 inch (1.524 mm nominal) stock and
+measure its actual thickness before the final cut. The rear mirror uses a
+separate thickness input. The three light rings are whole printed Prusament
+PETG Ultraglow Green parts. Their pale daytime appearance, green afterglow,
+and partial loss of LED colour need physical sample review.
+
+The reflecting planes stay at Z=25.5 and 36.7 mm, 11.2 mm apart. The collar
+top follows the measured front sheet and compressed washer height. The saved
+spreadsheet owns the dimensions after the first build. Do not approve a full
+print order until supplier fit samples and actual hardware pass.
 
 [Moving rainbow](exports/infinity-rainbow.gif) · [Ocean](exports/infinity-ocean.gif) ·
 [Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4) ·
@@ -29,9 +36,10 @@ uses the same mechanical assembly. The saved CAD defines the selected clear-cent
 | Replaceable necklace brackets | 2 | 2 |
 | Vent guards | 4 | 4 |
 | USB service cover | 1 | 1 |
-| **Printed pieces** | **35** | **13** |
+| Whole glow rings | 0 | 3 |
+| **Printed pieces** | **35** | **16** |
 
-The three flat front acrylic pieces become one sheet. Integral sleeve shoes
+The three flat front acrylic pieces become one sheet. Integral ring shoes
 replace six adhesive locating pads. The single wood cell grid remains; there is
 no second full cell grid. The large printed parts have no glued quarter seams.
 **Keep every main circle whole.** Stack the deck, barrel and rear along their
@@ -51,7 +59,7 @@ starting at 0° and spaced by 60°, attach the rear to captive nuts in the barre
 The nut-loading slots face the open electronics compartment.
 
 Remove only the rear screws to lift the rear and its electronics. Three integral
-barrel seats hold the outside diffuser while the rear is off. The two independent
+barrel seats hold the outside ring while the rear is off. The two independent
 necklace screws retain the brackets. Support the pendant during all service.
 Use unplugged connectors and service slack; do not hang the rear from wires.
 The small rear hatch still provides USB access. Full rear removal provides
@@ -59,124 +67,60 @@ battery, board, SWD/reset, nut and wiring access.
 
 ## Print settings and orientation
 
-Open the supplied part `.3mf` projects in [exports](exports), then select the
-**actual printer and its PETG filament preset**. The canonical
-[print specification](print-spec.json) generates every product and sample project.
-Each project includes its geometry, orientation and required print settings.
-Bracket projects and `FitSuspensionBracket.3mf` include the solid bracket settings.
-The reference machine has a 300 mm bed, zero heater setpoints, and no start/end
-program. The print service owns temperatures, heater limits and machine commands.
-Do not run the temporary inspection G-code on a printer. See
-[Prusa's 3MF project guidance](https://help.prusa3d.com/article/saving-projects-as-3mf_1773).
+Open the supplied part `.3mf` projects in [exports](exports). Use a service
+printer with at least a 300 × 300 mm bed. The [print specification](print-spec.json)
+defines the delivered orientations and effective settings. The reference
+projects omit machine heater settings and start/end G-code. The print service
+must use its actual qualified printer and material presets.
 
-| Setting | Starting value |
-| --- | --- |
-| Material / nozzle | PETG / 0.4 mm |
-| Layer / first layer | 0.2 / 0.2 mm |
-| Nominal extrusion width | 0.45 mm |
-| Perimeters / top / bottom | 5 / 5 / 5 |
-| Infill | 25% gyroid |
-| Necklace brackets | 6 perimeters, 100% rectilinear infill |
-| Brim / separation | 5 / 0.15 mm |
-| First-layer bulge compensation | 0.15 mm; check with fit samples |
-| Outer wall / wall / infill speed | 25 / 35 / 50 mm/s |
-| Bridge / first layer speed | 20 / 20 mm/s |
-| Supports | Off for the checked geometry |
+| Parts | Material and nozzle | Layer / paths | Orientation |
+| --- | --- | --- | --- |
+| Structural parts | PETG, 0.4 mm nozzle | 0.2 mm; 0.45 mm nominal path; 5 perimeters, 25% gyroid | Delivered bed face |
+| Necklace brackets | PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
+| Optical deck | PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
+| Halo and inner rings | Prusament PETG Ultraglow Green; abrasion-resistant, non-high-flow 0.4 mm nozzle | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
+| Outside ring | Same glow PETG and nozzle | 0.2 mm; two 0.6 mm nominal paths | Upright on circular bottom edge |
 
-Keep the exported STL orientation. Print the deck floor-down, the barrel
-**deck-joint face down**, the rear skin-down, guards roof-down, and brackets flat.
-The barrel's mounting bosses reach its bed face. Product and fit-sample STLs
-use 0.02 mm linear mesh deflection for smooth circular outlines. The battery
-strap passages have
-45° roofs with a short central bridge. The deck stays separate from the barrel
-so its broad annular floor never prints as an unsupported ceiling.
+Use a 5 mm brim and no supports. Keep the barrel deck-joint face down, rear
+skin down, vent guards roof down, and brackets flat. Inspect the actual slicer
+paths for both ring walls and the deck solid skins before release. Prusa
+provides 0.4 mm Ultraglow profiles but recommends 0.6 mm to reduce clogging;
+the 0.4 mm selection requires the supplier's production-path inspection.
+[Prusa Ultraglow guidance](https://prusament.com/materials/prusament-petg-ultraglow/).
 
-The optical walls remain 1.35 mm, about three 0.45 mm paths even with five
-perimeters requested. The lower barrel, rear ribs, USB cover and vent roofs
-now use 1.8 mm material. Broader post roots and 1.8 mm rear bridges reinforce
-connections without moving the LED carriers or mirror planes. Five solid layers
-preserve the 1 mm rear skin. Inspect the actual paths; wall count alone cannot make a thin wall thicker. These choices follow
-[Prusa's model guidance](https://help.prusa3d.com/article/modeling-with-3d-printing-in-mind_164135).
-
-Use the filament maker's temperature profile and a PETG-compatible build surface.
-Prusa recommends textured or satin surfaces and warns that PETG can bond too
-strongly to smooth PEI. PETG also needs care with bridges and support removal.
-[Prusa PETG guidance](https://help.prusa3d.com/article/petg_2059).
-
-Run `just print-check` to slice each exact delivered product and sample 3MF.
-The command applies no setting overrides. It checks the embedded project settings
-and the effective G-code settings against the same canonical specification.
-It rejects slicer warnings, empty output and support-dependent paths.
-It uses temporary generic G-code for inspection and deletes it afterwards.
-**Generate final G-code with the real printer profile.** Slicing does not prove
-bed adhesion, layer strength, dimensional fit, or service life. Print and inspect
-the fit samples and one bracket before committing to the large parts.
+Run `just print-check` on the delivered 3MF projects. It checks project and
+G-code settings and rejects support-dependent or empty toolpaths. It does not
+prove bed adhesion, strength, dimensional fit, or optical output. Print the
+fit pieces and three curvature arcs with production settings before a full
+order.
 
 ## Print the fit samples first
 
-Use [FitDeck.3mf](exports/FitDeck.3mf), [FitBarrel.3mf](exports/FitBarrel.3mf),
-[FitRear.3mf](exports/FitRear.3mf), [FitOptics.3mf](exports/FitOptics.3mf) and
-[FitService.3mf](exports/FitService.3mf) with the same PETG, nozzle, layers and supplied
-orientations as the full parts. These small samples are exact cuts from the
-current CAD, not independently drawn substitutes. They are test pieces only;
-they do not enter the 13-piece assembly or its mass estimate.
+Print [FitDeck](exports/FitDeck.3mf), [FitBarrel](exports/FitBarrel.3mf),
+[FitRear](exports/FitRear.3mf), [FitOptics](exports/FitOptics.3mf), and
+[FitService](exports/FitService.3mf). Print the [right bracket](exports/FitSuspensionBracket.3mf),
+[left bracket](exports/FitSuspensionBracketLeft.3mf),
+[frame seat](exports/FitSuspensionFrame.3mf), and
+[rear clearance](exports/FitSuspensionRear.3mf),
+[controller mount](exports/FitController.3mf), and the
+[halo](exports/FitRingHalo.3mf), [inner](exports/FitRingInner.3mf), and
+[outside](exports/FitRingOutside.3mf) ring arcs. These thirteen disposable
+samples do not enter the 16-part assembly or worn mass.
 
-The tall sample with the front collar is the deck. The sample with the sideways
-nut pocket is the barrel. The thin skin is the rear. Stack them in that order,
-with the deck's broad floor on the barrel's broad joint face. Match the large
-body-bolt bore and curved outside walls. The rear's large access hole surrounds
-the body-bolt location; its smaller hole meets the barrel's captive nut.
+Use actual M3 and M2 fasteners, plain nuts, metal washers, 0.020 inch
+Stockwell SG-30 GP silicone, finished acrylic stock, the supplied Sparkle
+board, and LED strips. Check free screw passage, full nut insertion and
+engagement, driver access, both bracket arrangements, front-sheet retention,
+ring seat engagement at maximum lift, and independent rear removal. The
+front sheet has six 7.0 mm holes around 6 mm collars. The 9 mm OD × 6.4 mm
+ID soft washers should compress to about 60% of measured free thickness.
+The 9 mm OD metal washers must bear on the collars while the soft washers
+retain the sheet. Record the usable tightening limit from the physical sample.
 
-1. Remove the brim and loose strands. The joint faces must sit flat by hand.
-   A 3 mm screw must slide through each nominal 3.4 mm body bore without cutting
-   a thread in the plastic.
-2. Slide an actual M3 hex nut into the barrel's side pocket. It must seat fully
-   and resist turning. Thread the rear screw by hand without using it to force
-   misaligned parts together. Select screw length for the actual nut/washer stack.
-3. Cut [fit-sheet.svg](exports/fit-sheet.svg) from an offcut of the chosen front
-   stock, using the same laser kerf setting. Its 6.6 mm hole must drop over the
-   collar. Fit the intended soft and metal washers. The metal washer must stop
-   on the printed collar while the soft washer holds the sheet.
-4. Correct first-layer bulge, extrusion or measured fit before the large prints.
-   Keep nominal screw passages and washer stops intact. Do not scale the whole
-   compass to correct a local hole fit.
-
-Joint and rear screw entries have 0.3 mm, 45° lead-ins. Front collar tips and
-their screw entries use shorter 0.15 mm lead-ins. The top bearing annulus now
-has 1.0 mm radial width, up from 0.6 mm, at the same stop height. These guides help
-parts start square. They do not make a tight joint acceptable. The slicer also
-sets 0.15 mm first-layer compensation. Prusa explains how first-layer bulge can
-change fits and how compensation interacts with the brim; inspect both in the
-slicer. [First-layer compensation](https://help.prusa3d.com/article/elephant-foot-compensation_114487).
-
-The optical sample contains both sleeve seats from the 30° station of the real
-deck. Rest the corresponding sections of the actual formed bands on it without
-forcing them. The nominal seat play is now **0.30 mm radially**; this preserves
-at least **0.50 mm to the LED faces** at the inward limit of that play. The rear
-mirror has **0.45 mm outer radial clearance**. These are starting allowances,
-not measured fits. Check the full mirror and all three sleeve stations together
-on the complete deck before coating or bonding. Do not widen the sleeve play
-without checking the remaining LED clearance.
-
-The service sample is an exact rear cut around one hatch nut pocket. Slide a
-nominal **M2 hex nut, 4 mm across flats and 1.6 mm thick**, into its side mouth.
-The pocket allows 4.4 mm across flats and 1.9 mm height. The nut must slide in by
-hand, resist turning, and remain trapped along the screw axis. Test the intended
-M2 screw before printing the rear. Do not substitute a taller locknut or force
-an oversize nut. The sample does not test the full rear's stiffness.
-
-Test the front collar with the actual sheet offcut and washers. Tighten only
-until the metal washer contacts the stop. Confirm that the sheet stays retained,
-the collar does not crush, and the sheet can move within its clearance without
-cracking. Establish the usable tightening limit from a physical sample; the CAD
-check proves bearing geometry, not an allowable torque.
-
-Small samples cannot prove roundness or warping across a 250 mm part. Print the
-whole barrel first, then inspect it after cooling. Check its joint face on a flat
-surface and measure the diameter in two perpendicular directions. Keep the brim,
-use a clean PETG-compatible build plate and avoid drafts. Use the chosen printer's
-PETG cooling profile. Do not force a bowed part flat with the body bolts.
-[Prusa warping guidance](https://help.prusa3d.com/article/warping_2011).
+Print glow-ring arc samples at all three curvatures with the production wall
+and path widths. Review LED patterns at the permitted power limit. Record
+visible afterglow immediately and at 1, 5 and 15 minutes. Stop the full order
+if any sample fails; correct the cause and repeat its fit test.
 
 ## Assemble the whole circles without juggling them
 
@@ -194,10 +138,9 @@ Tack the three tiny rim spacers to the wood grid before installing that grid, so
 you handle one subassembly. Keep the single laser-cut grid aligned to the PCB with
 the supplied registration overlay.
 
-Each curved diffuser remains one continuous band with one top seam. It is not a
-set of arc segments. Have the bands formed to the drawing or form them on a round
-mandrel, then cool and trim. Do not use the LEDs as a forming tool. Test their fit
-before applying mirror film or bonding the strips.
+Keep each printed ring whole. Seat its circular bottom edge on the specified
+locating stations. Do not split a ring into arcs or heat-form an acrylic band.
+Check the closed-ring internal lead passages before fitting the strips.
 
 ## Optical stack and load paths
 
@@ -207,12 +150,12 @@ The reflecting surfaces stay at **Z=25.5 and 36.7 mm**, with **11.2 mm separatio
 The useful front mirror annulus spans radii 85.5..110.5 mm. Keep opaque supports
 outside the useful paths. The circle remains a floating island on its hidden seat.
 
-The front sheet has six 6.6 mm holes over 6 mm locating collars. Six 8 mm bearing
-lands support it. Washers stop on the collars, **0.3 mm above the sheet**. Use
-soft annular washers under the metal washers to hold the sheet without rattling;
-select their free thickness for this compression space. Bolt load travels
-through the collars and frame. Do not use the wood or LED packages as stops.
-Do not tighten screws to flatten warped sheet or printed parts.
+The front sheet has six 7.0 mm holes over 6 mm locating collars. Six 8 mm
+bearing lands support it. The six 9 mm OD metal washers bear on collar tops;
+soft 9 mm OD × 6.4 mm ID washers retain the acrylic below them. The collar
+height derives from front-stock thickness and the target 60% washer
+compression. Measure actual stock and clamp retention. Bolt load travels
+through the collars and frame. Do not use wood or LED packages as stops.
 
 The single wood grid uses **4 mm stock**, with **0.5 mm sheet clearance** and
 **0.6 mm nominal LED clearance**. Three rim spacers contact clear PCB edge areas.
@@ -221,12 +164,15 @@ pads to restrain the grid below the sheet; keep them off the cell openings.
 Measure stock and fitted gaps before assembly. The larger gaps need a physical
 light-leak check; the demo is not a scattering simulation.
 
-The halo and inner sleeves sit on **1.6 mm high integral shoes**, with **0.8 mm
-high locating cuffs** on their LED side. The cuffs have 1.35 mm radial thickness.
-The cuffs leave 0.30 mm radial fit clearance. The rear mirror has 0.45 mm
-outer radial clearance. Matching notches provide sleeve-seat clearance and alignment. The front
-sheet limits sleeve lift; the sleeves limit rear-mirror lift. Remove them from
-the front in reverse order. No fixed overhanging lip traps the rear mirror.
+The halo and inner printed rings start at Z=25.6 mm and stand 10.6 mm high.
+Their inside diameters are 177.02 and 215.47 mm, with 1.0 mm walls. The
+outside ring starts at Z=3.2 mm and stands 33.0 mm high; its inside diameter
+is 246.00 mm and its wall is 1.2 mm. Three bottom locating stations retain
+each ring. The cavity cuffs stand 1.2 mm high and give 0.30 mm nominal radial
+seat play. The front sheet leaves 0.5 mm nominal clearance above the rings.
+Measure 0.2–0.8 mm after assembly. Require at least 0.5 mm actual LED-to-ring
+clearance after dimensional errors and movement. The cavity remains at least
+18 mm wide radially. Lift the rings from the front for mirror service.
 
 | Output | Direction | Pixels | Strip length |
 | --- | --- | ---: | ---: |
@@ -242,29 +188,25 @@ Bond the outer strip only to the barrel below the Z=22.65 mm deck joint. Its
 upper margin rests against the deck without adhesive. All outer LED packages
 sit below that joint, so the deck can lift past the strip during repair.
 
-The two cavity sleeves use nominal 1 mm dark diffusing acrylic, 0.8 mm nominal LED
-clearance and 0.1 mm end gaps. The outside sleeve uses nominal 2 mm stock,
-246/250 mm inside/outside diameters and Z=3.2..36.7 mm. Its LED row stays centred.
-The clear centre means no mirror coating; its diffusion finish remains a
-physical sample choice, with an adjustable assumption in Godot.
-Use **light-transmitting** black material. Ordinary opaque acrylic will hide LEDs.
-The 60% CAD display transparency is not a measured optical property.
-Heat-form, cool and trim the bands. SVG developments are nominal forming
-references, not proven final blanks. Match the tint across all three sleeves.
+The internal LED-to-ring gap starts at 1.0 mm. The printed rings transmit and
+scatter light by an unmeasured amount. Approve their daytime colour, LED
+pattern and afterglow from production-wall samples at the permitted power
+limit. Do not substitute another material or relax a fit requirement without
+a new design decision.
 
 ## Assembly and repair
 
 1. Measure the boards, pack, LED strips and sheet stock. Set the saved spreadsheet.
    Rebuild. Laser-cut the one wood grid, front sheet and keyed rear mirror. Use
    `front-coating.svg` only as a coating map, not a cut file. Apply kerf once in CAM.
-2. Pass the five small fit-sample checks, then print the 13 pieces in their exported
+2. Pass all thirteen fit-sample checks, then print the 16 pieces in their exported
    orientations. Check flatness, nut slots,
-   strap passages, bores, collars and sleeve seats. Fit-test hardware first.
-3. Load the captive nuts, including ten M2 nuts for the hatch and vent guards.
+   strap passages, bores, collars and ring seats. Fit-test hardware first.
+3. Load the captive nuts, including fourteen M2 nuts for the hatch, vent guards, and controller.
    Fit the two necklace brackets and their independent
    screws. Use washers and full nut engagement. Smooth the rounded webbing slots.
-4. Fit the LED strips and rear mirror. Seat both cavity sleeves in their shoes.
-   Fit the outer sleeve on the barrel seats. Keep all three seams at the top.
+4. Fit the LED strips and rear mirror. Seat both cavity rings in their shoes.
+   Fit the whole outside ring on its three barrel seats.
 5. Seat the circle PCB, three attached rim spacers and the single wood grid.
    Check all LED clearances. Fit the front sheet, soft washers and metal washers.
    Tighten the six body bolts against the stops. Check that the grid stays free
@@ -277,7 +219,7 @@ references, not proven final blanks. Match the tint across all three sleeves.
 8. For battery or board repair, switch off, support the frame, remove the rear
    screws, and disconnect service leads. Leave the optical-stack bolts tightened.
    For optical repair, remove the front bolts and lift the sheet, grid/spacers,
-   sleeves and mirror. Replacement parts do not require breaking frame glue joints.
+   rings and mirror. Replacement parts do not require breaking frame glue joints.
 
 The rear holds Sparkle Motion at (47,20), BlackPill, GPS, IMU, RF95, the divider,
 and the Pololu boost at (72,-28) mm. Board envelopes remain provisional. The
@@ -306,7 +248,7 @@ Each guard uses two M2 screws, replacing the bonded feet. Its 1.5 mm stand-off
 keeps the roof clear of the membrane. The roof prints flat on the bed. Two M2
 screws also retain the thicker USB cover; its screws now enter replaceable metal
 nuts rather than plastic pilot holes. The ten side-loaded nut pockets are
-integral with the rear, so the printed part count stays **13**. This change adds
+integral with the rear, so the printed part count stays **16**. This change adds
 eight vent screws and ten nuts. Use the same M2 nut type throughout. Select screw
 length with the actual gasket, cover and nut stack; tips must clear electronics.
 
@@ -320,27 +262,19 @@ frame replacement is required.
 
 ## Ordering a print from a service
 
-Keep the deck, barrel and rear as full, single-piece circles. Supply the STL
-orientations, material choice and this assembly guide. Require the supplier to
-review the mating-face flatness, six body-hole positions, collar stops and nut
-pockets. Agree on the allowed errors before ordering; general print tolerances
-do not establish functional fit or flatness. Have the supplier print the fit
-samples with the production material and settings first. A full-size barrel
-still needs inspection after cooling.
+Supply all sixteen whole printed parts and their thirteen fit samples. Require a
+300 mm printer, the specified structural PETG and Ultraglow Green, the
+orientations above, and an agreement to inspect functional fits. The supplier
+must print the samples with production settings and inspect the actual ring
+paths before a full order.
 
-[Xometry's standards](https://www.xometry.com/manufacturing-standards/) require
-individual review for guaranteed tolerances and otherwise let the supplier
-choose orientation. [Protolabs Network's FDM guidance](https://www.hubs.com/knowledge-base/how-design-parts-fdm-3d-printing/)
-describes hole undersizing and build-direction effects.
-[Xometry's design guide](https://xometry.pro/en/articles/fdm-design-tips/)
-supports local ribs and stronger roots rather than excessive solid thickness.
-The dimensions here remain specific starting values for this design.
-
-PA12 SLS or MJF is a possible service alternative, not a verified drop-in
-material change. Request a fresh fit and flatness review for that process;
-[Protolabs Network](https://www.hubs.com/knowledge-base/hp-mjf-vs-sls-3d-printing-technology-comparison/)
-warns that both powder processes can warp large flat parts. No supplier has
-reviewed this design or agreed to its tolerances yet.
+After the full parts cool, reject cracks, incomplete walls, distortion and
+lifted edges. Dry-assemble the full set on a flat reference. Require joint
+gaps no greater than 0.3 mm, free screw passage, full nut engagement,
+retained rings, specified optical gaps, and independent rear removal. Do not
+use bolts to flatten parts. Weigh the completed assemblies. Repeat the
+suspension, sustained-load, cyclic-load and service tests below. Keep thermal
+and dust acceptance separate from print and assembly approval.
 
 ## Sources, exports and checks
 
@@ -369,7 +303,8 @@ Godot scene metadata. Populated boards count once. Only installed strip and wire
 lengths enter worn mass. Brims, fit samples, unused stock, spares and the charger
 do not enter worn mass.
 
-Printed PETG uses net CAD solid volume at 1.27 g/cm³ as a conservative basis;
+Structural PETG uses net CAD solid volume at 1.27 g/cm³. Glow PETG uses
+Prusa’s published 1.5 g/cm³ density;
 its range allows for infill and print variation. Acrylic uses 1.19 g/cm³.
 Wood uses the editable density, nominally 0.60 g/cm³, with a 0.40–0.80 range.
 Slicer material estimates include brims and have a separate label in `parts.json`.
@@ -386,27 +321,21 @@ pocket uses **0.4 mm total across-flats allowance and 0.3 mm thickness allowance
 Thus M3 pockets are 5.9 mm across flats × 2.7 mm; M2 pockets are 4.4 × 1.9 mm.
 Every loading mouth has the same width and height as its pocket. These are
 starting fit-test dimensions. Do not force a nut or substitute a taller locknut.
-The [selected nut dimensions](component-inventory.json) also define the CAD
-screw, nut and washer envelopes. The M3 washers are 7 mm OD × 3.2 mm ID × 0.55 mm.
-M2 washers are 5 × 2.2 × 0.35 mm. The six soft front retention washers
-are 9 mm OD × 6.2 mm ID, cut from 0.5 mm silicone stock with the
-[washer template](exports/soft-front-washer.svg). Their nominal compressed
-height is 0.3 mm; verify compression force and sheet retention with the fit sample. Check actual hardware before full-size printing.
+The [selected nut dimensions](component-inventory.json) define the CAD
+screw, nut and washer envelopes. Standard M3 washers are 7 mm OD; the six
+front metal washers are 9 mm OD. M2 washers are 5 mm OD. The six soft front
+retention washers are 9 mm OD × 6.4 mm ID, cut from 0.020 inch
+[Stockwell SG-30 GP silicone](https://www.stockwell.com/data-sheets/sg-series-solid-silicone.pdf)
+using the [washer template](exports/soft-front-washer.svg). Target 60% of
+measured free thickness when compressed. Test the front clamp limit with
+actual stock and hardware.
 
-Print the three additional suspension samples:
-[bracket](exports/FitSuspensionBracket.3mf),
-[frame and captive seat](exports/FitSuspensionFrame.3mf), and
-[rear clearance](exports/FitSuspensionRear.3mf).
-These use the actual right bracket and adjoining model geometry. Assemble them
-with the selected M3 × 45 mm body bolt, M3 × 12 mm anchor screw, nuts and washers.
-Check that washers sit flat, nuts load fully, the rear clears both fasteners,
-and the webbing passes without a sharp lip. The bracket keeps its 5 mm thickness
-and 14 mm web sections. Rounded web transitions add material. Slot lips have
-0.5 mm rounds. An upper hub routes the left primary web above the vent nut; the right
-primary web has a direct clear path.
-Secondary anchors are at (±97,51) mm; all vent mounts stay at their original
-positions. Rear washer access has a 3.8 mm radius. The automated checks include
-nominal hardware collisions and radial nut loading paths.
+Print both bracket arrangements, their frame seat, and their rear clearance
+samples listed above. Use the actual M3 × 45 mm body bolt, M3 × 12 mm anchor
+screw, nuts, washers and webbing. Check the 5 mm thick brackets and 14 mm main
+webs, rounded slot lips, separate anchors, 0.4 mm side clearance, and rear
+removal. The slot centres are at (±84,64) mm; the left routed hub is at
+(-99,59.5) mm. Check protected vent and hatch nut bosses remain intact.
 
 Keep the main circles whole. The continuous 1 mm rear skin and 1.8 × 2 mm ribs
 remain. Internal foot windows remove plastic under board bearing lips; end ribs,
@@ -421,12 +350,12 @@ Give the print service these inspection requirements:
 - Remove brims and loose material. Reject cracks, lifted edges and incomplete walls.
 - Dry-stack deck, barrel and rear on a flat reference. Joint faces must seat
   without rocking or a gap greater than 0.3 mm. **Do not use bolts to pull the circles flat.**
-- Check all six collar heights: 38.5 mm from the assembly rear datum, within
+- Check all six collar heights: the saved collar stop height from the assembly rear datum, within
   0.2 mm; check that each washer stops on its collar before it loads the acrylic.
 - Pass the selected screws through every aligned hole by hand. Check all nut
   loading mouths, full nut seating, flat washer contact and thread engagement.
 - Check the 0.5 mm wood-to-sheet gap, at least 0.5 mm LED-to-wood clearance,
-  11.2 mm nominal mirror separation, sleeve seats and independent rear removal.
+  11.2 mm nominal mirror separation, ring seats and independent rear removal.
   Reject optical contact, forced fits or a blocked service path.
 
 **Defer compression sleeves in this revision.** A sleeve would need to span the
@@ -451,7 +380,7 @@ Physical printing, flatness, static strength, sustained/repeated load and clamp
 retention remain **unverified**. Do not treat CAD or slicing as release evidence.
 
 **SC-ENCLOSURE physical TODOs:** verify actual materials, stock, kerf, circle
-registration, formed sleeves, coating, diffuser uniformity, cell light leakage,
+registration, whole printed rings, coating, diffuser uniformity, cell light leakage,
 fit, nut retention, washer compression, sealing, connector access, thermal limits,
 magnetic effects and four-hour runtime. Test complete suspension off-body at the
 existing provisional 100 N per-side static target for 60 seconds in hanging and pull-out

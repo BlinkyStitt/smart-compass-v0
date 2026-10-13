@@ -145,12 +145,15 @@ class CadWorkflowTests(unittest.TestCase):
             (staged.root / cad.MASTER).write_bytes(b'rebuilt model')
             self.write(cad.EXPORTS + '/Obsolete.stl', b'old mesh')
             self.write(cad.EXPORTS + '/Obsolete.3mf', b'old project')
+            for path in cad.RETIRED_EXPORTS:
+                self.write(path, b'old forming template')
             self.write(cad.EXPORTS + '/parts.json',
                        json.dumps({'stl_files': ['Part.stl', 'Obsolete.stl']}).encode())
             original = cad.hashes(self.snapshot, cad.INPUTS)
             cad.publish(self.root, staged, original, {'freecad': ['test']})
             self.assertFalse((self.root / cad.EXPORTS / 'Obsolete.stl').exists())
             self.assertFalse((self.root / cad.EXPORTS / 'Obsolete.3mf').exists())
+            self.assertTrue(all(not (self.root / path).exists() for path in cad.RETIRED_EXPORTS))
             self.assertEqual(self.snapshot.read(cad.MASTER), b'rebuilt model')
             cad.check_freshness(self.snapshot)
 

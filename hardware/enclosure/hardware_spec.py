@@ -46,6 +46,8 @@ def stations(p):
     for i,(x,y) in enumerate([(x,y) for x in (-95,95) for y in (-30,30)]):
         for j,offset in enumerate((-11,11)):
             result.append((f'Vent{i}{j}','M2',x,y+offset,-p['structural_wall']-1.5-WASHERS['M2']['thickness'],1,8,2.5))
+    for i,(dx,dy) in enumerate([(dx,dy) for dx in (-22.86,22.86) for dy in (-13.97,13.97)]):
+        result.append((f'Sparkle{i}','M2',p['sparkle_x']-dx,p['sparkle_y']-dy,p['rear_thickness']+4+1.6+WASHERS['M2']['thickness'],-1,6,2.5))
     for i,x in enumerate((25,71)):
         result.append((f'Hatch{i}','M2',x,54,-p['structural_wall']-.35-WASHERS['M2']['thickness'],1,8,2.5))
     return result
@@ -79,7 +81,7 @@ def add_envelopes(b):
         shaft=Part.makeCylinder(diameter/2,length,App.Vector(x,y,seat),App.Vector(0,0,direction))
         cap=Part.makeCylinder(head/2,h,App.Vector(x,y,seat),App.Vector(0,0,-direction))
         add(name+'Screw',shaft.fuse(cap),f'DIN 912 {size} x {length}',.42 if name.startswith('Body') else -.23)
-        washer(name+'Washer',size,x,y,seat-WASHERS[size]['thickness'] if direction==-1 else seat,.39 if name.startswith('Body') else -.20)
+        washer(name+'Washer','M3_front' if name.startswith('Body') else size,x,y,seat-WASHERS['M3_front' if name.startswith('Body') else size]['thickness'] if direction==-1 else seat,.39 if name.startswith('Body') else -.20)
         # Top body washer lies BELOW the screw seat; rear washers lie ABOVE.
         if nut_z is not None:
             angle=math.degrees(math.atan2(y,x))+90 if size=='M3' else 0
@@ -87,7 +89,7 @@ def add_envelopes(b):
     for i,(x,y) in enumerate(mounting_points(b.p)):
         bottom=b.p['rear_thickness']
         soft=SOFT_WASHER
-        soft_z=b.p['front_plane_z']+b.p['acrylic_thickness']
+        soft_z=b.p['front_plane_z']+b.p['front_acrylic_thickness']
         envelope=Part.makeCylinder(soft['od']/2,soft['compressed_thickness'],App.Vector(x,y,soft_z)).cut(
             Part.makeCylinder(soft['id']/2,soft['compressed_thickness'],App.Vector(x,y,soft_z)))
         add(f'FrontSoftWasher{i}',envelope,'Custom silicone front retention washer, compressed envelope',.37)

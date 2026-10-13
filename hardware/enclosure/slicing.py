@@ -24,7 +24,9 @@ def executable():
 
 def settings(spec, name):
     bracket = name.startswith(('NecklaceLink', 'FitSuspensionBracket'))
-    return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {})
+    ring = name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing'))
+    profile = spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck')) else {}
+    return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile
 
 
 def project_names(inventory):
@@ -91,6 +93,15 @@ def check(root, fresh=True):
             mass = re.search(r'; filament used \[g\] = ([\d.]+)',gcode)
             if not mass or layers<2 or ';TYPE:External perimeter' not in gcode or ';TYPE:Support material' in gcode:
                 raise cad.CadError('Missing or unsupported toolpaths: '+name)
+            if name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing')):
+                # The thin wall must slice as two nominal paths around one contour.
+                # PrusaSlicer emits these as a single external-perimeter loop.
+                wall = gcode.split(';TYPE:External perimeter',1)[1]
+                widths = [float(value) for value in re.findall(r';WIDTH:([\d.]+)',wall)]
+                nominal = float(expected['extrusion_width'])
+                if (not widths or min(widths) < nominal-.04 or max(widths) > nominal+.04
+                    or any(f';TYPE:{kind}' in wall for kind in ('Internal perimeter','Internal infill','Gap fill','Solid infill'))):
+                    raise cad.CadError('Ring wall deviates from two nominal paths: '+name)
             if name in sample_names:
                 sample_total += float(mass[1])
             else:

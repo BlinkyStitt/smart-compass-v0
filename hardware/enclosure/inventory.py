@@ -14,16 +14,16 @@ def resolve(spec, volumes, p):
     for row in rows:
         formula = row.get('mass_formula')
         if formula:
-            if formula not in ('petg_volume','acrylic_volume','wood_volume'):
+            if formula not in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume'):
                 raise ValueError('Unknown mass formula: '+str(formula))
             if 'mass_g_per_unit' in row or 'mass_range_g_per_unit' in row:
                 raise ValueError('A component must specify a mass formula or a literal mass, not both: '+row['id'])
             volume = geometry[row['cad_part']]['volume_cm3']
-            density = 1.27 if formula=='petg_volume' else 1.19 if formula=='acrylic_volume' else p['wood_density_g_cm3']
+            density = 1.5 if formula=='glow_petg_volume' else 1.27 if formula in ('petg_volume','glow_petg_volume') else 1.19 if formula=='acrylic_volume' else p['wood_density_g_cm3']
             mass = volume*density
             row['mass_g_per_unit'] = mass
             row['mass_range_g_per_unit'] = ([volume*.4,volume*.8] if formula=='wood_volume'
-                                           else [mass*.70,mass*1.08] if formula=='petg_volume'
+                                           else [mass*.70,mass*1.08] if formula in ('petg_volume','glow_petg_volume')
                                            else [mass*.9,mass*1.1])
             if 'bounds_mm' in geometry[row['cad_part']]:
                 row['dimensions'] += '; CAD bounds '+ ' x '.join(f'{v:.2f}' for v in geometry[row['cad_part']]['bounds_mm'])+' mm'
@@ -55,7 +55,7 @@ def validate(rows, volumes=None):
                 raise ValueError('Incomplete inventory '+r['id']+': '+key)
     if volumes is not None:
         printed={v['name'] for v in volumes if v['printed']}
-        accounted={r['cad_part'] for r in rows if r.get('mass_formula')=='petg_volume'}
+        accounted={r['cad_part'] for r in rows if r.get('mass_formula') in ('petg_volume','glow_petg_volume')}
         if printed != accounted:
             raise ValueError('Printed inventory differs from manufactured geometry')
 

@@ -11,7 +11,7 @@ just demo
 ```
 
 The saved FreeCAD model now uses the selected clear-centre finish on one
-250 × 1.5 mm sheet. The demo compares that coating with a full-mirror coating on
+250 mm sheet of 0.060 inch clear acrylic. The demo compares that coating with a full-mirror coating on
 the same mechanical assembly. Both have a black masked outer rim.
 
 ![Indoor front comparison](../hardware/enclosure/exports/demo-front-indoor.png)
@@ -31,9 +31,11 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 [Explode and reassemble (GIF)](../hardware/enclosure/exports/exploded.gif) ·
 [Full-resolution video](../hardware/enclosure/exports/exploded.mp4)
 
+The preview shows pale green glow PETG in daylight and applies an assumed green bias to LED output. It does not simulate stored afterglow.
+
 The 24-second exploded loop separates the current assembly, pauses with its
 layers apart, then brings it back together. It keeps the front sheet and each
-large printed circle whole. The centre module, paired sleeves and LED rows,
+large printed circle whole. The centre module, paired printed rings and LED rows,
 and rear electronics move as groups. The camera stays on the front side.
 Parts, camera and moving rainbow return to their starting states at the loop
 boundary. These are diagram positions, not removal paths or service clearances.
@@ -49,7 +51,7 @@ the other side and back. Camera position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
 colour cycles per camera sweep. Emission scale stays at 2: no pulsing, blackout
 intervals or abrupt colour changes. Each loop shows the centre and all three
-rings, with night light, a 0.46 m distance, fixed exposure 1, and assumed sleeve
+rings, with night light, a 0.46 m distance, fixed exposure 1, and assumed printed-ring
 diffusion 0.65. These are illustration settings, not measurements.
 
 The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
@@ -69,7 +71,7 @@ rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
   direction remain adjustable. Exposure stays at 1 unless you move its slider.
 - Adjust front reflectance and transmission. Moving either control reduces
   the other when needed to keep their sum at or below 1.
-- Adjust sleeve transmission, sleeve diffusion and centre diffusion. These
+- Adjust glow-ring transmission, glow-ring diffusion and centre diffusion. These
   are assumptions, not measured material values. Scroll the control panel to
   reach the view controls.
 
@@ -91,15 +93,15 @@ The opaque LED strips/carriers terminate rays at these boundaries. Each mirror
 reflection reduces the remaining contribution. The shader stops below 0.1%,
 after 32 reflections, at an opaque boundary, or when a ray exits the cavity.
 The front coating reflects the environment. The cavity does not use screen-space
-reflections. The direct sleeves, circle cells and reflected rings use one LED
+reflections. The direct printed rings, circle cells and reflected rings use one LED
 colour texture, in the CAD pixel order.
 
 The first three patterns use the formulas in `design-v2.md`, in linear RGB.
 Each circle cell uses its CAD aperture and LED position. A variable Gaussian
-spread approximates the centre diffuser. One shared sleeve model spreads each LED
+spread approximates the centre diffuser. One shared ring model spreads each LED
 across neighbouring angles and height for both direct and reflected light. It
 uses a continuous surface with gentle LED peaks, without rectangular package
-masks. Mirror attenuation still reduces successive reflected copies. It treats the dark acrylic as a
+masks. Mirror attenuation still reduces successive reflected copies. It treats the glow PETG as a
 transmitting, emitting surface backed by an opaque strip. These are design
 approximations; the demo does not model scattering through an acrylic volume,
 refraction, polarisation, coating angle response, wavelength response, real
@@ -112,25 +114,25 @@ Default optical assumptions:
 | Front mirror reflectance / transmission | 0.65 / 0.25 |
 | Rear mirror reflectance | 0.94 |
 | Clear centre reflectance / transmission | 0.04 / 0.80 |
-| Sleeve transmission | 0.40 |
-| Sleeve diffusion / centre diffusion | 0.65 / 0.65 |
+| Glow-ring transmission | 0.40 |
+| Glow-ring diffusion / centre diffusion | 0.65 / 0.65 |
 | LED emission scale / exposure | 2.0 / 1.0 |
 
 The four light presets use relative scene intensities, not measured lux. The
-60% FreeCAD display transparency has no role in these values. Keep brightness,
+CAD display transparency has no role in these values. Keep brightness,
 coating, diffusion, fit, strength, dust and thermal tests in the existing
 `SC-ENCLOSURE` physical TODOs.
 
 ## Selected mechanical assembly
 
-The [enclosure guide](../hardware/enclosure/README.md) explains the 13 printed
+The [enclosure guide](../hardware/enclosure/README.md) explains the 16 printed
 parts, one-piece clear-centre front, assembly order, print settings and separate
 rear service screws. The [section](../hardware/enclosure/exports/assembly-section.svg)
 comes from the actual saved solids. The old quarter panels, seam straps, centre
 snap rim and separate front acrylic cut files have been removed.
 
-The rear mirror and all three sleeves remain. Their reflecting gap stays at
-11.2 mm. The outer LED row follows the centre of its revised sleeve. `scene.json`
+The rear mirror and all three printed glow rings remain. Their reflecting gap stays at
+11.2 mm. The outer LED row follows the centre of its shorter outside ring. `scene.json`
 records the native LED faces, part bounds, selected finish and complete installed
 mass estimates for the pendant, necklace and external-battery option.
 The alternate coating changes no geometry, camera, light, brightness or time.

@@ -33,19 +33,21 @@ INPUTS = (
 )
 FIXED_EXPORTS = frozenset('''
 amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
-diffusers.png edge-diffuser.svg edge.png electronics.png
+diffusers.png edge.png electronics.png
 exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
-front.png halo-ring-diffuser.svg inner-ring-diffuser.svg
+front.png
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
 amulet.glb scene.json lighting-demo.mp4
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
-FitSuspensionBracket.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
+FitSuspensionBracket.stl FitSuspensionBracketLeft.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
+FitController.stl FitRingHalo.stl FitRingInner.stl FitRingOutside.stl
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
 GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf'}
+RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg'))
 
 
 class CadError(Exception):
@@ -213,7 +215,7 @@ def publish(root, staged, original, tools):
     # publication cannot pass the freshness check with mixed generations.
     for path in sorted(exports | {MASTER, 'design-v2.md'}):
         atomic_write(root / path, staged.read(path))
-    for path in sorted(previous_meshes - exports):
+    for path in sorted((previous_meshes | RETIRED_EXPORTS) - exports):
         (root / path).unlink(missing_ok=True)
     atomic_write(root / MANIFEST, (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode())
     check_freshness(Snapshot(root))

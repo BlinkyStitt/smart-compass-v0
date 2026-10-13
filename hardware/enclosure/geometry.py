@@ -74,7 +74,7 @@ def optical_dimensions(p):
     inner = ring_radius(p['inner_count'], p)
     outer = ring_radius(p['outer_count'], p)
     front = p['front_plane_z']
-    rear = p['mirror_back_z'] + p['mirror_back_thickness']
+    rear = p['rear_mirror_front_z']
     return {
         'inner_radius': inner,
         'outer_radius': outer,
@@ -92,7 +92,7 @@ def optical_dimensions(p):
 def strip_bottom(name, p):
     """Centre the outer row in the side diffuser; mirror rows share one Z."""
     if name == 'Outer':
-        return (p['edge_bottom_z'] + p['front_plane_z'] - p['strip_width']) / 2
+        return (p['edge_bottom_z'] + p['front_plane_z'] - p['ring_front_clearance'] - p['strip_width']) / 2
     return p['strip_bottom_z']
 
 
@@ -106,18 +106,18 @@ def battery_centres(p):
 
 
 def necklace_anchors(p, side):
-    eye = (side*82, 62)
+    eye = (side*84, 64)
     primary = min(mounting_points(p), key=lambda point: math.dist(point, eye))
     return eye, primary, (side*97, 51)
 
 
 def cavity_diffusers(p):
-    """Curved acrylic on the emitting side of both mirror-cavity strips."""
+    """Whole printed rings on the emitting side of both mirror-cavity strips."""
     halo_face = ring_radius(p['halo_count'],p)+p['strip_thickness']/2+p['ring_led_depth']
     inner_face = ring_radius(p['inner_count'],p)-p['strip_thickness']/2-p['ring_led_depth']
     thickness,gap = p['ring_diffuser_thickness'],p['ring_diffuser_led_gap']
-    bottom = p['mirror_back_z']+p['mirror_back_thickness']+p['ring_diffuser_end_gap']
-    top = p['front_plane_z']-p['ring_diffuser_end_gap']
+    bottom = p['mirror_back_z']+p['rear_acrylic_thickness']+p['ring_bottom_clearance']
+    top = p['front_plane_z']-p['ring_front_clearance']
     return {'Halo':{'inner':halo_face+gap,'outer':halo_face+gap+thickness,'bottom':bottom,'height':top-bottom},
             'Inner':{'inner':inner_face-gap-thickness,'outer':inner_face-gap,'bottom':bottom,'height':top-bottom}}
 
