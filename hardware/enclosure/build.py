@@ -16,6 +16,8 @@ import FreeCAD as App
 import Part
 import Sketcher
 
+from hardware_spec import nut_dimensions, hexagon
+
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom, rear_mounting_points, wood_bottom
@@ -107,14 +109,40 @@ class Builder:
             # pocket roof. A round nose leaves an unsupported crescent.
             self.box(name+'Stem',7.6,7.2,5.8,x-3.8,y-4.4,0),
             self.cone(name+'Root',4.6,3.8,.8,self.p['rear_skin_thickness'],x,y)])
-        radius = 4.4/math.sqrt(3)
-        polygon = [(x+radius*math.cos(math.pi/6+j*math.tau/6),y+radius*math.sin(math.pi/6+j*math.tau/6)) for j in range(6)]
-        # Hex flats face the loading direction; allow 0.4 mm across flats and
-        # 0.3 mm over nominal 1.6 mm M2 nut thickness. Test actual hardware.
-        pocket = self.profile(name+'Nut',[polygon],2.4,1.9)
-        entry = self.box(name+'Entry',4.4,5,1.9,x-2.2,y,2.4)
+        pocket, entry = self.nut_pocket(name, 'M2', x, y, 2.4, 5)
         bore = self.cylinder(name+'Bore',1.2,10,-1,x,y)
         return boss, [pocket,entry,bore]
+
+    def nut_pocket(self, name, size, x, y, z, entrance_length):
+        """One hex construction and one allowance for every captive plain nut."""
+        flats, thickness = nut_dimensions(size, pocket=True)
+        pocket = self.profile(name+'Nut', [hexagon(x,y,flats)], z, thickness)
+        entry = self.box(name+'Entry', flats, entrance_length, thickness, x-flats/2,y,z)
+        return pocket, entry
+
+    def fillet(self, name, base, radius, edges):
+        obj = self.doc.addObject('Part::Fillet', name)
+        obj.Base = base
+        obj.Edges = [(i, radius, radius) for i in edges]
+        self.hide(base)
+        return obj
+
+    def root_blend(self, name, length, edge, y, z, radius=.6):
+        """Add a tangent quarter-round at a straight wall/skin junction."""
+        block = self.box(name+'Block',radius,length,radius,edge,y,z)
+        cylinder = self.cylinder(name+'Round',radius,length,0)
+        cylinder.Placement = App.Placement(App.Vector(edge+radius,y,z+radius),App.Rotation(App.Vector(1,0,0),-90))
+        return self.cut(name,block,cylinder)
+
+    def circular_root(self,name,radius,z,x,y,round_radius=.6,up=True):
+        # Net additive quarter-round; tangent to the boss and adjoining plane.
+        bottom=z if up else z-round_radius
+        ring=self.annulus(name+'Ring',radius,radius+round_radius,bottom,round_radius)
+        torus=self.doc.addObject('Part::Torus',name+'Tool')
+        torus.Radius1,torus.Radius2=radius+round_radius,round_radius
+        torus.Placement.Base=App.Vector(x,y,z+round_radius if up else z-round_radius)
+        ring.Placement.Base=App.Vector(x,y,0)
+        return self.cut(name,ring,torus)
 
     def top_mark(self, name, y, z, upright=False):
         """Font-independent TOP strokes, recessed in a non-mating surface."""
@@ -249,24 +277,52 @@ def build(p=None):
         eye,bolt,secondary = necklace_anchors(p,side)
         x,y = eye
         webs = []
-        for j,target in enumerate((bolt,secondary)):
-            dx,dy = target[0]-x,target[1]-y
-            length = math.hypot(dx,dy)
-            nx,ny = -7*dy/length,7*dx/length
-            polygon = [(x+nx,y+ny),(x-nx,y-ny),(target[0]-nx,target[1]-ny),(target[0]+nx,target[1]+ny)]
-            webs.append(b.profile(f'NecklaceWeb{i}{j}',[polygon],E('rear_thickness'),E('necklace_link_thickness')))
+        # A common upper hub keeps the full-width webs above both vent mounts.
+        # Each primary bolt retains its original position on the optical circle.
+        hub=(side*94,58)
+        # The lower primary bolt needs a routed web; the upper bolt has a direct clear path.
+        primary_path=(eye,hub,bolt) if bolt[1]<eye[1] else (eye,bolt)
+        for j,path in enumerate((primary_path,(eye,secondary))):
+            for k,(start,target) in enumerate(zip(path,path[1:])):
+                dx,dy=target[0]-start[0],target[1]-start[1]
+                length=math.hypot(dx,dy)
+                nx,ny=-7*dy/length,7*dx/length
+                polygon=[(start[0]+nx,start[1]+ny),(start[0]-nx,start[1]-ny),
+                         (target[0]-nx,target[1]-ny),(target[0]+nx,target[1]+ny)]
+                webs.append(b.profile(f'NecklaceWeb{i}{j}{k}',[polygon],E('rear_thickness'),E('necklace_link_thickness')))
+        if len(primary_path)==3:
+            webs.append(b.cylinder(f'NecklaceHub{i}',7,E('necklace_link_thickness'),E('rear_thickness'),*hub))
         link = b.fuse(f'NecklaceLinkBlank{i}',webs+[
             b.cylinder(f'NecklaceEyePad{i}',11,E('necklace_link_thickness'),E('rear_thickness'),x,y),
             b.cylinder(f'NecklaceBoltPad{i}',6,E('necklace_link_thickness'),E('rear_thickness'),*bolt),
             b.cylinder(f'NecklaceAnchorPad{i}',6,E('necklace_link_thickness'),E('rear_thickness'),*secondary)])
+        doc.recompute()
+        # Concave transitions add material; convex pad outlines stay unchanged.
+        edges = []
+        for n, edge in enumerate(link.Shape.Edges, 1):
+            if edge.BoundBox.ZLength < p['necklace_link_thickness']-.01:
+                continue
+            v = edge.Vertexes[0].Point
+            count = sum(link.Shape.isInside(App.Vector(v.x+dx,v.y+dy,rear+2),1e-7,False)
+                        for dx,dy in ((.05,.05),(.05,-.05),(-.05,.05),(-.05,-.05)))
+            if count >= 3:
+                edges.append(n)
+        link = b.fillet(f'NecklaceWebRounds{i}',link,.8,edges)
         # Capsule slot: 12 x 4 mm, with rounded ends for replaceable 10 mm tape.
         slot = b.fuse(f'NecklaceSlot{i}',[
             b.box(f'NecklaceSlotWeb{i}',8,4,p['necklace_link_thickness'],x-4,y-2,rear),
             b.cylinder(f'NecklaceSlotEnd{i}a',2,p['necklace_link_thickness'],rear,x-4,y),
             b.cylinder(f'NecklaceSlotEnd{i}b',2,p['necklace_link_thickness'],rear,x+4,y)])
-        link = b.cut(f'NecklaceLink{i}',link,[
+        link = b.cut(f'NecklaceDrilled{i}',link,[
             slot,b.cylinder(f'NecklaceBolt{i}',E('fastener_hole_radius'),E('necklace_link_thickness'),E('rear_thickness'),*bolt),
             b.cylinder(f'NecklaceAnchorBore{i}',1.7,E('necklace_link_thickness'),E('rear_thickness'),*secondary)])
+        doc.recompute()
+        # Round both lips of the webbing slot; retain the 5 mm plate and webs.
+        slot_edges = [n for n,e in enumerate(link.Shape.Edges,1)
+                      if e.BoundBox.ZLength < 1e-7
+                      and e.BoundBox.XMin >= x-6.01 and e.BoundBox.XMax <= x+6.01
+                      and e.BoundBox.YMin >= y-2.01 and e.BoundBox.YMax <= y+2.01]
+        link = b.fillet(f'NecklaceLink{i}',link,.5,slot_edges)
         b.add(link,'Manufactured',f'Necklace bracket {i+1} - replaceable two-anchor webbing plate',(.20,.22,.25),material='Printed PETG; 5 mm plate; print flat, solid local fill; two bolted frame connections; physical strength TODO')
         suspension.append(link)
         top = rear+p['necklace_link_thickness']
@@ -275,13 +331,15 @@ def build(p=None):
         radial = math.hypot(sx,sy)
         rib = b.box(f'AnchorRib{i}',120-radial,8,deck_bottom-top,radial-1,-4,top)
         rib.Placement = App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),math.degrees(math.atan2(sy,sx)))).multiply(rib.Placement)
-        anchor_bosses += [b.cylinder(f'AnchorBoss{i}',5.5,deck_bottom-top,top,sx,sy),rib]
-        anchor_tools.append(b.cylinder(f'AnchorScrewPassage{i}',1.7,6,top,sx,sy))
-        nut = [(sx+3.25*math.cos(math.pi/6+j*math.tau/6),sy+3.25*math.sin(math.pi/6+j*math.tau/6)) for j in range(6)]
-        anchor_tools.append(b.profile(f'AnchorNutPocket{i}',[nut],top+3.4,2.8))
-        entry = b.box(f'AnchorNutEntry{i}',10,5.8,2.8,radial-10,-2.9,top+3.4)
-        entry.Placement = App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),math.degrees(math.atan2(sy,sx)))).multiply(entry.Placement)
-        anchor_tools.append(entry)
+        anchor_bosses += [b.cylinder(f'AnchorBoss{i}',5.5,deck_bottom-top,top,sx,sy),
+                          b.circular_root(f'AnchorRoot{i}',5.5,deck_bottom,sx,sy,up=False),rib]
+        anchor_tools.append(b.cylinder(f'AnchorScrewPassage{i}',1.7,8,top,sx,sy))
+        # Local +Y is the nut loading direction; rotate the complete pocket.
+        pocket,entry = b.nut_pocket(f'AnchorPocket{i}','M3',0,0,top+3.4,10)
+        rotation=App.Rotation(App.Vector(0,0,1),math.degrees(math.atan2(sy,sx))+90)
+        for item in (pocket,entry):
+            item.Placement=App.Placement(App.Vector(sx,sy,0),rotation).multiply(item.Placement)
+        anchor_tools += [pocket,entry]
 
     # Annular mirrors surround the circle. The outer strip emits through the
     # open edge band: no opaque barrel lies in front of its LED faces.
@@ -323,9 +381,9 @@ def build(p=None):
     for i,(x,y) in enumerate(rear_mounting_points(p)):
         angle = math.degrees(math.atan2(y,x))
         boss = b.fuse(f'RearMountBoss{i}',[b.cylinder(f'RearMountRound{i}',4.5,deck_bottom-rear,rear,112.5,0),b.box(f'RearMountRib{i}',7,8,deck_bottom-rear,112,-4,rear)])
-        nut = [(112.5+3.35*math.cos(math.pi/6+j*math.tau/6),3.35*math.sin(math.pi/6+j*math.tau/6)) for j in range(6)]
-        pocket = b.profile(f'RearMountNut{i}',[nut],5.4,2.8)
-        entry = b.box(f'RearMountEntry{i}',7,5.8,2.8,106,-2.9,5.4)
+        pocket,entry = b.nut_pocket(f'RearMountPocket{i}','M3',0,0,5.4,7)
+        for item in (pocket,entry):
+            item.Placement=App.Placement(App.Vector(112.5,0,0),App.Rotation(App.Vector(0,0,1),90)).multiply(item.Placement)
         clearance = b.box(f'RearMountClearance{i}',11.6,9.6,deck_bottom-rear,107.7,-4.8,rear)
         rear_clearances.append(clearance)
         for item in (boss,pocket,entry,clearance):
@@ -388,7 +446,7 @@ def build(p=None):
     rear_cuts += [b.box('RearServiceOpening',38,18,rear+12,hatch_x-19,hatch_y-9,-1)]
     rear_cuts += [b.cylinder(f'RearHatchHole{i}',1.2,rear+12,-1,x,hatch_y) for i,x in enumerate(hatch_screws)]
     rear_cuts += [b.box(f'RearEyeClearance{i}',16,8,rear+12,x-8,58,-1) for i,x in enumerate((-82,82))]
-    rear_cuts += [b.cylinder(f'RearAnchorAccess{i}',3.3,rear+12,-1,side*97,48) for i,side in enumerate((-1,1))]
+    rear_cuts += [b.cylinder(f'RearAnchorAccess{i}',3.8,rear+12,-1,*necklace_anchors(p,side)[2]) for i,side in enumerate((-1,1))]
     # A reinforced, capped cable entry supports a belt battery without an open
     # side window. Actual gland thread, jacket and strain relief need fit checks.
     rear_cuts.append(b.cylinder('ExternalPowerBore','Parameters.external_port_diameter/2',rear+12,-1,p['external_port_x'],p['external_port_y']))
@@ -398,7 +456,8 @@ def build(p=None):
     rear_items.append(b.cylinder('ExternalPowerLand',10,E('rear_thickness'),0,p['external_port_x'],p['external_port_y']))
     for i,(x,y) in enumerate(points+rear_mounting_points(p)+vent_points+control_points+[(x,hatch_y) for x in hatch_screws]):
         r = 10 if (x,y) in vent_points else 8 if (x,y) in control_points else 6
-        rear_items.append(b.cylinder(f'RearClampLand{i}',r,E('rear_thickness'),0,x,y))
+        rear_items += [b.cylinder(f'RearClampLand{i}',r,E('rear_thickness'),0,x,y),
+                       b.circular_root(f'RearClampRoot{i}',r,p['rear_skin_thickness'],x,y)]
     rib_blanks = []
     for i,offset in enumerate((-80,-40,0,40,80)):
         rib_blanks += [b.box(f'RearRibX{i}',220,E('rear_rib_width'),E('rear_rib_height'),-110,offset-p['rear_rib_width']/2,E('rear_skin_thickness')),
@@ -407,6 +466,13 @@ def build(p=None):
     ribs.Base = b.fuse('RearRibGrid',rib_blanks)
     ribs.Tool = b.cylinder('RearRibLimit',110,p['rear_skin_thickness']+p['rear_rib_height'])
     rear_items.append(ribs)
+    for i,offset in enumerate((-80,-40,0,40,80)):
+        for j,angle in enumerate((0,90,180,270)):
+            root = b.root_blend(f'RearRibBlend{i}{j}',200,offset+p['rear_rib_width']/2,-100,p['rear_skin_thickness'])
+            root.Placement=App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),angle))
+            limited = doc.addObject('Part::Common',f'RearRibBlendLimit{i}{j}')
+            limited.Base,limited.Tool = root,ribs.Tool
+            rear_items.append(limited)
     for i,x in enumerate(hatch_screws):
         post,tools = b.service_mount(f'HatchStandoff{i}',x,hatch_y)
         rear_items.append(post)
@@ -466,16 +532,26 @@ def build(p=None):
         if key == 'sparkle':
             for i, (dx, dy) in enumerate(sparkle_holes):
                 standoff = b.cut(f'SparkleStandoff{i}', b.cylinder(f'SparkleStandBlank{i}', 2.5, rear+4, 0, x + dx, y + dy), b.cylinder(f'SparkleScrewHole{i}', 1.1, 4, rear, x + dx, y + dy))
-                carrier_items.append(standoff)
+                root = b.cone(f'SparkleRoot{i}',3.1,2.5,.6,p['rear_skin_thickness'],x+dx,y+dy)
+                carrier_items.append(b.fuse(f'SparkleMount{i}',[standoff,root]))
         else:
             # Open-ended rails avoid guessed mounting holes; straps retain each board.
             for side in (-1, 1):
                 start = x + w / 2 - 1 if side == 1 else x - w / 2 - 2.5
                 foot = b.box(f'{key}Foot{side:+}', 3.5, l + 4, rear+4, start, y - l / 2 - 2, 0)
+                side_name='Right' if side==1 else 'Left'
+                # Open windows under the bearing lip, above the continuous skin.
+                # Keep end ribs and the tie land; the outer wall remains intact.
+                inner_x = start if side==1 else start+2
+                reliefs = [b.box(f'{key}FootRelief{side_name}{j}',1.5,(l-6)/2,2.8,
+                                inner_x, yy, p['rear_skin_thickness'])
+                           for j,yy in enumerate((y-l/2+1,y+3))]
+                foot = b.cut(f'{key}OpenFoot{side_name}',foot,reliefs)
                 wall = b.box(f'{key}Wall{side:+}', 2, l + 4, 7, x + side * (w / 2 + 1.5) - 1, y - l / 2 - 2, rear)
                 rail = b.fuse(f'{key}Rail{side:+}', [foot, wall])
                 slot = b.box(f'{key}TieSlot{side:+}', 6, 6, 1.5, start - 1, y - 3, rear + 1)
-                carrier_items.append(b.cut(f'{key}TieRail{side:+}', rail, slot))
+                blend = b.root_blend(f'{key}RailRoot{side_name}',l+4,start+3.5,y-l/2-2,p['rear_skin_thickness'])
+                carrier_items.append(b.cut(f'{key}TieRail{side:+}', b.fuse(f'{key}BlendedRail{side_name}',[rail,blend]), slot))
         pcb = b.box(key + 'PCB', w, l, 1.6, x - w / 2, y - l / 2, rear + 4)
         if key == 'sparkle':
             pcb = b.cut('SparklePCBWithHoles', pcb, [b.cylinder(f'SparklePCBHole{i}', 1.25, 1.6, rear + 4, x + dx, y + dy) for i, (dx, dy) in enumerate(sparkle_holes)])
@@ -598,6 +674,8 @@ def build(p=None):
         Gui.activeDocument().activeView().viewAxonometric()
         Gui.activeDocument().activeView().fitAll()
     doc.recompute()
+    from hardware_spec import add_envelopes
+    add_envelopes(b)
     check_model(b, centres, cells)
     doc.saveAs(str(master))
     export_files(b, centres, cells)
@@ -799,7 +877,7 @@ def export_files(b, centres, cells):
     volumes = []
     nonprinted = {'WoodMask','FrontSheet','RearMirror','EdgeDiffuserSeam','HatchGasket','HaloDiffuser','InnerDiffuser'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloDiffuserPad','InnerDiffuserPad'))}
     for obj in b.parts:
-        volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted})
+        volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted,'bounds_mm':[round(getattr(obj.Shape.BoundBox,a+'Length'),3) for a in 'XYZ']})
         if obj.Name in nonprinted:
             continue
         for i,solid in enumerate(obj.Shape.Solids):
@@ -817,9 +895,9 @@ def export_files(b, centres, cells):
             print_mesh(shape).write(str(out/name))
             mesh_names.append(name)
     fit_samples = []
-    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate'),('FitOptics','OpticalDeck'),('FitService','RearPlate')):
+    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate'),('FitOptics','OpticalDeck'),('FitService','RearPlate'),('FitSuspensionBracket','NecklaceLink1'),('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate')):
         source = b.doc.getObject(parent).Shape
-        sample = optical_fit_sample(source) if name=='FitOptics' else service_fit_sample(source) if name=='FitService' else fit_sample(source,b.p)
+        sample = (source.copy() if name=='FitSuspensionBracket' else source.common(Part.makeBox(40,50,25,App.Vector(70,35,0))) if name.startswith('FitSuspension') else optical_fit_sample(source) if name=='FitOptics' else service_fit_sample(source) if name=='FitService' else fit_sample(source,b.p))
         if not sample.isValid() or len(sample.Solids)!=1:
             raise ValueError('Disconnected fit sample: '+name)
         if parent == 'BarrelFrame':
@@ -835,19 +913,11 @@ def export_files(b, centres, cells):
             raise ValueError('Invalid generator-owned STL name: '+name)
         (out/name).unlink(missing_ok=True)
     printed_volume = sum(v['volume_cm3'] for v in volumes if v['printed'])
-    acrylic_names = {'FrontSheet','RearMirror','EdgeDiffuserSeam','HaloDiffuser','InnerDiffuser'}
-    acrylic_volume = sum(v['volume_cm3'] for v in volumes if v['name'] in acrylic_names)
-    wood_volume = sum(v['volume_cm3'] for v in volumes if v['name'] == 'WoodMask')
-    wood_mass = wood_volume*b.p['wood_density_g_cm3']
-    mechanical_mass = printed_volume*1.27+acrylic_volume*1.19+wood_mass
-    mass = {'basis':'CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass',
-            'excludes':'Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier',
-            'printed_petg_g':round(printed_volume*1.27,1),'acrylic_g':round(acrylic_volume*1.19,1),
-            'wood_density_g_cm3':b.p['wood_density_g_cm3'],'wood_g':round(wood_mass,1),
-            'mechanical_subset_g':round(mechanical_mass,1),'candidate_pack_g':b.p['battery_mass_g'],
-            'internal_pack_subset_g':round(mechanical_mass+b.p['battery_mass_g'],1),
-            'external_pack_pendant_subset_g':round(mechanical_mass,1)}
-    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,'printed_volume_cm3':round(printed_volume,4),'optics_mm':optical_dimensions(b.p),'mass_estimate':mass,'fit_samples':fit_samples,'print_basis':{'bed_mm':[b.p['print_bed_x'],b.p['print_bed_y']],'margin_mm':b.p['print_margin'],'nozzle_mm':.4,'layer_mm':.2,'orientation':'STLs already placed on their intended bed face'}},indent=2)+'\n')
+    (out/'parts.json').write_text(json.dumps({'stl_files':mesh_names,'volumes':volumes,
+        'printed_volume_cm3':round(printed_volume,4),'optics_mm':optical_dimensions(b.p),
+        'parameters_for_inventory':b.p,'fit_samples':fit_samples,
+        'print_basis':{'bed_mm':[b.p['print_bed_x'],b.p['print_bed_y']],'margin_mm':b.p['print_margin'],
+                       'nozzle_mm':.4,'layer_mm':.2,'orientation':'Delivered projects preserve the intended bed face'}},indent=2)+'\n')
     svg_files(b, cells, out)
     section_drawing(b, out)
     if App.GuiUp:
@@ -888,6 +958,10 @@ def svg_files(b, cells, out):
     (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Single wood cell grid - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
     sheet_paths = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>']
     sheet_paths += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="3.300000"/>' for x,y in mounting_points(p)]
+    from hardware_spec import SOFT_WASHER
+    washer_paths=[f'<circle cx="0" cy="0" r="{SOFT_WASHER[key]/2:.6f}"/>' for key in ('od','id')]
+    (out/'soft-front-washer.svg').write_text(document(washer_paths,
+        f'Six soft front retention washers; {SOFT_WASHER["free_thickness"]:g} mm silicone stock; knife/die cut; compression must be tested',SOFT_WASHER['od']/2+1))
     (out/'fit-sheet.svg').write_text(document(['<path d="M -9,-9 H 9 V 9 H -9 Z"/>','<circle cx="0" cy="0" r="3.300000"/>'],'FIT SAMPLE ONLY: 18 mm square in actual front-sheet stock; test on FitDeck collar',9))
     (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 1.5 mm acrylic; six 6.6 mm locating holes',p['case_diameter']/2))
     (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (r,p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: clear centre r<=83; rear-facing two-way mirror 83..110.5; black rim 110.5..125',p['case_diameter']/2))

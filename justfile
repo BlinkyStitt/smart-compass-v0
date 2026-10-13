@@ -16,7 +16,7 @@ cad-check:
 cad-tests:
     python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
 
-# Slice every current STL with the checked print settings.
+# Slice the exact delivered 3MF projects and verify their effective settings.
 print-check:
     python3 hardware/enclosure/slicing.py
 

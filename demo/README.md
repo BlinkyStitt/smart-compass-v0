@@ -131,7 +131,8 @@ snap rim and separate front acrylic cut files have been removed.
 
 The rear mirror and all three sleeves remain. Their reflecting gap stays at
 11.2 mm. The outer LED row follows the centre of its revised sleeve. `scene.json`
-records the native LED faces, part bounds, selected finish and mechanical mass.
+records the native LED faces, part bounds, selected finish and complete installed
+mass estimates for the pendant, necklace and external-battery option.
 The alternate coating changes no geometry, camera, light, brightness or time.
 
 ## Checks and reproducible outputs

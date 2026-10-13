@@ -104,9 +104,12 @@ def export():
     for obj in objects:
         if obj.Name=='FrontSheet':
             continue
-        role = ('packages' if obj.Name.endswith('LEDs') else
+        role = ('hardware' if 'HardwareVariant' in obj.PropertiesList else
+                'packages' if obj.Name.endswith('LEDs') else
                 'sleeve' if obj.Name in ('HaloDiffuser','InnerDiffuser','EdgeDiffuserSeam') else 'solid')
         add(obj.Name,obj.Shape,tuple(obj.ViewObject.ShapeColor[:3]),role,obj.Label)
+        if role=='hardware':
+            parts[-1]['explosion_offset_m']=obj.ExplosionOffsetM
     # Three render regions, one manufactured sheet and one CAD source.
     sheet=source.FrontSheet.Shape
     inner=Part.makeCylinder(p['circle_diameter']/2,p['acrylic_thickness'],App.Vector(0,0,front))

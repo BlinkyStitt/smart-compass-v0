@@ -18,12 +18,12 @@ MASTER = CAD + '/smart-compass.FCStd'
 EXPORTS = CAD + '/exports'
 MANIFEST = CAD + '/exports-manifest.json'
 INPUTS = (
-    'justfile',
+    'justfile', 'design-v2.md',
     *(CAD + '/' + name for name in (
         'cad.py', 'build.py', 'check.py', 'geometry.py',
         'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
         'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
-        'test_geometry.py', 'test_cad.py', 'demo_export.py', 'slicing.py', 'print-settings.ini',
+        'test_geometry.py', 'test_cad.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
@@ -41,10 +41,11 @@ turntable.gif wood-fibonacci-mask.svg
 amulet.glb scene.json lighting-demo.mp4
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
+FitSuspensionBracket.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
-GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb'}
+GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf'}
 
 
 class CadError(Exception):
@@ -101,7 +102,9 @@ def required_exports(snapshot):
             raise CadError('Unsafe STL filename in parts.json: ' + repr(name))
     if len(set(names)) != len(names):
         raise CadError('Duplicate STL filename in parts.json')
-    return {EXPORTS + '/' + name for name in FIXED_EXPORTS.union(names)}
+    meshes = FIXED_EXPORTS.union(names)
+    projects = {str(PurePosixPath(name).with_suffix('.3mf')) for name in meshes if name.endswith('.stl')}
+    return {EXPORTS + '/' + name for name in meshes.union(projects)}
 
 
 def hashes(snapshot, paths):
@@ -200,17 +203,17 @@ def publish(root, staged, original, tools):
         'exports': hashes(staged, exports),
     }
     try:
-        previous_stls = {p for p in required_exports(Snapshot(root)) if p.endswith('.stl')}
+        previous_meshes = {p for p in required_exports(Snapshot(root)) if PurePosixPath(p).suffix in {'.stl','.3mf'}}
     except CadError:
         # Missing/damaged generated output must not prevent a rebuild. Without
         # its inventory, do not delete old meshes; the final check rejects orphans.
-        previous_stls = set()
+        previous_meshes = set()
     ensure_unchanged(root, original)
     # Replace each file atomically. Write the manifest last so an interrupted
     # publication cannot pass the freshness check with mixed generations.
-    for path in sorted(exports | {MASTER}):
+    for path in sorted(exports | {MASTER, 'design-v2.md'}):
         atomic_write(root / path, staged.read(path))
-    for path in sorted(previous_stls - exports):
+    for path in sorted(previous_meshes - exports):
         (root / path).unlink(missing_ok=True)
     atomic_write(root / MANIFEST, (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode())
     check_freshness(Snapshot(root))
@@ -236,8 +239,11 @@ def rebuild(root):
         subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', str(directory),
                         '-p', 'test_*.py', '-v'], cwd=staged.root, check=True)
         version = native_stage(freecad, directory, 'build')
+        import inventory
+        inventory.export(staged.root)
         native_stage(freecad, directory, 'check')
         import slicing
+        slicing.generate(staged.root)
         slicer_version = slicing.check(staged.root, fresh=False)
         native_stage(freecad, directory, 'demo')
         print('CAD: validate and capture interactive lighting comparisons', flush=True)
@@ -249,9 +255,10 @@ def rebuild(root):
         publish(root, staged, original, tools)
         mass = load_json(Snapshot(root), EXPORTS + '/parts.json')['mass_estimate']
         print('CAD BUILD COMPLETE: model and all exports checked; freshness manifest written.', flush=True)
-        print(f"Partial mass: {mass['mechanical_subset_g']} g mechanical; "
-              f"{mass['internal_pack_subset_g']} g with candidate battery. "
-              'Electronics, LEDs, wiring and hardware remain excluded.', flush=True)
+        print(f"Complete pendant: {mass['complete_pendant']['nominal_g']} g; "
+              f"necklace: {mass['necklace']['nominal_g']} g; "
+              f"total worn: {mass['total_worn']['nominal_g']} g. Physical mass unmeasured.", flush=True)
+
 
 
 def main():

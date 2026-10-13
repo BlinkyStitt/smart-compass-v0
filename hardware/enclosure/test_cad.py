@@ -23,6 +23,9 @@ class CadWorkflowTests(unittest.TestCase):
         for name in cad.FIXED_EXPORTS | {'Part.stl'}:
             self.write(cad.EXPORTS + '/' + name, ('export: ' + name).encode())
         self.write(cad.EXPORTS + '/parts.json', json.dumps({'stl_files': ['Part.stl']}).encode())
+        for name in cad.required_exports(self.snapshot):
+            if not (self.root / name).exists():
+                self.write(name, b'project fixture')
         self.record()
 
     def write(self, path, data):
@@ -141,11 +144,13 @@ class CadWorkflowTests(unittest.TestCase):
             staged = cad.Snapshot(Path(directory))
             (staged.root / cad.MASTER).write_bytes(b'rebuilt model')
             self.write(cad.EXPORTS + '/Obsolete.stl', b'old mesh')
+            self.write(cad.EXPORTS + '/Obsolete.3mf', b'old project')
             self.write(cad.EXPORTS + '/parts.json',
                        json.dumps({'stl_files': ['Part.stl', 'Obsolete.stl']}).encode())
             original = cad.hashes(self.snapshot, cad.INPUTS)
             cad.publish(self.root, staged, original, {'freecad': ['test']})
             self.assertFalse((self.root / cad.EXPORTS / 'Obsolete.stl').exists())
+            self.assertFalse((self.root / cad.EXPORTS / 'Obsolete.3mf').exists())
             self.assertEqual(self.snapshot.read(cad.MASTER), b'rebuilt model')
             cad.check_freshness(self.snapshot)
 

@@ -14,6 +14,8 @@ import Part
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
+import inventory
+from hardware_spec import nut_dimensions, stations
 from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, wood_bottom
 
 
@@ -181,6 +183,47 @@ def check():
         assert not any(bolt_path.common(obj.Shape).Length > 1e-7 for obj in b.parts), 'A cover blocks a body bolt'
         nut_space = Part.makeCylinder(4,6,App.Vector(x,y,-6))
         assert not any(nut_space.common(obj.Shape).Volume > .05 for obj in b.parts), 'No rear nut/tool clearance'
+    for name,size,x,y,seat,direction,length,nut_z in stations(p):
+        screw=doc.getObject(name+'Screw')
+        washer=doc.getObject(name+'Washer')
+        assert screw in b.hardware and washer in b.hardware
+        assert len(screw.Shape.Solids)==1 and len(washer.Shape.Solids)==1
+        if nut_z is None:
+            continue
+        nut=doc.getObject(name+'Nut')
+        target=doc.BarrelFrame if size=='M3' else doc.RearPlate
+        # Axial capture remains above and below each nut away from the bore.
+        if size=='M3':
+            a=math.atan2(y,x)+math.pi/2
+            for displacement in (0,1,2,3,4,6,8,10):
+                moved=nut.Shape.copy()
+                moved.translate(App.Vector(-math.sin(a)*displacement,math.cos(a)*displacement,0))
+                assert moved.common(target.Shape).Volume<1e-7, 'M3 nut loading path blocked: '+name
+            pocket=doc.getObject(('AnchorPocket'+name[-1] if name.startswith('Anchor') else 'RearMountPocket'+name[-1])+'Nut')
+            assert math.isclose(pocket.LengthFwd.Value,2.7,abs_tol=1e-7)
+            for z in (nut_z-.3,nut_z+nut_dimensions(size)[1]+.3):
+                assert target.Shape.isInside(App.Vector(x+2*math.cos(a),y+2*math.sin(a),z),1e-7,True), 'M3 nut lacks axial capture: '+name
+    assert nut_dimensions('M3',True)==(5.9,2.7)
+    assert nut_dimensions('M2',True)==(4.4,1.9)
+    for i in range(2):
+        assert doc.getObject(f'NecklaceLink{i}').TypeId=='Part::Fillet'
+        rounded=doc.getObject(f'NecklaceWebRounds{i}')
+        assert rounded.Edges, 'Bracket web transitions lack rounds'
+        assert rounded.Base.Shape.cut(rounded.Shape).Volume<1e-7, 'Web rounding reduced the load-bearing outline'
+    # The foot windows stay above the unchanged skin and below board bearing faces.
+    for key in ('blackpill','gps','imu','radio','sense','power'):
+        for side in (-1,1):
+            for j in (0,1):
+                side_name='Right' if side==1 else 'Left'
+                relief=doc.getObject(f'{key}FootRelief{side_name}{j}')
+                assert math.isclose(relief.Shape.BoundBox.ZMin,p['rear_skin_thickness'],abs_tol=1e-7)
+                assert relief.Shape.BoundBox.ZMax < p['rear_thickness']+4
+                foot=doc.getObject(f'{key}OpenFoot{side_name}')
+                assert relief.Shape.common(foot.Shape).Volume<1e-7, 'Board foot relief is blocked'
+    # Washer access leaves all ten service nut standoffs present.
+    for name,x,y in service_points:
+        assert doc.getObject(name) is not None
+        assert doc.RearPlate.Shape.isInside(App.Vector(x+1.6,y,4.5),1e-7,True)
     # The saved centre must stay open for the full visible mirror annulus.
     for r in (p['mirror_view_inner_radius']+.1,p['mirror_view_outer_radius']-.1):
         for i in range(12):
@@ -222,6 +265,9 @@ def check():
                    (('FitDeck.stl','OpticalDeck'),('FitBarrel.stl','BarrelFrame'),('FitRear.stl','RearPlate'))}
     sample_shapes['FitOptics.stl']=build.optical_fit_sample(doc.OpticalDeck.Shape)
     sample_shapes['FitService.stl']=build.service_fit_sample(doc.RearPlate.Shape)
+    sample_shapes['FitSuspensionBracket.stl']=doc.NecklaceLink1.Shape.copy()
+    for name,parent in (('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate')):
+        sample_shapes[name+'.stl']=doc.getObject(parent).Shape.common(Part.makeBox(40,50,25,App.Vector(70,35,0)))
     assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
@@ -238,7 +284,7 @@ def check():
         assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
     acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
     assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
-    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg','fit-sheet.svg'):
+    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg','fit-sheet.svg','soft-front-washer.svg'):
         ET.parse(HERE/'exports'/filename)
     edge_template = ET.parse(HERE/'exports/edge-diffuser.svg').getroot()
     assert math.isclose(float(edge_template.attrib['width'].removesuffix('mm')),edge_template_width,abs_tol=1e-5)
@@ -263,10 +309,10 @@ def check():
     manifest = json.loads((HERE/'exports/parts.json').read_text())
     assert 'CellBaffle.stl' not in manifest['stl_files'], 'Superseded divider grid exported for printing'
     assert all(f'CircleRimFoot{i}.stl' in manifest['stl_files'] for i in range(3))
-    mass = manifest['mass_estimate']
-    wood_volume = next(v['volume_cm3'] for v in manifest['volumes'] if v['name']=='WoodMask')
-    assert math.isclose(mass['wood_g'],round(wood_volume*p['wood_density_g_cm3'],1),abs_tol=1e-7)
-    assert abs(mass['mechanical_subset_g']-sum(mass[k] for k in ('printed_petg_g','acrylic_g','wood_g'))) <= .2
+    rows=inventory.resolve(json.loads((HERE/'component-inventory.json').read_text()),manifest['volumes'],p)
+    assert rows==manifest['components'], 'Exported component ledger differs from source inventory'
+    assert inventory.totals(rows)==manifest['mass_estimate'], 'Complete mass totals differ from component ledger'
+    assert manifest['mass_estimate']['complete_pendant']['nominal_g'] > 700
     assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontSheet')
     assert len(manifest['stl_files'])==13, 'Unexpected printed assembly part count'
     assert all(name+'.stl' in manifest['stl_files'] for name in ('OpticalDeck','BarrelFrame','RearPlate'))
