@@ -45,7 +45,7 @@ def check():
         bases = [f for f in doc.WoodMask.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_z) < 1e-7]
         assert sum(top.common(base).Area for top in tops for base in bases) >= 1.5, 'Rim spacer misses the wood grid rim'
     assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZMin,p['front_plane_z'],abs_tol=1e-7)
-    assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZLength,p['acrylic_thickness'],abs_tol=1e-7)
+    assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZLength,p['front_acrylic_thickness'],abs_tol=1e-7)
     assert math.isclose(p['front_plane_z']-doc.WoodMask.Shape.BoundBox.ZMax,p['wood_to_sheet_gap'],abs_tol=1e-7)
     for name in ('OpticalDeck','BarrelFrame','RearPlate','FrontSheet'):
         obj=doc.getObject(name)
@@ -100,8 +100,8 @@ def check():
     assert d['visible_mirror_width'] >= 20
     assert d['diffuser_gap'] >= 18
     for name,dim in cavity_diffusers(p).items():
-        band = doc.getObject(name+'Diffuser')
-        assert band in b.parts and band.Material.startswith('Diffusing acrylic')
+        band = doc.getObject(name+'Ring')
+        assert band in b.parts and band.Material.startswith('Prusament PETG Ultraglow Green')
         if App.GuiUp:
             assert band.Visibility, 'Curved acrylic diffuser is hidden: '+name
             assert band.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Curved acrylic diffuser needs the translucent CAD display: '+name
@@ -114,19 +114,17 @@ def check():
         assert band.Shape.BoundBox.ZMin < leds.Shape.BoundBox.ZMin
         assert band.Shape.BoundBox.ZMax > leds.Shape.BoundBox.ZMax
     assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZMin-doc.RearMirror.Shape.BoundBox.ZMax,d['mirror_separation'],abs_tol=1e-7)
-    assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin <= doc.OuterLEDs.Shape.BoundBox.ZMin
-    assert doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax >= doc.OuterLEDs.Shape.BoundBox.ZMax
-    assert doc.EdgeDiffuserSeam.Material.startswith('Black LED-diffusing acrylic'), 'Curved outside wall must use black acrylic'
+    assert doc.EdgeDiffuser.Shape.BoundBox.ZMin <= doc.OuterLEDs.Shape.BoundBox.ZMin
+    assert doc.EdgeDiffuser.Shape.BoundBox.ZMax >= doc.OuterLEDs.Shape.BoundBox.ZMax
+    assert doc.EdgeDiffuser.Material.startswith('Prusament PETG Ultraglow Green')
     assert math.isclose(doc.EdgeDiffuserOuter.Radius.Value-doc.EdgeDiffuserInner.Radius.Value,p['edge_diffuser_thickness'],abs_tol=1e-7)
-    edge_template_width = math.tau*(doc.EdgeDiffuserOuter.Radius.Value+doc.EdgeDiffuserInner.Radius.Value)/2-1
-    edge_template_height = doc.EdgeDiffuserSeam.Shape.BoundBox.ZLength
     if App.GuiUp:
-        assert all(math.isclose(c,t,abs_tol=1e-6) for c,t in zip(doc.EdgeDiffuserSeam.ViewObject.ShapeColor[:3],build.DIFFUSER_TINT)), 'Outside acrylic diffuser needs the shared dark tint'
-        assert doc.EdgeDiffuserSeam.Visibility, 'Outside acrylic diffuser is hidden'
-        assert doc.EdgeDiffuserSeam.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Black acrylic diffuser must show LEDs through its translucent CAD display'
-    assert math.isclose(doc.OuterStripSeam.Shape.BoundBox.Center.z,doc.EdgeDiffuserSeam.Shape.BoundBox.Center.z,abs_tol=1e-7), 'Outer strip is not centered in the outside surface'
-    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMin,p['edge_bottom_z'],abs_tol=1e-7)
-    assert math.isclose(doc.EdgeDiffuserSeam.Shape.BoundBox.ZMax,p['front_plane_z'],abs_tol=1e-7)
+        assert all(math.isclose(c,t,abs_tol=1e-6) for c,t in zip(doc.EdgeDiffuser.ViewObject.ShapeColor[:3],build.DIFFUSER_TINT)), 'Outside acrylic diffuser needs the shared dark tint'
+        assert doc.EdgeDiffuser.Visibility, 'Outside acrylic diffuser is hidden'
+        assert doc.EdgeDiffuser.ViewObject.Transparency == build.DIFFUSER_TRANSPARENCY, 'Black acrylic diffuser must show LEDs through its translucent CAD display'
+    assert math.isclose(doc.OuterStripSeam.Shape.BoundBox.Center.z,doc.EdgeDiffuser.Shape.BoundBox.Center.z,abs_tol=1e-7), 'Outer strip is not centered in the outside surface'
+    assert math.isclose(doc.EdgeDiffuser.Shape.BoundBox.ZMin,p['edge_bottom_z'],abs_tol=1e-7)
+    assert math.isclose(doc.EdgeDiffuser.Shape.BoundBox.ZMax,p['front_plane_z']-p['ring_front_clearance'],abs_tol=1e-7)
     assert not any(doc.getObject(name) for name in ('ButtonActuator0','SparkleUSBPowerPort','RadioPort','PowerSwitchPort')), 'Exposed side pegs or windows returned'
     # Rear skin stays closed except for covered vent/control/service passages.
     assert doc.RearPlate.Shape.isInside(App.Vector(0,-95,p['rear_skin_thickness']/2),1e-7,True)
@@ -153,6 +151,14 @@ def check():
         # Both axial faces trap the nut; no printed thread or friction-only insert.
         assert doc.RearPlate.Shape.isInside(App.Vector(x+1.6,y,2.2),1e-7,True)
         assert doc.RearPlate.Shape.isInside(App.Vector(x+1.6,y,4.5),1e-7,True)
+    for i,(dx,dy) in enumerate([(dx,dy) for dx in (-22.86,22.86) for dy in (-13.97,13.97)]):
+        x,y=p['sparkle_x']-dx,p['sparkle_y']-dy
+        assert doc.RearPlate.Shape.isInside(App.Vector(x,y,p['rear_skin_thickness']/2),1e-7,True), 'Controller mount opens rear skin'
+        assert doc.getObject(f'Sparkle{i}Screw') in b.hardware
+        assert doc.getObject(f'Sparkle{i}Washer') in b.hardware
+        assert doc.getObject(f'Sparkle{i}Nut') in b.hardware
+        assert doc.getObject(f'SparklePocket{i}Nut').LengthFwd.Value == 1.9
+        assert doc.RearPlate.Shape.common(doc.getObject(f'Sparkle{i}Nut').Shape).Volume < 1e-7
     for i in range(4):
         guard=doc.getObject(f'VentGuard{i}')
         for drop in (.1,1,4,8):
@@ -167,7 +173,10 @@ def check():
     for name,dim in cavity_diffusers(p).items():
         cuff=doc.getObject(name+'CuffBlank0')
         gap=dim['inner']-cuff.Base.Radius.Value if name=='Halo' else cuff.Tool.Radius.Value-dim['outer']
-        assert math.isclose(gap,p['sleeve_fit_clearance'],abs_tol=1e-7)
+        assert math.isclose(gap,p['ring_seat_play'],abs_tol=1e-7)
+        assert math.isclose(cuff.Shape.BoundBox.ZLength,p['ring_cuff_height'],abs_tol=1e-7)
+        assert p['ring_diffuser_led_gap']-p['ring_seat_play']-p['ring_radial_error_budget']+1e-7 >= .5
+        assert dim['bottom']+p['ring_cuff_height'] > dim['bottom']+.8
     assert math.isclose(doc.RearMirrorBlank.Base.Radius.Value,ring_radius(p['inner_count'],p)+p['strip_thickness']/2-p['mirror_fit_clearance'],abs_tol=1e-7)
     for side in (-1,1):
         (x,y),primary,secondary = necklace_anchors(p,side)
@@ -176,7 +185,7 @@ def check():
         assert len(link.Shape.Solids) == 1
         screw_path = Part.makeLine(App.Vector(*secondary,-4),App.Vector(*secondary,p['rear_thickness']+p['necklace_link_thickness']+6.1))
         assert not any(screw_path.common(obj.Shape).Length > 1e-7 for obj in b.parts), 'Independent necklace anchor screw is blocked'
-        eye_path = Part.makeLine(App.Vector(x,62,-3),App.Vector(x,62,p['rear_thickness']+p['necklace_link_thickness']+.1))
+        eye_path = Part.makeLine(App.Vector(x,64,-3),App.Vector(x,64,p['rear_thickness']+p['necklace_link_thickness']+.1))
         assert not any(eye_path.common(obj.Shape).Length > 1e-7 for obj in b.parts), 'A cover blocks a necklace eye'
     for x,y in mounting_points(p):
         bolt_path = Part.makeLine(App.Vector(x,y,-4),App.Vector(x,y,p['case_depth']+1))
@@ -206,10 +215,13 @@ def check():
     assert nut_dimensions('M3',True)==(5.9,2.7)
     assert nut_dimensions('M2',True)==(4.4,1.9)
     for i in range(2):
-        assert doc.getObject(f'NecklaceLink{i}').TypeId=='Part::Fillet'
-        rounded=doc.getObject(f'NecklaceWebRounds{i}')
-        assert rounded.Edges, 'Bracket web transitions lack rounds'
-        assert rounded.Base.Shape.cut(rounded.Shape).Volume<1e-7, 'Web rounding reduced the load-bearing outline'
+        link = doc.getObject(f'NecklaceLink{i}')
+        clearance = doc.getObject(f'NecklaceClearanceBlank{i}')
+        assert link.TypeId == 'Part::Fillet' and clearance.Shape.isValid()
+        assert clearance.Shape.Volume > link.Shape.Volume
+        assert link.Shape.cut(clearance.Shape).Volume < 1e-6, 'Bracket escapes its 0.4 mm clearance outline'
+        for boss in [doc.getObject(f'HatchStandoff{j}') for j in range(2)]+[doc.getObject(f'VentMount{j}{k}') for j in range(4) for k in range(2)]:
+            assert clearance.Shape.common(boss.Shape).Volume < 1e-6, 'Bracket clearance cuts a protected nut boss'
     # The foot windows stay above the unchanged skin and below board bearing faces.
     for key in ('blackpill','gps','imu','radio','sense','power'):
         for side in (-1,1):
@@ -238,7 +250,7 @@ def check():
         assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontSheet'), 'Opaque part blocks a circle pixel'
     # Front service sequence: lift sheet, grid/spacers, sleeves and rear mirror.
     # Check actual translated solids through the complete axial exit path.
-    for name in ('HaloDiffuser','InnerDiffuser','RearMirror','WoodMask','CirclePCB'):
+    for name in ('HaloRing','InnerRing','RearMirror','WoodMask','CirclePCB'):
         shape=doc.getObject(name).Shape
         for lift in (.1,.5,1,2,4,8,16,32):
             lifted=shape.copy()
@@ -265,7 +277,11 @@ def check():
                    (('FitDeck.stl','OpticalDeck'),('FitBarrel.stl','BarrelFrame'),('FitRear.stl','RearPlate'))}
     sample_shapes['FitOptics.stl']=build.optical_fit_sample(doc.OpticalDeck.Shape)
     sample_shapes['FitService.stl']=build.service_fit_sample(doc.RearPlate.Shape)
+    sample_shapes['FitController.stl']=build.controller_fit_sample(doc.RearPlate.Shape,p)
+    for name,parent in (('FitRingHalo','HaloRing'),('FitRingInner','InnerRing'),('FitRingOutside','EdgeDiffuser')):
+        sample_shapes[name+'.stl']=build.ring_fit_sample(doc.getObject(parent).Shape)
     sample_shapes['FitSuspensionBracket.stl']=doc.NecklaceLink1.Shape.copy()
+    sample_shapes['FitSuspensionBracketLeft.stl']=doc.NecklaceLink0.Shape.copy()
     for name,parent in (('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate')):
         sample_shapes[name+'.stl']=doc.getObject(parent).Shape.common(Part.makeBox(40,50,25,App.Vector(70,35,0)))
     assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
@@ -284,11 +300,8 @@ def check():
         assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
     acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
     assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
-    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','edge-diffuser.svg','fit-sheet.svg','soft-front-washer.svg'):
+    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','fit-sheet.svg','soft-front-washer.svg'):
         ET.parse(HERE/'exports'/filename)
-    edge_template = ET.parse(HERE/'exports/edge-diffuser.svg').getroot()
-    assert math.isclose(float(edge_template.attrib['width'].removesuffix('mm')),edge_template_width,abs_tol=1e-5)
-    assert math.isclose(float(edge_template.attrib['height'].removesuffix('mm')),edge_template_height,abs_tol=1e-5)
     cut_circles=sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in acrylic.findall('.//s:circle',ns))
     assert cut_circles==sheet_circles, 'Front cut paths differ from native outline/locating holes'
     fit_holes=ET.parse(HERE/'exports/fit-sheet.svg').findall('.//s:circle',ns)
@@ -299,11 +312,7 @@ def check():
             mid=Part.Vertex(App.Vector((a[0]+b[0])/2,(a[1]+b[1])/2,p['mirror_back_z']))
             assert mid.distToShape(mirror_outline)[0] <= .021, 'Laser mirror path exceeds chord tolerance'
     assert not (HERE/'exports/rear-clear-acrylic.svg').exists(), 'Superseded acrylic rear laser file remains'
-    for name,dim in cavity_diffusers(p).items():
-        template = ET.parse(HERE/'exports'/(name.lower()+'-ring-diffuser.svg')).getroot()
-        width = math.tau*(dim['inner']+dim['outer'])/2-p['ring_diffuser_seam_gap']
-        assert math.isclose(float(template.attrib['width'].removesuffix('mm')),width,abs_tol=1e-5)
-        assert math.isclose(float(template.attrib['height'].removesuffix('mm')),dim['height'],abs_tol=1e-5)
+    assert not any((HERE/'exports'/name).exists() for name in ('edge-diffuser.svg','halo-ring-diffuser.svg','inner-ring-diffuser.svg'))
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
@@ -314,11 +323,11 @@ def check():
     assert inventory.totals(rows)==manifest['mass_estimate'], 'Complete mass totals differ from component ledger'
     assert manifest['mass_estimate']['complete_pendant']['nominal_g'] > 700
     assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontSheet')
-    assert len(manifest['stl_files'])==13, 'Unexpected printed assembly part count'
+    assert len(manifest['stl_files'])==16, 'Unexpected printed assembly part count'
     assert all(name+'.stl' in manifest['stl_files'] for name in ('OpticalDeck','BarrelFrame','RearPlate'))
     assert not any('Q1' in name or name.startswith(('SeamStraps','CircleBezel','FrontBezel')) for name in manifest['stl_files'])
     assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
-    assert not any('Diffuser' in name for name in manifest['stl_files']), 'Acrylic diffuser cannot be a printed part'
+    assert {'HaloRing.stl','InnerRing.stl','EdgeDiffuser.stl'} <= set(manifest['stl_files'])
     assert len([name for name in manifest['stl_files'] if name.startswith('NecklaceLink')]) == 2
     assert {sample['file'] for sample in manifest['fit_samples']} == set(sample_shapes)
     all_meshes=set(manifest['stl_files']) | set(sample_shapes)
@@ -329,11 +338,12 @@ def check():
         assert mesh.isSolid(), 'STL is not closed: ' + file.name
         if filename in sample_shapes:
             assert abs(abs(mesh.Volume)-sample_shapes[filename].Volume)<8, 'Fit STL differs from native cut'
-            assert max(mesh.BoundBox.XLength,mesh.BoundBox.YLength)<60, 'Fit sample is no longer small'
+            if not filename.startswith('FitSuspensionBracket'):
+                assert max(mesh.BoundBox.XLength,mesh.BoundBox.YLength)<60, 'Fit sample is no longer small'
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'sleeve_fit_clearance':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

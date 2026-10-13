@@ -30,13 +30,19 @@
         "od": 5,
         "id": 2.2,
         "thickness": 0.35
+      },
+      "M3_front": {
+        "od": 9,
+        "id": 3.2,
+        "thickness": 0.55
       }
     },
     "soft_front_washer": {
       "od": 9,
-      "id": 6.2,
-      "free_thickness": 0.5,
-      "compressed_thickness": 0.3
+      "id": 6.4,
+      "free_thickness": 0.508,
+      "compressed_thickness": 0.3048,
+      "source": "https://www.stockwell.com/data-sheets/sg-series-solid-silicone.pdf"
     }
   },
   "components": [
@@ -255,18 +261,18 @@
       "unit": "part",
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/front-sheet.svg",
-      "dimensions": "1.5 mm nominal stock; contour/formed length from fabrication file",
+      "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting",
       "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
-      "status": "Exact metric stock and finish unresolved; do not substitute thicker sheet",
+      "status": "Physical stock thickness and finished clamp fit require measurement",
       "group": "pendant",
       "cad_part": "FrontSheet",
       "mass_formula": "acrylic_volume",
       "stock_sources": [
         {
-          "label": "Clear acrylic stock candidate",
-          "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+          "label": "0.060 inch clear acrylic",
+          "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
         }
       ]
     },
@@ -277,11 +283,11 @@
       "unit": "part",
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/rear-mirror.svg",
-      "dimensions": "1.5 mm nominal stock; contour/formed length from fabrication file",
+      "dimensions": "Separate 1.5 mm nominal rear mirror acrylic",
       "material": "Acrylic; Full mirror on +Z",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
-      "status": "Exact metric stock and finish unresolved; do not substitute thicker sheet",
+      "status": "Measure finished mirror stock before cutting",
       "group": "pendant",
       "cad_part": "RearMirror",
       "mass_formula": "acrylic_volume",
@@ -293,68 +299,68 @@
       ]
     },
     {
-      "id": "EdgeDiffuserSeam",
-      "label": "EdgeDiffuserSeam",
+      "id": "EdgeDiffuser",
+      "label": "Outside printed glow ring",
       "installed_quantity": 1,
       "unit": "part",
-      "purchase_quantity": "1 custom blank; trim waste excluded",
-      "source": "hardware/enclosure/exports/edge-diffuser.svg",
-      "dimensions": "2 mm nominal stock; contour/formed length from fabrication file",
-      "material": "Acrylic; Black LED-diffusing; no mirror",
+      "purchase_quantity": "1 whole upright printed ring",
+      "source": "hardware/enclosure/exports/EdgeDiffuser.3mf",
+      "dimensions": "246.00 mm inside diameter x 1.2 mm wall x 33.0 mm high, Z=3.2 mm",
+      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
-      "status": "TAP stock thickness must match exact 2 mm model; listed imperial stock is not a direct substitute. Forming/finish unresolved",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
+      "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
-      "cad_part": "EdgeDiffuserSeam",
-      "mass_formula": "acrylic_volume",
+      "cad_part": "EdgeDiffuser",
+      "mass_formula": "glow_petg_volume",
       "stock_sources": [
         {
-          "label": "TAP Black LED acrylic candidate",
-          "url": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668/1000"
+          "label": "Prusa Ultraglow technical sheet",
+          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
         }
       ]
     },
     {
-      "id": "HaloDiffuser",
-      "label": "HaloDiffuser",
+      "id": "HaloRing",
+      "label": "Halo printed glow ring",
       "installed_quantity": 1,
       "unit": "part",
-      "purchase_quantity": "1 custom blank; trim waste excluded",
-      "source": "hardware/enclosure/exports/halo-ring-diffuser.svg",
-      "dimensions": "1 mm nominal stock; contour/formed length from fabrication file",
-      "material": "Acrylic; Dark diffusing formed band",
+      "purchase_quantity": "1 whole upright printed ring",
+      "source": "hardware/enclosure/exports/HaloRing.3mf",
+      "dimensions": "177.02 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm",
+      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
-      "status": "Exact metric stock and finish unresolved; do not substitute thicker sheet",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
+      "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
-      "cad_part": "HaloDiffuser",
-      "mass_formula": "acrylic_volume",
+      "cad_part": "HaloRing",
+      "mass_formula": "glow_petg_volume",
       "stock_sources": [
         {
-          "label": "Clear acrylic stock candidate",
-          "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+          "label": "Prusa Ultraglow technical sheet",
+          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
         }
       ]
     },
     {
-      "id": "InnerDiffuser",
-      "label": "InnerDiffuser",
+      "id": "InnerRing",
+      "label": "Inner printed glow ring",
       "installed_quantity": 1,
       "unit": "part",
-      "purchase_quantity": "1 custom blank; trim waste excluded",
-      "source": "hardware/enclosure/exports/inner-ring-diffuser.svg",
-      "dimensions": "1 mm nominal stock; contour/formed length from fabrication file",
-      "material": "Acrylic; Dark diffusing formed band",
+      "purchase_quantity": "1 whole upright printed ring",
+      "source": "hardware/enclosure/exports/InnerRing.3mf",
+      "dimensions": "215.47 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm",
+      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
-      "status": "Exact metric stock and finish unresolved; do not substitute thicker sheet",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
+      "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
-      "cad_part": "InnerDiffuser",
-      "mass_formula": "acrylic_volume",
+      "cad_part": "InnerRing",
+      "mass_formula": "glow_petg_volume",
       "stock_sources": [
         {
-          "label": "Clear acrylic stock candidate",
-          "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+          "label": "Prusa Ultraglow technical sheet",
+          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
         }
       ]
     },
@@ -1024,9 +1030,9 @@
     {
       "id": "M2_nuts",
       "label": "M2 plain nuts",
-      "installed_quantity": 10,
+      "installed_quantity": 14,
       "unit": "nut",
-      "purchase_quantity": "12 singles, 2 spares excluded",
+      "purchase_quantity": "16 singles, including 2 spares",
       "source": "https://www.accu.co.uk/hexagon-nuts/766448-NUT203M2-B",
       "dimensions": "M2 plain DIN 934, 4 AF x 1.6 mm; pockets 4.4 AF x 1.9",
       "material": "A4 stainless; M3 natural, M2 black oxide",
@@ -1043,9 +1049,9 @@
     {
       "id": "M3_washers",
       "label": "M3 HPW DIN 125 washers",
-      "installed_quantity": 20,
+      "installed_quantity": 14,
       "unit": "washer",
-      "purchase_quantity": "22 singles, 2 spares excluded",
+      "purchase_quantity": "16 singles, including 2 spares",
       "source": "https://www.accu.co.uk/metric-flat-washers/72482-HPW-M3-A2",
       "dimensions": "7 OD x 3.2 ID x 0.55 mm",
       "material": "A2 stainless, natural",
@@ -1056,15 +1062,34 @@
       ],
       "mass_kind": "published",
       "mass_basis": "Supplier 11 g/100",
-      "status": "Supply/offline status requires confirmation; use actual nominal maximum thickness",
+      "status": "Supply and actual thickness require confirmation",
+      "group": "pendant"
+    },
+    {
+      "id": "M3_front_washers",
+      "label": "9 mm OD M3 front clamp metal washers",
+      "installed_quantity": 6,
+      "unit": "washer",
+      "purchase_quantity": "8 singles, including 2 spares",
+      "source": "hardware/enclosure/hardware_spec.py",
+      "dimensions": "9 OD x 3.2 ID x 0.55 mm; above soft front washers",
+      "material": "A2 stainless steel",
+      "mass_g_per_unit": 0.24147239321250497,
+      "mass_range_g_per_unit": [
+        0.18,
+        0.31
+      ],
+      "mass_kind": "calculated",
+      "mass_basis": "Annulus x 7.9 g/cm3; weigh selected hardware",
+      "status": "Select actual 9 mm washer and test clamp limit",
       "group": "pendant"
     },
     {
       "id": "M2_washers",
       "label": "M2 HPW DIN 125 washers",
-      "installed_quantity": 10,
+      "installed_quantity": 14,
       "unit": "washer",
-      "purchase_quantity": "12 singles, 2 spares excluded",
+      "purchase_quantity": "16 singles, including 2 spares",
       "source": "https://www.accu.co.uk/metric-flat-washers/72476-HPW-M2-A2",
       "dimensions": "5 OD x 2.2 ID x 0.35 mm",
       "material": "A2 stainless, natural",
@@ -1080,12 +1105,12 @@
     },
     {
       "id": "sparkle_mount_hardware",
-      "label": "Sparkle standoff screw allowance",
+      "label": "M2 x 6 controller screws",
       "installed_quantity": 4,
       "unit": "screw",
       "purchase_quantity": "4 plus 2 spares",
       "source": "design-v2.md",
-      "dimensions": "M2 low-profile provisional; saved pilot diameter 2.2 mm",
+      "dimensions": "M2 x 6 mm; four captive plain nuts and M2 washers",
       "material": "Stainless steel",
       "mass_g_per_unit": 0.3,
       "mass_range_g_per_unit": [
@@ -1094,7 +1119,7 @@
       ],
       "mass_kind": "estimated",
       "mass_basis": "Engineering allowance; weigh installed item",
-      "status": "UNRESOLVED retention: current 2.2 mm bores do not define M2 threads; select/finalize before assembly",
+      "status": "Physical board, nut insertion and driver access require fit test",
       "group": "pendant"
     },
     {
@@ -1176,13 +1201,13 @@
     },
     {
       "id": "seam_adhesive",
-      "label": "Sleeve seam and optical lead seals",
+      "label": "Optical lead and joint seals",
       "installed_quantity": 1,
       "unit": "application",
       "purchase_quantity": "1 small adhesive/tape supply; installed mass only",
       "source": "hardware/enclosure/README.md",
-      "dimensions": "Three formed sleeve seams and three lead exits",
-      "material": "Acrylic-safe adhesive and opaque removable tape",
+      "dimensions": "Three internal LED lead exits and removable optical joints",
+      "material": "Removable opaque seal tape",
       "mass_g_per_unit": 3,
       "mass_range_g_per_unit": [
         1,
@@ -1443,13 +1468,13 @@
       "source": "hardware/enclosure/exports/soft-front-washer.svg",
       "stock_sources": [
         {
-          "label": "0.5 mm natural silicone sheet",
-          "url": "https://www.doonx.com/products/0-5mm-natural-silicone-rubber-sheet"
+          "label": "Stockwell SG-30 GP 0.020 inch",
+          "url": "https://www.stockwell.com/data-sheets/sg-series-solid-silicone.pdf"
         }
       ],
-      "dimensions": "9 OD x 6.2 ID x 0.5 mm free; nominal 0.3 mm compressed",
+      "dimensions": "9 OD x 6.4 ID x 0.508 mm free; 0.3048 mm target compressed",
       "material": "Silicone rubber, smooth faces",
-      "mass_g_per_unit": 0.01838,
+      "mass_g_per_unit": 0.017572774968008024,
       "mass_range_g_per_unit": [
         0.015,
         0.035

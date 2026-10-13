@@ -112,10 +112,10 @@ func _prepare_explosion():
 	var layers = {
 		0.36: ["FrontCentre", "FrontMirrorCoating", "FrontRim"],
 		0.25: ["WoodMask", "CirclePCB", "CircleLEDs", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
-		0.19: ["HaloDiffuser", "HaloStripSeam", "HaloLEDs"],
-		0.14: ["InnerDiffuser", "InnerStripSeam", "InnerLEDs"],
+		0.19: ["HaloRing", "HaloStripSeam", "HaloLEDs"],
+		0.14: ["InnerRing", "InnerStripSeam", "InnerLEDs"],
 		0.085: ["RearMirror"],
-		0.04: ["OpticalDeck", "EdgeDiffuserSeam", "OuterStripSeam", "OuterLEDs"],
+		0.04: ["OpticalDeck", "EdgeDiffuser", "OuterStripSeam", "OuterLEDs"],
 		0.0: ["BarrelFrame"],
 		-0.10: ["RearPlate", "BatteryEnvelope0", "SparklePCBWithHoles", "blackpillPCB", "gpsPCB", "imuPCB", "radioPCB", "sensePCB", "powerPCB", "ExternalPowerBlank", "RearButton0", "RearButton1", "RearButton2", "ControlMembrane0", "ControlMembrane1", "ControlMembrane2"],
 		-0.13: ["NecklaceLink0", "NecklaceLink1", "HatchGasket", "VentMembrane0", "VentMembrane1", "VentMembrane2", "VentMembrane3"],
@@ -181,8 +181,8 @@ func _make_materials():
 			cavity_materials.append(material)
 		elif part.role == "sleeve":
 			var group = 3
-			if part.name == "HaloDiffuser": group = 1
-			if part.name == "InnerDiffuser": group = 2
+			if part.name == "HaloRing": group = 1
+			if part.name == "InnerRing": group = 2
 			var material = _shader("res://sleeve.gdshader")
 			material.set_shader_parameter("group", group)
 			material.set_shader_parameter("count", COUNTS[group])
@@ -273,8 +273,8 @@ func _make_controls():
 		reflectance=minf(reflectance,1-v)
 		_sync_slider(reflect_slider,reflectance)
 		_update_optics())
-	_slider(box,"Sleeve transmission (assumed)",0,1,diffuser_transmission,func(v): diffuser_transmission=v; _update_optics())
-	_slider(box,"Sleeve diffusion (assumed)",0,1,diffusion,func(v): diffusion=v; _update_optics())
+	_slider(box,"Glow ring transmission (assumed)",0,1,diffuser_transmission,func(v): diffuser_transmission=v; _update_optics())
+	_slider(box,"Glow ring diffusion (assumed)",0,1,diffusion,func(v): diffusion=v; _update_optics())
 	_slider(box,"Centre diffusion (assumed)",0,1,central_diffusion,func(v): central_diffusion=v; _update_optics())
 	var views = HBoxContainer.new()
 	box.add_child(views)
@@ -459,7 +459,7 @@ func _run_checks():
 	_exploded_pose(0.5)
 	assert(meshes.FrontCentre.position == meshes.FrontRim.position and meshes.FrontCentre.position == meshes.FrontMirrorCoating.position, "Front sheet must stay whole")
 	assert(not cavity_materials[0].get_shader_parameter("cavity_closed"), "Separated mirrors must not show a closed cavity")
-	assert(meshes.HaloDiffuser.material_override.get_shader_parameter("assembly_offset").is_equal_approx(explosion_offsets.HaloDiffuser))
+	assert(meshes.HaloRing.material_override.get_shader_parameter("assembly_offset").is_equal_approx(explosion_offsets.HaloRing))
 	_exploded_pose(1)
 	assert(camera.transform.is_equal_approx(exploded_start), "Exploded camera loop must close")
 	for name in meshes:
@@ -473,7 +473,7 @@ func _run_checks():
 		assert(pattern_time==saved_time and camera.position==saved_position)
 		assert(meshes.RearMirror.visible)
 		assert(meshes.WoodMask.visible and meshes.FrontCentre.visible)
-		assert(meshes.HaloDiffuser.visible and meshes.InnerDiffuser.visible)
+		assert(meshes.HaloRing.visible and meshes.InnerRing.visible)
 		assert(meshes.OpticalDeck.visible and meshes.BarrelFrame.visible and meshes.RearPlate.visible)
 	for value in range(4):
 		_set_lighting(value)

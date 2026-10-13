@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="250mm" height="250mm" viewBox="-125 -125 250 250">
-<title>One front sheet; 1.5 mm acrylic; six 6.6 mm locating holes</title>
+<title>One front sheet; 0.060 inch clear acrylic nominal; six 7.0 mm locating holes</title>
 <desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
 <g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
 <circle cx="0" cy="0" r="125.000000"/>
-<circle cx="89.244178" cy="74.884757" r="3.300000"/>
-<circle cx="-20.230013" cy="114.730103" r="3.300000"/>
-<circle cx="-109.474190" cy="39.845347" r="3.300000"/>
-<circle cx="-89.244178" cy="-74.884757" r="3.300000"/>
-<circle cx="20.230013" cy="-114.730103" r="3.300000"/>
-<circle cx="109.474190" cy="-39.845347" r="3.300000"/>
+<circle cx="89.244178" cy="74.884757" r="3.500000"/>
+<circle cx="-20.230013" cy="114.730103" r="3.500000"/>
+<circle cx="-109.474190" cy="39.845347" r="3.500000"/>
+<circle cx="-89.244178" cy="-74.884757" r="3.500000"/>
+<circle cx="20.230013" cy="-114.730103" r="3.500000"/>
+<circle cx="109.474190" cy="-39.845347" r="3.500000"/>
 </g></svg>

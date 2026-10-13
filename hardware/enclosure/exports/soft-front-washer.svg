@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="11mm" height="11mm" viewBox="-5.5 -5.5 11 11">
-<title>Six soft front retention washers; 0.5 mm silicone stock; knife/die cut; compression must be tested</title>
+<title>Six soft front retention washers; 0.508 mm silicone stock; knife/die cut; compression must be tested</title>
 <desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
 <g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
 <circle cx="0" cy="0" r="4.500000"/>
-<circle cx="0" cy="0" r="3.100000"/>
+<circle cx="0" cy="0" r="3.200000"/>
 </g></svg>

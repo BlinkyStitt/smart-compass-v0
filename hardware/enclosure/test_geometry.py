@@ -66,7 +66,7 @@ class GeometryTests(unittest.TestCase):
         for depth in (35,45,48,52):
             p = dict(self.p,front_plane_z=depth)
             rear,front = p['edge_bottom_z'],depth
-            self.assertAlmostEqual(strip_bottom('Outer',p)+p['strip_width']/2,(rear+front)/2)
+            self.assertAlmostEqual(strip_bottom('Outer',p)+p['strip_width']/2,(rear+front-p['ring_front_clearance'])/2)
             self.assertEqual(strip_bottom('Inner',p),p['strip_bottom_z'])
             self.assertEqual(strip_bottom('Halo',p),p['strip_bottom_z'])
 
@@ -78,12 +78,16 @@ class GeometryTests(unittest.TestCase):
         self.assertGreaterEqual(inner_face-halo_face,20)
 
     def test_diffusers_keep_led_clearance_and_an_open_mirror_cavity(self):
+        self.assertNotIn('ring_diffuser_end_gap',self.p)
+        self.assertNotIn('ring_diffuser_seam_gap',self.p)
+        self.assertAlmostEqual(self.p['ring_bottom_clearance'],.1)
         bands = cavity_diffusers(self.p)
         halo_face = ring_radius(self.p['halo_count'],self.p)+self.p['strip_thickness']/2+self.p['ring_led_depth']
         inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
         self.assertAlmostEqual(bands['Halo']['inner']-halo_face,self.p['ring_diffuser_led_gap'])
         self.assertAlmostEqual(inner_face-bands['Inner']['outer'],self.p['ring_diffuser_led_gap'])
-        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-self.p['sleeve_fit_clearance'],.5)
+        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-self.p['ring_seat_play']-self.p['ring_radial_error_budget']+1e-9,.5)
+        self.assertGreaterEqual(self.p['ring_cuff_height']-.8+1e-9,.4)
         self.assertGreaterEqual(bands['Inner']['inner']-bands['Halo']['outer'],18)
         for band in bands.values():
             self.assertLess(band['bottom'],self.p['strip_bottom_z'])

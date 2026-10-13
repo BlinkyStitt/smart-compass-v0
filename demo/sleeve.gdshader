@@ -15,7 +15,7 @@ varying vec3 pos;
 void vertex() { pos = (MODEL_MATRIX * vec4(VERTEX,1.0)).xyz - assembly_offset; }
 #include "res://ring_diffusion.gdshaderinc"
 void fragment() {
-    ALBEDO=vec3(0.018);
-    ROUGHNESS=0.45;
-    EMISSION=diffused_ring_light(pos,group,count,pitch_radius,led_z)*transmission*brightness;
+    ALBEDO=vec3(0.72,0.82,0.54);
+    ROUGHNESS=0.62;
+    EMISSION=diffused_ring_light(pos,group,count,pitch_radius,led_z)*vec3(0.75,1.0,0.55)*transmission*brightness;
 }

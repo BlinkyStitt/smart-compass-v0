@@ -85,7 +85,7 @@ def export():
     out = HERE/'exports'
     glb, parts = GLB(), []
     front = p['front_plane_z']
-    rear = p['mirror_back_z']+p['mirror_back_thickness']
+    rear = p['mirror_back_z']+p['rear_acrylic_thickness']
     centers = led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()), p)
     cells = mask_cells(centers, p['mask_edge_radius'], p['mask_web'])
     leds = []
@@ -106,14 +106,14 @@ def export():
             continue
         role = ('hardware' if 'HardwareVariant' in obj.PropertiesList else
                 'packages' if obj.Name.endswith('LEDs') else
-                'sleeve' if obj.Name in ('HaloDiffuser','InnerDiffuser','EdgeDiffuserSeam') else 'solid')
+                'sleeve' if obj.Name in ('HaloRing','InnerRing','EdgeDiffuser') else 'solid')
         add(obj.Name,obj.Shape,tuple(obj.ViewObject.ShapeColor[:3]),role,obj.Label)
         if role=='hardware':
             parts[-1]['explosion_offset_m']=obj.ExplosionOffsetM
     # Three render regions, one manufactured sheet and one CAD source.
     sheet=source.FrontSheet.Shape
-    inner=Part.makeCylinder(p['circle_diameter']/2,p['acrylic_thickness'],App.Vector(0,0,front))
-    outer=Part.makeCylinder(p['mirror_view_outer_radius'],p['acrylic_thickness'],App.Vector(0,0,front))
+    inner=Part.makeCylinder(p['circle_diameter']/2,p['front_acrylic_thickness'],App.Vector(0,0,front))
+    outer=Part.makeCylinder(p['mirror_view_outer_radius'],p['front_acrylic_thickness'],App.Vector(0,0,front))
     regions=[sheet.common(inner),sheet.common(outer).cut(inner),sheet.cut(outer)]
     assert abs(sum(region.Volume for region in regions)-sheet.Volume)<1e-6
     for name,region,colour,role in zip(('FrontCentre','FrontMirrorCoating','FrontRim'),regions,((.7,.8,.9),(.6,.7,.8),(.018,.018,.018)),('centre','cavity','solid')):
@@ -152,7 +152,7 @@ def export():
             'ring_seam_gap':p['ring_seam_gap']/1000,'pitch':1/p['strip_density'],
             'edge_radius':p['edge_diffuser_radius']/1000,'edge_z':(strip_bottom('Outer',p)+p['strip_width']/2)/1000},
         'design':{'selected_finish':'clear centre, mirror ring, black masked rim',
-            'sheet_thickness_m':p['acrylic_thickness']/1000,'locating_hole_diameter_m':.0066,
+            'sheet_thickness_m':p['front_acrylic_thickness']/1000,'locating_hole_diameter_m':.007,
             'compression_stop_diameter_m':.006,'front_sheet_volume_cm3':sheet.Volume/1000,
             'fasteners_m':[[x/1000,y/1000,front/1000] for x,y in mounting_points(p)],
             'printed_part_count':len(inventory['stl_files']),'mass_estimate':inventory['mass_estimate']}}

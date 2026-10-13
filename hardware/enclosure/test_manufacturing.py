@@ -36,7 +36,7 @@ class ManufacturingTests(unittest.TestCase):
     def resolved(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
-        volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula']=='petg_volume'}
+        volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','glow_petg_volume')}
                  for r in spec['components'] if r.get('mass_formula')]
         return inventory.resolve(spec,volumes,p),volumes
 
@@ -85,7 +85,9 @@ class ManufacturingTests(unittest.TestCase):
         stations=hardware_spec.stations(p)
         m3=[r for r in stations if r[1]=='M3'];m2=[r for r in stations if r[1]=='M2']
         self.assertEqual(len(m3),quantities['body_screws']+quantities['anchor_screws']+quantities['rear_screws'])
-        self.assertEqual(len(m2),quantities['service_screws'])
-        self.assertEqual(len(m3)+6,quantities['M3_washers'])
+        self.assertEqual(len(m2),quantities['service_screws']+quantities['sparkle_mount_hardware'])
+        self.assertEqual(len(m3),quantities['M3_washers'])
+        self.assertEqual(6,quantities['M3_front_washers'])
         self.assertEqual(sum(r[-1] is not None for r in m3)+6,quantities['M3_nuts'])
         self.assertEqual(len(m2),quantities['M2_nuts'])
+        self.assertEqual(len(m2),quantities['M2_washers'])
