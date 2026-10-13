@@ -83,7 +83,7 @@ class GeometryTests(unittest.TestCase):
         inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
         self.assertAlmostEqual(bands['Halo']['inner']-halo_face,self.p['ring_diffuser_led_gap'])
         self.assertAlmostEqual(inner_face-bands['Inner']['outer'],self.p['ring_diffuser_led_gap'])
-        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-.25,.5)
+        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-self.p['sleeve_fit_clearance'],.5)
         self.assertGreaterEqual(bands['Inner']['inner']-bands['Halo']['outer'],18)
         for band in bands.values():
             self.assertLess(band['bottom'],self.p['strip_bottom_z'])

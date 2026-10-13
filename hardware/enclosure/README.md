@@ -3,7 +3,7 @@
 Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The selected design uses
 one **250 × 1.5 mm acrylic front sheet**, with a clear centre, a two-way mirror
 ring, and a black masked outer rim. The sheet sits at Z=36.7..38.2 mm. Printed
-compression stops end at Z=38.5 mm. Rear vent guards add 2.85 mm before hardware.
+compression stops end at Z=38.5 mm. Rear vent guards add 3.3 mm before hardware.
 The rear mirror and all three curved diffusers remain separate optical parts.
 
 [Moving rainbow](exports/infinity-rainbow.gif) · [Ocean](exports/infinity-ocean.gif) ·
@@ -83,9 +83,11 @@ strap passages have
 45° roofs with a short central bridge. The deck stays separate from the barrel
 so its broad annular floor never prints as an unsupported ceiling.
 
-The 1.35 mm thin walls use about three 0.45 mm paths even with five perimeters
-requested. Five solid layers preserve the 1 mm rear skin. Inspect the actual
-paths; wall count alone cannot make a thin wall thicker. These choices follow
+The optical walls remain 1.35 mm, about three 0.45 mm paths even with five
+perimeters requested. The lower barrel, rear ribs, USB cover and vent roofs
+now use 1.8 mm material. Broader post roots and 1.8 mm rear bridges reinforce
+connections without moving the LED carriers or mirror planes. Five solid layers
+preserve the 1 mm rear skin. Inspect the actual paths; wall count alone cannot make a thin wall thicker. These choices follow
 [Prusa's model guidance](https://help.prusa3d.com/article/modeling-with-3d-printing-in-mind_164135).
 
 Use the filament maker's temperature profile and a PETG-compatible build surface.
@@ -103,8 +105,9 @@ the fit samples and one bracket before committing to the large parts.
 
 ## Print the fit samples first
 
-Use [FitDeck.stl](exports/FitDeck.stl), [FitBarrel.stl](exports/FitBarrel.stl) and
-[FitRear.stl](exports/FitRear.stl) with the same PETG, nozzle, layers and supplied
+Use [FitDeck.stl](exports/FitDeck.stl), [FitBarrel.stl](exports/FitBarrel.stl),
+[FitRear.stl](exports/FitRear.stl), [FitOptics.stl](exports/FitOptics.stl) and
+[FitService.stl](exports/FitService.stl) with the same PETG, nozzle, layers and supplied
 orientations as the full parts. These small samples are exact cuts from the
 current CAD, not independently drawn substitutes. They are test pieces only;
 they do not enter the 13-piece assembly or its mass estimate.
@@ -129,12 +132,35 @@ the body-bolt location; its smaller hole meets the barrel's captive nut.
    Keep nominal screw passages and washer stops intact. Do not scale the whole
    compass to correct a local hole fit.
 
-Body and rear screw entries now have 0.3 mm, 45° lead-ins. Front collar tips taper
-by 0.4 mm and retain a flat washer stop at the original height. These guides help
+Joint and rear screw entries have 0.3 mm, 45° lead-ins. Front collar tips and
+their screw entries use shorter 0.15 mm lead-ins. The top bearing annulus now
+has 1.0 mm radial width, up from 0.6 mm, at the same stop height. These guides help
 parts start square. They do not make a tight joint acceptable. The slicer also
 sets 0.15 mm first-layer compensation. Prusa explains how first-layer bulge can
 change fits and how compensation interacts with the brim; inspect both in the
 slicer. [First-layer compensation](https://help.prusa3d.com/article/elephant-foot-compensation_114487).
+
+The optical sample contains both sleeve seats from the 30° station of the real
+deck. Rest the corresponding sections of the actual formed bands on it without
+forcing them. The nominal seat play is now **0.30 mm radially**; this preserves
+at least **0.50 mm to the LED faces** at the inward limit of that play. The rear
+mirror has **0.45 mm outer radial clearance**. These are starting allowances,
+not measured fits. Check the full mirror and all three sleeve stations together
+on the complete deck before coating or bonding. Do not widen the sleeve play
+without checking the remaining LED clearance.
+
+The service sample is an exact rear cut around one hatch nut pocket. Slide a
+nominal **M2 hex nut, 4 mm across flats and 1.6 mm thick**, into its side mouth.
+The pocket allows 4.4 mm across flats and 1.9 mm height. The nut must slide in by
+hand, resist turning, and remain trapped along the screw axis. Test the intended
+M2 screw before printing the rear. Do not substitute a taller locknut or force
+an oversize nut. The sample does not test the full rear's stiffness.
+
+Test the front collar with the actual sheet offcut and washers. Tighten only
+until the metal washer contacts the stop. Confirm that the sheet stays retained,
+the collar does not crush, and the sheet can move within its clearance without
+cracking. Establish the usable tightening limit from a physical sample; the CAD
+check proves bearing geometry, not an allowable torque.
 
 Small samples cannot prove roundness or warping across a 250 mm part. Print the
 whole barrel first, then inspect it after cooling. Check its joint face on a flat
@@ -145,9 +171,10 @@ PETG cooling profile. Do not force a bowed part flat with the body bolts.
 
 ## Assemble the whole circles without juggling them
 
-Work with the barrel upright on a flat padded surface. Align the deck's top wire
-exits with the barrel's top exit. Insert two opposite body bolts loosely to guide
-the circles while you check the remaining holes. Keep all six bolts loose until
+Work with the barrel upright on a flat padded surface. Align the recessed
+**TOP** marks on the deck, inner barrel wall and inside of the rear. The marks
+identify the same top sector. Align the deck's wire exits with the barrel's
+exit. Insert two opposite body bolts loosely to guide the circles while you check the remaining holes. Keep all six bolts loose until
 they pass freely. Then remove the temporary bolts as needed to install the optics.
 The bolts guide the parts; they must not pull a distorted ring into position.
 
@@ -187,7 +214,7 @@ light-leak check; the demo is not a scattering simulation.
 
 The halo and inner sleeves sit on **1.6 mm high integral shoes**, with **0.8 mm
 high locating cuffs** on their LED side. The cuffs have 1.35 mm radial thickness.
-The cuffs leave 0.25 mm radial fit clearance. The rear mirror has 0.3 mm
+The cuffs leave 0.30 mm radial fit clearance. The rear mirror has 0.45 mm
 outer radial clearance. Matching notches provide sleeve-seat clearance and alignment. The front
 sheet limits sleeve lift; the sleeves limit rear-mirror lift. Remove them from
 the front in reverse order. No fixed overhanging lip traps the rear mirror.
@@ -221,10 +248,11 @@ references, not proven final blanks. Match the tint across all three sleeves.
 1. Measure the boards, pack, LED strips and sheet stock. Set the saved spreadsheet.
    Rebuild. Laser-cut the one wood grid, front sheet and keyed rear mirror. Use
    `front-coating.svg` only as a coating map, not a cut file. Apply kerf once in CAM.
-2. Pass the small fit-sample checks, then print the 13 pieces in their exported
+2. Pass the five small fit-sample checks, then print the 13 pieces in their exported
    orientations. Check flatness, nut slots,
    strap passages, bores, collars and sleeve seats. Fit-test hardware first.
-3. Load the captive nuts. Fit the two necklace brackets and their independent
+3. Load the captive nuts, including ten M2 nuts for the hatch and vent guards.
+   Fit the two necklace brackets and their independent
    screws. Use washers and full nut engagement. Smooth the rounded webbing slots.
 4. Fit the LED strips and rear mirror. Seat both cavity sleeves in their shoes.
    Fit the outer sleeve on the barrel seats. Keep all three seams at the top.
@@ -259,11 +287,51 @@ Each uses the main body bolt and an independent M3 anchor. Use closed, deburred,
 nonmagnetic metal rings and sewn loops. Replace a bracket or webbing without
 replacing the frame. Keep spares. Check magnetic effects of all actual hardware.
 
-Four covered 6 mm vents use nominal 16 mm adhesive ePTFE membranes and removable
-bonded guards. Seal the side seam, lips, rear joint, bolt access clearances,
+Four covered 6 mm vents use nominal 16 mm adhesive ePTFE membranes and
+screw-removable guards. Seal the side seam, lips, rear joint, bolt access clearances,
 controls, hatch and lead exits with suitable removable seals. These vents provide
 breathing; they do not prove adequate cooling or dust exclusion. The model has
 no tested dust or IP rating.
+
+Each guard uses two M2 screws, replacing the bonded feet. Its 1.5 mm stand-off
+keeps the roof clear of the membrane. The roof prints flat on the bed. Two M2
+screws also retain the thicker USB cover; its screws now enter replaceable metal
+nuts rather than plastic pilot holes. The ten side-loaded nut pockets are
+integral with the rear, so the printed part count stays **13**. This change adds
+eight vent screws and ten nuts. Use the same M2 nut type throughout. Select screw
+length with the actual gasket, cover and nut stack; tips must clear electronics.
+
+Load the nuts with the rear removed. Their side mouths face +Y (toward TOP).
+The roof and floor trap each nut along the screw axis; a loose nut can still
+slide from its loading mouth during handling. A temporary screw holds it during
+assembly. For membrane service, remove the two guard screws and lift the guard.
+Keep the membrane's sealing face and screw passages sealed with replaceable
+seals. A damaged nut can slide out after removal of the rear; no heating or
+frame replacement is required.
+
+## Ordering a print from a service
+
+Keep the deck, barrel and rear as full, single-piece circles. Supply the STL
+orientations, material choice and this assembly guide. Require the supplier to
+review the mating-face flatness, six body-hole positions, collar stops and nut
+pockets. Agree on the allowed errors before ordering; general print tolerances
+do not establish functional fit or flatness. Have the supplier print the fit
+samples with the production material and settings first. A full-size barrel
+still needs inspection after cooling.
+
+[Xometry's standards](https://www.xometry.com/manufacturing-standards/) require
+individual review for guaranteed tolerances and otherwise let the supplier
+choose orientation. [Protolabs Network's FDM guidance](https://www.hubs.com/knowledge-base/how-design-parts-fdm-3d-printing/)
+describes hole undersizing and build-direction effects.
+[Xometry's design guide](https://xometry.pro/en/articles/fdm-design-tips/)
+supports local ribs and stronger roots rather than excessive solid thickness.
+The dimensions here remain specific starting values for this design.
+
+PA12 SLS or MJF is a possible service alternative, not a verified drop-in
+material change. Request a fresh fit and flatness review for that process;
+[Protolabs Network](https://www.hubs.com/knowledge-base/hp-mjf-vs-sls-3d-printing-technology-comparison/)
+warns that both powder processes can warp large flat parts. No supplier has
+reviewed this design or agreed to its tolerances yet.
 
 ## Sources, exports and checks
 
@@ -285,17 +353,18 @@ at most 0.02 mm polygon chord error. `assembly-section.svg` cuts actual solids.
 
 | Term | CAD estimate |
 | --- | ---: |
-| Printed PETG, solid-volume basis | 240.5 g |
-| Acrylic, including all three sleeves | 194.3 g |
+| Printed PETG, solid-volume basis | 254.0 g |
+| Acrylic, including all three sleeves | 194.1 g |
 | Single wood grid | 16.7 g |
-| **Mechanical subtotal** | **451.5 g** |
+| **Mechanical subtotal** | **464.8 g** |
 | Candidate internal pack | 190.0 g |
-| **Subtotal with pack** | **641.5 g** |
+| **Subtotal with pack** | **654.8 g** |
 
 The single front sheet is about 87.3 g after holes, or 87.6 g before holes,
-compared with about 92 g for the previous three front pieces. The full mechanical
-subtotal changes from about 456 g to 452 g. Fewer parts and simpler service are
-the main gains.
+compared with about 92 g for the previous three front pieces. The previous
+whole-circle design had a 451.5 g mechanical subtotal. The stronger barrel,
+ribs, stops and service mounts increase this to 464.8 g, a 13.3 g change before the added metal fasteners. Fewer assembly pieces and
+replaceable service hardware are the main gains.
 
 Mass uses PETG 1.27 g/cm³, acrylic 1.19 g/cm³ and an unmeasured wood assumption of
 0.60 g/cm³. Both subtotals exclude films, electronics, LEDs, wiring, fasteners,

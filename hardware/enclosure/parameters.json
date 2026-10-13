@@ -95,7 +95,7 @@
     "wood": "One 4 mm laser-cut cell grid; 0.5 mm front-sheet gap and nominal 0.6 mm LED clearance; measure stock and fit; soft rim pads only",
     "acrylic": "One 250 x 1.5 mm front sheet: clear centre, two-way mirror ring and black masked rim; rear mirror and all three formed sleeves retained",
     "mirror": "25 mm front annulus; 11.2 mm mirror separation; concealed circle support and outward halo; no optical-performance claim",
-    "ventilation": "Four 6 mm rear openings with nominal 16 mm adhesive membrane patches and separate rear guards; select membrane/adhesive and verify heat/dust later",
+    "ventilation": "Four 6 mm rear openings with nominal 16 mm adhesive membrane patches; screw-removable guards with M2 captive nuts; verify membrane, heat and dust physically",
     "controls": "Rear membrane-covered Mode/Action and latching power button placeholders; service hatch gasket; exact parts/actuation remain TODO",
     "power": "Pololu U3V70F5 fixed 5 V boost, nominal 15.2 x 40.6 x 4.6 mm at (72,-28); protected/switched raw-pack input; external Adafruit charger while pack is disconnected; fuse/switch/capacitor and connector fit TODO",
     "necklace": "Two replaceable 5 mm PETG brackets with primary body bolt and separate captive-nut M3 frame anchor, 12 x 4 mm rounded webbing slots; strength, webbing and metal ring selection remain physical TODO",
@@ -107,7 +107,7 @@
   "vent_patch_radius": 8.0,
   "vent_patch_thickness": 0.2,
   "rear_skin_thickness": 1.0,
-  "rear_rib_width": 1.6,
+  "rear_rib_width": 1.8,
   "rear_rib_height": 2.0,
   "battery_count": 1,
   "battery_spacing": 100.0,
@@ -126,5 +126,8 @@
   "external_port_y": 84.0,
   "external_port_diameter": 12.0,
   "front_plane_z": 36.7,
-  "wood_to_sheet_gap": 0.5
+  "wood_to_sheet_gap": 0.5,
+  "structural_wall": 1.8,
+  "sleeve_fit_clearance": 0.3,
+  "mirror_fit_clearance": 0.45
 }

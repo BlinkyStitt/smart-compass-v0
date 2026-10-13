@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "d7253a34e3114d7c825eb1d9a2c0dc4f3a46b05c71586e7e33346e6e4f46a2fe",
+  "master_sha256": "448d1a17a7de6060ad03a5f0539f61bcc9738672a74216df0519598fc0652bf6",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -67,22 +67,22 @@
     },
     {
       "name": "VentGuard0",
-      "label": "Vent 1 - rear guard, two turned air paths",
+      "label": "Vent 1 - removable two-screw guard",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
           -0.105,
-          -0.04,
-          -0.00285
+          -0.044,
+          -0.0033
         ],
         [
           -0.085,
-          -0.02,
+          -0.016,
           0.0
         ]
       ],
-      "volume_cm3": 0.66
+      "volume_cm3": 1.0741423034202828
     },
     {
       "name": "VentMembrane1",
@@ -105,22 +105,22 @@
     },
     {
       "name": "VentGuard1",
-      "label": "Vent 2 - rear guard, two turned air paths",
+      "label": "Vent 2 - removable two-screw guard",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
           -0.105,
-          0.02,
-          -0.00285
+          0.016,
+          -0.0033
         ],
         [
           -0.085,
-          0.04,
+          0.044,
           0.0
         ]
       ],
-      "volume_cm3": 0.66
+      "volume_cm3": 1.0741423034202828
     },
     {
       "name": "VentMembrane2",
@@ -143,22 +143,22 @@
     },
     {
       "name": "VentGuard2",
-      "label": "Vent 3 - rear guard, two turned air paths",
+      "label": "Vent 3 - removable two-screw guard",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
           0.085,
-          -0.04,
-          -0.00285
+          -0.044,
+          -0.0033
         ],
         [
           0.105,
-          -0.02,
+          -0.016,
           0.0
         ]
       ],
-      "volume_cm3": 0.66
+      "volume_cm3": 1.0741423034202828
     },
     {
       "name": "VentMembrane3",
@@ -181,41 +181,41 @@
     },
     {
       "name": "VentGuard3",
-      "label": "Vent 4 - rear guard, two turned air paths",
+      "label": "Vent 4 - removable two-screw guard",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
           0.085,
-          0.02,
-          -0.00285
+          0.016,
+          -0.0033
         ],
         [
           0.105,
-          0.04,
+          0.044,
           0.0
         ]
       ],
-      "volume_cm3": 0.66
+      "volume_cm3": 1.0741423034202828
     },
     {
       "name": "ServiceCover",
-      "label": "Rear service cover - USB/programming access; two M2 screws",
+      "label": "Rear service cover - USB/programming access; two M2 captive-nut screws",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
-          0.025,
+          0.021,
           0.041,
-          -0.0017
+          -0.00215
         ],
         [
-          0.071,
+          0.075,
           0.067,
           -0.0003499999999999999
         ]
       ],
-      "volume_cm3": 1.6023854877628427
+      "volume_cm3": 2.510913983683791
     },
     {
       "name": "HatchGasket",
@@ -224,17 +224,17 @@
       "role": "solid",
       "bounds_m": [
         [
-          0.025,
+          0.021,
           0.041,
           -0.00035
         ],
         [
-          0.071,
+          0.075,
           0.067,
           0.0
         ]
       ],
-      "volume_cm3": 0.1760332746051815
+      "volume_cm3": 0.24883327460518145
     },
     {
       "name": "RearPlate",
@@ -253,7 +253,7 @@
           0.012
         ]
       ],
-      "volume_cm3": 72.9451258561436
+      "volume_cm3": 75.00305748962175
     },
     {
       "name": "ControlMembrane0",
@@ -319,17 +319,17 @@
       "role": "solid",
       "bounds_m": [
         [
-          -0.1117309909416397,
-          -0.11171618922150879,
+          -0.11158098430754534,
+          -0.11156616268689111,
           0.024
         ],
         [
-          0.11173592499360244,
-          0.11172585615772186,
+          0.11158592499360244,
+          0.11157584262141106,
           0.0255
         ]
       ],
-      "volume_cm3": 24.217024471695957
+      "volume_cm3": 24.06267774540616
     },
     {
       "name": "EdgeDiffuserSeam",
@@ -481,7 +481,7 @@
           0.0385
         ]
       ],
-      "volume_cm3": 69.74142066041448
+      "volume_cm3": 69.76182784022869
     },
     {
       "name": "BarrelFrame",
@@ -500,7 +500,7 @@
           0.022650000000000003
         ]
       ],
-      "volume_cm3": 35.459733991337764
+      "volume_cm3": 41.45677699124438
     },
     {
       "name": "BatteryEnvelope0",
@@ -12823,14 +12823,14 @@
     "mass_estimate": {
       "basis": "CAD solid volume with PETG 1.27, acrylic 1.19 and provisional wood density in g/cm3; not slicer or measured finished mass",
       "excludes": "Films, electronics, LED strips, wires, fasteners, gland/plug, seals, straps, necklace and belt carrier",
-      "printed_petg_g": 240.5,
-      "acrylic_g": 194.3,
+      "printed_petg_g": 254.0,
+      "acrylic_g": 194.1,
       "wood_density_g_cm3": 0.6,
       "wood_g": 16.7,
-      "mechanical_subset_g": 451.5,
+      "mechanical_subset_g": 464.8,
       "candidate_pack_g": 190.0,
-      "internal_pack_subset_g": 641.5,
-      "external_pack_pendant_subset_g": 451.5
+      "internal_pack_subset_g": 654.8,
+      "external_pack_pendant_subset_g": 464.8
     }
   }
 }

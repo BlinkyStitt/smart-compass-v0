@@ -14,7 +14,7 @@ import Part
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, wood_bottom
 
 
 def check():
@@ -53,11 +53,14 @@ def check():
         assert min(doc.getObject(name).Shape.BoundBox.XLength,doc.getObject(name).Shape.BoundBox.YLength)>230
     joint=p['mirror_back_z']-p['strip_wall']
     for x,y in mounting_points(p):
-        for name,z,sign in (('OpticalDeck',joint,1),('BarrelFrame',joint,-1),('OpticalDeck',p['case_depth'],-1)):
+        for name,z,sign in (('OpticalDeck',joint,1),('BarrelFrame',joint,-1)):
             shape=doc.getObject(name).Shape
             assert not shape.isInside(App.Vector(x+1.85,y,z+sign*.05),1e-7,True), 'Bore entry is square: '+name
             assert shape.isInside(App.Vector(x+1.85,y,z+sign*.6),1e-7,True), 'Lead-in removed the nominal bore land: '+name
-        assert not doc.OpticalDeck.Shape.isInside(App.Vector(x+2.8,y,p['case_depth']-.1),1e-7,True), 'Collar tip lacks lead-in'
+        assert not doc.OpticalDeck.Shape.isInside(App.Vector(x+2.98,y,p['case_depth']-.02),1e-7,True), 'Collar tip lacks lead-in'
+        assert not doc.OpticalDeck.Shape.isInside(App.Vector(x+1.8,y,p['case_depth']-.02),1e-7,True), 'Top bore lacks lead-in'
+        land=Part.makeCylinder(2.80,.01,App.Vector(x,y,p['case_depth']-.02)).cut(Part.makeCylinder(1.90,.01,App.Vector(x,y,p['case_depth']-.02)))
+        assert abs(doc.OpticalDeck.Shape.common(land).Volume-land.Volume)<1e-7, 'Front washer stop must retain a continuous broad bearing land'
         assert doc.OpticalDeck.Shape.isInside(App.Vector(x+2.3,y,p['case_depth']-.01),1e-7,True), 'Collar lacks flat washer stop'
     for x,y in rear_mounting_points(p):
         assert not doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.05),1e-7,True), 'Rear screw entry lacks lead-in'
@@ -131,6 +134,39 @@ def check():
         assert math.isclose(membrane.Shape.BoundBox.ZMax,0,abs_tol=1e-7)
         assert membrane.Shape.BoundBox.XLength > hole.Shape.BoundBox.XLength+4
         assert doc.getObject(f'VentGuard{i}') in b.parts
+    # Model actual nominal M2 nuts, screw passages and their insertion sweeps.
+    service_points=[('HatchStandoff'+str(i),x,54) for i,x in enumerate((25,71))]
+    service_points += [(f'VentMount{i}{j}',x,y+offset) for i,(x,y) in enumerate([(x,y) for x in (-95,95) for y in (-30,30)]) for j,offset in enumerate((-11,11))]
+    for name,x,y in service_points:
+        radius=4/math.sqrt(3)  # nominal M2: 4 mm across flats, 1.6 mm thick
+        points=[App.Vector(x+radius*math.cos(math.pi/6+j*math.tau/6),y+radius*math.sin(math.pi/6+j*math.tau/6),2.5) for j in range(6)]
+        nut=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,1.6))
+        assert doc.RearPlate.Shape.common(nut).Volume<1e-7, 'M2 nut does not fit: '+name
+        for offset in (0,1,2,3,4,5,6,8):
+            moved=nut.copy()
+            moved.translate(App.Vector(0,offset,0))
+            assert doc.RearPlate.Shape.common(moved).Volume<1e-7, 'M2 nut insertion blocked: '+name
+        ray=Part.makeLine(App.Vector(x,y,-6),App.Vector(x,y,7))
+        assert not any(ray.common(obj.Shape).Length>1e-7 for obj in b.parts), 'M2 service screw path blocked: '+name
+        # Both axial faces trap the nut; no printed thread or friction-only insert.
+        assert doc.RearPlate.Shape.isInside(App.Vector(x+1.6,y,2.2),1e-7,True)
+        assert doc.RearPlate.Shape.isInside(App.Vector(x+1.6,y,4.5),1e-7,True)
+    for i in range(4):
+        guard=doc.getObject(f'VentGuard{i}')
+        for drop in (.1,1,4,8):
+            moved=guard.Shape.copy()
+            moved.translate(App.Vector(0,0,-drop))
+            assert moved.common(doc.RearPlate.Shape).Volume<1e-7, 'Vent guard cannot lift off'
+        membrane=doc.getObject(f'VentMembrane{i}')
+        assert membrane.Shape.common(guard.Shape).Volume<1e-7, 'Guard contacts membrane'
+    for name,part in [('DeckTopMark','OpticalDeck'),('BarrelTopMark','BarrelFrame'),('RearTopMark','RearPlate')]:
+        assert doc.getObject(name).Shape.common(doc.getObject(part).Shape).Volume<1e-7, 'TOP mark was not engraved'
+    assert math.isclose(doc.Barrel.Base.Radius.Value-doc.Barrel.Tool.Radius.Value,p['structural_wall'],abs_tol=1e-7)
+    for name,dim in cavity_diffusers(p).items():
+        cuff=doc.getObject(name+'CuffBlank0')
+        gap=dim['inner']-cuff.Base.Radius.Value if name=='Halo' else cuff.Tool.Radius.Value-dim['outer']
+        assert math.isclose(gap,p['sleeve_fit_clearance'],abs_tol=1e-7)
+    assert math.isclose(doc.RearMirrorBlank.Base.Radius.Value,ring_radius(p['inner_count'],p)+p['strip_thickness']/2-p['mirror_fit_clearance'],abs_tol=1e-7)
     for side in (-1,1):
         (x,y),primary,secondary = necklace_anchors(p,side)
         link = doc.getObject('NecklaceLink'+str(0 if side==-1 else 1))
@@ -184,6 +220,8 @@ def check():
     mirror_outline=Part.makeCompound([e.copy() for f in doc.RearMirror.Shape.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-p['mirror_back_z'])<1e-7 for e in f.Edges])
     sample_shapes={name:build.fit_sample(doc.getObject(parent).Shape,p) for name,parent in
                    (('FitDeck.stl','OpticalDeck'),('FitBarrel.stl','BarrelFrame'),('FitRear.stl','RearPlate'))}
+    sample_shapes['FitOptics.stl']=build.optical_fit_sample(doc.OpticalDeck.Shape)
+    sample_shapes['FitService.stl']=build.service_fit_sample(doc.RearPlate.Shape)
     assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
@@ -249,7 +287,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'sleeve_fit_clearance':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_diffuser_end_gap':.5}, {'ring_diffuser_seam_gap':5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
