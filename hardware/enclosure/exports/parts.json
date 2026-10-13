@@ -219,6 +219,36 @@
       ]
     },
     {
+      "name": "HaloLightShield",
+      "volume_cm3": 0.1303,
+      "printed": false,
+      "bounds_mm": [
+        178.902,
+        178.961,
+        0.06
+      ]
+    },
+    {
+      "name": "InnerLightShield",
+      "volume_cm3": 0.1634,
+      "printed": false,
+      "bounds_mm": [
+        223.224,
+        223.298,
+        0.06
+      ]
+    },
+    {
+      "name": "OuterLightShield",
+      "volume_cm3": 0.1906,
+      "printed": false,
+      "bounds_mm": [
+        248.235,
+        248.318,
+        0.06
+      ]
+    },
+    {
       "name": "WoodMask",
       "volume_cm3": 27.7899,
       "printed": false,
@@ -440,7 +470,10 @@
     "rear_mirror_front_z": 25.5,
     "front_washer_free_thickness": 0.508,
     "front_washer_compression_ratio": 0.6,
-    "ring_radial_error_budget": 0.2
+    "ring_radial_error_budget": 0.2,
+    "light_shield_thickness": 0.06,
+    "light_shield_edge_clearance": 0.05,
+    "light_shield_bolt_clearance_radius": 4.2
   },
   "fit_samples": [
     {
@@ -955,6 +988,37 @@
       ]
     },
     {
+      "id": "OuterLightShield",
+      "label": "Outside opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/outer-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.38,
+      "mass_range_g_per_unit": [
+        0.15,
+        0.7
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "OuterLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+        }
+      ],
+      "installed_mass_g": 0.38,
+      "installed_mass_range_g": [
+        0.15,
+        0.7
+      ]
+    },
+    {
       "id": "HaloRing",
       "label": "Halo printed glow ring",
       "installed_quantity": 1,
@@ -987,6 +1051,37 @@
       ]
     },
     {
+      "id": "HaloLightShield",
+      "label": "Halo opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/halo-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.22,
+      "mass_range_g_per_unit": [
+        0.1,
+        0.5
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "HaloLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+        }
+      ],
+      "installed_mass_g": 0.22,
+      "installed_mass_range_g": [
+        0.1,
+        0.5
+      ]
+    },
+    {
       "id": "InnerRing",
       "label": "Inner printed glow ring",
       "installed_quantity": 1,
@@ -1016,6 +1111,37 @@
       "installed_mass_range_g": [
         7.5691,
         11.6781
+      ]
+    },
+    {
+      "id": "InnerLightShield",
+      "label": "Inner opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/inner-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.28,
+      "mass_range_g_per_unit": [
+        0.1,
+        0.5
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "InnerLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+        }
+      ],
+      "installed_mass_g": 0.28,
+      "installed_mass_range_g": [
+        0.1,
+        0.5
       ]
     },
     {
@@ -2434,10 +2560,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 950.6,
+      "nominal_g": 951.5,
       "range_g": [
-        727.3,
-        1179.4
+        727.7,
+        1181.1
       ]
     },
     "necklace": {
@@ -2448,17 +2574,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 982.8,
+      "nominal_g": 983.7,
       "range_g": [
-        747.1,
-        1241.4
+        747.5,
+        1243.1
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 762.6,
+      "nominal_g": 763.5,
       "range_g": [
-        548.3,
-        971.4
+        548.6,
+        973.1
       ]
     },
     "external_belt_and_lead": {
@@ -2469,10 +2595,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1084.8,
+      "nominal_g": 1085.7,
       "range_g": [
-        808.1,
-        1423.4
+        808.5,
+        1425.1
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -2493,8 +2619,11 @@
       "FrontSheet",
       "RearMirror",
       "EdgeDiffuser",
+      "OuterLightShield",
       "HaloRing",
+      "HaloLightShield",
       "InnerRing",
+      "InnerLightShield",
       "wood",
       "front_coating",
       "rim_mask",

@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "d233af6ffa64701e1709b5ba73d1957811083dad263b990c9c7a9e8051a27c2b",
+  "master_sha256": "1cb85b367dbdee0bb39e8328afb011ee47c7b6acab5c116a1f8e5e369181fd31",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -387,6 +387,63 @@
         ]
       ],
       "volume_cm3": 7.208703560465278
+    },
+    {
+      "name": "HaloLightShield",
+      "label": "Halo opaque LED-edge shield - die-cut tape on ring top",
+      "variant": "common",
+      "role": "solid",
+      "bounds_m": [
+        [
+          -0.08951010114495321,
+          -0.08945038433509431,
+          0.0362
+        ],
+        [
+          0.08951010114495321,
+          0.08945038433509431,
+          0.03626000000000001
+        ]
+      ],
+      "volume_cm3": 0.13034982494622044
+    },
+    {
+      "name": "InnerLightShield",
+      "label": "Inner opaque LED-edge shield - die-cut tape on ring top",
+      "variant": "common",
+      "role": "solid",
+      "bounds_m": [
+        [
+          -0.11168592499360243,
+          -0.11168592499360243,
+          0.0362
+        ],
+        [
+          0.11168592499360243,
+          0.11168592499360243,
+          0.03626000000000001
+        ]
+      ],
+      "volume_cm3": 0.16337217505378293
+    },
+    {
+      "name": "OuterLightShield",
+      "label": "Outer opaque LED-edge shield - die-cut tape on ring top",
+      "variant": "common",
+      "role": "solid",
+      "bounds_m": [
+        [
+          -0.1242,
+          -0.12414109438840008,
+          0.0362
+        ],
+        [
+          0.1242,
+          0.12414109438840006,
+          0.03626000000000001
+        ]
+      ],
+      "volume_cm3": 0.19061870819345345
     },
     {
       "name": "WoodMask",
@@ -14742,10 +14799,10 @@
     "printed_part_count": 16,
     "mass_estimate": {
       "complete_pendant": {
-        "nominal_g": 950.6,
+        "nominal_g": 951.5,
         "range_g": [
-          727.3,
-          1179.4
+          727.7,
+          1181.1
         ]
       },
       "necklace": {
@@ -14756,17 +14813,17 @@
         ]
       },
       "total_worn": {
-        "nominal_g": 982.8,
+        "nominal_g": 983.7,
         "range_g": [
-          747.1,
-          1241.4
+          747.5,
+          1243.1
         ]
       },
       "external_battery_pendant": {
-        "nominal_g": 762.6,
+        "nominal_g": 763.5,
         "range_g": [
-          548.3,
-          971.4
+          548.6,
+          973.1
         ]
       },
       "external_belt_and_lead": {
@@ -14777,10 +14834,10 @@
         ]
       },
       "external_total_worn": {
-        "nominal_g": 1084.8,
+        "nominal_g": 1085.7,
         "range_g": [
-          808.1,
-          1423.4
+          808.5,
+          1425.1
         ]
       },
       "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -14801,8 +14858,11 @@
         "FrontSheet",
         "RearMirror",
         "EdgeDiffuser",
+        "OuterLightShield",
         "HaloRing",
+        "HaloLightShield",
         "InnerRing",
+        "InnerLightShield",
         "wood",
         "front_coating",
         "rim_mask",

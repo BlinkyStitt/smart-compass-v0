@@ -16,7 +16,7 @@ sys.path.insert(0, str(HERE))
 import build
 import inventory
 from hardware_spec import nut_dimensions, stations
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, top_light_shields, wood_bottom
 
 
 def check():
@@ -177,6 +177,12 @@ def check():
         assert math.isclose(cuff.Shape.BoundBox.ZLength,p['ring_cuff_height'],abs_tol=1e-7)
         assert p['ring_diffuser_led_gap']-p['ring_seat_play']-p['ring_radial_error_budget']+1e-7 >= .5
         assert dim['bottom']+p['ring_cuff_height'] > dim['bottom']+.8
+    for name,dim in top_light_shields(p).items():
+        shield=doc.getObject(name+'LightShield')
+        assert shield.Material.startswith('tesa 7160 black PET')
+        assert math.isclose(shield.Shape.BoundBox.ZMin,dim['bottom'],abs_tol=1e-7)
+        assert math.isclose(shield.Shape.BoundBox.ZLength,p['light_shield_thickness'],abs_tol=1e-7)
+        assert not doc.FrontSheet.Shape.common(shield.Shape).Volume > 1e-7
     assert math.isclose(doc.RearMirrorBlank.Base.Radius.Value,ring_radius(p['inner_count'],p)+p['strip_thickness']/2-p['mirror_fit_clearance'],abs_tol=1e-7)
     for side in (-1,1):
         (x,y),primary,secondary = necklace_anchors(p,side)
@@ -250,8 +256,11 @@ def check():
         assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontSheet'), 'Opaque part blocks a circle pixel'
     # Front service sequence: lift sheet, grid/spacers, sleeves and rear mirror.
     # Check actual translated solids through the complete axial exit path.
-    for name in ('HaloRing','InnerRing','RearMirror','WoodMask','CirclePCB'):
+    for name in ('HaloRing','InnerRing','EdgeDiffuser','RearMirror','WoodMask','CirclePCB'):
         shape=doc.getObject(name).Shape
+        if name in ('HaloRing','InnerRing','EdgeDiffuser'):
+            shield_name='OuterLightShield' if name=='EdgeDiffuser' else name.removesuffix('Ring')+'LightShield'
+            shape=Part.makeCompound([shape,doc.getObject(shield_name).Shape])
         for lift in (.1,.5,1,2,4,8,16,32):
             lifted=shape.copy()
             lifted.translate(App.Vector(0,0,lift))
@@ -285,6 +294,7 @@ def check():
     for name,parent in (('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate')):
         sample_shapes[name+'.stl']=doc.getObject(parent).Shape.common(Part.makeBox(40,50,25,App.Vector(70,35,0)))
     assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
+    outside_shield_shape = doc.OuterLightShield.Shape.copy()
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
     doc.recompute()
@@ -300,8 +310,23 @@ def check():
         assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
     acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
     assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
-    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','fit-sheet.svg','soft-front-washer.svg'):
+    for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','fit-sheet.svg','soft-front-washer.svg','halo-light-shield.svg','inner-light-shield.svg','outer-light-shield.svg'):
         ET.parse(HERE/'exports'/filename)
+    for name,dim in top_light_shields(p).items():
+        cut=ET.parse(HERE/'exports'/(name.lower()+'-light-shield.svg'))
+        if name == 'Outer':
+            polygons=cut.findall('.//s:polygon',ns)
+            assert len(polygons)==2, 'Outside shield needs outer and scalloped inner contours'
+            assert not cut.findall('.//s:circle',ns), 'Outside shield must use the actual scalloped CAD contour'
+            for polygon in polygons:
+                points=[tuple(map(float,pair.split(','))) for pair in polygon.attrib['points'].split()]
+                assert len(points)>20
+                for x,y in points:
+                    assert outside_shield_shape.distToShape(Part.Vertex(App.Vector(x,y,dim['bottom'])))[0]<.025
+        else:
+            circles=cut.findall('.//s:circle',ns)
+            assert len(circles)==2
+            assert [float(circle.attrib['r']) for circle in circles] == [round(dim['outer'],6),round(dim['inner'],6)]
     cut_circles=sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in acrylic.findall('.//s:circle',ns))
     assert cut_circles==sheet_circles, 'Front cut paths differ from native outline/locating holes'
     fit_holes=ET.parse(HERE/'exports/fit-sheet.svg').findall('.//s:circle',ns)
@@ -323,6 +348,9 @@ def check():
     assert inventory.totals(rows)==manifest['mass_estimate'], 'Complete mass totals differ from component ledger'
     assert manifest['mass_estimate']['complete_pendant']['nominal_g'] > 700
     assert not next(v['printed'] for v in manifest['volumes'] if v['name']=='FrontSheet')
+    for name in ('HaloLightShield','InnerLightShield','OuterLightShield'):
+        assert not next(v['printed'] for v in manifest['volumes'] if v['name']==name)
+        assert any(row.get('cad_part')==name for row in rows)
     assert len(manifest['stl_files'])==16, 'Unexpected printed assembly part count'
     assert all(name+'.stl' in manifest['stl_files'] for name in ('OpticalDeck','BarrelFrame','RearPlate'))
     assert not any('Q1' in name or name.startswith(('SeamStraps','CircleBezel','FrontBezel')) for name in manifest['stl_files'])

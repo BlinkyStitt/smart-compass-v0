@@ -321,6 +321,32 @@
       ]
     },
     {
+      "id": "OuterLightShield",
+      "label": "Outside opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/outer-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.38,
+      "mass_range_g_per_unit": [
+        0.15,
+        0.7
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "OuterLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+        }
+      ]
+    },
+    {
       "id": "HaloRing",
       "label": "Halo printed glow ring",
       "installed_quantity": 1,
@@ -343,6 +369,32 @@
       ]
     },
     {
+      "id": "HaloLightShield",
+      "label": "Halo opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/halo-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.22,
+      "mass_range_g_per_unit": [
+        0.1,
+        0.5
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "HaloLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+        }
+      ]
+    },
+    {
       "id": "InnerRing",
       "label": "Inner printed glow ring",
       "installed_quantity": 1,
@@ -361,6 +413,32 @@
         {
           "label": "Prusa Ultraglow technical sheet",
           "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
+        }
+      ]
+    },
+    {
+      "id": "InnerLightShield",
+      "label": "Inner opaque LED-edge shield",
+      "installed_quantity": 1,
+      "unit": "cut film ring",
+      "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+      "source": "hardware/enclosure/exports/inner-light-shield.svg",
+      "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+      "material": "Opaque black PET and acrylic adhesive",
+      "mass_g_per_unit": 0.28,
+      "mass_range_g_per_unit": [
+        0.1,
+        0.5
+      ],
+      "mass_kind": "estimated",
+      "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+      "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+      "group": "pendant",
+      "cad_part": "InnerLightShield",
+      "stock_sources": [
+        {
+          "label": "tesa 7160 light-blocking tape",
+          "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
         }
       ]
     },
