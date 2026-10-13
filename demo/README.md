@@ -32,6 +32,7 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 [Full-resolution video](../hardware/enclosure/exports/exploded.mp4)
 
 The preview shows pale green glow PETG in daylight and applies an assumed green bias to LED output. It does not simulate stored afterglow.
+Three modeled black PET shields cover the exposed upper LED edges at the rings. The preview shows their geometry; it does not prove tape adhesion or the absence of light leaks in an assembled sample.
 
 The 24-second exploded loop separates the current assembly, pauses with its
 layers apart, then brings it back together. It keeps the front sheet and each

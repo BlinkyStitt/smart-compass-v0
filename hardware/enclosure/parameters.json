@@ -136,5 +136,8 @@
   "rear_mirror_front_z": 25.5,
   "front_washer_free_thickness": 0.508,
   "front_washer_compression_ratio": 0.6,
-  "ring_radial_error_budget": 0.2
+  "ring_radial_error_budget": 0.2,
+  "light_shield_thickness": 0.06,
+  "light_shield_edge_clearance": 0.05,
+  "light_shield_bolt_clearance_radius": 4.2
 }

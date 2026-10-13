@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, strip_bottom
+from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, strip_bottom, top_light_shields
 
 HERE = Path(__file__).resolve().parent
 
@@ -92,6 +92,23 @@ class GeometryTests(unittest.TestCase):
         for band in bands.values():
             self.assertLess(band['bottom'],self.p['strip_bottom_z'])
             self.assertGreater(band['bottom']+band['height'],self.p['strip_bottom_z']+self.p['strip_width'])
+
+    def test_opaque_shields_cover_exposed_led_edges_without_trapping_rings(self):
+        shields=top_light_shields(self.p)
+        self.assertEqual(set(shields),{'Halo','Inner','Outer'})
+        for name,dim in shields.items():
+            count=int(self.p[name.lower()+'_count'])
+            for i in range(count):
+                (x,y),_=ring_pixel(count,i,name!='Inner',self.p)
+                self.assertLess(dim['inner'],math.hypot(x,y))
+                self.assertGreater(dim['outer'],math.hypot(x,y))
+            self.assertGreaterEqual(dim['bottom']-strip_bottom(name,self.p)-self.p['strip_width']+1e-9,.1)
+            self.assertGreaterEqual(self.p['front_plane_z']-dim['bottom']-dim['height'],.4)
+            if name != 'Outer':
+                band=cavity_diffusers(self.p)[name]
+                self.assertAlmostEqual(dim['bottom'],band['bottom']+band['height'])
+            else:
+                self.assertAlmostEqual(dim['bottom'],self.p['edge_bottom_z']+33)
 
     def test_excessive_web_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Web removes LED'):

@@ -20,7 +20,7 @@ from hardware_spec import nut_dimensions, hexagon
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom, rear_mounting_points, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
 
 DIFFUSER_TRANSPARENCY = 35  # CAD display only; not measured optical transmission.
 DIFFUSER_TINT = (184 / 255, 209 / 255, 138 / 255)  # Use the native file's 8-bit RGB precision.
@@ -631,6 +631,13 @@ def build(p=None):
         band = b.annulus(name+'Ring',d['inner'],d['outer'],d['bottom'],d['height'])
         band.Label = name+'Ring - whole glow PETG print'
         b.add(band,'Manufactured',name+'Ring - whole glow PETG print',DIFFUSER_TINT,DIFFUSER_TRANSPARENCY,material='Prusament PETG Ultraglow Green; 1.0 mm wall; optical transmission unmeasured')
+    for name,d in top_light_shields(p).items():
+        shield = b.annulus(name+'LightShield'+('Blank' if name=='Outer' else ''),d['inner'],d['outer'],d['bottom'],d['height'])
+        if name == 'Outer':
+            clearances = [b.cylinder(f'OuterShieldBoltClearance{i}',p['light_shield_bolt_clearance_radius'],d['height'],d['bottom'],x,y)
+                          for i,(x,y) in enumerate(points)]
+            shield = b.cut(name+'LightShield',shield,clearances)
+        b.add(shield,'Manufactured',name+' opaque LED-edge shield - die-cut tape on ring top',(.015,.015,.015),material='tesa 7160 black PET light-blocking tape, 0.06 mm; adhesive on ring end face; retain liner beneath free span')
     # One deep laser-cut wood grid supplies both the face pattern and cell walls.
     # A free gap separates it from the sheet; three spacers support its rear rim.
     openings = b.profile('FibonacciApertures', cells, wood_expr, E('wood_thickness'))
@@ -744,6 +751,17 @@ def validate_parameters(p):
     optics = optical_dimensions(p)
     if p['ring_diffuser_thickness'] != 1 or p['ring_diffuser_led_gap'] < 1 or not .05 <= p['ring_bottom_clearance'] <= .2 or p['ring_cuff_height']+1e-7 < .8+.4 or p['ring_front_clearance'] != .5 or not .5 <= p['front_washer_compression_ratio'] <= .7:
         raise ValueError('Printed rings need specified walls, LED clearance, and axial retention')
+    if not 0 < p['light_shield_thickness'] <= .1 or not 0 < p['light_shield_edge_clearance'] <= .1 or not 4.1 <= p['light_shield_bolt_clearance_radius'] < 4.4:
+        raise ValueError('Opaque LED-edge shields need thin tape and a clear frame edge')
+    for name, dim in top_light_shields(p).items():
+        wall_edge = (ring_radius(p['halo_count'],p)-p['strip_thickness']/2 if name == 'Halo'
+                     else ring_radius(p['inner_count'],p)+p['strip_thickness']/2 if name == 'Inner'
+                     else ring_radius(p['outer_count'],p)-p['strip_thickness']/2)
+        radial_clearance = (dim['inner']-wall_edge if name != 'Inner' else wall_edge-dim['outer'])
+        if radial_clearance-p['ring_seat_play'] < .04-1e-7:
+            raise ValueError('Moving LED-edge shield can catch the opaque carrier')
+        if dim['bottom']-(strip_bottom(name,p)+p['strip_width']) < .05-1e-7 or p['front_plane_z']-dim['bottom']-dim['height'] < .2:
+            raise ValueError('LED-edge shield needs strip and front-sheet clearance')
     if optics['diffuser_gap'] < 18:
         raise ValueError('Curved diffusers leave less than 18 mm of radial mirror cavity')
     if optics['visible_mirror_width'] < 20 or optics['circle_to_inner_led'] < 20:
@@ -811,7 +829,10 @@ def check_model(b, centres, cells):
                 continue
             volume = a.Shape.common(other.Shape).Volume
             if volume > .05:
-                failures.append((a.Name, other.Name, round(volume, 4)))
+                overlap = a.Shape.common(other.Shape).BoundBox
+                failures.append((a.Name, other.Name, round(volume, 4),
+                                 (round(overlap.XMin, 3), round(overlap.YMin, 3),
+                                  round(overlap.XMax, 3), round(overlap.YMax, 3))))
     if failures:
         raise ValueError('Unintended assembly collisions (mm^3): ' + repr(failures))
     # Tall component envelopes matter when controllers sit under the circle
@@ -857,6 +878,14 @@ def check_model(b, centres, cells):
                 raise ValueError(f'Opaque frame blocks {name} pixel {i}')
             if name != 'Outer' and ray.common(b.doc.getObject(name+'Ring').Shape).Length < b.p['ring_diffuser_thickness']-.01:
                 raise ValueError(f'Curved diffuser does not cover {name} pixel {i}')
+    for name in ('Halo','Inner','Outer'):
+        shield = b.doc.getObject(name+'LightShield')
+        for i in range(int(b.p[name.lower()+'_count'])):
+            (x,y),_ = ring_pixel(int(b.p[name.lower()+'_count']),i,name!='Inner',b.p)
+            axial = Part.makeLine(App.Vector(x,y,strip_bottom(name,b.p)+b.p['strip_width']/2+2.5),
+                                  App.Vector(x,y,b.p['front_plane_z']))
+            if axial.common(shield.Shape).Length < b.p['light_shield_thickness']-.01:
+                raise ValueError(f'LED upper edge has a direct unshielded path: {name} {i}')
     print('CAD geometry checks: connected parts, no product/LED collisions, inward and outward light paths clear',flush=True)
 
 
@@ -903,7 +932,7 @@ def export_files(b, centres, cells):
         return MeshPart.meshFromShape(Shape=shape,LinearDeflection=.02,AngularDeflection=.08,Relative=False)
     mesh_names = []
     volumes = []
-    nonprinted = {'WoodMask','FrontSheet','RearMirror','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloRingPad','InnerRingPad'))}
+    nonprinted = {'WoodMask','FrontSheet','RearMirror','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloRingPad','InnerRingPad')) or o.Name.endswith('LightShield')}
     for obj in b.parts:
         volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted,'bounds_mm':[round(getattr(obj.Shape.BoundBox,a+'Length'),3) for a in 'XYZ']})
         if obj.Name in nonprinted:
@@ -992,6 +1021,16 @@ def svg_files(b, cells, out):
         f'Six soft front retention washers; {SOFT_WASHER["free_thickness"]:g} mm silicone stock; knife/die cut; compression must be tested',SOFT_WASHER['od']/2+1))
     (out/'fit-sheet.svg').write_text(document(['<path d="M -9,-9 H 9 V 9 H -9 Z"/>','<circle cx="0" cy="0" r="3.500000"/>'],'FIT SAMPLE ONLY: 18 mm square in actual front-sheet stock; test on FitDeck collar',9))
     (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 0.060 inch clear acrylic nominal; six 7.0 mm locating holes',p['case_diameter']/2))
+    for name, dim in top_light_shields(p).items():
+        if name == 'Outer':
+            shield = b.doc.OuterLightShield.Shape
+            face = next(f for f in shield.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-dim['bottom']) < 1e-7)
+            paths = ['<polygon points="'+' '.join(f'{v.x:.6f},{v.y:.6f}' for v in wire.discretize(Deflection=.01))+'"/>'
+                     for wire in face.Wires]
+        else:
+            paths = [f'<circle cx="0" cy="0" r="{dim[key]:.6f}"/>' for key in ('outer','inner')]
+        (out/(name.lower()+'-light-shield.svg')).write_text(document(paths,
+            f'{name} opaque LED-edge shield; die-cut 0.06 mm tesa 7160; retain release liner below free span; bond only to printed ring top',dim['outer']))
     (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (r,p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: clear centre r<=83; rear-facing two-way mirror 83..110.5; black rim 110.5..125',p['case_diameter']/2))
     inner_r = ring_radius(p['inner_count'],p)
     rear_outer = inner_r+p['strip_thickness']/2
@@ -1042,7 +1081,7 @@ def export_previews(b, out):
     # radial coverage stays visible without the front mirror or printed frame.
     products = b.parts+b.hardware+b.references
     visibility = [(obj,obj.Visibility) for obj in products]
-    diffuser_view = {'HaloRing','InnerRing','EdgeDiffuser','HaloLEDs','InnerLEDs','OuterLEDs','HaloStripSeam','InnerStripSeam','OuterStripSeam'}
+    diffuser_view = {'HaloRing','InnerRing','EdgeDiffuser','HaloLightShield','InnerLightShield','OuterLightShield','HaloLEDs','InnerLEDs','OuterLEDs','HaloStripSeam','InnerStripSeam','OuterStripSeam'}
     for obj in products:
         obj.Visibility = obj.Name in diffuser_view
     Gui.updateGui()

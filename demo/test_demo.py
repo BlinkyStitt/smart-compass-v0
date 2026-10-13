@@ -67,6 +67,7 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(len(design['fasteners_m']),6)
         self.assertAlmostEqual(design['sheet_thickness_m'],.001524)
         self.assertEqual(design['printed_part_count'],16)
+        self.assertTrue({'HaloLightShield','InnerLightShield','OuterLightShield'} <= {part['name'] for part in m['parts']})
         inventory=json.loads((path/'parts.json').read_text())
         quantities={row['id']:row['installed_quantity'] for row in inventory['components']}
         expected=sum(quantities[key] for key in ('body_screws','anchor_screws','rear_screws','service_screws','sparkle_mount_hardware',

@@ -43,6 +43,7 @@ infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
 FitSuspensionBracket.stl FitSuspensionBracketLeft.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
 FitController.stl FitRingHalo.stl FitRingInner.stl FitRingOutside.stl
+halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))

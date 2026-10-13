@@ -122,6 +122,15 @@ and path widths. Review LED patterns at the permitted power limit. Record
 visible afterglow immediately and at 1, 5 and 15 minutes. Stop the full order
 if any sample fails; correct the cause and repeat its fit test.
 
+Cut trial sections from the [halo](exports/halo-light-shield.svg),
+[inner](exports/inner-light-shield.svg), and
+[outside](exports/outer-light-shield.svg) light-shield contours in 0.06 mm
+tesa 7160 black PET tape. Apply them to the printed ring arc samples with
+adhesive only on the ring end face. Keep the release liner below each free
+span. Fit actual LEDs and the front-sheet sample. Reject visible bare LED
+edges or light leaking above the ring at the permitted power limit. Test
+adhesion, sag, sheet clearance, and clean removal with the ring.
+
 ## Assemble the whole circles without juggling them
 
 Work with the barrel upright on a flat padded surface. Align the recessed
@@ -173,6 +182,16 @@ seat play. The front sheet leaves 0.5 mm nominal clearance above the rings.
 Measure 0.2–0.8 mm after assembly. Require at least 0.5 mm actual LED-to-ring
 clearance after dimensional errors and movement. The cavity remains at least
 18 mm wide radially. Lift the rings from the front for mirror service.
+
+Die-cut three opaque PET light shields from the supplied SVGs. Bond each
+shield only to the top end face of its printed ring. The 0.06 mm film
+covers the exposed LED upper edge and the glow ring end face. Keep its
+release liner on the free span above the LEDs; do not bond it to the strip,
+front sheet, or frame. The nominal film-to-sheet clearance is 0.44 mm.
+Check that the film stays flat at every permitted ring position. Lift each
+ring with its shield attached during service. The supplier lists visible
+transmission below 0.005%; the assembled light seal still needs a dark-room
+sample test. [tesa 7160 specification](https://www.tesa.com/en/files/download/12213622,0,medium-12213622.pdf).
 
 | Output | Direction | Pixels | Strip length |
 | --- | --- | ---: | ---: |

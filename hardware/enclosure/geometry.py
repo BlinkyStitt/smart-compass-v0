@@ -122,6 +122,26 @@ def cavity_diffusers(p):
             'Inner':{'inner':inner_face-gap-thickness,'outer':inner_face-gap,'bottom':bottom,'height':top-bottom}}
 
 
+def top_light_shields(p):
+    """Opaque tape covers the exposed axial LED edges and ring end faces."""
+    bands = cavity_diffusers(p)
+    halo_strip_outer = ring_radius(p['halo_count'], p) + p['strip_thickness']/2
+    inner_strip_inner = ring_radius(p['inner_count'], p) - p['strip_thickness']/2
+    clearance = p['light_shield_edge_clearance']
+    return {
+        'Halo': {'inner': halo_strip_outer + clearance, 'outer': bands['Halo']['outer'],
+                 'bottom': bands['Halo']['bottom'] + bands['Halo']['height'],
+                 'height': p['light_shield_thickness']},
+        'Inner': {'inner': bands['Inner']['inner'], 'outer': inner_strip_inner - clearance,
+                  'bottom': bands['Inner']['bottom'] + bands['Inner']['height'],
+                  'height': p['light_shield_thickness']},
+        'Outer': {'inner': ring_radius(p['outer_count'], p) + p['strip_thickness']/2 + clearance,
+                  'outer': p['edge_diffuser_radius'] + p['edge_diffuser_thickness'],
+                  'bottom': p['front_plane_z'] - p['ring_front_clearance'],
+                  'height': p['light_shield_thickness']},
+    }
+
+
 def rear_mounting_points(p):
     """Rear-cover screws are independent of the six optical-stack bolts."""
     return [(112.5*math.cos(math.radians(0+60*i)),112.5*math.sin(math.radians(0+60*i))) for i in range(6)]

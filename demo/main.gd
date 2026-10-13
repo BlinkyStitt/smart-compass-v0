@@ -112,10 +112,10 @@ func _prepare_explosion():
 	var layers = {
 		0.36: ["FrontCentre", "FrontMirrorCoating", "FrontRim"],
 		0.25: ["WoodMask", "CirclePCB", "CircleLEDs", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
-		0.19: ["HaloRing", "HaloStripSeam", "HaloLEDs"],
-		0.14: ["InnerRing", "InnerStripSeam", "InnerLEDs"],
+		0.19: ["HaloRing", "HaloLightShield", "HaloStripSeam", "HaloLEDs"],
+		0.14: ["InnerRing", "InnerLightShield", "InnerStripSeam", "InnerLEDs"],
 		0.085: ["RearMirror"],
-		0.04: ["OpticalDeck", "EdgeDiffuser", "OuterStripSeam", "OuterLEDs"],
+		0.04: ["OpticalDeck", "EdgeDiffuser", "OuterLightShield", "OuterStripSeam", "OuterLEDs"],
 		0.0: ["BarrelFrame"],
 		-0.10: ["RearPlate", "BatteryEnvelope0", "SparklePCBWithHoles", "blackpillPCB", "gpsPCB", "imuPCB", "radioPCB", "sensePCB", "powerPCB", "ExternalPowerBlank", "RearButton0", "RearButton1", "RearButton2", "ControlMembrane0", "ControlMembrane1", "ControlMembrane2"],
 		-0.13: ["NecklaceLink0", "NecklaceLink1", "HatchGasket", "VentMembrane0", "VentMembrane1", "VentMembrane2", "VentMembrane3"],
@@ -460,6 +460,9 @@ func _run_checks():
 	assert(meshes.FrontCentre.position == meshes.FrontRim.position and meshes.FrontCentre.position == meshes.FrontMirrorCoating.position, "Front sheet must stay whole")
 	assert(not cavity_materials[0].get_shader_parameter("cavity_closed"), "Separated mirrors must not show a closed cavity")
 	assert(meshes.HaloRing.material_override.get_shader_parameter("assembly_offset").is_equal_approx(explosion_offsets.HaloRing))
+	assert(explosion_offsets.HaloLightShield.is_equal_approx(explosion_offsets.HaloRing))
+	assert(explosion_offsets.InnerLightShield.is_equal_approx(explosion_offsets.InnerRing))
+	assert(explosion_offsets.OuterLightShield.is_equal_approx(explosion_offsets.EdgeDiffuser))
 	_exploded_pose(1)
 	assert(camera.transform.is_equal_approx(exploded_start), "Exploded camera loop must close")
 	for name in meshes:
