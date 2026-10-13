@@ -10,8 +10,9 @@ uniform float led_z = 0.0201;
 uniform float brightness = 2.0;
 uniform float transmission = 0.4;
 uniform float diffusion = 0.65;
+uniform vec3 assembly_offset = vec3(0.0);
 varying vec3 pos;
-void vertex() { pos = (MODEL_MATRIX * vec4(VERTEX,1.0)).xyz; }
+void vertex() { pos = (MODEL_MATRIX * vec4(VERTEX,1.0)).xyz - assembly_offset; }
 #include "res://ring_diffusion.gdshaderinc"
 void fragment() {
     ALBEDO=vec3(0.018);

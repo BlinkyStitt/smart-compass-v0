@@ -34,7 +34,7 @@ INPUTS = (
 FIXED_EXPORTS = frozenset('''
 amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
 diffusers.png edge-diffuser.svg edge.png electronics.png
-exploded.png front-sheet.svg front-coating.svg
+exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
 front.png halo-ring-diffuser.svg inner-ring-diffuser.svg
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg

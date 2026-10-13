@@ -28,6 +28,18 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 
 ## Looping animations
 
+[Explode and reassemble (GIF)](../hardware/enclosure/exports/exploded.gif) ·
+[Full-resolution video](../hardware/enclosure/exports/exploded.mp4)
+
+The 24-second exploded loop separates the current assembly, pauses with its
+layers apart, then brings it back together. It keeps the front sheet and each
+large printed circle whole. The centre module, paired sleeves and LED rows,
+and rear electronics move as groups. The camera stays on the front side.
+Parts, camera and moving rainbow return to their starting states at the loop
+boundary. These are diagram positions, not removal paths or service clearances.
+The separated front coating shows environment reflection; the infinity cavity
+returns when the mirrors come back together.
+
 [Spiral rainbow](../hardware/enclosure/exports/infinity-rainbow.gif) ·
 [Ocean gradient](../hardware/enclosure/exports/infinity-ocean.gif) ·
 [Sunset gradient](../hardware/enclosure/exports/infinity-sunset.gif)
@@ -143,8 +155,9 @@ the same surface profile on all three rings.
 `just cad` rebuilds the native model, validates CAD, slices all printed parts and fit samples, exports the GLB and metadata,
 checks the demo, and captures both finishes under all four lights with LEDs
 on and off. It repeats front, 72° steep, edge and rear views. It combines the 64
-matched renders into 16 labelled comparison sheets, plus the Godot demo, comparison video, sweep GIF and three moving gradient GIFs, and
-decodes every output. FreeCAD supplies geometry and static engineering views;
+matched renders into 16 labelled comparison sheets. It also creates the Godot
+demo, comparison video, sweep GIF, three moving gradient GIFs, and exploded
+GIF/video. It decodes every output. FreeCAD supplies geometry and static engineering views;
 Godot is the sole demo video renderer. The freshness manifest includes the demo sources and
 outputs. The staged commit hook checks the same inventory. A stale or missing
 asset prevents `just demo` and an ordinary direct Godot launch.

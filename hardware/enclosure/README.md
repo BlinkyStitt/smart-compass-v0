@@ -7,11 +7,13 @@ compression stops end at Z=38.5 mm. Rear vent guards add 3.3 mm before hardware.
 The rear mirror and all three curved diffusers remain separate optical parts.
 
 [Moving rainbow](exports/infinity-rainbow.gif) · [Ocean](exports/infinity-ocean.gif) ·
-[Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4)
+[Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4) ·
+[Explode and reassemble](exports/exploded.gif) ([MP4](exports/exploded.mp4))
 
-All demo videos and GIFs come from Godot. They use smooth spatial gradients and
-slow, seamless side-to-front sweeps. The [demo guide](../../demo/README.md) lists
-controls and unmeasured optical assumptions. Its alternative full-mirror coating
+All demo videos and GIFs come from Godot. The lighting loops use smooth spatial
+gradients and slow, seamless side-to-front sweeps. The exploded loop separates
+the current layers, pauses, and reassembles them. All main circles stay whole.
+The [demo guide](../../demo/README.md) lists controls and unmeasured optical assumptions. Its alternative full-mirror coating
 uses the same mechanical assembly. The saved CAD defines the selected clear-centre design.
 
 ![Assembly](exports/assembly.png)

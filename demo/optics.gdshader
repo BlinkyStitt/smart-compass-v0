@@ -3,6 +3,7 @@ render_mode cull_disabled;
 
 // CAD metres. Trace a view ray between finite parallel mirror planes.
 uniform sampler2D colours : filter_nearest, repeat_disable;
+uniform bool cavity_closed = true;
 uniform float front_z = 0.0367;
 uniform float rear_z = 0.0255;
 uniform float halo_radius = 0.08901;
@@ -31,7 +32,7 @@ void fragment() {
     vec3 point = world_position;
     vec3 light = vec3(0.0);
     // Back and edge faces never show a false infinity tunnel.
-    if (direction.z < -0.00001 && eye.z > front_z) {
+    if (cavity_closed && direction.z < -0.00001 && eye.z > front_z) {
         point += direction*((front_z-point.z)/direction.z);
         vec3 hit;
         vec3 traced=trace_cavity(point,direction,hit);

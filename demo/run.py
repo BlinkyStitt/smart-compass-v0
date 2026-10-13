@@ -77,14 +77,20 @@ def capture():
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'gradient-{style}-%04d.png'),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(output/f'infinity-{style}.gif')],check=True)
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/'exploded-%04d.png'),
+                        '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'exploded.mp4')],check=True)
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'exploded.mp4'),
+                        '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
+                        '-loop','0',str(output/'exploded.gif')],check=True)
+        shutil.copyfile(frames/'exploded-poster.png',output/'exploded-poster.png')
         shutil.copyfile(frames/'movie-0000.png',output/'turntable-poster.png')
-    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png'):
+    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else (1280,720)
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
-            seconds=52 if name=='amulet-demo.mp4' else 12
+            seconds={'amulet-demo.mp4':52,'lighting-demo.mp4':12,'exploded.mp4':24}[name]
             assert int(probe['nb_frames'])==seconds*24 and abs(float(probe['duration'])-seconds)<.01
         if name.endswith('.gif'):
             seconds=16 if name in GRADIENTS else 24
