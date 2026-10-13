@@ -6,6 +6,8 @@ const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const COUNTS = [256, 64, 84, 90]
 var metadata: Dictionary
 var meshes = {}
+var assembled_transforms = {}
+var explosion_offsets = {}
 var cell_materials = []
 var sleeve_materials = []
 var cavity_materials = []
@@ -83,6 +85,7 @@ func _ready():
 	var assembly = document.generate_scene(state)
 	add_child(assembly)
 	_collect(assembly)
+	_prepare_explosion()
 	_make_materials()
 	_make_world()
 	_make_controls()
@@ -102,6 +105,52 @@ func _ready():
 func _collect(node):
 	if node is MeshInstance3D: meshes[str(node.name)] = node
 	for child in node.get_children(): _collect(child)
+
+# Illustration distances in metres. Each circular part stays whole. The centre
+# module and each LED/sleeve pair stay together; electronics stay on the rear.
+func _prepare_explosion():
+	var layers = {
+		0.36: ["FrontCentre", "FrontMirrorCoating", "FrontRim"],
+		0.25: ["WoodMask", "CirclePCB", "CircleLEDs", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
+		0.19: ["HaloDiffuser", "HaloStripSeam", "HaloLEDs"],
+		0.14: ["InnerDiffuser", "InnerStripSeam", "InnerLEDs"],
+		0.085: ["RearMirror"],
+		0.04: ["OpticalDeck", "EdgeDiffuserSeam", "OuterStripSeam", "OuterLEDs"],
+		0.0: ["BarrelFrame"],
+		-0.10: ["RearPlate", "BatteryEnvelope0", "SparklePCBWithHoles", "blackpillPCB", "gpsPCB", "imuPCB", "radioPCB", "sensePCB", "powerPCB", "ExternalPowerBlank", "RearButton0", "RearButton1", "RearButton2", "ControlMembrane0", "ControlMembrane1", "ControlMembrane2"],
+		-0.13: ["NecklaceLink0", "NecklaceLink1", "HatchGasket", "VentMembrane0", "VentMembrane1", "VentMembrane2", "VentMembrane3"],
+		-0.16: ["ServiceCover", "VentGuard0", "VentGuard1", "VentGuard2", "VentGuard3"],
+	}
+	for offset in layers:
+		for name in layers[offset]:
+			assert(meshes.has(name), "Unknown exploded part: " + name)
+			explosion_offsets[name] = Vector3(0, 0, offset)
+	for part in metadata.parts:
+		if part.role == "cell": explosion_offsets[part.name] = Vector3(0, 0, 0.25)
+		assert(explosion_offsets.has(part.name), "Assign an exploded layer to " + part.name)
+		assembled_transforms[part.name] = meshes[part.name].transform
+
+func _set_explosion(amount: float):
+	for name in meshes:
+		var mesh = meshes[name]
+		mesh.transform = assembled_transforms[name]
+		mesh.position += explosion_offsets[name]*amount
+		if mesh.material_override is ShaderMaterial and mesh.material_override in sleeve_materials:
+			# Keep the direct light field attached to the moved sleeve and LED row.
+			mesh.material_override.set_shader_parameter("assembly_offset", explosion_offsets[name]*amount)
+	for material in cavity_materials:
+		# Separated mirrors no longer form the canonical 11.2 mm cavity.
+		material.set_shader_parameter("cavity_closed", amount == 0.0)
+
+func _exploded_pose(phase: float):
+	var amount = smoothstep(0.08, 0.38, phase)*(1.0-smoothstep(0.62, 0.92, phase))
+	_set_explosion(amount)
+	distance = 0.60+0.25*amount
+	target = Vector3(0, 0, 0.0367+0.075*amount)
+	yaw = 35.0+30.0*amount+6.0*sin(TAU*phase)
+	pitch_angle = -16.0
+	pattern_time = 16.0*phase
+	_update_camera()
 
 func _shader(path):
 	var material = ShaderMaterial.new()
@@ -381,6 +430,8 @@ func _update_colours():
 	colour_texture.update(image_data)
 
 func _run_checks():
+	# Headless Godot starts with a 64-pixel window; test the capture resolution.
+	get_window().size = Vector2i(1280,720)
 	assert(metadata.leds.size()==494)
 	assert(meshes.size()==metadata.parts.size())
 	for part in metadata.parts:
@@ -394,6 +445,25 @@ func _run_checks():
 	assert(absf(yaw)<0.00001, "Sweep must cross the front")
 	_sweep(1)
 	assert(camera.position.is_equal_approx(loop_start), "Sweep must close its loop")
+	_exploded_pose(0)
+	var exploded_start=camera.transform
+	for phase in [0.125,0.25,0.5,0.75,0.875]:
+		_exploded_pose(phase)
+		for mesh in meshes.values():
+			var bounds=mesh.get_aabb()
+			for corner in range(8):
+				var point=mesh.global_transform*bounds.get_endpoint(corner)
+				assert(not camera.is_position_behind(point), "Exploded part behind camera")
+				assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)), "Exploded part clipped: %s at %s in %s (phase %s)" % [mesh.name,camera.unproject_position(point),get_viewport().get_visible_rect(),phase])
+	_exploded_pose(0.5)
+	assert(meshes.FrontCentre.position == meshes.FrontRim.position and meshes.FrontCentre.position == meshes.FrontMirrorCoating.position, "Front sheet must stay whole")
+	assert(not cavity_materials[0].get_shader_parameter("cavity_closed"), "Separated mirrors must not show a closed cavity")
+	assert(meshes.HaloDiffuser.material_override.get_shader_parameter("assembly_offset").is_equal_approx(explosion_offsets.HaloDiffuser))
+	_exploded_pose(1)
+	assert(camera.transform.is_equal_approx(exploded_start), "Exploded camera loop must close")
+	for name in meshes:
+		assert(meshes[name].transform.is_equal_approx(assembled_transforms[name]), "Reassembly must restore " + name)
+	assert(cavity_materials[0].get_shader_parameter("cavity_closed"), "Reassembly must restore reflections")
 	_reset()
 	var saved_time=pattern_time
 	var saved_position=camera.position
@@ -524,7 +594,21 @@ func _capture():
 			_update_colours()
 			await _settle()
 			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [style,frame]))==OK)
-	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames and 1152 gradient loop frames")
+	_reset()
+	_set_finish(0)
+	_set_lighting(1)
+	pattern=0
+	caption.text="Exploded assembly"
+	for frame in range(576):
+		_exploded_pose(frame/576.0)
+		_update_colours()
+		await _settle()
+		var picture=get_viewport().get_texture().get_image()
+		assert(picture.save_png(capture_dir.path_join("exploded-%04d.png" % frame))==OK)
+		if frame==288:
+			assert(picture.save_png(capture_dir.path_join("exploded-poster.png"))==OK)
+	_exploded_pose(1)
+	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1152 gradient frames and 576 exploded loop frames")
 	get_tree().quit()
 
 func _benchmark():
