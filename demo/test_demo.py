@@ -61,6 +61,23 @@ class DemoTests(unittest.TestCase):
         size,kind=struct.unpack_from('<II',data,12)
         self.assertEqual(kind,0x4e4f534a)
         glb=json.loads(data[20:20+size])
+        def values(index,dimensions):
+            accessor=glb['accessors'][index]
+            view=glb['bufferViews'][accessor['bufferView']]
+            start=28+size+view.get('byteOffset',0)+accessor.get('byteOffset',0)
+            self.assertEqual(accessor['componentType'],5126)
+            return [struct.unpack_from('<'+'f'*dimensions,data,start+i*dimensions*4) for i in range(accessor['count'])]
+        packages=next(mesh for mesh in glb['meshes'] if mesh['name']=='CircleLEDs')['primitives'][0]['attributes']
+        positions=values(packages['POSITION'],3)
+        identities=values(packages['COLOR_0'],4)
+        self.assertEqual(len(positions),len(identities))
+        indices={round(colour[0]*255) for colour in identities}
+        self.assertEqual(indices,set(range(256)))
+        for offset in range(0,len(positions),3):
+            index=round(identities[offset][0]*255)
+            self.assertTrue(all(round(colour[0]*255)==index for colour in identities[offset:offset+3]))
+            x,y,_=m['leds'][index]['position_m']
+            self.assertTrue(all(abs(point[0]-x)<.00251 and abs(point[1]-y)<.00251 for point in positions[offset:offset+3]),'Package colour index differs from the published board map')
         self.assertEqual({node['name'] for node in glb['nodes']},{part['name'] for part in m['parts']})
         # All 256 light contours derive from the one CAD wood grid.
         self.assertEqual(sum(part['role']=='cell' for part in m['parts']),256)

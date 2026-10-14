@@ -36,11 +36,11 @@ class GLB:
         self.doc['accessors'].append(record)
         return len(self.doc['accessors'])-1
 
-    def mesh(self, name, shape, color, variant='common', role='solid', label=None):
+    def mesh(self, name, shape, color, variant='common', role='solid', label=None, pixel_centres=None):
         import MeshPart
         mesh = MeshPart.meshFromShape(Shape=shape, LinearDeflection=.12, AngularDeflection=.20, Relative=False)
         points, triangles = mesh.Topology
-        positions, normals = [], []
+        positions, normals, pixel_colours = [], [], []
         # Flat normals preserve tiny cell walls and sharp mechanical edges.
         for triangle in triangles:
             a, b, c = [points[i] for i in triangle]
@@ -48,15 +48,24 @@ class GLB:
             if normal.Length < 1e-12:
                 continue
             normal.normalize()
+            if pixel_centres is not None:
+                centre=(a+b+c)/3
+                index=min(range(len(pixel_centres)),key=lambda i: math.hypot(centre.x-pixel_centres[i][0],centre.y-pixel_centres[i][1]))
+                x,y=pixel_centres[index]
+                assert all(abs(point.x-x)<=2.50001 and abs(point.y-y)<=2.50001 for point in (a,b,c)), 'LED triangle crosses published pixel identities'
             for point in (a, b, c):
                 positions.append(tuple(v/1000 for v in point))
                 normals.append(tuple(normal))
+                if pixel_centres is not None: pixel_colours.append((index/255,0.0,0.0,1.0))
         position = self.accessor(positions, 'fff', 'VEC3', 5126, True)
         normal = self.accessor(normals, 'fff', 'VEC3', 5126)
         material = len(self.doc['materials'])
         self.doc['materials'].append({'name': name, 'doubleSided': True,
             'pbrMetallicRoughness': {'baseColorFactor': [*color, 1], 'metallicFactor': 0, 'roughnessFactor': .65}})
-        self.doc['meshes'].append({'name': name, 'primitives': [{'attributes': {'POSITION': position, 'NORMAL': normal}, 'material': material}]})
+        attributes={'POSITION':position,'NORMAL':normal}
+        if pixel_colours:
+            attributes['COLOR_0']=self.accessor(pixel_colours,'ffff','VEC4',5126)
+        self.doc['meshes'].append({'name': name, 'primitives': [{'attributes': attributes, 'material': material}]})
         self.doc['scenes'][0]['nodes'].append(len(self.doc['nodes']))
         self.doc['nodes'].append({'name': name, 'mesh': len(self.doc['meshes'])-1})
         bb = shape.BoundBox
@@ -99,15 +108,15 @@ def export():
             y += ny*p['ring_led_depth']/2
             leds.append({'group': group, 'index': i, 'position_m': [x/1000,y/1000,(strip_bottom(name,p)+p['strip_width']/2)/1000], 'direction': [nx,ny,0]})
     objects = [o for group in (source.Manufactured,source.Electronics,source.Optics) for o in group.Group if o.Visibility]
-    def add(name,shape,color,role='solid',label=None):
-        parts.append(glb.mesh(name,shape,color,role=role,label=label))
+    def add(name,shape,color,role='solid',label=None,pixel_centres=None):
+        parts.append(glb.mesh(name,shape,color,role=role,label=label,pixel_centres=pixel_centres))
     for obj in objects:
         if obj.Name=='FrontSheet':
             continue
         role = ('hardware' if 'HardwareVariant' in obj.PropertiesList else
                 'packages' if obj.Name.endswith('LEDs') else
                 'sleeve' if obj.Name in ('HaloRing','InnerRing','EdgeDiffuser') else 'solid')
-        add(obj.Name,obj.Shape,tuple(obj.ViewObject.ShapeColor[:3]),role,obj.Label)
+        add(obj.Name,obj.Shape,tuple(obj.ViewObject.ShapeColor[:3]),role,obj.Label,centers if obj.Name=='CircleLEDs' else None)
         if role=='hardware':
             parts[-1]['explosion_offset_m']=obj.ExplosionOffsetM
     # Three render regions, one manufactured sheet and one CAD source.

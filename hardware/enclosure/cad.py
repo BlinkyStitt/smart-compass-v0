@@ -27,7 +27,7 @@ INPUTS = (
     )),
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
-        'sleeve.gdshader', 'cell.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
+        'sleeve.gdshader', 'cell.gdshader', 'package.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
         'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'glow.gd', 'glow_diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),
 )

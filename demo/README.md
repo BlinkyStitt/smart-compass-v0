@@ -42,8 +42,11 @@ Three modeled black PET shields cover the exposed upper LED edges at the rings. 
 
 The 24-second exploded loop separates the current assembly, pauses with its
 layers apart, then brings it back together. It keeps the front sheet and each
-large printed circle whole. The centre module, paired printed rings and LED rows,
-and rear electronics move as groups. The camera stays on the front side.
+large printed circle whole. The wood stencil and its rim spacers lift separately
+from the Fibonacci256 PCB and its soldered LEDs. Display-only lit aperture faces
+disappear while the stencil lifts; the exposed 256 LED package fronts show the
+same pattern in the manufacturer's pixel order. Paired printed rings and LED
+rows stay together. The camera stays on the front side.
 Parts, camera and moving rainbow return to their starting states at the loop
 boundary. These are diagram positions, not removal paths or service clearances.
 The separated front coating shows environment reflection; the infinity cavity
@@ -93,6 +96,13 @@ exposure. For a stationary comparison, pause first.
 The exporter tessellates the saved assembled FreeCAD model in metres, with X
 right, Y up and Z toward the front. It never uses print-bed STL translations.
 Godot loads the GLB at runtime through `GLTFDocument`.
+
+The board's 256 positions and pixel order come from [Evil Genius Labs' existing
+Fibonacci256 Pixelblaze map](https://www.evilgeniuslabs.org/fibonacci256#pixelblaze-map).
+The local coordinate table matches all 256 published entries. The present wood
+stencil is generated from that map with a 1.6 mm inset web; it is not an imported
+manufacturer stencil file. Its contour has not been checked against Evil Genius
+Labs' original stencil.
 
 The cavity shader follows rays between Z=25.5 and Z=36.7 mm. It intersects the
 finite annular cavity, central obstruction and cylindrical diffuser boundaries.

@@ -12,6 +12,7 @@ var meshes = {}
 var assembled_transforms = {}
 var explosion_offsets = {}
 var cell_materials = []
+var package_materials = []
 var sleeve_materials = []
 var cavity_materials = []
 var centre_materials = []
@@ -111,12 +112,13 @@ func _collect(node):
 	if node is MeshInstance3D: meshes[str(node.name)] = node
 	for child in node.get_children(): _collect(child)
 
-# Illustration distances in metres. Each circular part stays whole. The centre
-# module and each LED/sleeve pair stay together; electronics stay on the rear.
+# Illustration distances in metres. The stencil lifts separately from the
+# populated LED board. Each ring/strip pair stays together.
 func _prepare_explosion():
 	var layers = {
 		0.36: ["FrontCentre", "FrontMirrorCoating", "FrontRim"],
-		0.25: ["WoodMask", "CirclePCB", "CircleLEDs", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
+		0.28: ["WoodMask", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
+		0.22: ["CirclePCB", "CircleLEDs"],
 		0.19: ["HaloRing", "HaloLightShield", "HaloStripSeam", "HaloLEDs"],
 		0.14: ["InnerRing", "InnerLightShield", "InnerStripSeam", "InnerLEDs"],
 		0.085: ["RearMirror"],
@@ -131,7 +133,7 @@ func _prepare_explosion():
 			assert(meshes.has(name), "Unknown exploded part: " + name)
 			explosion_offsets[name] = Vector3(0, 0, offset)
 	for part in metadata.parts:
-		if part.role == "cell": explosion_offsets[part.name] = Vector3(0, 0, 0.25)
+		if part.role == "cell": explosion_offsets[part.name] = explosion_offsets.CirclePCB
 		if part.role == "hardware": explosion_offsets[part.name] = Vector3(0, 0, part.explosion_offset_m)
 		assert(explosion_offsets.has(part.name), "Assign an exploded layer to " + part.name)
 		assembled_transforms[part.name] = meshes[part.name].transform
@@ -147,6 +149,11 @@ func _set_explosion(amount: float):
 	for material in cavity_materials:
 		# Separated mirrors no longer form the canonical 11.2 mm cavity.
 		material.set_shader_parameter("cavity_closed", amount == 0.0)
+	# These faces approximate light at the assembled diffuser plane. They are
+	# not physical pieces of the stencil or LEDs. Reveal the package emitters
+	# when the stencil lifts, rather than carrying lit aperture shapes with it.
+	for part in metadata.parts:
+		if part.role == "cell": meshes[part.name].visible = amount == 0.0
 
 func _exploded_pose(phase: float):
 	var amount = smoothstep(0.08, 0.38, phase)*(1.0-smoothstep(0.62, 0.92, phase))
@@ -171,7 +178,11 @@ func _make_materials():
 	for part in metadata.parts:
 		var mesh = meshes.get(part.name)
 		assert(mesh != null, "Missing named GLB mesh " + part.name)
-		if part.role == "cell":
+		if part.name == "CircleLEDs":
+			var material = _shader("res://package.gdshader")
+			mesh.material_override = material
+			package_materials.append(material)
+		elif part.role == "cell":
 			var material = _shader("res://cell.gdshader")
 			var index = int(part.name.trim_prefix("Cell"))
 			material.set_shader_parameter("index", index)
@@ -360,6 +371,8 @@ func _update_optics():
 		material.set_shader_parameter("brightness",brightness)
 		material.set_shader_parameter("diffusion",central_diffusion)
 		material.set_shader_parameter("transmission",1.0)
+	for material in package_materials:
+		material.set_shader_parameter("brightness",brightness)
 	for material in centre_materials:
 		material.set_shader_parameter("reflectance",reflectance if finish == 1 else 0.04)
 		material.set_shader_parameter("transmission",transmission if finish == 1 else 0.8)
@@ -509,6 +522,10 @@ func _run_checks():
 				assert(not camera.is_position_behind(point), "Exploded part behind camera")
 				assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)), "Exploded part clipped: %s at %s in %s (phase %s)" % [mesh.name,camera.unproject_position(point),get_viewport().get_visible_rect(),phase])
 	_exploded_pose(0.5)
+	assert(meshes.WoodMask.get_aabb().position.z+meshes.WoodMask.position.z > meshes.CircleLEDs.get_aabb().end.z+meshes.CircleLEDs.position.z+0.05,"Stencil must lift clear of the populated LED board")
+	assert(explosion_offsets.CirclePCB==explosion_offsets.CircleLEDs,"Soldered LED packages must stay on their board")
+	for part in metadata.parts:
+		if part.role == "cell": assert(not meshes[part.name].visible,"Exploded stencil must not carry virtual lit apertures")
 	assert(meshes.FrontCentre.position == meshes.FrontRim.position and meshes.FrontCentre.position == meshes.FrontMirrorCoating.position, "Front sheet must stay whole")
 	assert(not cavity_materials[0].get_shader_parameter("cavity_closed"), "Separated mirrors must not show a closed cavity")
 	assert(meshes.HaloRing.material_override.get_shader_parameter("assembly_offset").is_equal_approx(explosion_offsets.HaloRing))
@@ -519,6 +536,7 @@ func _run_checks():
 	assert(camera.transform.is_equal_approx(exploded_start), "Exploded camera loop must close")
 	for name in meshes:
 		assert(meshes[name].transform.is_equal_approx(assembled_transforms[name]), "Reassembly must restore " + name)
+		assert(meshes[name].visible,"Reassembly must restore the assembled light field")
 	assert(cavity_materials[0].get_shader_parameter("cavity_closed"), "Reassembly must restore reflections")
 	_reset()
 	var saved_time=pattern_time
@@ -659,7 +677,7 @@ func _capture():
 	_set_finish(0)
 	_set_lighting(1)
 	pattern=0
-	caption.text="Exploded assembly"
+	caption.text="Exploded assembly | stencil above the Fibonacci256 LED board"
 	for frame in range(576):
 		_exploded_pose(frame/576.0)
 		_update_colours()
