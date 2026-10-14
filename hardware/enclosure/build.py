@@ -16,7 +16,7 @@ import FreeCAD as App
 import Part
 import Sketcher
 
-from hardware_spec import nut_dimensions, hexagon
+from hardware_spec import nut_dimensions, hexagon, body_bolt_length
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
@@ -712,6 +712,11 @@ def validate_parameters(p):
             or abs(p['case_depth']-(p['front_plane_z']+p['front_acrylic_thickness']+p['front_washer_compressed_height']))>1e-6
             or p['wood_to_sheet_gap'] < .3):
         raise ValueError('Front needs compression-stop height and free wood clearance')
+    if (not .25 <= p['body_bolt_tip_projection'] <= .4
+            or not .1 <= p['body_bolt_tip_chamfer'] <= .2
+            or p['body_bolt_tip_projection']-p['body_bolt_tip_chamfer'] < .1-1e-7
+            or body_bolt_length(p)>p['body_bolt_stock_length']):
+        raise ValueError('Finished body bolts need full nut engagement, a deburred lead and adequate stock')
     if not (0 < p['assumed_efficiency'] <= 1):
         raise ValueError('Efficiency must lie in (0,1]')
     if p['battery_mass_g'] <= 0 or p['wood_density_g_cm3'] <= 0 or not math.isfinite(p['wood_density_g_cm3']):

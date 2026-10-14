@@ -139,5 +139,8 @@
   "ring_radial_error_budget": 0.2,
   "light_shield_thickness": 0.06,
   "light_shield_edge_clearance": 0.2,
-  "ring_station_count": 8
+  "ring_station_count": 8,
+  "body_bolt_stock_length": 45.0,
+  "body_bolt_tip_projection": 0.3,
+  "body_bolt_tip_chamfer": 0.15
 }

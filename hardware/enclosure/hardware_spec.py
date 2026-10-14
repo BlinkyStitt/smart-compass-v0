@@ -32,12 +32,18 @@ def hexagon(x,y,flats):
              y+radius*math.sin(math.pi/6+j*math.tau/6)) for j in range(6)]
 
 
+def body_bolt_length(p):
+    """Finish the stock screw to the measured clamp stack and a short lead."""
+    return (p['case_depth']+WASHERS['M3_front']['thickness']-p['rear_thickness']
+            +WASHERS['M3']['thickness']+NUTS['M3']['thickness']+p['body_bolt_tip_projection'])
+
+
 def stations(p):
     """Screw seat Z, direction, length and optional nut seat; washers at each seat."""
     from geometry import mounting_points, necklace_anchors, rear_mounting_points
     result=[]
     for i,(x,y) in enumerate(mounting_points(p)):
-        result.append((f'Body{i}','M3',x,y,p['case_depth']+.55,-1,45,None))
+        result.append((f'Body{i}','M3',x,y,p['case_depth']+WASHERS['M3_front']['thickness'],-1,body_bolt_length(p),None))
     for i,side in enumerate((-1,1)):
         x,y=necklace_anchors(p,side)[2]
         result.append((f'Anchor{i}','M3',x,y,p['rear_thickness']-.55,1,12,p['rear_thickness']+p['necklace_link_thickness']+3.5))
@@ -78,9 +84,13 @@ def add_envelopes(b):
         add(name,shape,NUTS[size]['variant'],offset)
     for name,size,x,y,seat,direction,length,nut_z in stations(b.p):
         diameter=int(size[1:]); h=diameter; head=5.5 if size=='M3' else 3.8
-        shaft=Part.makeCylinder(diameter/2,length,App.Vector(x,y,seat),App.Vector(0,0,direction))
+        chamfer=b.p['body_bolt_tip_chamfer'] if name.startswith('Body') else 0
+        shaft=Part.makeCylinder(diameter/2,length-chamfer,App.Vector(x,y,seat),App.Vector(0,0,direction))
+        if chamfer:
+            lead=Part.makeCone(diameter/2,diameter/2-chamfer,chamfer,App.Vector(x,y,seat+direction*(length-chamfer)),App.Vector(0,0,direction))
+            shaft=shaft.fuse(lead)
         cap=Part.makeCylinder(head/2,h,App.Vector(x,y,seat),App.Vector(0,0,-direction))
-        add(name+'Screw',shaft.fuse(cap),f'DIN 912 {size} x {length}',.42 if name.startswith('Body') else -.23)
+        add(name+'Screw',shaft.fuse(cap),f'DIN 912 {size} x {length:g}'+(' - finish and deburr tip' if name.startswith('Body') else ''),.42 if name.startswith('Body') else -.23)
         washer(name+'Washer','M3_front' if name.startswith('Body') else size,x,y,seat-WASHERS['M3_front' if name.startswith('Body') else size]['thickness'] if direction==-1 else seat,.39 if name.startswith('Body') else -.20)
         # Top body washer lies BELOW the screw seat; rear washers lie ABOVE.
         if nut_z is not None:

@@ -1012,22 +1012,19 @@
     },
     {
       "id": "body_screws",
-      "label": "SSC-M3-45-A2 body bolts",
+      "label": "Finished M3 body bolts from SSC-M3-45-A2 stock",
       "installed_quantity": 6,
       "unit": "screw",
       "purchase_quantity": "8 singles, 2 spares excluded",
       "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
-      "dimensions": "M3 x 45 mm; 5.5 x 3 mm head; min 18 mm threaded",
+      "dimensions": "M3 x45 mm stock; finish under-head length from saved clamp stack and tip allowance",
       "material": "A2 stainless, natural",
-      "mass_g_per_unit": 2.61,
-      "mass_range_g_per_unit": [
-        1.6965,
-        3.915
-      ],
-      "mass_kind": "published",
-      "mass_basis": "Supplier 261 g/100",
-      "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
-      "group": "pendant"
+      "mass_kind": "estimated",
+      "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
+      "status": "Measure finished acrylic and washer stack before cutting; finish and deburr tips; require full nut engagement and a smooth end that does not catch fabric",
+      "group": "pendant",
+      "stock_mass_g_per_unit": 2.61,
+      "mass_formula": "finished_body_screw"
     },
     {
       "id": "anchor_screws",

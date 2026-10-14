@@ -181,16 +181,15 @@ each ring. All stops provide 1.2 mm locating height and 0.20 mm nominal radial
 seat clearance. The circular contact geometry limits sideways movement to less
 than 0.217 mm nominally and 0.434 mm with the combined 0.20 mm radial
 error budget assigned to the locating clearance. Package corners and this
-amplified movement allowance leave
-at least 0.53 mm LED clearance. The front lands keep at least 8 mm² of sheet
-bearing area per station; their outward edges clear the continuous shields.
+amplified movement allowance leave at least 0.53 mm LED clearance. The front
+lands keep at least 8 mm² of sheet bearing area per station; their outward edges clear the continuous shields.
 The front sheet leaves 0.5 mm nominal clearance above the rings.
 Measure 0.2–0.8 mm after assembly. Require at least 0.5 mm actual LED-to-ring
 clearance after dimensional errors and movement. The 0.20 mm budget is
 combined across fits, ring profiles, shields and strips; it is not a separate
 allowance for each part. Reject actual assemblies below 0.5 mm clearance.
-The cavity remains at least
-18 mm wide radially. Lift the rings from the front for mirror service.
+The cavity remains at least 18 mm wide radially. Lift the rings from the front
+for mirror service.
 
 Die-cut three opaque PET light shields from the supplied SVGs. Bond each
 shield only to the top end face of its printed ring. The 0.06 mm film
@@ -359,8 +358,13 @@ measured free thickness when compressed. Test the front clamp limit with
 actual stock and hardware.
 
 Print both bracket arrangements, their frame seat, and their rear clearance
-samples listed above. Use the actual M3 × 45 mm body bolt, M3 × 12 mm anchor
-screw, nuts, washers and webbing. Check the 5 mm thick brackets and 14 mm main
+samples listed above. Use the finished M3 body bolt from 45 mm stock,
+M3 × 12 mm anchor screws, nuts, washers and webbing. Finish each body bolt to the under-head
+length in the generated inventory after measuring the actual front sheet and
+washer stack. The baseline length is 40.329 mm, with 0.30 mm projection past
+the rear nut and a 0.15 mm chamfer. Deburr and smooth the cut end. Reject a
+bolt that catches fabric or lacks full nut engagement. Do not install uncut
+45 mm body bolts. Check the 5 mm thick brackets and 14 mm main
 webs, rounded slot lips, separate anchors, 0.4 mm side clearance, and rear
 removal. The slot centres are at (±84,64) mm; the left routed hub is at
 (-99,59.5) mm. Check protected vent and hatch nut bosses remain intact.

@@ -44,7 +44,7 @@ class ManufacturingTests(unittest.TestCase):
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
         volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','glow_petg_volume')}
-                 for r in spec['components'] if r.get('mass_formula')]
+                 for r in spec['components'] if r.get('mass_formula') in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume')]
         return inventory.resolve(spec,volumes,p),volumes
 
     def test_installed_strip_lengths_and_single_populated_boards(self):
@@ -85,6 +85,20 @@ class ManufacturingTests(unittest.TestCase):
         spec['components'][0]['mass_formula']='unknown_density'
         with self.assertRaisesRegex(ValueError,'Unknown mass formula'):
             inventory.resolve(spec,[],p)
+
+    def test_body_bolts_follow_the_measured_stack_and_full_nut_engagement(self):
+        p=json.loads((HERE/'parameters.json').read_text())
+        for front_thickness in (1.45,1.524,1.65):
+            changed=dict(p,case_depth=p['front_plane_z']+front_thickness+p['front_washer_compressed_height'])
+            body=[station for station in hardware_spec.stations(changed) if station[0].startswith('Body')]
+            for name,size,x,y,seat,direction,length,nut_z in body:
+                nut_end=p['rear_thickness']-hardware_spec.WASHERS['M3']['thickness']-hardware_spec.NUTS['M3']['thickness']
+                self.assertAlmostEqual(nut_end-(seat-length),p['body_bolt_tip_projection'])
+                self.assertGreater(p['body_bolt_tip_projection']-p['body_bolt_tip_chamfer'],.099)
+                self.assertLess(length,p['body_bolt_stock_length'])
+        rows,_=self.resolved()
+        finished=next(r for r in rows if r['id']=='body_screws')
+        self.assertLess(finished['mass_g_per_unit'],finished['stock_mass_g_per_unit'])
 
     def test_fastener_quantities_match_modeled_joints(self):
         rows,_=self.resolved(); quantities={r['id']:r['installed_quantity'] for r in rows}

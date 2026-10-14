@@ -473,7 +473,10 @@
     "ring_radial_error_budget": 0.2,
     "light_shield_thickness": 0.06,
     "light_shield_edge_clearance": 0.2,
-    "ring_station_count": 8
+    "ring_station_count": 8,
+    "body_bolt_stock_length": 45.0,
+    "body_bolt_tip_projection": 0.3,
+    "body_bolt_tip_chamfer": 0.15
   },
   "fit_samples": [
     {
@@ -1867,26 +1870,28 @@
     },
     {
       "id": "body_screws",
-      "label": "SSC-M3-45-A2 body bolts",
+      "label": "Finished M3 body bolts from SSC-M3-45-A2 stock",
       "installed_quantity": 6,
       "unit": "screw",
       "purchase_quantity": "8 singles, 2 spares excluded",
       "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
-      "dimensions": "M3 x 45 mm; 5.5 x 3 mm head; min 18 mm threaded",
+      "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
       "material": "A2 stainless, natural",
-      "mass_g_per_unit": 2.61,
-      "mass_range_g_per_unit": [
-        1.6965,
-        3.915
-      ],
-      "mass_kind": "published",
-      "mass_basis": "Supplier 261 g/100",
-      "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+      "mass_kind": "estimated",
+      "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
+      "status": "Measure finished acrylic and washer stack before cutting; finish and deburr tips; require full nut engagement and a smooth end that does not catch fabric",
       "group": "pendant",
-      "installed_mass_g": 15.66,
+      "stock_mass_g_per_unit": 2.61,
+      "mass_formula": "finished_body_screw",
+      "mass_g_per_unit": 2.388665682299546,
+      "mass_range_g_per_unit": [
+        1.5526326934947048,
+        3.5829985234493185
+      ],
+      "installed_mass_g": 14.332,
       "installed_mass_range_g": [
-        10.179,
-        23.49
+        9.3158,
+        21.498
       ]
     },
     {
@@ -2560,10 +2565,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 951.9,
+      "nominal_g": 950.6,
       "range_g": [
-        727.9,
-        1181.5
+        727.0,
+        1179.5
       ]
     },
     "necklace": {
@@ -2574,17 +2579,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 984.1,
+      "nominal_g": 982.8,
       "range_g": [
-        747.7,
-        1243.5
+        746.8,
+        1241.5
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 763.9,
+      "nominal_g": 762.6,
       "range_g": [
-        548.9,
-        973.5
+        548.0,
+        971.5
       ]
     },
     "external_belt_and_lead": {
@@ -2595,10 +2600,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1086.1,
+      "nominal_g": 1084.8,
       "range_g": [
-        808.7,
-        1425.5
+        807.8,
+        1423.5
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",

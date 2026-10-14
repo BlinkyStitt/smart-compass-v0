@@ -68,12 +68,12 @@ Generated from [component-inventory.json](hardware/enclosure/component-inventory
 
 | Assembly | Estimated installed mass | Allowance range |
 | --- | ---: | ---: |
-| Complete pendant, internal battery | 951.9 g | 727.9–1181.5 g |
+| Complete pendant, internal battery | 950.6 g | 727.0–1179.5 g |
 | Necklace | 32.2 g | 19.8–62.0 g |
-| Total worn, internal battery | 984.1 g | 747.7–1243.5 g |
-| Optional external-battery pendant | 763.9 g | 548.9–973.5 g |
+| Total worn, internal battery | 982.8 g | 746.8–1241.5 g |
+| Optional external-battery pendant | 762.6 g | 548.0–971.5 g |
 | Optional belt pack, carrier and lead | 290.0 g | 240.0–390.0 g |
-| Total worn, external option | 1086.1 g | 808.7–1425.5 g |
+| Total worn, external option | 1084.8 g | 807.8–1423.5 g |
 
 Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.
 
@@ -131,7 +131,7 @@ No component mass is measured. Published values describe supplier parts. Calcula
 | [Installed 18 AWG power wire](hardware/enclosure/battery-options.md) (pendant) | 0.8 m conductor | 1 m extra stock; factory battery leads excluded | 0.8 m total conductor, about 0.4 m paired runs; Stranded copper, flexible insulation | 9.60 g (7.20–14.40) | **estimated**: Estimated 12 g/m installed conductor; not retail spool; excludes factory battery leads; excludes connector pigtails. 18 AWG supply and installed route unresolved; do not use a thin signal-wire substitute |
 | [Installed 26 AWG signal wire](https://www.adafruit.com/product/1970) (pendant) | 2 m conductor | 3 m stock | 2 m total conductor; RF antenna allocated separately; Stranded copper, insulation | 6.00 g (4.00–10.00) | **estimated**: Estimated 3 g/m of installed conductor; not bundle/spool mass; excludes factory connector pigtails and RF antenna. Fit and mass require measurement |
 | [Solder, heatshrink and wire restraint](design-v2.md) (pendant) | 1 allowance | Small spool/tubing stock; count cured/installed amount | All four displays and board harness joins; Solder alloy, polymer tubing, ties | 3.00 g (1.50–6.00) | **estimated**: Engineering allowance; weigh installed item. Fit and mass require measurement |
-| [SSC-M3-45-A2 body bolts](https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2) (pendant) | 6 screw | 8 singles, 2 spares excluded | M3 x 45 mm; 5.5 x 3 mm head; min 18 mm threaded; A2 stainless, natural | 15.66 g (10.18–23.49) | **published**: Supplier 261 g/100. Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified |
+| [Finished M3 body bolts from SSC-M3-45-A2 stock](https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2) (pendant) | 6 screw | 8 singles, 2 spares excluded | M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack; A2 stainless, natural | 14.33 g (9.32–21.50) | **estimated**: Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws. Measure finished acrylic and washer stack before cutting; finish and deburr tips; require full nut engagement and a smooth end that does not catch fabric |
 | [SSCF-M3-12-A2 anchor screws](https://www.accu.co.uk/metric-cap-head-screws/3820-SSCF-M3-12-A2) (pendant) | 2 screw | 4 singles, 2 spares excluded | M3 x 12 mm; 5.5 x 3 mm head; A2 stainless, natural | 1.80 g (1.17–2.70) | **estimated**: Nominal cylinder envelope x steel density; socket/thread reduce actual mass. Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified |
 | [SSCF-M3-10-A2 rear screws](https://www.accu.co.uk/metric-cap-head-screws/3819-SSCF-M3-10-A2) (pendant) | 6 screw | 8 singles, 2 spares excluded | M3 x 10 mm; 5.5 x 3 mm head; A2 stainless, natural | 4.80 g (3.12–7.20) | **estimated**: Nominal cylinder envelope x steel density; socket/thread reduce actual mass. Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified |
 | [SSCF-M2-8-A2 hatch/vent screws](https://www.accu.co.uk/metric-cap-head-screws/3793-SSCF-M2-8-A2) (pendant) | 10 screw | 12 singles, 2 spares excluded | M2 x 8 mm; 3.8 x 2 mm head; A2 stainless, natural | 3.50 g (2.27–5.25) | **estimated**: Nominal cylinder envelope x steel density; socket/thread reduce actual mass. Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified |

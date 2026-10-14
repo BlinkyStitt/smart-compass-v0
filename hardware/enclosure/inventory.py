@@ -4,6 +4,8 @@ import json
 import math
 from pathlib import Path
 
+from hardware_spec import body_bolt_length
+
 BEGIN = '<!-- BEGIN GENERATED BUILD INVENTORY -->'
 END = '<!-- END GENERATED BUILD INVENTORY -->'
 
@@ -14,10 +16,22 @@ def resolve(spec, volumes, p):
     for row in rows:
         formula = row.get('mass_formula')
         if formula:
-            if formula not in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume'):
+            if formula not in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume','finished_body_screw'):
                 raise ValueError('Unknown mass formula: '+str(formula))
             if 'mass_g_per_unit' in row or 'mass_range_g_per_unit' in row:
                 raise ValueError('A component must specify a mass formula or a literal mass, not both: '+row['id'])
+        if formula=='finished_body_screw':
+            length=body_bolt_length(p)
+            # Scale published stock mass by the same nominal head/shank envelope.
+            # Socket, threads and the small finished chamfer remain estimates.
+            head_equivalent=(5.5/3)**2*3
+            mass=row['stock_mass_g_per_unit']*(length+head_equivalent)/(p['body_bolt_stock_length']+head_equivalent)
+            row['mass_g_per_unit']=mass
+            row['mass_range_g_per_unit']=[mass*.65,mass*1.5]
+            row['dimensions']=(f"M3, finish to {length:.3f} mm under head from {p['body_bolt_stock_length']:g} mm stock; "
+                               f"{p['body_bolt_tip_projection']:g} mm nominal nut projection, "
+                               f"{p['body_bolt_tip_chamfer']:g} mm tip chamfer; measure actual clamp stack")
+        elif formula:
             volume = geometry[row['cad_part']]['volume_cm3']
             density = 1.5 if formula=='glow_petg_volume' else 1.27 if formula in ('petg_volume','glow_petg_volume') else 1.19 if formula=='acrylic_volume' else p['wood_density_g_cm3']
             mass = volume*density

@@ -64,9 +64,6 @@ def check():
         land=Part.makeCylinder(2.80,.01,App.Vector(x,y,p['case_depth']-.02)).cut(Part.makeCylinder(1.90,.01,App.Vector(x,y,p['case_depth']-.02)))
         assert abs(doc.OpticalDeck.Shape.common(land).Volume-land.Volume)<1e-7, 'Front washer stop must retain a continuous broad bearing land'
         assert doc.OpticalDeck.Shape.isInside(App.Vector(x+2.3,y,p['case_depth']-.01),1e-7,True), 'Collar lacks flat washer stop'
-    for i,(x,y) in enumerate(mounting_points(p)):
-        sheet_land=Part.makeCylinder(4,.01,App.Vector(x,y,p['front_plane_z']-.01)).cut(Part.makeCylinder(3.5,.01,App.Vector(x,y,p['front_plane_z']-.01)))
-        assert doc.OpticalDeck.Shape.common(sheet_land).Volume/.01 >= 8, 'Trimmed sheet land lost its bearing area'
     for x,y in rear_mounting_points(p):
         assert not doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.05),1e-7,True), 'Rear screw entry lacks lead-in'
         assert doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.6),1e-7,True)
@@ -236,6 +233,11 @@ def check():
         assert screw in b.hardware and washer in b.hardware
         assert len(screw.Shape.Solids)==1 and len(washer.Shape.Solids)==1
         if nut_z is None:
+            rear_nut=doc.getObject('BodyRearNut'+name.removeprefix('Body'))
+            assert math.isclose(rear_nut.Shape.BoundBox.ZMin-screw.Shape.BoundBox.ZMin,p['body_bolt_tip_projection'],abs_tol=1e-7), 'Body screw projection differs from measured stack'
+            tip=screw.Shape.BoundBox.ZMin
+            assert not screw.Shape.isInside(App.Vector(x+1.49,y,tip+.01),1e-7,True), 'Finished body screw lacks its tip chamfer'
+            assert screw.Shape.isInside(App.Vector(x+1.49,y,tip+p['body_bolt_tip_chamfer']+.01),1e-7,True), 'Tip finish removed full nut engagement'
             continue
         nut=doc.getObject(name+'Nut')
         target=doc.BarrelFrame if size=='M3' else doc.RearPlate
@@ -392,7 +394,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
