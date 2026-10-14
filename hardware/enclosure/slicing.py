@@ -25,7 +25,7 @@ def executable():
 def settings(spec, name):
     bracket = name.startswith(('NecklaceLink', 'FitSuspensionBracket'))
     ring = name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing'))
-    profile = spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck')) else {}
+    profile = spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
     return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile
 
 

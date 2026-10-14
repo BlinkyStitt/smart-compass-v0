@@ -33,6 +33,13 @@ class ManufacturingTests(unittest.TestCase):
         with self.assertRaisesRegex(cad.CadError,'filament_type'):
             slicing.verify_settings(dict(main,filament_type='PLA'),main,'wrong material')
 
+    def test_optical_fit_samples_use_production_deck_settings(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        production=slicing.settings(spec,'OpticalDeck.stl')
+        self.assertEqual(production['layer_height'],'0.1')
+        for sample in ('FitDeck.stl','FitOptics.stl'):
+            self.assertEqual(slicing.settings(spec,sample),production)
+
     def resolved(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
