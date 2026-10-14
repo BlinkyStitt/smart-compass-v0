@@ -190,11 +190,11 @@
     },
     {
       "name": "EdgeDiffuser",
-      "volume_cm3": 30.7534,
+      "volume_cm3": 51.4216,
       "printed": true,
       "bounds_mm": [
-        248.224,
-        248.312,
+        249.823,
+        249.911,
         33.0
       ]
     },
@@ -240,11 +240,11 @@
     },
     {
       "name": "OuterLightShield",
-      "volume_cm3": 0.1846,
+      "volume_cm3": 0.2221,
       "printed": false,
       "bounds_mm": [
-        248.235,
-        248.318,
+        249.834,
+        249.917,
         0.06
       ]
     },
@@ -319,7 +319,7 @@
       ]
     }
   ],
-  "printed_volume_cm3": 243.7506,
+  "printed_volume_cm3": 264.4188,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -350,8 +350,8 @@
     "map_mirror_y": false,
     "mask_web": 1.6,
     "mask_edge_radius": 82.5,
-    "inner_count": 84,
-    "outer_count": 90,
+    "inner_count": 84.0,
+    "outer_count": 90.0,
     "strip_density": 120.0,
     "ring_seam_gap": 3.0,
     "strip_width": 10.0,
@@ -407,7 +407,7 @@
     "mirror_view_inner_radius": 85.5,
     "mirror_view_outer_radius": 110.5,
     "edge_diffuser_radius": 123.0,
-    "edge_diffuser_thickness": 1.2,
+    "edge_diffuser_thickness": 2.0,
     "edge_bottom_z": 3.2,
     "fastener_phase_deg": 40.0,
     "print_bed_x": 300.0,
@@ -434,14 +434,14 @@
       "sense": "BlackPill PA4 divider board placeholder; sense protected/switched raw pack before boost; final divider/profile and calibration TODO; Unknown until installed",
       "external_power": "Optional belt-mounted protected raw 1S pack, no USB bank; cable follows necklace to reinforced rear entry with blanking plug for internal use; Adafruit PG-7 762 fit reference, actual gland/cable/strain relief and voltage drop TODO"
     },
-    "halo_count": 64,
+    "halo_count": 64.0,
     "vent_hole_radius": 3.0,
     "vent_patch_radius": 8.0,
     "vent_patch_thickness": 0.2,
     "rear_skin_thickness": 1.0,
     "rear_rib_width": 1.8,
     "rear_rib_height": 2.0,
-    "battery_count": 1,
+    "battery_count": 1.0,
     "battery_spacing": 100.0,
     "power_x": 72.0,
     "power_y": -28.0,
@@ -473,7 +473,7 @@
     "ring_radial_error_budget": 0.2,
     "light_shield_thickness": 0.06,
     "light_shield_edge_clearance": 0.2,
-    "ring_station_count": 8,
+    "ring_station_count": 8.0,
     "body_bolt_stock_length": 45.0,
     "body_bolt_tip_projection": 0.3,
     "body_bolt_tip_chamfer": 0.15
@@ -965,11 +965,11 @@
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/EdgeDiffuser.3mf",
-      "dimensions": "246.00 mm inside diameter x 1.2 mm wall x 33.0 mm high, Z=3.2 mm; CAD bounds 248.22 x 248.31 x 33.00 mm",
+      "dimensions": "246.00 mm inside diameter x 2.0 mm wall x 33.0 mm high, Z=3.2 mm; CAD bounds 249.82 x 249.91 x 33.00 mm",
       "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
-      "status": "Print path, optical output, fit and mass need physical acceptance",
+      "status": "Four-path wall, optical output, handling strength, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "EdgeDiffuser",
       "mass_formula": "glow_petg_volume",
@@ -979,15 +979,15 @@
           "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
         }
       ],
-      "mass_g_per_unit": 46.1301,
+      "mass_g_per_unit": 77.13239999999999,
       "mass_range_g_per_unit": [
-        32.29107,
-        49.820508000000004
+        53.99267999999999,
+        83.30299199999999
       ],
-      "installed_mass_g": 46.1301,
+      "installed_mass_g": 77.1324,
       "installed_mass_range_g": [
-        32.2911,
-        49.8205
+        53.9927,
+        83.303
       ]
     },
     {
@@ -2565,10 +2565,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 950.6,
+      "nominal_g": 981.6,
       "range_g": [
-        727.0,
-        1179.5
+        748.7,
+        1213.0
       ]
     },
     "necklace": {
@@ -2579,17 +2579,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 982.8,
+      "nominal_g": 1013.8,
       "range_g": [
-        746.8,
-        1241.5
+        768.5,
+        1275.0
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 762.6,
+      "nominal_g": 793.6,
       "range_g": [
-        548.0,
-        971.5
+        569.7,
+        1005.0
       ]
     },
     "external_belt_and_lead": {
@@ -2600,10 +2600,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1084.8,
+      "nominal_g": 1115.8,
       "range_g": [
-        807.8,
-        1423.5
+        829.5,
+        1457.0
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -2696,7 +2696,7 @@
     "VentGuard3": 1.52,
     "ServiceCover": 3.45,
     "RearPlate": 95.59,
-    "EdgeDiffuser": 45.89,
+    "EdgeDiffuser": 76.83,
     "HaloRing": 9.43,
     "InnerRing": 11.46,
     "CircleRimFoot0": 0.08,

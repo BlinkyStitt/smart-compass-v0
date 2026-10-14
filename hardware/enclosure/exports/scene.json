@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "9660b74cb935411496a0034e24d38b5836fbac8a5a3879e45448099852bccfc6",
+  "master_sha256": "7c88445872923a128b01422968ea175a1294406c7aa67ea1e43300cbc5117910",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -338,17 +338,17 @@
       "role": "sleeve",
       "bounds_m": [
         [
-          -0.1242,
-          -0.12414109438840008,
+          -0.125,
+          -0.12494071496417077,
           0.0032
         ],
         [
-          0.1242,
-          0.12414109438840006,
+          0.125,
+          0.12494071496417074,
           0.0362
         ]
       ],
-      "volume_cm3": 30.75342747710878
+      "volume_cm3": 51.42158855395764
     },
     {
       "name": "HaloRing",
@@ -433,17 +433,17 @@
       "role": "solid",
       "bounds_m": [
         [
-          -0.1242,
-          -0.12414109438840008,
+          -0.125,
+          -0.12494071496417077,
           0.0362
         ],
         [
-          0.1242,
-          0.12414109438840006,
+          0.125,
+          0.12494071496417074,
           0.03626000000000001
         ]
       ],
-      "volume_cm3": 0.18455999352147523
+      "volume_cm3": 0.22213846820665548
     },
     {
       "name": "WoodMask",
@@ -14756,7 +14756,7 @@
     "ring_wall_mm": [
       1.0,
       1.0,
-      1.2
+      2.0
     ],
     "ring_seam_gap": 0.003,
     "pitch": 0.008333333333333333,
@@ -14804,10 +14804,10 @@
     "printed_part_count": 16,
     "mass_estimate": {
       "complete_pendant": {
-        "nominal_g": 950.6,
+        "nominal_g": 981.6,
         "range_g": [
-          727.0,
-          1179.5
+          748.7,
+          1213.0
         ]
       },
       "necklace": {
@@ -14818,17 +14818,17 @@
         ]
       },
       "total_worn": {
-        "nominal_g": 982.8,
+        "nominal_g": 1013.8,
         "range_g": [
-          746.8,
-          1241.5
+          768.5,
+          1275.0
         ]
       },
       "external_battery_pendant": {
-        "nominal_g": 762.6,
+        "nominal_g": 793.6,
         "range_g": [
-          548.0,
-          971.5
+          569.7,
+          1005.0
         ]
       },
       "external_belt_and_lead": {
@@ -14839,10 +14839,10 @@
         ]
       },
       "external_total_worn": {
-        "nominal_g": 1084.8,
+        "nominal_g": 1115.8,
         "range_g": [
-          807.8,
-          1423.5
+          829.5,
+          1457.0
         ]
       },
       "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",

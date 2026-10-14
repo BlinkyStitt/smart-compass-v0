@@ -73,7 +73,7 @@
   "mirror_view_inner_radius": 85.5,
   "mirror_view_outer_radius": 110.5,
   "edge_diffuser_radius": 123.0,
-  "edge_diffuser_thickness": 1.2,
+  "edge_diffuser_thickness": 2.0,
   "edge_bottom_z": 3.2,
   "fastener_phase_deg": 40.0,
   "print_bed_x": 300.0,

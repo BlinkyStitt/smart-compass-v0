@@ -40,6 +40,44 @@ class ManufacturingTests(unittest.TestCase):
         for sample in ('FitDeck.stl','FitOptics.stl'):
             self.assertEqual(slicing.settings(spec,sample),production)
 
+    def test_outside_ring_sample_uses_the_same_four_path_wall(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        outside=slicing.settings(spec,'EdgeDiffuser.stl')
+        self.assertEqual(slicing.settings(spec,'FitRingOutside.stl'),outside)
+        self.assertEqual((outside['perimeters'],outside['extrusion_width']),('4','0.53'))
+        self.assertEqual(outside['first_layer_extrusion_width'],'0.46')
+        self.assertEqual((outside['layer_height'],outside['nozzle_diameter']),('0.2','0.4'))
+        cavity=slicing.settings(spec,'HaloRing.stl')
+        self.assertEqual((cavity['perimeters'],cavity['extrusion_width']),('2','0.5'))
+
+    def test_perimeter_measurement_ignores_brims_travel_and_retraction(self):
+        gcode="""M82
+G92 E0
+;LAYER_CHANGE
+;TYPE:Skirt/Brim
+;WIDTH:0.8
+G1 X100 Y100 E5
+;TYPE:External perimeter
+;WIDTH:0.46
+G1 X103 Y104 E6
+G1 X103 Y110
+G1 X100 Y114 E7
+G1 X110 Y114 E6
+G92 E0
+;LAYER_CHANGE
+;TYPE:Perimeter
+;WIDTH:0.53
+G1 X113 Y118 E1
+M83
+G1 X116 Y122 E1
+;TYPE:Internal infill
+;WIDTH:0.9
+G1 X200 Y200 E10
+"""
+        layers=slicing.perimeter_layers(gcode)
+        self.assertEqual([layer['length_mm'] for layer in layers],[10,10])
+        self.assertEqual([layer['widths_mm'] for layer in layers],[{.46},{.53}])
+
     def resolved(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())

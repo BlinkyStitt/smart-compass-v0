@@ -5,6 +5,7 @@ The print service must select its actual machine and PETG filament profile.
 """
 import argparse
 import json
+import math
 from pathlib import Path
 import re
 import shutil
@@ -41,6 +42,41 @@ def verify_settings(actual, expected, name):
     for key, value in expected.items():
         if actual.get(key) != value:
             raise cad.CadError(f'{name}: effective {key}={actual.get(key)!r}, required {value!r}')
+
+
+def perimeter_layers(gcode):
+    """Measure actual perimeter travel and widths, excluding brims and infill."""
+    layers=[]
+    width=None
+    x=y=e=0.0
+    relative_e=False
+    role=''
+    for line in gcode.splitlines():
+        if line == ';LAYER_CHANGE':
+            layers.append({'length_mm':0.0,'widths_mm':set()})
+        elif line.startswith(';TYPE:'):
+            role=line[6:]
+        elif line.startswith(';WIDTH:'):
+            width=float(line[7:])
+        command=line.split(';',1)[0].strip()
+        if not command:
+            continue
+        words=command.split()
+        values={key:float(value) for key,value in re.findall(r'([XYE])([-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))',command)}
+        if words[0] in ('M82','M83'):
+            relative_e=words[0]=='M83'
+        elif words[0]=='G92':
+            x,y,e=values.get('X',x),values.get('Y',y),values.get('E',e)
+        elif words[0] in ('G0','G1'):
+            nx,ny=values.get('X',x),values.get('Y',y)
+            ne=e+(values.get('E',0.0)) if relative_e else values.get('E',e)
+            travel=math.hypot(nx-x,ny-y)
+            if layers and role in ('External perimeter','Perimeter') and ne>e and travel>0:
+                layers[-1]['length_mm']+=travel
+                if width is not None:
+                    layers[-1]['widths_mm'].add(width)
+            x,y,e=nx,ny,ne
+    return layers
 
 
 def generate(root):
@@ -94,14 +130,24 @@ def check(root, fresh=True):
             if not mass or layers<2 or ';TYPE:External perimeter' not in gcode or ';TYPE:Support material' in gcode:
                 raise cad.CadError('Missing or unsupported toolpaths: '+name)
             if name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing')):
-                # The thin wall must slice as two nominal paths around one contour.
-                # PrusaSlicer emits these as a single external-perimeter loop.
-                wall = gcode.split(';TYPE:External perimeter',1)[1]
-                widths = [float(value) for value in re.findall(r';WIDTH:([\d.]+)',wall)]
-                nominal = float(expected['extrusion_width'])
-                if (not widths or min(widths) < nominal-.04 or max(widths) > nominal+.04
-                    or any(f';TYPE:{kind}' in wall for kind in ('Internal perimeter','Internal infill','Gap fill','Solid infill'))):
-                    raise cad.CadError('Ring wall deviates from two nominal paths: '+name)
+                # Cavity rings use two paths; the stronger outside wall uses four.
+                # Both must remain continuous perimeter walls without gap fill.
+                perimeter=perimeter_layers(gcode)
+                if len(perimeter)!=layers or any(f';TYPE:{kind}' in gcode for kind in ('Internal infill','Gap fill','Solid infill')):
+                    raise cad.CadError('Ring wall needs continuous perimeter paths without infill: '+name)
+                for layer, measured in enumerate(perimeter):
+                    widths=measured['widths_mm']
+                    nominal=float(expected['first_layer_extrusion_width' if layer==0 else 'extrusion_width'])
+                    if not widths or min(widths)<nominal-.04 or max(widths)>nominal+.04:
+                        raise cad.CadError(f'Ring wall deviates from nominal perimeter width on layer {layer+1}: '+name)
+                if name=='EdgeDiffuser.stl':
+                    p=json.loads((root/cad.CAD/'parameters.json').read_text())
+                    circumference=math.tau*(p['edge_diffuser_radius']+p['edge_diffuser_thickness']/2)
+                    # Total perimeter travel distinguishes four full circular
+                    # paths from a missing path, double pass or partial wall.
+                    paths=[layer['length_mm']/circumference for layer in perimeter]
+                    if len(paths)!=layers or any(abs(count-4)>.1 for count in paths):
+                        raise cad.CadError('Outside ring does not have four complete paths on every layer: '+name)
             if name in sample_names:
                 sample_total += float(mass[1])
             else:

@@ -39,7 +39,7 @@
     "start_gcode": "",
     "end_gcode": ""
   },
-  "service_requirements": "300 mm bed; Prusament PETG Ultraglow Green for three upright whole rings; abrasion-resistant 0.4 mm non-high-flow nozzle. Print rings with brim and no supports. Inspect real 0.5/0.6 mm paths and fit samples before full order. Select actual machine and filament heater settings.",
+  "service_requirements": "300 mm bed; Prusament PETG Ultraglow Green for three upright whole rings; abrasion-resistant 0.4 mm non-high-flow nozzle. Print rings with brim and no supports. Inspect two nominal 0.5 mm cavity paths and four nominal 0.53 mm outside paths (0.46 mm first layer) with production fit samples before full order. Select actual machine and filament heater settings.",
   "ring_cavity": {
     "extrusion_width": "0.5",
     "first_layer_extrusion_width": "0.5",
@@ -49,9 +49,9 @@
     "filament_density": "1.5"
   },
   "ring_outside": {
-    "extrusion_width": "0.6",
-    "first_layer_extrusion_width": "0.6",
-    "perimeters": "2",
+    "extrusion_width": "0.53",
+    "first_layer_extrusion_width": "0.46",
+    "perimeters": "4",
     "fill_density": "0%",
     "filament_type": "PETG",
     "filament_density": "1.5"

@@ -79,7 +79,12 @@ must use its actual qualified printer and material presets.
 | Necklace brackets | PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
 | Optical deck | PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
 | Halo and inner rings | Prusament PETG Ultraglow Green; abrasion-resistant, non-high-flow 0.4 mm nozzle | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
-| Outside ring | Same glow PETG and nozzle | 0.2 mm; two 0.6 mm nominal paths | Upright on circular bottom edge |
+| Outside ring | Same glow PETG and nozzle | 0.2 mm; four 0.53 mm nominal paths; 0.46 mm first-layer paths | Upright on circular bottom edge |
+
+The outside profile accounts for overlap between adjacent extrusion paths.
+Its first-layer width also accounts for the 0.15 mm elephant-foot compensation.
+Inspect all four paths on every layer; do not infer solid walls from the
+perimeter setting alone.
 
 Use a 5 mm brim and no supports. Keep the barrel deck-joint face down, rear
 skin down, vent guards roof down, and brackets flat. Inspect the actual slicer
@@ -117,6 +122,11 @@ ID soft washers should compress to about 60% of measured free thickness.
 The 9 mm OD metal washers must bear on the collars while the soft washers
 retain the sheet. Record the usable tightening limit from the physical sample.
 
+Print the outside arc with its four-path, 2.0 mm wall. Inspect it for voids,
+cracks and layer separation. Check handling during repeated installation and
+removal. A full-size ring must also pass handling and assembly checks; an arc
+cannot establish whole-ring strength. Reject cracking or permanent distortion.
+
 Print glow-ring arc samples at all three curvatures with the production wall
 and path widths. Review LED patterns at the permitted power limit. Record
 visible afterglow immediately and at 1, 5 and 15 minutes. Stop the full order
@@ -130,6 +140,15 @@ adhesive only on the ring end face. Keep the release liner below each free
 span. Fit actual LEDs and the front-sheet sample. Reject visible bare LED
 edges or light leaking above the ring at the permitted power limit. Test
 adhesion, sag, sheet clearance, and clean removal with the ring.
+
+The outside ring grows outward from the unchanged 246 mm inside diameter.
+At the conservative 0.434 mm centre offset, its edge can project slightly
+past the 250 mm front sheet. CAD checks a continuous 1.5 mm band of the
+nominal ring below the sheet at every offset. Allowing a further 0.20 mm
+radial size error leaves at least 1.3 mm of that band for retention. Check
+actual ring and sheet dimensions during assembly acceptance.
+The opaque shield covers the ring end face. Inspect this exposed edge and
+shield during the full-size light-leak and handling tests.
 
 ## Assemble the whole circles without juggling them
 
@@ -176,7 +195,15 @@ light-leak check; the demo is not a scattering simulation.
 The halo and inner printed rings start at Z=25.6 mm and stand 10.6 mm high.
 Their inside diameters are 177.02 and 215.47 mm, with 1.0 mm walls. The
 outside ring starts at Z=3.2 mm and stands 33.0 mm high; its inside diameter
-is 246.00 mm and its wall is 1.2 mm. Eight integral locating stations retain
+is 246.00 mm and its wall is 2.0 mm (250.00 mm nominal outside diameter).
+
+The [Adafruit arcade-button cap STL](https://www.printables.com/model/7148-neopixel-arcade-buttons/files)
+has a 1.5 mm main cylindrical wall and a 1.5 mm transmitting end face,
+measured from its mesh. The 2.0 mm outside ring exceeds that reference
+thickness for handling. The different material and larger diameter still
+require production-wall optical samples and full-size handling tests.
+
+Eight integral locating stations retain
 each ring. All stops provide 1.2 mm locating height and 0.20 mm nominal radial
 seat clearance. The circular contact geometry limits sideways movement to less
 than 0.217 mm nominally and 0.434 mm with the combined 0.20 mm radial

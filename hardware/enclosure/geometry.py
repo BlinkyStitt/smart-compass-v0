@@ -159,6 +159,12 @@ def ring_led_clearances(p):
             'Outer':p['edge_diffuser_radius']-math.hypot(outer_face,2.5)}
 
 
+def outside_front_overlap(p):
+    """Continuous radial band below the sheet at every permitted ring offset."""
+    return min(p['edge_diffuser_thickness'], p['case_diameter']/2-p['edge_diffuser_radius']
+               -ring_movement_limit(p,p['ring_radial_error_budget']))
+
+
 def top_light_shields(p):
     """Opaque tape covers the exposed axial LED edges and ring end faces."""
     bands = cavity_diffusers(p)

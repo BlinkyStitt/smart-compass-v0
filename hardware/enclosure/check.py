@@ -16,7 +16,7 @@ sys.path.insert(0, str(HERE))
 import build
 import inventory
 from hardware_spec import nut_dimensions, stations
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, top_light_shields, wood_bottom
 
 
 def check():
@@ -199,6 +199,14 @@ def check():
                 assert beyond.common(doc.OpticalFrame.Shape).Volume>1e-6, 'Ring escapes its movement limit: '+name
             offset=App.Vector(clearance_motion*math.cos(a),clearance_motion*math.sin(a),0)
             moved=original.copy();moved.translate(offset)
+            if name == 'EdgeDiffuser':
+                # A complete annular band must stay below the real sheet, even
+                # when the outside edge projects beyond its nominal outline.
+                stop=Part.makeCylinder(p['edge_diffuser_radius']+1.5,.1,App.Vector(0,0,p['front_plane_z']+.1)).cut(
+                    Part.makeCylinder(p['edge_diffuser_radius'],.1,App.Vector(0,0,p['front_plane_z']+.1)))
+                stop.translate(offset)
+                assert outside_front_overlap(p) >= 1.5
+                assert abs(stop.common(doc.FrontSheet.Shape).Volume-stop.Volume)<1e-6, 'Moved outside ring loses continuous sheet retention'
             # Include even positions excluded by the pad width. This checks a
             # conservative superset of every reachable optical clearance.
             assert moved.distToShape(doc.getObject(led_name).Shape)[0] >= .5, 'Moved ring loses LED clearance: '+name
@@ -394,7 +402,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':1.2}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

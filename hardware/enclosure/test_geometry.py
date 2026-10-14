@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, strip_bottom, top_light_shields
+from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, top_light_shields
 
 HERE = Path(__file__).resolve().parent
 
@@ -121,6 +121,21 @@ class GeometryTests(unittest.TestCase):
         self.assertGreater(ring_movement_limit(old),.59)
         self.assertLess(ring_led_clearances(self.p)['Halo'],self.p['ring_diffuser_led_gap'])
         self.assertGreaterEqual(min(ring_led_clearances(self.p).values())-ring_movement_limit(self.p,.2),.53)
+
+    def test_thicker_outside_wall_preserves_led_gap_and_continuous_sheet_retention(self):
+        self.assertGreaterEqual(self.p['edge_diffuser_thickness'],2)
+        self.assertLessEqual(2*(self.p['edge_diffuser_radius']+self.p['edge_diffuser_thickness']),self.p['case_diameter'])
+        self.assertGreaterEqual(outside_front_overlap(self.p),1.5)
+        # The strengthened wall grows outward. Its optical face and LED gap stay fixed.
+        previous=dict(self.p,edge_diffuser_thickness=1.2)
+        self.assertEqual(ring_led_clearances(previous),ring_led_clearances(self.p))
+        self.assertEqual(cavity_diffusers(previous),cavity_diffusers(self.p))
+        for i in range(360):
+            a=math.radians(i)
+            offset=ring_movement_limit(self.p,self.p['ring_radial_error_budget'])
+            x=self.p['edge_diffuser_radius']+1.5+offset*math.cos(a)
+            y=offset*math.sin(a)
+            self.assertLessEqual(math.hypot(x,y),self.p['case_diameter']/2)
 
     def test_excessive_web_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Web removes LED'):

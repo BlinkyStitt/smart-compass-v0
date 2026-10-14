@@ -20,7 +20,7 @@ from hardware_spec import nut_dimensions, hexagon, body_bolt_length
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
 
 DIFFUSER_TRANSPARENCY = 35  # CAD display only; not measured optical transmission.
 DIFFUSER_TINT = (184 / 255, 209 / 255, 138 / 255)  # Use the native file's 8-bit RGB precision.
@@ -630,7 +630,7 @@ def build(p=None):
     b.add(rear_mirror, 'Manufactured', '05 Rear mirror annulus - reflective face toward front', (.60,.65,.72), material='1.5 mm acrylic with full mirror film on +Z face')
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('front_plane_z')+'-'+E('edge_bottom_z')+'-'+E('ring_front_clearance'))
 
-    b.add(edge, 'Manufactured', 'OutsideRing - whole glow PETG print', DIFFUSER_TINT, DIFFUSER_TRANSPARENCY, material='Prusament PETG Ultraglow Green; 1.2 mm wall; optical transmission unmeasured')
+    b.add(edge, 'Manufactured', 'OutsideRing - whole glow PETG print', DIFFUSER_TINT, DIFFUSER_TRANSPARENCY, material=f"Prusament PETG Ultraglow Green; {p['edge_diffuser_thickness']:g} mm wall; optical transmission unmeasured")
 
     # Curved bands diffuse the radial emitting faces. They do not cover the
     # flat front mirror annulus or replace the Fibonacci wood face.
@@ -793,8 +793,10 @@ def validate_parameters(p):
         raise ValueError('Strip does not fit between the mirror surfaces')
     if optics['outer_led_clearance'] < .5:
         raise ValueError('Outer LED packages leave less than 0.5 mm diffuser clearance')
-    if p['edge_diffuser_thickness'] != 1.2 or p['edge_diffuser_radius']+p['edge_diffuser_thickness'] > p['case_diameter']/2:
-        raise ValueError('Acrylic outside wall must have positive thickness and fit under the front border')
+    if p['edge_diffuser_thickness'] < 2 or p['edge_diffuser_radius']+p['edge_diffuser_thickness'] > p['case_diameter']/2:
+        raise ValueError('Outside printed ring needs at least a 2 mm wall and must fit the nominal front diameter')
+    if outside_front_overlap(p) < 1.5:
+        raise ValueError('Outside ring needs at least 1.5 mm continuous front-sheet overlap at maximum movement')
     if p['edge_bottom_z'] < p['rear_thickness']+1.2-1e-7 or optics['edge_height'] < 2*p['strip_width']:
         raise ValueError('Outside diffuser must span the body between the rear and front lips')
     # The outer strip sits outside the floor radius. It can span the floor's
