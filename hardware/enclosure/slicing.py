@@ -23,15 +23,32 @@ def executable():
     return path
 
 
-def settings(spec, name):
+def is_ring(name):
+    return name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing'))
+
+
+def project_filename(name, material):
+    stem=Path(name).stem
+    return stem+('-'+material if material!='glow' and is_ring(name) else '')+'.3mf'
+
+
+def settings(spec, name, material='glow'):
     bracket = name.startswith(('NecklaceLink', 'FitSuspensionBracket'))
-    ring = name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing'))
+    ring = is_ring(name)
     profile = spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
-    return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile
+    material_profile={'filament_density':str(spec['ring_materials'][material]['density_g_cm3'])} if ring else {}
+    return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile | material_profile
 
 
 def project_names(inventory):
     return inventory['stl_files'] + [sample['file'] for sample in inventory['fit_samples']]
+
+
+def project_jobs(inventory, spec):
+    for material in spec['ring_materials']:
+        for name in project_names(inventory):
+            if material==spec['default_ring_material'] or is_ring(name):
+                yield name, project_filename(name,material), material
 
 
 def configuration(text):
@@ -84,10 +101,10 @@ def generate(root):
     spec = json.loads((root/cad.CAD/'print-spec.json').read_text())
     inventory = json.loads((root/cad.EXPORTS/'parts.json').read_text())
     with tempfile.TemporaryDirectory(prefix='compass-project-', dir=root.parent) as temporary:
-        for name in project_names(inventory):
+        for name, project_name, material in project_jobs(inventory,spec):
             config = Path(temporary)/'settings.ini'
-            config.write_text(''.join(f'{k} = {v}\n' for k,v in settings(spec,name).items()))
-            output = (root/cad.EXPORTS/name).with_suffix('.3mf')
+            config.write_text(''.join(f'{k} = {v}\n' for k,v in settings(spec,name,material).items()))
+            output = root/cad.EXPORTS/project_name
             expanded = Path(temporary)/'expanded.ini'
             result = subprocess.run([executable(), '--load', str(config), '--export-3mf',
                                      '--save', str(expanded), '--output', str(output), str(root/cad.EXPORTS/name)],
@@ -108,13 +125,13 @@ def check(root, fresh=True):
         cad.check_freshness(cad.Snapshot(root))
     spec = json.loads((root/cad.CAD/'print-spec.json').read_text())
     inventory = json.loads((root/cad.EXPORTS/'parts.json').read_text())
-    total = sample_total = 0.0
+    masses = {name:{} for name in spec['ring_materials']}
+    sample_masses = {name:{} for name in spec['ring_materials']}
     sample_names = [sample['file'] for sample in inventory['fit_samples']]
-    masses = {}
     with tempfile.TemporaryDirectory(prefix='compass-slice-', dir=root.parent) as temporary:
-        for name in project_names(inventory):
-            project = (root/cad.EXPORTS/name).with_suffix('.3mf')
-            expected = settings(spec,name)
+        for name, project_name, material in project_jobs(inventory,spec):
+            project = root/cad.EXPORTS/project_name
+            expected = settings(spec,name,material)
             with zipfile.ZipFile(project) as archive:
                 verify_settings(configuration(archive.read('Metadata/Slic3r_PE.config').decode()), expected, project.name)
             output = Path(temporary)/(name+'.gcode')
@@ -149,18 +166,22 @@ def check(root, fresh=True):
                     if len(paths)!=layers or any(abs(count-4)>.1 for count in paths):
                         raise cad.CadError('Outside ring does not have four complete paths on every layer: '+name)
             if name in sample_names:
-                sample_total += float(mass[1])
+                sample_masses[material][Path(name).stem] = float(mass[1])
             else:
-                total += float(mass[1])
-                masses[Path(name).stem] = float(mass[1])
+                masses[material][Path(name).stem] = float(mass[1])
             print(f'SLICE PASS: {project.name}, {layers} layers, {mass[1]} g including brim',flush=True)
+    default=spec['default_ring_material']
+    combined={name:masses[default] | mass for name,mass in masses.items()}
+    combined_samples={name:sample_masses[default] | mass for name,mass in sample_masses.items()}
     if not fresh:
-        inventory['slicer_mass_g_including_brim'] = masses
+        inventory['slicer_mass_g_including_brim'] = combined[default]
+        inventory['slicer_mass_by_ring_material'] = combined
         (root/cad.EXPORTS/'parts.json').write_text(json.dumps(inventory,indent=2)+'\n')
     version = subprocess.check_output([executable(),'--help'],text=True).splitlines()[0]
-    print(f'SLICER PASS: {len(masses)} products, {total:.2f} g including brims; '
-          f'{len(sample_names)} disposable samples, {sample_total:.2f} g separately. '
-          'Physical printing and fit remain untested.',flush=True)
+    for material in spec['ring_materials']:
+        print(f'SLICER PASS: {material}: {len(combined[material])} products, {sum(combined[material].values()):.2f} g including brims; '
+              f'{len(combined_samples[material])} disposable samples, {sum(combined_samples[material].values()):.2f} g separately. '
+              'Physical printing and fit remain untested.',flush=True)
     return version
 
 

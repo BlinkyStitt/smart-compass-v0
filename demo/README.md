@@ -26,6 +26,23 @@ The [52-second Godot demo](../hardware/enclosure/exports/amulet-demo.mp4) also
 shows a front-hemisphere sweep and all four lighting presets. All demo movie and GIF
 frames come from Godot, including their animated LEDs and mirror reflections.
 
+## Ring material versions
+
+Use **Ring material** to select Glow PETG or Silver PETG. The view, pattern and
+common geometry stay the same. Glow uses pale, matte material with green stored
+emission. Silver uses a grey/silver surface, neutral RGB absorption and no
+phosphor emission. Direct rings and reflections share the selected response.
+Both models keep the 2.0 mm outside wall. Optical coefficients are assumptions;
+production samples must establish actual transmission and diffusion.
+
+[Glow model GLB](../hardware/enclosure/exports/amulet.glb) ·
+[Silver model GLB](../hardware/enclosure/exports/amulet-silver.glb)
+
+[Glow rainbow MP4](../hardware/enclosure/exports/infinity-rainbow.mp4) ·
+[Glow rainbow GIF](../hardware/enclosure/exports/infinity-rainbow.gif) ·
+[Silver rainbow MP4](../hardware/enclosure/exports/infinity-rainbow-silver.mp4) ·
+[Silver rainbow GIF](../hardware/enclosure/exports/infinity-rainbow-silver.gif)
+
 ## Looping animations
 
 [Explode and reassemble (GIF)](../hardware/enclosure/exports/exploded.gif) ·

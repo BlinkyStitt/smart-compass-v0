@@ -40,7 +40,7 @@ void fragment() {
         vec3 traced=trace_cavity(point,direction,hit);
         if (traced.z>0.0) {
             int group=int(traced.z);
-            light=traced.x*glow_ring_light(hit,group,group==1?64:84,group==1?pitch_radii.x:pitch_radii.y,strip_z,group==1?ring_wall_mm.x:ring_wall_mm.y,brightness,diffuser_transmission);
+            light=traced.x*ring_light(hit,group,group==1?64:84,group==1?pitch_radii.x:pitch_radii.y,strip_z,group==1?ring_wall_mm.x:ring_wall_mm.y,brightness,diffuser_transmission);
         }
     }
     ALBEDO = vec3(reflectance);

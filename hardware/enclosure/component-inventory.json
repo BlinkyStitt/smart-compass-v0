@@ -300,25 +300,17 @@
     },
     {
       "id": "EdgeDiffuser",
-      "label": "Outside printed glow ring",
+      "label": "Outside printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/EdgeDiffuser.3mf",
       "dimensions": "246.00 mm inside diameter x 2.0 mm wall x 33.0 mm high, Z=3.2 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Four-path wall, optical output, handling strength, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "EdgeDiffuser",
-      "mass_formula": "glow_petg_volume",
-      "stock_sources": [
-        {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
-        }
-      ]
+      "mass_formula": "ring_petg_volume"
     },
     {
       "id": "OuterLightShield",
@@ -348,25 +340,17 @@
     },
     {
       "id": "HaloRing",
-      "label": "Halo printed glow ring",
+      "label": "Halo printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/HaloRing.3mf",
       "dimensions": "177.02 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "HaloRing",
-      "mass_formula": "glow_petg_volume",
-      "stock_sources": [
-        {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
-        }
-      ]
+      "mass_formula": "ring_petg_volume"
     },
     {
       "id": "HaloLightShield",
@@ -396,25 +380,17 @@
     },
     {
       "id": "InnerRing",
-      "label": "Inner printed glow ring",
+      "label": "Inner printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/InnerRing.3mf",
       "dimensions": "215.47 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "InnerRing",
-      "mass_formula": "glow_petg_volume",
-      "stock_sources": [
-        {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
-        }
-      ]
+      "mass_formula": "ring_petg_volume"
     },
     {
       "id": "InnerLightShield",

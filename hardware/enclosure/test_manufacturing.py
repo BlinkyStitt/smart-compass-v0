@@ -50,6 +50,29 @@ class ManufacturingTests(unittest.TestCase):
         cavity=slicing.settings(spec,'HaloRing.stl')
         self.assertEqual((cavity['perimeters'],cavity['extrusion_width']),('2','0.5'))
 
+    def test_silver_and_glow_keep_same_paths_but_use_correct_densities(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        for name in ('HaloRing.stl','InnerRing.stl','EdgeDiffuser.stl','FitRingHalo.stl','FitRingInner.stl','FitRingOutside.stl'):
+            glow=slicing.settings(spec,name,'glow')
+            silver=slicing.settings(spec,name,'silver')
+            self.assertEqual(float(glow.pop('filament_density')),spec['ring_materials']['glow']['density_g_cm3'])
+            self.assertEqual(float(silver.pop('filament_density')),spec['ring_materials']['silver']['density_g_cm3'])
+            self.assertEqual(glow,silver)
+            self.assertNotEqual(slicing.project_filename(name,'glow'),slicing.project_filename(name,'silver'))
+        for name in ('RearPlate.stl','NecklaceLink0.stl'):
+            self.assertEqual(slicing.settings(spec,name,'glow'),slicing.settings(spec,name,'silver'))
+        component=json.loads((HERE/'component-inventory.json').read_text())
+        p=json.loads((HERE/'parameters.json').read_text())
+        volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
+                 for r in component['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume','wood_volume')]
+        masses=[]
+        for material in ('glow','silver'):
+            rows=inventory.resolve(component,volumes,p,spec['ring_materials'][material])
+            ring=next(r for r in rows if r['id']=='EdgeDiffuser')
+            self.assertEqual(ring['material'],spec['ring_materials'][material]['filament'])
+            masses.append(ring['mass_g_per_unit'])
+        self.assertGreater(masses[0],masses[1])
+
     def test_perimeter_measurement_ignores_brims_travel_and_retraction(self):
         gcode="""M82
 G92 E0
@@ -81,9 +104,9 @@ G1 X200 Y200 E10
     def resolved(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
-        volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','glow_petg_volume')}
-                 for r in spec['components'] if r.get('mass_formula') in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume')]
-        return inventory.resolve(spec,volumes,p),volumes
+        volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
+                 for r in spec['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume','wood_volume')]
+        return inventory.resolve(spec,volumes,p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow']),volumes
 
     def test_installed_strip_lengths_and_single_populated_boards(self):
         rows,_=self.resolved(); byid={r['id']:r for r in rows}
@@ -118,11 +141,11 @@ G1 X200 Y200 E10
         p=json.loads((HERE/'parameters.json').read_text())
         spec['components'][0]['mass_g_per_unit']=1
         with self.assertRaisesRegex(ValueError,'formula or a literal mass'):
-            inventory.resolve(spec,[],p)
+            inventory.resolve(spec,[],p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow'])
         del spec['components'][0]['mass_g_per_unit']
         spec['components'][0]['mass_formula']='unknown_density'
         with self.assertRaisesRegex(ValueError,'Unknown mass formula'):
-            inventory.resolve(spec,[],p)
+            inventory.resolve(spec,[],p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow'])
 
     def test_body_bolts_follow_the_measured_stack_and_full_nut_engagement(self):
         p=json.loads((HERE/'parameters.json').read_text())

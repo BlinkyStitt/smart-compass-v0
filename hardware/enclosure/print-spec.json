@@ -39,26 +39,85 @@
     "start_gcode": "",
     "end_gcode": ""
   },
-  "service_requirements": "300 mm bed; Prusament PETG Ultraglow Green for three upright whole rings; abrasion-resistant 0.4 mm non-high-flow nozzle. Print rings with brim and no supports. Inspect two nominal 0.5 mm cavity paths and four nominal 0.53 mm outside paths (0.46 mm first layer) with production fit samples before full order. Select actual machine and filament heater settings.",
+  "service_requirements": "300 mm bed; choose one named ring material option per assembly. Print whole rings upright, 0.4 mm non-high-flow nozzle, brim, no supports. Inspect two nominal 0.5 mm cavity paths and four nominal 0.53 mm outside paths (0.46 mm first layer). Qualify fit, handling strength and light transmission separately for each filament; no full-order release before samples pass. Service selects actual machine heater settings.",
   "ring_cavity": {
     "extrusion_width": "0.5",
     "first_layer_extrusion_width": "0.5",
     "perimeters": "2",
     "fill_density": "0%",
-    "filament_type": "PETG",
-    "filament_density": "1.5"
+    "filament_type": "PETG"
   },
   "ring_outside": {
     "extrusion_width": "0.53",
     "first_layer_extrusion_width": "0.46",
     "perimeters": "4",
     "fill_density": "0%",
-    "filament_type": "PETG",
-    "filament_density": "1.5"
+    "filament_type": "PETG"
   },
   "optical_deck": {
     "layer_height": "0.1",
     "top_solid_layers": "10",
     "bottom_solid_layers": "10"
+  },
+  "default_ring_material": "glow",
+  "ring_materials": {
+    "glow": {
+      "label": "Glow PETG",
+      "filament": "Prusament PETG Ultraglow Green",
+      "density_g_cm3": 1.5,
+      "density_basis": "Prusament PETG Ultraglow technical sheet",
+      "source": "https://prusament.com/materials/prusament-petg-ultraglow/",
+      "evidence": "Adafruit demonstrated ColorFabb glowFill PLA/PHA with NeoPixels. Selected PETG has a different formulation; qualify production-wall samples.",
+      "acceptance": "Review LED patterns at the permitted power limit. Record green afterglow immediately and after 1, 5 and 15 minutes.",
+      "nozzle": "Use an abrasion-resistant, non-high-flow 0.4 mm nozzle for Ultraglow. Prusa recommends 0.6 mm to reduce clogging; inspect these 0.4 mm production paths before release.",
+      "render": {
+        "albedo": [
+          0.8,
+          0.84,
+          0.66
+        ],
+        "roughness": 0.78,
+        "metallic": 0.0,
+        "absorption_per_mm": [
+          0.4,
+          0.08,
+          0.65
+        ],
+        "prompt_green": 0.06,
+        "stored_emission": 1.0,
+        "transmission": 0.4,
+        "diffusion": 0.65
+      },
+      "id": "glow"
+    },
+    "silver": {
+      "label": "Silver PETG",
+      "filament": "Extrudr PETG Silver",
+      "density_g_cm3": 1.29,
+      "density_basis": "Extrudr PETG family nominal density; verify the silver lot and printed mass",
+      "source": "https://www.extrudr.com/en/inlt/products/petg/",
+      "evidence": "Christopher Parrott tested 0.4 mm Rigid.ink silver PLA. This PETG candidate and the thicker production walls have not passed optical qualification.",
+      "acceptance": "Test white, red, green, blue and moving rainbow patterns through both production wall thicknesses. If the silver is opaque or the patterns are unacceptable, stop this version. Keep the 2.0 mm outside wall; do not replace it with a 0.4 mm membrane.",
+      "nozzle": "Use a 0.4 mm non-high-flow nozzle and qualified PETG settings. Inspect the same complete wall paths as the glow version.",
+      "render": {
+        "albedo": [
+          0.58,
+          0.6,
+          0.62
+        ],
+        "roughness": 0.42,
+        "metallic": 0.15,
+        "absorption_per_mm": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "prompt_green": 0.0,
+        "stored_emission": 0.0,
+        "transmission": 0.4,
+        "diffusion": 0.65
+      },
+      "id": "silver"
+    }
   }
 }

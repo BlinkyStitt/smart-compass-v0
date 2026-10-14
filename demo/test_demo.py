@@ -33,6 +33,27 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(reference([.099,0,.0367],[.01,0,-.025],optics,1,0),[0,0,0])
         self.assertGreater(len(cases(optics)),100)
 
+    def test_material_models_share_geometry_and_have_distinct_responses(self):
+        path=ROOT/'hardware/enclosure/exports'
+        metadata=json.loads((path/'scene.json').read_text())
+        spec=json.loads((ROOT/'hardware/enclosure/print-spec.json').read_text())
+        self.assertEqual(metadata['ring_materials'],spec['ring_materials'])
+        binaries=[]; colours=[]
+        for name in ('amulet.glb','amulet-silver.glb'):
+            data=(path/name).read_bytes()
+            size=struct.unpack_from('<I',data,12)[0]
+            document=json.loads(data[20:20+size])
+            binaries.append(data[28+size:])
+            rings=[m['pbrMetallicRoughness']['baseColorFactor'] for m in document['materials'] if m['name'] in ('HaloRing','InnerRing','EdgeDiffuser')]
+            self.assertEqual(len(rings),3)
+            colours.append(rings)
+        self.assertEqual(binaries[0],binaries[1])
+        self.assertNotEqual(colours[0],colours[1])
+        silver=metadata['ring_materials']['silver']['render']
+        self.assertEqual(silver['stored_emission'],0)
+        self.assertEqual(silver['prompt_green'],0)
+        self.assertEqual(len(set(silver['absorption_per_mm'])),1)
+
     def test_metadata_and_glb(self):
         path=ROOT/'hardware/enclosure/exports'
         m=json.loads((path/'scene.json').read_text())

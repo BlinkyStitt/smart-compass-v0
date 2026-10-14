@@ -2,10 +2,15 @@ extends Node3D
 
 const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
 const FINISHES = ["Selected • clear centre", "Comparison • full mirror"]
+const RING_MATERIALS = ["glow", "silver"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
 const COUNTS = Glow.COUNTS
 var glow = Glow.new()
+var ring_material = 0
+var ring_transmit_slider: HSlider
+var ring_diffuse_slider: HSlider
+var glow_buttons = []
 var charge_texture: ImageTexture
 var metadata: Dictionary
 var meshes = {}
@@ -267,6 +272,7 @@ func _make_controls():
 	scroll.add_child(box)
 	_label(box,"AMULET / OPTICAL PREVIEW",18)
 	_label(box,"Assumed optics • no measured brightness",12)
+	_option(box,"Ring material",[metadata.ring_materials.glow.label,metadata.ring_materials.silver.label],0,_set_ring_material)
 	_option(box,"Front finish",FINISHES,0,_set_finish)
 	_option(box,"Pattern",PATTERNS,0,func(v): pattern=v)
 	var pause_button = CheckButton.new()
@@ -297,10 +303,10 @@ func _make_controls():
 		reflectance=minf(reflectance,1-v)
 		_sync_slider(reflect_slider,reflectance)
 		_update_optics())
-	_slider(box,"Glow ring transmission (assumed)",0,1,diffuser_transmission,func(v): diffuser_transmission=v; _update_optics())
-	_slider(box,"Glow ring diffusion (assumed)",0,1,diffusion,func(v): diffusion=v; _update_optics())
-	_button(box,"Precharge glow (illustration)",func(): _reset_glow(0.85,0.65))
-	_button(box,"Clear stored glow",func(): _reset_glow())
+	ring_transmit_slider = _slider(box,"Ring transmission (assumed)",0,1,diffuser_transmission,func(v): diffuser_transmission=v; _update_optics())
+	ring_diffuse_slider = _slider(box,"Ring diffusion (assumed)",0,1,diffusion,func(v): diffusion=v; _update_optics())
+	glow_buttons.append(_button(box,"Precharge glow (illustration)",func(): _reset_glow(0.85,0.65)))
+	glow_buttons.append(_button(box,"Clear stored glow",func(): _reset_glow()))
 	_slider(box,"Centre diffusion (assumed)",0,1,central_diffusion,func(v): central_diffusion=v; _update_optics())
 	var views = HBoxContainer.new()
 	box.add_child(views)
@@ -327,6 +333,7 @@ func _button(parent,text,callback):
 	button.add_theme_font_size_override("font_size",11)
 	button.pressed.connect(callback)
 	parent.add_child(button)
+	return button
 
 func _option(parent,title,items,selected,callback):
 	_label(parent,title,12)
@@ -363,11 +370,32 @@ func _set_finish(value):
 		meshes[part.name].visible = true
 	_update_optics()
 
+func _apply_ring_response(material, choice):
+	var response=choice.render
+	material.set_shader_parameter("ring_absorption",Vector3(response.absorption_per_mm[0],response.absorption_per_mm[1],response.absorption_per_mm[2]))
+	material.set_shader_parameter("ring_prompt_green",float(response.prompt_green))
+	material.set_shader_parameter("ring_stored_emission",float(response.stored_emission))
+
+func _set_ring_material(value):
+	ring_material=value
+	var response=metadata.ring_materials[RING_MATERIALS[value]].render
+	diffuser_transmission=float(response.transmission)
+	diffusion=float(response.diffusion)
+	_sync_slider(ring_transmit_slider,diffuser_transmission)
+	_sync_slider(ring_diffuse_slider,diffusion)
+	for button in glow_buttons: button.disabled=RING_MATERIALS[value]!="glow"
+	_update_optics()
+
 func _update_optics():
+	var choice=metadata.ring_materials[RING_MATERIALS[ring_material]]
+	for material in sleeve_materials+cavity_materials: _apply_ring_response(material,choice)
 	for material in cavity_materials:
 		for entry in [["reflectance",reflectance],["transmission",transmission],["diffuser_transmission",diffuser_transmission],["diffusion",diffusion],["brightness",brightness]]:
 			material.set_shader_parameter(entry[0],entry[1])
 	for material in sleeve_materials:
+		material.set_shader_parameter("ring_albedo",Vector3(choice.render.albedo[0],choice.render.albedo[1],choice.render.albedo[2]))
+		material.set_shader_parameter("ring_roughness",float(choice.render.roughness))
+		material.set_shader_parameter("ring_metallic",float(choice.render.metallic))
 		material.set_shader_parameter("transmission",diffuser_transmission)
 		material.set_shader_parameter("diffusion",diffusion)
 		material.set_shader_parameter("brightness",brightness)
@@ -464,6 +492,7 @@ func _reset_glow(fast: float = 0.0, slow: float = 0.0):
 	charge_texture.update(glow.image)
 
 func _advance_glow(seconds: float):
+	if RING_MATERIALS[ring_material]!="glow": return
 	glow.advance(seconds,image_data,brightness,ambient*0.08+sun.light_energy*0.01)
 	charge_texture.update(glow.image)
 
@@ -498,6 +527,15 @@ func _check_glow():
 
 func _run_checks():
 	_check_glow()
+	var material_time=pattern_time
+	var material_camera=camera.position
+	for value in range(RING_MATERIALS.size()):
+		_set_ring_material(value)
+		var response=metadata.ring_materials[RING_MATERIALS[value]].render
+		for material in sleeve_materials+cavity_materials:
+			assert(is_equal_approx(material.get_shader_parameter("ring_stored_emission"),float(response.stored_emission)),"Direct and reflected rings must use the selected material")
+		assert(pattern_time==material_time and camera.position==material_camera,"Material selection must preserve pattern and view")
+	_set_ring_material(0)
 	# Headless Godot starts with a 64-pixel window; test the capture resolution.
 	get_window().size = Vector2i(1280,720)
 	assert(metadata.leds.size()==494)
@@ -668,18 +706,22 @@ func _capture():
 	diffusion=0.65
 	brightness=2.0
 	groups=[true,true,true,true]
-	for style in ["rainbow","ocean","sunset"]:
-		# A uniform precharged state makes the repeating colour loop continuous.
-		_reset_glow(0.35,0.20)
-		pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
-		caption.text="%s gradient | Godot infinity mirror | diffusion 0.65" % style.capitalize()
-		for frame in range(384):
-			_sweep(frame/384.0,65.0)
-			pattern_time=frame/24.0
-			_update_optics()
-			_update_colours()
-			await _settle()
-			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [style,frame]))==OK)
+	for material_index in range(RING_MATERIALS.size()):
+		_set_ring_material(material_index)
+		for style in (["rainbow","ocean","sunset"] if material_index==0 else ["rainbow"]):
+			var capture_style=style+("-silver" if material_index==1 else "")
+			# A uniform precharged state makes the repeating colour loop continuous.
+			_reset_glow(0.35,0.20)
+			pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
+			caption.text="%s | %s gradient | unmeasured optics" % [metadata.ring_materials[RING_MATERIALS[material_index]].label,style.capitalize()]
+			for frame in range(384):
+				_sweep(frame/384.0,65.0)
+				pattern_time=frame/24.0
+				_update_optics()
+				_update_colours()
+				await _settle()
+				assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [capture_style,frame]))==OK)
+	_set_ring_material(0)
 	_reset()
 	_reset_glow(0.35,0.20)
 	_set_finish(0)
@@ -723,7 +765,7 @@ func _capture():
 		var picture=get_viewport().get_texture().get_image()
 		assert(picture.save_png(capture_dir.path_join("afterglow-%04d.png" % frame))==OK)
 		if frame==96: assert(picture.save_png(capture_dir.path_join("afterglow-poster.png"))==OK)
-	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1152 gradient frames, 576 exploded frames and 576 afterglow frames")
+	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1536 gradient frames, 576 exploded frames and 576 afterglow frames")
 	get_tree().quit()
 
 func _benchmark():
@@ -825,6 +867,7 @@ func _gpu_checks():
 				assert(absf(readings[index]-baseline[index])<0.009, "Ring diffuser profiles differ")
 	print("DEMO GPU DIFFUSER PASS: smooth LED gaps, gentle peaks, continuous edges and matching profiles for all three rings")
 	material.shader=load("res://glow_diagnostic.gdshader")
+	_apply_ring_response(material,metadata.ring_materials.glow)
 	material.set_shader_parameter("colours",colour_texture)
 	material.set_shader_parameter("charges",charge_texture)
 	material.set_shader_parameter("pitch",float(metadata.optics.pitch))
@@ -861,5 +904,24 @@ func _gpu_checks():
 	var faded=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 	assert(faded.g>0.005 and faded.g<after.g*0.15,"GPU afterglow must fade to a weaker green tail")
 	print("DEMO GPU GLOW PASS: green spectral filtering, wall attenuation, LED-off emission and fading tail")
+	_apply_ring_response(material,metadata.ring_materials.silver)
+	groups=[true,true,true,true]
+	pattern=6
+	_update_colours()
+	material.set_shader_parameter("brightness",2.0)
+	material.set_shader_parameter("wall_mm",float(metadata.optics.ring_wall_mm[0]))
+	await _settle()
+	var silver_thin=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(silver_thin.r>0.1 and absf(silver_thin.r-silver_thin.g)<0.009 and absf(silver_thin.g-silver_thin.b)<0.009,"Silver must retain neutral RGB transmission")
+	material.set_shader_parameter("wall_mm",float(metadata.optics.ring_wall_mm[2]))
+	await _settle()
+	var silver_thick=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(silver_thick.r<silver_thin.r,"Silver wall thickness must attenuate light")
+	_reset_glow(0.85,0.65)
+	material.set_shader_parameter("brightness",0.0)
+	await _settle()
+	var silver_off=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(silver_off.r<0.00001 and silver_off.g<0.00001 and silver_off.b<0.00001,"Silver must not emit stored green afterglow")
+	print("DEMO GPU SILVER PASS: neutral colour transmission, wall attenuation and no afterglow")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()

@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Smart Compass — print service instructions</title>
+<title>Smart Compass — $material_label print service instructions</title>
 <style>
 body{font:16px/1.5 system-ui,sans-serif;color:#18212b;max-width:1150px;margin:32px auto;padding:0 20px}h1,h2,h3{line-height:1.2}h2{margin-top:2em}.notice{padding:18px;border:3px solid #915600;background:#fff3d6}.info{padding:16px;background:#edf3f8}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #bdc8d3;padding:8px;text-align:left;vertical-align:top}th{background:#edf3f8}a{color:#064b8a;overflow-wrap:anywhere}img{max-width:100%;height:auto}.scroll{overflow-x:auto}li{margin:.5em 0}@media print{body{margin:0;max-width:none;font-size:10pt}.scroll{overflow:visible}table{font-size:8pt}tr,img,.notice{break-inside:avoid}h2,h3{break-after:avoid}}
 </style>
-<h1>Smart Compass: print service handoff</h1>
+<h1>Smart Compass: $material_label print service handoff</h1>
 <p>Package <strong>$package_id</strong> · All dimensions are millimetres.</p>
 <div class="notice"><strong>Print samples first. Hold the full order.</strong>
 <p>Quote both stages. Print <strong>$samples disposable samples</strong> first. Print the <strong>$products full assembly parts</strong> only after the customer confirms sample acceptance and releases that stage.</p>
@@ -12,11 +12,12 @@ body{font:16px/1.5 system-ui,sans-serif;color:#18212b;max-width:1150px;margin:32
 <h2>1. Confirm that you can make this job</h2>
 <ul>
 <li>Use a printer with at least a <strong>300 × 300 mm bed</strong>. The largest rear part needs at least 259 mm of usable width with its brim. Keep all circles whole. Keep the supplied scale and bed orientation.</li>
-<li>Use <strong>opaque PETG</strong> for the frame, deck, rear, brackets, spacers, guards and cover. Use <strong>Prusament PETG Ultraglow Green</strong> for the three light rings and their arc samples. Identify your proposed opaque PETG before printing. A silver material option is under review and is not included in this package.</li>
-<li>Use a <strong>0.4 mm nozzle</strong>. For Ultraglow use an abrasion-resistant, non-high-flow nozzle. Prusa recommends 0.6 mm to reduce clogging; this job uses 0.4 mm and requires inspection of the actual production paths.</li>
+<li>Use <strong>opaque PETG</strong> for the frame, deck, rear, brackets, spacers, guards and cover. Use <strong>$material_name</strong> for the three light rings and their arc samples. Identify your proposed opaque PETG before printing. Keep this filament option separate from the other material version.</li>
+<li>Use a <strong>0.4 mm nozzle</strong>. $nozzle_instructions</li>
 <li>Use a $brim mm brim, with $brim_gap mm brim separation, and no supports. Keep elephant-foot compensation at $foot mm.</li>
 <li>Print the samples on the production machine with the production filament and settings. Agree to inspect dimensions and functional fits with the actual mating hardware.</li>
 </ul>
+<p class="info">$evidence Both versions use the same strong outside wall. Each material needs its own sample acceptance.</p>
 <h2>2. Which files should you use?</h2>
 <table><thead><tr><th>Folder / file</th><th>Purpose</th></tr></thead><tbody>
 <tr><td>01-SAMPLES-PRINT-FIRST</td><td>Start here. One of each sample. Both bracket arrangements are included.</td></tr>
@@ -53,7 +54,7 @@ $product_rows
 <li>Test all three ring curvatures and seats. Retain each ring at maximum permitted lift. Require 0.2–0.8 mm measured clearance below the front sheet and at least 0.5 mm actual LED clearance. Keep the $mirror_separation mm mirror separation and at least 18 mm radial cavity width.</li>
 <li>Inspect the $outside_wall mm outside arc for voids, cracks and layer separation. Repeat installation and removal. Whole-ring handling still requires a full-size test.</li>
 <li>Fit the three opaque light shields, actual strips and front-sheet sample. Reject exposed LED edges or light leaking above the rings. Check shield adhesion, sag, sheet clearance and removal with the ring. The shields use 0.06 mm tesa 7160 black PET tape; they are separate cut parts.</li>
-<li>Review LED patterns at the customer's permitted power limit. Record glow immediately and after 1, 5 and 15 minutes. The rendered appearance is an unmeasured illustration.</li>
+<li>$optical_acceptance Use the customer's permitted LED power limit. The rendered appearance is an unmeasured illustration.</li>
 </ul>
 <p><strong>If a sample fails, stop the full order, correct the cause and repeat the affected test. Do not substitute material or relax an acceptance requirement without a new customer decision.</strong></p>
 <h2>6. Full-size inspection and packing</h2>
@@ -65,7 +66,7 @@ $product_rows
 </ul>
 <h2>7. What is outside this print order?</h2>
 <p>The flat acrylic front, rear mirror, wood LED stencil, coatings, light shields, soft washers, hardware, electronics, wiring and webbing are separate supplied or fabricated items. They are not plastic print jobs. The assembly references show some of these items so you can see the mating interfaces.</p>
-<h2>Assembly references</h2>
+<h2>Assembly references</h2><p>These show the common geometry. Image colours show the baseline glow assembly; use the material specified in this order for printing.</p>
 <p><a href="04-REFERENCE-DO-NOT-PRINT/smart-compass.step">Complete assembly STEP</a> · <a href="04-REFERENCE-DO-NOT-PRINT/assembly-section.svg">Section drawing</a></p>
 <h3>Assembled</h3><img src="04-REFERENCE-DO-NOT-PRINT/assembly.png" alt="Current assembled pendant">
 <h3>Exploded reference</h3><img src="04-REFERENCE-DO-NOT-PRINT/exploded.png" alt="Separated assembly parts for fit reference">

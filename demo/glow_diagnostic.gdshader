@@ -15,5 +15,5 @@ uniform float transmission=0.4;
 uniform float wall_mm=1.0;
 #include "res://ring_diffusion.gdshaderinc"
 void fragment() {
-    ALBEDO=glow_ring_light(sample_point,group,count,radius,led_z,wall_mm,brightness,transmission);
+    ALBEDO=ring_light(sample_point,group,count,radius,led_z,wall_mm,brightness,transmission);
 }

@@ -2,21 +2,22 @@
 from copy import deepcopy
 import json
 import math
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from hardware_spec import body_bolt_length
+from slicing import project_filename
 
 BEGIN = '<!-- BEGIN GENERATED BUILD INVENTORY -->'
 END = '<!-- END GENERATED BUILD INVENTORY -->'
 
 
-def resolve(spec, volumes, p):
+def resolve(spec, volumes, p, ring_material):
     rows = deepcopy(spec['components'])
     geometry = {v['name']:v for v in volumes}
     for row in rows:
         formula = row.get('mass_formula')
         if formula:
-            if formula not in ('petg_volume','glow_petg_volume','acrylic_volume','wood_volume','finished_body_screw'):
+            if formula not in ('petg_volume','ring_petg_volume','acrylic_volume','wood_volume','finished_body_screw'):
                 raise ValueError('Unknown mass formula: '+str(formula))
             if 'mass_g_per_unit' in row or 'mass_range_g_per_unit' in row:
                 raise ValueError('A component must specify a mass formula or a literal mass, not both: '+row['id'])
@@ -33,11 +34,16 @@ def resolve(spec, volumes, p):
                                f"{p['body_bolt_tip_chamfer']:g} mm tip chamfer; measure actual clamp stack")
         elif formula:
             volume = geometry[row['cad_part']]['volume_cm3']
-            density = 1.5 if formula=='glow_petg_volume' else 1.27 if formula in ('petg_volume','glow_petg_volume') else 1.19 if formula=='acrylic_volume' else p['wood_density_g_cm3']
+            density = ring_material['density_g_cm3'] if formula=='ring_petg_volume' else 1.27 if formula in ('petg_volume','ring_petg_volume') else 1.19 if formula=='acrylic_volume' else p['wood_density_g_cm3']
+            if formula=='ring_petg_volume':
+                row['material']=ring_material['filament']
+                row['source']=str(PurePosixPath(row['source']).with_name(project_filename(row['cad_part']+'.stl',ring_material['id'])))
+                row['mass_basis']=f"CAD net solid volume x {density:g} g/cm3; {ring_material['density_basis']}; verify printed mass"
+                row['stock_sources']=[{'label':ring_material['filament'],'url':ring_material['source']}]
             mass = volume*density
             row['mass_g_per_unit'] = mass
             row['mass_range_g_per_unit'] = ([volume*.4,volume*.8] if formula=='wood_volume'
-                                           else [mass*.70,mass*1.08] if formula in ('petg_volume','glow_petg_volume')
+                                           else [mass*.70,mass*1.08] if formula in ('petg_volume','ring_petg_volume')
                                            else [mass*.9,mass*1.1])
             if 'bounds_mm' in geometry[row['cad_part']]:
                 row['dimensions'] += '; CAD bounds '+ ' x '.join(f'{v:.2f}' for v in geometry[row['cad_part']]['bounds_mm'])+' mm'
@@ -69,7 +75,7 @@ def validate(rows, volumes=None):
                 raise ValueError('Incomplete inventory '+r['id']+': '+key)
     if volumes is not None:
         printed={v['name'] for v in volumes if v['printed']}
-        accounted={r['cad_part'] for r in rows if r.get('mass_formula') in ('petg_volume','glow_petg_volume')}
+        accounted={r['cad_part'] for r in rows if r.get('mass_formula') in ('petg_volume','ring_petg_volume')}
         if printed != accounted:
             raise ValueError('Printed inventory differs from manufactured geometry')
 
@@ -131,10 +137,17 @@ def export(root):
     parts=json.loads(parts_path.read_text())
     spec=json.loads((directory/'component-inventory.json').read_text())
     p=parts['parameters_for_inventory']
-    rows=resolve(spec,parts['volumes'],p); mass=totals(rows)
+    print_spec=json.loads((directory/'print-spec.json').read_text())
+    variants={}
+    for name,material in print_spec['ring_materials'].items():
+        rows=resolve(spec,parts['volumes'],p,material)
+        variants[name]={'filament':material['filament'],'components':rows,'mass_estimate':totals(rows)}
+    parts['material_variants']=variants
+    selected=variants[print_spec['default_ring_material']]
+    rows,mass=selected['components'],selected['mass_estimate']
     parts['components']=rows;parts['mass_estimate']=mass
     parts_path.write_text(json.dumps(parts,indent=2)+'\n')
-    doc=root/'design-v2.md';text=doc.read_text(); section=BEGIN+'\n'+markdown(rows,mass)+END
+    doc=root/'design-v2.md';text=doc.read_text(); section=BEGIN+'\n'+markdown(rows,mass)+'\n### Ring material options\n\nBoth versions share the same 16 printed parts and 2.0 mm outside wall. Qualify each filament with production samples. Optical values remain unmeasured.\n\n| Ring filament | Pendant estimate | Total worn estimate |\n| --- | ---: | ---: |\n'+''.join(f"| {v['filament']} | {v['mass_estimate']['complete_pendant']['nominal_g']:.1f} g | {v['mass_estimate']['total_worn']['nominal_g']:.1f} g |\n" for v in variants.values())+END
     if BEGIN in text:
         start=text.index(BEGIN);stop=text.index(END,start)+len(END)
         text=text[:start]+section+text[stop:]

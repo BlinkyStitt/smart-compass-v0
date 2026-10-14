@@ -555,6 +555,4278 @@
     "layer_mm": 0.2,
     "orientation": "Delivered projects preserve the intended bed face"
   },
+  "material_variants": {
+    "glow": {
+      "filament": "Prusament PETG Ultraglow Green",
+      "components": [
+        {
+          "id": "OpticalDeck",
+          "label": "OpticalDeck",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/OpticalDeck.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "OpticalDeck",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 88.99690100000001,
+          "mass_range_g_per_unit": [
+            62.2978307,
+            96.11665308000002
+          ],
+          "installed_mass_g": 88.9969,
+          "installed_mass_range_g": [
+            62.2978,
+            96.1167
+          ]
+        },
+        {
+          "id": "BarrelFrame",
+          "label": "BarrelFrame",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/BarrelFrame.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.00 x 248.00 x 20.65 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "BarrelFrame",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 52.268247,
+          "mass_range_g_per_unit": [
+            36.5877729,
+            56.449706760000005
+          ],
+          "installed_mass_g": 52.2682,
+          "installed_mass_range_g": [
+            36.5878,
+            56.4497
+          ]
+        },
+        {
+          "id": "RearPlate",
+          "label": "RearPlate",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/RearPlate.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.84 x 248.92 x 12.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "RearPlate",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 94.742254,
+          "mass_range_g_per_unit": [
+            66.3195778,
+            102.32163432000002
+          ],
+          "installed_mass_g": 94.7423,
+          "installed_mass_range_g": [
+            66.3196,
+            102.3216
+          ]
+        },
+        {
+          "id": "NecklaceLink0",
+          "label": "NecklaceLink0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/NecklaceLink0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 42.46 x 41.13 x 5.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "NecklaceLink0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 5.273167,
+          "mass_range_g_per_unit": [
+            3.6912168999999997,
+            5.69502036
+          ],
+          "installed_mass_g": 5.2732,
+          "installed_mass_range_g": [
+            3.6912,
+            5.695
+          ]
+        },
+        {
+          "id": "NecklaceLink1",
+          "label": "NecklaceLink1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/NecklaceLink1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 30.00 x 35.88 x 5.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "NecklaceLink1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 3.787013,
+          "mass_range_g_per_unit": [
+            2.6509091,
+            4.08997404
+          ],
+          "installed_mass_g": 3.787,
+          "installed_mass_range_g": [
+            2.6509,
+            4.09
+          ]
+        },
+        {
+          "id": "CircleRimFoot0",
+          "label": "CircleRimFoot0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.00 x 4.00 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "CircleRimFoot1",
+          "label": "CircleRimFoot1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "CircleRimFoot2",
+          "label": "CircleRimFoot2",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot2.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot2",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "VentGuard0",
+          "label": "VentGuard0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard1",
+          "label": "VentGuard1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard2",
+          "label": "VentGuard2",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard2.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard2",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard3",
+          "label": "VentGuard3",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard3.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard3",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "ServiceCover",
+          "label": "ServiceCover",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/ServiceCover.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 54.00 x 26.00 x 1.80 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "ServiceCover",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 3.188843,
+          "mass_range_g_per_unit": [
+            2.2321901,
+            3.44395044
+          ],
+          "installed_mass_g": 3.1888,
+          "installed_mass_range_g": [
+            2.2322,
+            3.444
+          ]
+        },
+        {
+          "id": "FrontSheet",
+          "label": "FrontSheet",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 custom blank; trim waste excluded",
+          "source": "hardware/enclosure/exports/front-sheet.svg",
+          "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting; CAD bounds 249.83 x 249.92 x 1.52 mm",
+          "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
+          "status": "Physical stock thickness and finished clamp fit require measurement",
+          "group": "pendant",
+          "cad_part": "FrontSheet",
+          "mass_formula": "acrylic_volume",
+          "stock_sources": [
+            {
+              "label": "0.060 inch clear acrylic",
+              "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+            }
+          ],
+          "mass_g_per_unit": 88.604187,
+          "mass_range_g_per_unit": [
+            79.7437683,
+            97.4646057
+          ],
+          "installed_mass_g": 88.6042,
+          "installed_mass_range_g": [
+            79.7438,
+            97.4646
+          ]
+        },
+        {
+          "id": "RearMirror",
+          "label": "RearMirror",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 custom blank; trim waste excluded",
+          "source": "hardware/enclosure/exports/rear-mirror.svg",
+          "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
+          "material": "Acrylic; Full mirror on +Z",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
+          "status": "Measure finished mirror stock before cutting",
+          "group": "pendant",
+          "cad_part": "RearMirror",
+          "mass_formula": "acrylic_volume",
+          "stock_sources": [
+            {
+              "label": "Clear acrylic stock candidate",
+              "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+            }
+          ],
+          "mass_g_per_unit": 28.308434,
+          "mass_range_g_per_unit": [
+            25.4775906,
+            31.1392774
+          ],
+          "installed_mass_g": 28.3084,
+          "installed_mass_range_g": [
+            25.4776,
+            31.1393
+          ]
+        },
+        {
+          "id": "EdgeDiffuser",
+          "label": "Outside printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/EdgeDiffuser.3mf",
+          "dimensions": "246.00 mm inside diameter x 2.0 mm wall x 33.0 mm high, Z=3.2 mm; CAD bounds 249.82 x 249.91 x 33.00 mm",
+          "mass_kind": "calculated",
+          "status": "Four-path wall, optical output, handling strength, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "EdgeDiffuser",
+          "mass_formula": "ring_petg_volume",
+          "material": "Prusament PETG Ultraglow Green",
+          "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Prusament PETG Ultraglow Green",
+              "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
+            }
+          ],
+          "mass_g_per_unit": 77.13239999999999,
+          "mass_range_g_per_unit": [
+            53.99267999999999,
+            83.30299199999999
+          ],
+          "installed_mass_g": 77.1324,
+          "installed_mass_range_g": [
+            53.9927,
+            83.303
+          ]
+        },
+        {
+          "id": "OuterLightShield",
+          "label": "Outside opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/outer-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.38,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "OuterLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.38,
+          "installed_mass_range_g": [
+            0.15,
+            0.7
+          ]
+        },
+        {
+          "id": "HaloRing",
+          "label": "Halo printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/HaloRing.3mf",
+          "dimensions": "177.02 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 179.02 x 179.02 x 10.60 mm",
+          "mass_kind": "calculated",
+          "status": "Print path, optical output, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "HaloRing",
+          "mass_formula": "ring_petg_volume",
+          "material": "Prusament PETG Ultraglow Green",
+          "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Prusament PETG Ultraglow Green",
+              "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
+            }
+          ],
+          "mass_g_per_unit": 8.8923,
+          "mass_range_g_per_unit": [
+            6.22461,
+            9.603684000000001
+          ],
+          "installed_mass_g": 8.8923,
+          "installed_mass_range_g": [
+            6.2246,
+            9.6037
+          ]
+        },
+        {
+          "id": "HaloLightShield",
+          "label": "Halo opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/halo-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.22,
+          "mass_range_g_per_unit": [
+            0.1,
+            0.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "HaloLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.22,
+          "installed_mass_range_g": [
+            0.1,
+            0.5
+          ]
+        },
+        {
+          "id": "InnerRing",
+          "label": "Inner printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/InnerRing.3mf",
+          "dimensions": "215.47 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 217.33 x 217.40 x 10.60 mm",
+          "mass_kind": "calculated",
+          "status": "Print path, optical output, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "InnerRing",
+          "mass_formula": "ring_petg_volume",
+          "material": "Prusament PETG Ultraglow Green",
+          "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Prusament PETG Ultraglow Green",
+              "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
+            }
+          ],
+          "mass_g_per_unit": 10.81305,
+          "mass_range_g_per_unit": [
+            7.569135,
+            11.678094000000002
+          ],
+          "installed_mass_g": 10.8131,
+          "installed_mass_range_g": [
+            7.5691,
+            11.6781
+          ]
+        },
+        {
+          "id": "InnerLightShield",
+          "label": "Inner opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/inner-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.28,
+          "mass_range_g_per_unit": [
+            0.1,
+            0.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "InnerLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.28,
+          "installed_mass_range_g": [
+            0.1,
+            0.5
+          ]
+        },
+        {
+          "id": "wood",
+          "label": "Wood cell grid",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 blank at least 166 x 166 mm",
+          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
+          "dimensions": "166 mm diameter x 4 mm; 256 cells; CAD bounds 165.89 x 165.94 x 4.00 mm",
+          "material": "Plywood; opaque sealed cell walls",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "WoodMask",
+          "mass_formula": "wood_volume",
+          "stock_sources": [
+            {
+              "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
+              "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+            }
+          ],
+          "mass_g_per_unit": 16.673939999999998,
+          "mass_range_g_per_unit": [
+            11.115960000000001,
+            22.231920000000002
+          ],
+          "installed_mass_g": 16.6739,
+          "installed_mass_range_g": [
+            11.116,
+            22.2319
+          ]
+        },
+        {
+          "id": "front_coating",
+          "label": "Front two-way coating",
+          "installed_quantity": 1,
+          "unit": "annulus",
+          "purchase_quantity": "1 custom coating application",
+          "source": "hardware/enclosure/exports/front-coating.svg",
+          "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+          "material": "Partially reflecting optical coating",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.3,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Supplier process/transmission unselected; sample required",
+          "group": "pendant",
+          "installed_mass_g": 1,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "rim_mask",
+          "label": "Front black rim mask",
+          "installed_quantity": 1,
+          "unit": "rim",
+          "purchase_quantity": "1 application",
+          "source": "hardware/enclosure/exports/front-coating.svg",
+          "dimensions": "r110.5..125 mm",
+          "material": "Opaque acrylic-compatible coating",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.3,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 1,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "rear_coating",
+          "label": "Rear mirror coating/film",
+          "installed_quantity": 1,
+          "unit": "annulus",
+          "purchase_quantity": "1 cut piece",
+          "source": "hardware/enclosure/exports/rear-mirror.svg",
+          "dimensions": "Full reflective annulus, inward facing",
+          "material": "Acrylic-compatible mirror coating/film",
+          "mass_g_per_unit": 1.5,
+          "mass_range_g_per_unit": [
+            0.5,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Film adhesive and optical flatness unresolved",
+          "group": "pendant",
+          "installed_mass_g": 1.5,
+          "installed_mass_range_g": [
+            0.5,
+            4
+          ]
+        },
+        {
+          "id": "wood_finish",
+          "label": "Wood finish and spacer tack",
+          "installed_quantity": 1,
+          "unit": "application",
+          "purchase_quantity": "1 small container, installed cure mass only",
+          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
+          "dimensions": "Seal cell walls opaque; tack three spacers to rim",
+          "material": "Opaque finish and removable acrylic-safe adhesive",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "circle",
+          "label": "Populated Fibonacci256",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "Existing board; 0 new",
+          "source": "https://www.evilgeniuslabs.org/fibonacci256",
+          "dimensions": "166 mm diameter x 1.6 mm PCB; LED height CAD 3 mm",
+          "material": "FR4, copper, 256 LEDs and passives",
+          "mass_g_per_unit": 82,
+          "mass_range_g_per_unit": [
+            65,
+            105
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimate: FR4 disc about 64 g plus copper, populated LEDs/passives; counted once, no solid clearance boxes",
+          "status": "Existing board; registration and populated mass unmeasured",
+          "group": "pendant",
+          "cad_part": "CirclePCB",
+          "installed_mass_g": 82,
+          "installed_mass_range_g": [
+            65,
+            105
+          ]
+        },
+        {
+          "id": "halo_strip",
+          "label": "Halo RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "64 pixels, 533.333 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "HaloStripSeam",
+          "length_parameter": "halo_count",
+          "installed_quantity": 0.5333333333333333,
+          "installed_mass_g": 13.3333,
+          "installed_mass_range_g": [
+            8.0,
+            21.3333
+          ]
+        },
+        {
+          "id": "inner_strip",
+          "label": "Inner RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "84 pixels, 700.000 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "InnerStripSeam",
+          "length_parameter": "inner_count",
+          "installed_quantity": 0.7,
+          "installed_mass_g": 17.5,
+          "installed_mass_range_g": [
+            10.5,
+            28.0
+          ]
+        },
+        {
+          "id": "outer_strip",
+          "label": "Outer RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "90 pixels, 750.000 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "OuterStripSeam",
+          "length_parameter": "outer_count",
+          "installed_quantity": 0.75,
+          "installed_mass_g": 18.75,
+          "installed_mass_range_g": [
+            11.25,
+            30.0
+          ]
+        },
+        {
+          "id": "sparkle",
+          "label": "Full Sparkle Motion 6100, PCB antenna, Rev D",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 board",
+          "source": "https://www.adafruit.com/product/6100",
+          "dimensions": "CAD 50.8 x 33.147 x 15 mm, check supplied Rev D",
+          "material": "Populated FR4, ESP32, terminals, microphone",
+          "mass_g_per_unit": 18,
+          "mass_range_g_per_unit": [
+            12,
+            25
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Populated board estimate; no extra mass for built-in microphone, IR, regulator, fuse or terminals",
+          "status": "Supplier page reports out of stock; outline text differs from Rev D CAD. Confirm revision/drawing",
+          "group": "pendant",
+          "cad_part": "SparklePCBWithHoles",
+          "installed_mass_g": 18,
+          "installed_mass_range_g": [
+            12,
+            25
+          ]
+        },
+        {
+          "id": "blackpill",
+          "label": "WeAct BlackPill V3.1 STM32F411CEU6",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 F411CE board, no tall headers",
+          "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1",
+          "dimensions": "20.8 x 52.8 mm CAD; 12 mm envelope",
+          "material": "Populated FR4, MCU and USB",
+          "mass_g_per_unit": 7,
+          "mass_range_g_per_unit": [
+            4,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Manufacturer design link; exact sales listing/supplied height unresolved",
+          "group": "pendant",
+          "cad_part": "blackpillPCB",
+          "installed_mass_g": 7,
+          "installed_mass_range_g": [
+            4,
+            10
+          ]
+        },
+        {
+          "id": "gps",
+          "label": "Adafruit Ultimate GPS FeatherWing 3133 PA1616D",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 without optional coin cell",
+          "source": "https://www.adafruit.com/product/3133",
+          "dimensions": "Published 51.2 x 22.9 x 6.7 mm; CAD 50.8 x 22.86 x 8 mm",
+          "material": "Populated FR4 and ceramic antenna",
+          "mass_g_per_unit": 8.8,
+          "mass_range_g_per_unit": [
+            8,
+            10
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier populated board weight, without coin cell",
+          "status": "Nominal outline differs from the CAD reference by 0.4 x 0.04 mm. Published width leaves 0.3 mm per side in the current 51.8 mm rail gap; actual supplied board, solder joints and headers require fit measurement",
+          "group": "pendant",
+          "cad_part": "gpsPCB",
+          "installed_mass_g": 8.8,
+          "installed_mass_range_g": [
+            8,
+            10
+          ]
+        },
+        {
+          "id": "imu",
+          "label": "Adafruit LSM9DS1 3387 classic breakout",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 exact classic breakout",
+          "source": "https://www.adafruit.com/product/3387",
+          "dimensions": "Published 33.4 x 20.4 x 3 mm; CAD 25 x 25 x 8 mm",
+          "material": "Populated FR4, accel/gyro/magnetometer",
+          "mass_g_per_unit": 2.5,
+          "mass_range_g_per_unit": [
+            2,
+            4
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier board mass",
+          "status": "INCOMPATIBLE with 25 x 25 placeholder in either rotation. Keep LSM9DS1 family; layout revision/actual owned breakout needed",
+          "group": "pendant",
+          "cad_part": "imuPCB",
+          "installed_mass_g": 2.5,
+          "installed_mass_range_g": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "radio",
+          "label": "Adafruit RFM95W breakout 3072, 868/915 MHz",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 radio, use 915 MHz configuration",
+          "source": "https://www.adafruit.com/product/3072",
+          "dimensions": "Published 29 x 25 x 4 mm; rotate 25 x 29 inside 25 x 32 x 8 envelope",
+          "material": "Populated FR4 and shield",
+          "mass_g_per_unit": 3.1,
+          "mass_range_g_per_unit": [
+            2.8,
+            4.5
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier board weight",
+          "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+          "group": "pendant",
+          "cad_part": "radioPCB",
+          "installed_mass_g": 3.1,
+          "installed_mass_range_g": [
+            2.8,
+            4.5
+          ]
+        },
+        {
+          "id": "rf_antenna",
+          "label": "915 MHz quarter-wave wire antenna",
+          "installed_quantity": 1,
+          "unit": "antenna",
+          "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
+          "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
+          "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+          "material": "Insulated copper wire",
+          "mass_g_per_unit": 0.25,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+          "group": "pendant",
+          "installed_mass_g": 0.25,
+          "installed_mass_range_g": [
+            0.15,
+            0.6
+          ]
+        },
+        {
+          "id": "boost",
+          "label": "Pololu U3V70F5 item 2891",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 regulator",
+          "source": "https://www.pololu.com/product/2891",
+          "dimensions": "40.6 x 15.2 x 4.6 mm, rotated in CAD",
+          "material": "Populated FR4 and inductor",
+          "mass_g_per_unit": 3.5,
+          "mass_range_g_per_unit": [
+            3.2,
+            4.5
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier populated board weight",
+          "status": "Nominal board envelope matches; solder joints and wiring need clearance check",
+          "group": "pendant",
+          "cad_part": "powerPCB",
+          "installed_mass_g": 3.5,
+          "installed_mass_range_g": [
+            3.2,
+            4.5
+          ]
+        },
+        {
+          "id": "battery",
+          "label": "BatterySpace CU-MM109 / 4816 protected 1S 10 Ah",
+          "installed_quantity": 1,
+          "unit": "pack",
+          "purchase_quantity": "1 factory pack",
+          "source": "https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx",
+          "dimensions": "80 x 65 x 20 mm; 18 AWG open leads",
+          "material": "LiPo, integral protection, polyswitch and leads",
+          "mass_g_per_unit": 190.0,
+          "mass_range_g_per_unit": [
+            180.006,
+            210.00699999999998
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier pack mass, including integral protection and stock leads; no second BMS mass",
+          "status": "Provisional internal baseline; confirm drawing, lead placement, pack swelling reserve and measured mass",
+          "group": "pendant",
+          "cad_part": "BatteryEnvelope0",
+          "installed_mass_g": 190.0,
+          "installed_mass_range_g": [
+            180.006,
+            210.007
+          ]
+        },
+        {
+          "id": "sense",
+          "label": "PA4 divider assembly",
+          "installed_quantity": 1,
+          "unit": "populated assembly",
+          "purchase_quantity": "1 custom 18 x 16 mm perfboard with 2 resistors and 100 nF capacitor",
+          "source": "design-v2.md",
+          "dimensions": "18 x 16 x 7 mm CAD envelope; divider values remain battery TODO",
+          "material": "FR4, copper, resistors, ceramic capacitor",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Divider values/profile unresolved; include board and parts once",
+          "group": "pendant",
+          "cad_part": "sensePCB",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "fuse",
+          "label": "Pack/branch fuse assembly",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 holder + pack fuse + halo branch fuse",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Pack path >=3 A working; fuse rating follows measured wire/connector protection",
+          "material": "Fuse links, holder and insulation",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            8
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact fuses/holder/rating and envelope unresolved",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "power_switch",
+          "label": "Latching physical power switch",
+          "installed_quantity": 1,
+          "unit": "switch",
+          "purchase_quantity": "1 DC rated switch",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "CAD body diameter 8 x 6 mm; flange diameter 12",
+          "material": "Metal/plastic contacts; >=3 A DC working candidate requirement",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable switch and fit unresolved; placeholder is not approval",
+          "group": "pendant",
+          "cad_part": "RearButton2",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            7
+          ]
+        },
+        {
+          "id": "buttons",
+          "label": "Mode and Action momentary switches",
+          "installed_quantity": 2,
+          "unit": "switch",
+          "purchase_quantity": "2 switches",
+          "source": "design-v2.md",
+          "dimensions": "CAD diameter 8 x 6 mm, flange diameter 12; active low",
+          "material": "Switch contacts and housing",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.5,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact switch/travel/retention unresolved",
+          "group": "pendant",
+          "cad_part": "RearButton0",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1.0,
+            6
+          ]
+        },
+        {
+          "id": "bulk_cap",
+          "label": "Supply bulk capacitor",
+          "installed_quantity": 1,
+          "unit": "capacitor",
+          "purchase_quantity": "1 electrolytic capacitor",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Provisional 1000 uF, >=6.3 V; envelope not assigned",
+          "material": "Aluminium electrolytic",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact capacitor and place/retention unresolved",
+          "group": "pendant",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "power_connectors",
+          "label": "Keyed raw-pack connector, XT60 requirement",
+          "installed_quantity": 1,
+          "unit": "mated pair",
+          "purchase_quantity": "1 pair",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "XT60 candidate; verify polarity, cable exit, DC rating and space",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 7,
+          "mass_range_g_per_unit": [
+            5,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable pair and installed envelope unresolved; 7 g allowance",
+          "group": "pendant",
+          "installed_mass_g": 7,
+          "installed_mass_range_g": [
+            5,
+            10
+          ]
+        },
+        {
+          "id": "led_connectors",
+          "label": "Four keyed display connector pairs",
+          "installed_quantity": 4,
+          "unit": "mated pair",
+          "purchase_quantity": "4 pairs",
+          "source": "https://www.adafruit.com/product/1663",
+          "dimensions": "3 pin candidate; current rating per limited branch required",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 5.4,
+          "mass_range_g_per_unit": [
+            4,
+            6
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier plug 2.8 g + receptacle 2.6 g with supplied 22 AWG pigtails, counted once; loose-wire allowances exclude these pigtails",
+          "status": "Supplier out of stock; current rating and installed envelope unresolved",
+          "group": "pendant",
+          "installed_mass_g": 21.6,
+          "installed_mass_range_g": [
+            16,
+            24
+          ]
+        },
+        {
+          "id": "logic_connectors",
+          "label": "Sensor/UART/service connector allowance",
+          "installed_quantity": 6,
+          "unit": "mated pair",
+          "purchase_quantity": "6 pairs",
+          "source": "design-v2.md",
+          "dimensions": "Low-profile 2.54 mm headers or keyed harness, final pin counts unresolved",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 0.8,
+          "mass_range_g_per_unit": [
+            0.4,
+            1.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact connector variants/counts/envelopes unresolved; estimate includes all signal joins",
+          "group": "pendant",
+          "installed_mass_g": 4.8,
+          "installed_mass_range_g": [
+            2.4,
+            9.0
+          ]
+        },
+        {
+          "id": "usb_adapter",
+          "label": "5 V Sparkle input and service lead",
+          "installed_quantity": 1,
+          "unit": "lead",
+          "purchase_quantity": "1 DC barrel input lead + USB service allowance",
+          "source": "https://www.adafruit.com/product/369",
+          "dimensions": "Sparkle 2.1 mm centre-positive DC candidate; USB service through hatch",
+          "material": "Copper, polymer, shield",
+          "mass_g_per_unit": 5,
+          "mass_range_g_per_unit": [
+            2,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact input connector/service extension and strain relief unresolved",
+          "group": "pendant",
+          "installed_mass_g": 5,
+          "installed_mass_range_g": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "power_wire",
+          "label": "Installed 18 AWG power wire",
+          "installed_quantity": 0.8,
+          "unit": "m conductor",
+          "purchase_quantity": "1 m extra stock; factory battery leads excluded",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "0.8 m total conductor, about 0.4 m paired runs",
+          "material": "Stranded copper, flexible insulation",
+          "mass_g_per_unit": 12,
+          "mass_range_g_per_unit": [
+            9,
+            18
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 12 g/m installed conductor; not retail spool; excludes factory battery leads; excludes connector pigtails",
+          "status": "18 AWG supply and installed route unresolved; do not use a thin signal-wire substitute",
+          "group": "pendant",
+          "installed_mass_g": 9.6,
+          "installed_mass_range_g": [
+            7.2,
+            14.4
+          ]
+        },
+        {
+          "id": "signal_wire",
+          "label": "Installed 26 AWG signal wire",
+          "installed_quantity": 2,
+          "unit": "m conductor",
+          "purchase_quantity": "3 m stock",
+          "source": "https://www.adafruit.com/product/1970",
+          "dimensions": "2 m total conductor; RF antenna allocated separately",
+          "material": "Stranded copper, insulation",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            2,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 3 g/m of installed conductor; not bundle/spool mass; excludes factory connector pigtails and RF antenna",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            4,
+            10
+          ]
+        },
+        {
+          "id": "wire_finish",
+          "label": "Solder, heatshrink and wire restraint",
+          "installed_quantity": 1,
+          "unit": "allowance",
+          "purchase_quantity": "Small spool/tubing stock; count cured/installed amount",
+          "source": "design-v2.md",
+          "dimensions": "All four displays and board harness joins",
+          "material": "Solder alloy, polymer tubing, ties",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            6
+          ]
+        },
+        {
+          "id": "body_screws",
+          "label": "Finished M3 body bolts from SSC-M3-45-A2 stock",
+          "installed_quantity": 6,
+          "unit": "screw",
+          "purchase_quantity": "8 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
+          "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
+          "material": "A2 stainless, natural",
+          "mass_kind": "estimated",
+          "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
+          "status": "Measure finished acrylic and washer stack before cutting; finish and deburr tips; require full nut engagement and a smooth end that does not catch fabric",
+          "group": "pendant",
+          "stock_mass_g_per_unit": 2.61,
+          "mass_formula": "finished_body_screw",
+          "mass_g_per_unit": 2.388665682299546,
+          "mass_range_g_per_unit": [
+            1.5526326934947048,
+            3.5829985234493185
+          ],
+          "installed_mass_g": 14.332,
+          "installed_mass_range_g": [
+            9.3158,
+            21.498
+          ]
+        },
+        {
+          "id": "anchor_screws",
+          "label": "SSCF-M3-12-A2 anchor screws",
+          "installed_quantity": 2,
+          "unit": "screw",
+          "purchase_quantity": "4 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3820-SSCF-M3-12-A2",
+          "dimensions": "M3 x 12 mm; 5.5 x 3 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.9,
+          "mass_range_g_per_unit": [
+            0.585,
+            1.35
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 1.8,
+          "installed_mass_range_g": [
+            1.17,
+            2.7
+          ]
+        },
+        {
+          "id": "rear_screws",
+          "label": "SSCF-M3-10-A2 rear screws",
+          "installed_quantity": 6,
+          "unit": "screw",
+          "purchase_quantity": "8 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3819-SSCF-M3-10-A2",
+          "dimensions": "M3 x 10 mm; 5.5 x 3 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.8,
+          "mass_range_g_per_unit": [
+            0.52,
+            1.2
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 4.8,
+          "installed_mass_range_g": [
+            3.12,
+            7.2
+          ]
+        },
+        {
+          "id": "service_screws",
+          "label": "SSCF-M2-8-A2 hatch/vent screws",
+          "installed_quantity": 10,
+          "unit": "screw",
+          "purchase_quantity": "12 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3793-SSCF-M2-8-A2",
+          "dimensions": "M2 x 8 mm; 3.8 x 2 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.35,
+          "mass_range_g_per_unit": [
+            0.2275,
+            0.525
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 3.5,
+          "installed_mass_range_g": [
+            2.275,
+            5.25
+          ]
+        },
+        {
+          "id": "M3_nuts",
+          "label": "M3 plain nuts",
+          "installed_quantity": 14,
+          "unit": "nut",
+          "purchase_quantity": "16 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/hexagon-nuts/766459-NUT203M3",
+          "dimensions": "M3 plain DIN 934, 5.5 AF x 2.4 mm; pockets 5.9 AF x 2.7",
+          "material": "A4 stainless; M3 natural, M2 black oxide",
+          "mass_g_per_unit": 0.3968,
+          "mass_range_g_per_unit": [
+            0.2579,
+            0.5952
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier mass per 100 divided by 100",
+          "status": "Fit-test required; no taller locknut substitution",
+          "group": "pendant",
+          "installed_mass_g": 5.5552,
+          "installed_mass_range_g": [
+            3.6106,
+            8.3328
+          ]
+        },
+        {
+          "id": "M2_nuts",
+          "label": "M2 plain nuts",
+          "installed_quantity": 14,
+          "unit": "nut",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/hexagon-nuts/766448-NUT203M2-B",
+          "dimensions": "M2 plain DIN 934, 4 AF x 1.6 mm; pockets 4.4 AF x 1.9",
+          "material": "A4 stainless; M3 natural, M2 black oxide",
+          "mass_g_per_unit": 0.1474,
+          "mass_range_g_per_unit": [
+            0.0958,
+            0.2211
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier mass per 100 divided by 100",
+          "status": "Fit-test required; no taller locknut substitution",
+          "group": "pendant",
+          "installed_mass_g": 2.0636,
+          "installed_mass_range_g": [
+            1.3412,
+            3.0954
+          ]
+        },
+        {
+          "id": "M3_washers",
+          "label": "M3 HPW DIN 125 washers",
+          "installed_quantity": 14,
+          "unit": "washer",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/metric-flat-washers/72482-HPW-M3-A2",
+          "dimensions": "7 OD x 3.2 ID x 0.55 mm",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.11,
+          "mass_range_g_per_unit": [
+            0.0715,
+            0.165
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier 11 g/100",
+          "status": "Supply and actual thickness require confirmation",
+          "group": "pendant",
+          "installed_mass_g": 1.54,
+          "installed_mass_range_g": [
+            1.001,
+            2.31
+          ]
+        },
+        {
+          "id": "M3_front_washers",
+          "label": "9 mm OD M3 front clamp metal washers",
+          "installed_quantity": 6,
+          "unit": "washer",
+          "purchase_quantity": "8 singles, including 2 spares",
+          "source": "hardware/enclosure/hardware_spec.py",
+          "dimensions": "9 OD x 3.2 ID x 0.55 mm; above soft front washers",
+          "material": "A2 stainless steel",
+          "mass_g_per_unit": 0.24147239321250497,
+          "mass_range_g_per_unit": [
+            0.18,
+            0.31
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Annulus x 7.9 g/cm3; weigh selected hardware",
+          "status": "Select actual 9 mm washer and test clamp limit",
+          "group": "pendant",
+          "installed_mass_g": 1.4488,
+          "installed_mass_range_g": [
+            1.08,
+            1.86
+          ]
+        },
+        {
+          "id": "M2_washers",
+          "label": "M2 HPW DIN 125 washers",
+          "installed_quantity": 14,
+          "unit": "washer",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/metric-flat-washers/72476-HPW-M2-A2",
+          "dimensions": "5 OD x 2.2 ID x 0.35 mm",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.046,
+          "mass_range_g_per_unit": [
+            0.0299,
+            0.069
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Annulus x 7.9 g/cm3; supplier 105 g/100 conflicts with dimensions, rejected for mass",
+          "status": "Supply/offline status requires confirmation; use actual nominal maximum thickness",
+          "group": "pendant",
+          "installed_mass_g": 0.644,
+          "installed_mass_range_g": [
+            0.4186,
+            0.966
+          ]
+        },
+        {
+          "id": "sparkle_mount_hardware",
+          "label": "M2 x 6 controller screws",
+          "installed_quantity": 4,
+          "unit": "screw",
+          "purchase_quantity": "4 plus 2 spares",
+          "source": "design-v2.md",
+          "dimensions": "M2 x 6 mm; four captive plain nuts and M2 washers",
+          "material": "Stainless steel",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Physical board, nut insertion and driver access require fit test",
+          "group": "pendant",
+          "installed_mass_g": 1.2,
+          "installed_mass_range_g": [
+            0.6,
+            2.4
+          ]
+        },
+        {
+          "id": "joint_seals",
+          "label": "Removable body joint seals",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "~1.5 m seal stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Two whole circular joints; no bolt preload to flatten parts",
+          "material": "Closed-cell foam or removable seal tape",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            7
+          ]
+        },
+        {
+          "id": "hatch_gasket",
+          "label": "Service hatch gasket",
+          "installed_quantity": 1,
+          "unit": "gasket",
+          "purchase_quantity": "1 blank, 54 x 26 mm",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "54 x 26 mm, 38 x 18 window; 0.35 mm compressed",
+          "material": "Closed-cell foam",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.1,
+            1
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Stock/compression and adhesive unresolved",
+          "group": "pendant",
+          "cad_part": "HatchGasket",
+          "installed_mass_g": 0.3,
+          "installed_mass_range_g": [
+            0.1,
+            1
+          ]
+        },
+        {
+          "id": "vents",
+          "label": "Four adhesive vent membranes",
+          "installed_quantity": 4,
+          "unit": "patch",
+          "purchase_quantity": "4 plus replacement stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "16 mm patch over 6 mm opening; 0.2 mm CAD",
+          "material": "Adhesive ePTFE membrane",
+          "mass_g_per_unit": 0.15,
+          "mass_range_g_per_unit": [
+            0.05,
+            0.4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable breathable patch and adhesion unresolved",
+          "group": "pendant",
+          "installed_mass_g": 0.6,
+          "installed_mass_range_g": [
+            0.2,
+            1.6
+          ]
+        },
+        {
+          "id": "control_membranes",
+          "label": "Three control covers",
+          "installed_quantity": 3,
+          "unit": "cover",
+          "purchase_quantity": "3 custom covers",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "Rear controls, exact travel per fitted switch",
+          "material": "Silicone/TPU membrane",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.1,
+            1
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Membrane finish, bonding and switch travel unresolved",
+          "group": "pendant",
+          "installed_mass_g": 0.9,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "seam_adhesive",
+          "label": "Optical lead and joint seals",
+          "installed_quantity": 1,
+          "unit": "application",
+          "purchase_quantity": "1 small adhesive/tape supply; installed mass only",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Three internal LED lead exits and removable optical joints",
+          "material": "Removable opaque seal tape",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1,
+            7
+          ]
+        },
+        {
+          "id": "padding",
+          "label": "Battery/back contact padding",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "1 foam blank; trim waste excluded",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Battery cradle and rear skin-contact area; electronics clearances required",
+          "material": "Closed-cell foam",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "battery_straps",
+          "label": "Two battery restraint straps",
+          "installed_quantity": 2,
+          "unit": "strap",
+          "purchase_quantity": "2 cut straps",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm wide, ~250 mm each; fit existing strap passages",
+          "material": "Hook and loop textile",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "board_ties",
+          "label": "Board restraint ties",
+          "installed_quantity": 12,
+          "unit": "tie",
+          "purchase_quantity": "1 retail pack, count 12 fitted",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Two per six rail-mounted boards; low profile",
+          "material": "Nylon",
+          "mass_g_per_unit": 0.12,
+          "mass_range_g_per_unit": [
+            0.07,
+            0.25
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 1.44,
+          "installed_mass_range_g": [
+            0.84,
+            3.0
+          ]
+        },
+        {
+          "id": "blank",
+          "label": "External entry blank and seal",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 custom plug + seal + nut",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "12 mm bore, 16 mm head/retaining envelope",
+          "material": "Polymer and elastomer",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact plug/retention/seal unresolved; internal baseline uses blank",
+          "group": "pendant",
+          "cad_part": "ExternalPowerBlank",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "neck_webbing",
+          "label": "Necklace webbing",
+          "installed_quantity": 0.9,
+          "unit": "m",
+          "purchase_quantity": "1 m stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm wide, compatible with 12 x 4 mm slots; selected stock width 9.525 mm, verify thickness in 4 mm slot",
+          "material": "Soft woven polyester",
+          "mass_g_per_unit": 18,
+          "mass_range_g_per_unit": [
+            12,
+            30
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 18 g/m installed; do not count unused stock",
+          "status": "Fit and mass require measurement",
+          "group": "necklace",
+          "stock_sources": [
+            {
+              "label": "3/8 inch utility polyester webbing, black",
+              "url": "https://www.strapworks.com/38-inch-utility-polyester-webbing-black"
+            }
+          ],
+          "installed_mass_g": 16.2,
+          "installed_mass_range_g": [
+            10.8,
+            27.0
+          ]
+        },
+        {
+          "id": "wear_loops",
+          "label": "Replaceable sewn wear loops",
+          "installed_quantity": 2,
+          "unit": "loop",
+          "purchase_quantity": "0.4 m extra webbing for four 100 mm loops: 2 installed and 2 spares",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm webbing; about 100 mm each; slot lips rounded 0.5 mm; selected stock width 9.525 mm, verify thickness in 4 mm slot",
+          "material": "Polyester plus thread",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "necklace",
+          "stock_sources": [
+            {
+              "label": "3/8 inch utility polyester webbing, black",
+              "url": "https://www.strapworks.com/38-inch-utility-polyester-webbing-black"
+            }
+          ],
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "closed_rings",
+          "label": "Two deburred closed necklace rings",
+          "installed_quantity": 2,
+          "unit": "ring",
+          "purchase_quantity": "2 rings",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Provisional 20 mm OD x 3 mm section; closed, nonmagnetic",
+          "material": "Brass, smooth finish",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            2,
+            6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable nonmagnetic fitting unresolved; supplier/load and compass checks required",
+          "group": "necklace",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            4,
+            12
+          ]
+        },
+        {
+          "id": "neck_clasp",
+          "label": "Necklace adjustment/clasp fittings",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "1 set",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Fits 10 mm tape; do not rely on open jump rings",
+          "material": "Nonmagnetic metal/polymer",
+          "mass_g_per_unit": 6,
+          "mass_range_g_per_unit": [
+            3,
+            15
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact clasp, adjustment and snag-release behavior unresolved",
+          "group": "necklace",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            3,
+            15
+          ]
+        },
+        {
+          "id": "belt_carrier",
+          "label": "Optional belt carrier and padding",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 custom carrier, not baseline",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Fits same 80 x 65 x 20 mm pack",
+          "material": "Textile/polymer and foam",
+          "mass_g_per_unit": 45,
+          "mass_range_g_per_unit": [
+            25,
+            90
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "external",
+          "installed_mass_g": 45,
+          "installed_mass_range_g": [
+            25,
+            90
+          ]
+        },
+        {
+          "id": "belt_cable",
+          "label": "Optional raw-pack lead and disconnects",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 paired cable/harness, not baseline",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "1.2 m paired 18 AWG + keyed disconnect and fuse/switch allowance",
+          "material": "Copper, insulation and connectors",
+          "mass_g_per_unit": 55,
+          "mass_range_g_per_unit": [
+            35,
+            90
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "external",
+          "installed_mass_g": 55,
+          "installed_mass_range_g": [
+            35,
+            90
+          ]
+        },
+        {
+          "id": "gland",
+          "label": "Optional Adafruit PG-7 gland 762",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 gland replaces internal blank",
+          "source": "https://www.adafruit.com/product/762",
+          "dimensions": "PG-7; cable diameter 3..4.3 mm, CAD bore 12 mm",
+          "material": "Polymer and elastomer",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Thread/nut/paired-cable fit not verified; no external option manufacture approval",
+          "group": "external",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            7
+          ]
+        },
+        {
+          "id": "charger",
+          "label": "Adafruit 259 external 1S charger",
+          "installed_quantity": 1,
+          "unit": "charger",
+          "purchase_quantity": "1 charging tool, never installed",
+          "source": "https://www.adafruit.com/product/259",
+          "dimensions": "Set selected 4.2 V chemistry, <=1 A, pack disconnected",
+          "material": "Populated board",
+          "mass_g_per_unit": 12,
+          "mass_range_g_per_unit": [
+            8,
+            20
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Charge-only adapter/pack compatibility unresolved; excluded from worn mass",
+          "group": "tool",
+          "installed_mass_g": 12,
+          "installed_mass_range_g": [
+            8,
+            20
+          ]
+        },
+        {
+          "id": "soft_front_washers",
+          "label": "Custom silicone front retention washers",
+          "installed_quantity": 6,
+          "unit": "washer",
+          "purchase_quantity": "6 knife/die-cut washers plus 2 spares; offcut excluded",
+          "source": "hardware/enclosure/exports/soft-front-washer.svg",
+          "stock_sources": [
+            {
+              "label": "Stockwell SG-30 GP 0.020 inch",
+              "url": "https://www.stockwell.com/data-sheets/sg-series-solid-silicone.pdf"
+            }
+          ],
+          "dimensions": "9 OD x 6.4 ID x 0.508 mm free; 0.3048 mm target compressed",
+          "material": "Silicone rubber, smooth faces",
+          "mass_g_per_unit": 0.017572774968008024,
+          "mass_range_g_per_unit": [
+            0.015,
+            0.035
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Free annulus volume x estimated 1.1 g/cm3; compression changes shape, not mass",
+          "status": "Stock hardness, compression force and retention require fit testing; knife/die cut, not an acrylic laser cut",
+          "group": "pendant",
+          "installed_mass_g": 0.1054,
+          "installed_mass_range_g": [
+            0.09,
+            0.21
+          ]
+        }
+      ],
+      "mass_estimate": {
+        "complete_pendant": {
+          "nominal_g": 981.6,
+          "range_g": [
+            748.7,
+            1213.0
+          ]
+        },
+        "necklace": {
+          "nominal_g": 32.2,
+          "range_g": [
+            19.8,
+            62.0
+          ]
+        },
+        "total_worn": {
+          "nominal_g": 1013.8,
+          "range_g": [
+            768.5,
+            1275.0
+          ]
+        },
+        "external_battery_pendant": {
+          "nominal_g": 793.6,
+          "range_g": [
+            569.7,
+            1005.0
+          ]
+        },
+        "external_belt_and_lead": {
+          "nominal_g": 290.0,
+          "range_g": [
+            240.0,
+            390.0
+          ]
+        },
+        "external_total_worn": {
+          "nominal_g": 1115.8,
+          "range_g": [
+            829.5,
+            1457.0
+          ]
+        },
+        "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
+        "outstanding_measurements": [
+          "OpticalDeck",
+          "BarrelFrame",
+          "RearPlate",
+          "NecklaceLink0",
+          "NecklaceLink1",
+          "CircleRimFoot0",
+          "CircleRimFoot1",
+          "CircleRimFoot2",
+          "VentGuard0",
+          "VentGuard1",
+          "VentGuard2",
+          "VentGuard3",
+          "ServiceCover",
+          "FrontSheet",
+          "RearMirror",
+          "EdgeDiffuser",
+          "OuterLightShield",
+          "HaloRing",
+          "HaloLightShield",
+          "InnerRing",
+          "InnerLightShield",
+          "wood",
+          "front_coating",
+          "rim_mask",
+          "rear_coating",
+          "wood_finish",
+          "circle",
+          "halo_strip",
+          "inner_strip",
+          "outer_strip",
+          "sparkle",
+          "blackpill",
+          "gps",
+          "imu",
+          "radio",
+          "rf_antenna",
+          "boost",
+          "battery",
+          "sense",
+          "fuse",
+          "power_switch",
+          "buttons",
+          "bulk_cap",
+          "power_connectors",
+          "led_connectors",
+          "logic_connectors",
+          "usb_adapter",
+          "power_wire",
+          "signal_wire",
+          "wire_finish",
+          "body_screws",
+          "anchor_screws",
+          "rear_screws",
+          "service_screws",
+          "M3_nuts",
+          "M2_nuts",
+          "M3_washers",
+          "M3_front_washers",
+          "M2_washers",
+          "sparkle_mount_hardware",
+          "joint_seals",
+          "hatch_gasket",
+          "vents",
+          "control_membranes",
+          "seam_adhesive",
+          "padding",
+          "battery_straps",
+          "board_ties",
+          "blank",
+          "neck_webbing",
+          "wear_loops",
+          "closed_rings",
+          "neck_clasp",
+          "belt_carrier",
+          "belt_cable",
+          "gland",
+          "soft_front_washers"
+        ]
+      }
+    },
+    "silver": {
+      "filament": "Extrudr PETG Silver",
+      "components": [
+        {
+          "id": "OpticalDeck",
+          "label": "OpticalDeck",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/OpticalDeck.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "OpticalDeck",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 88.99690100000001,
+          "mass_range_g_per_unit": [
+            62.2978307,
+            96.11665308000002
+          ],
+          "installed_mass_g": 88.9969,
+          "installed_mass_range_g": [
+            62.2978,
+            96.1167
+          ]
+        },
+        {
+          "id": "BarrelFrame",
+          "label": "BarrelFrame",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/BarrelFrame.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.00 x 248.00 x 20.65 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "BarrelFrame",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 52.268247,
+          "mass_range_g_per_unit": [
+            36.5877729,
+            56.449706760000005
+          ],
+          "installed_mass_g": 52.2682,
+          "installed_mass_range_g": [
+            36.5878,
+            56.4497
+          ]
+        },
+        {
+          "id": "RearPlate",
+          "label": "RearPlate",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/RearPlate.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.84 x 248.92 x 12.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "RearPlate",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 94.742254,
+          "mass_range_g_per_unit": [
+            66.3195778,
+            102.32163432000002
+          ],
+          "installed_mass_g": 94.7423,
+          "installed_mass_range_g": [
+            66.3196,
+            102.3216
+          ]
+        },
+        {
+          "id": "NecklaceLink0",
+          "label": "NecklaceLink0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/NecklaceLink0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 42.46 x 41.13 x 5.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "NecklaceLink0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 5.273167,
+          "mass_range_g_per_unit": [
+            3.6912168999999997,
+            5.69502036
+          ],
+          "installed_mass_g": 5.2732,
+          "installed_mass_range_g": [
+            3.6912,
+            5.695
+          ]
+        },
+        {
+          "id": "NecklaceLink1",
+          "label": "NecklaceLink1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/NecklaceLink1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 30.00 x 35.88 x 5.00 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "NecklaceLink1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 3.787013,
+          "mass_range_g_per_unit": [
+            2.6509091,
+            4.08997404
+          ],
+          "installed_mass_g": 3.787,
+          "installed_mass_range_g": [
+            2.6509,
+            4.09
+          ]
+        },
+        {
+          "id": "CircleRimFoot0",
+          "label": "CircleRimFoot0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.00 x 4.00 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "CircleRimFoot1",
+          "label": "CircleRimFoot1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "CircleRimFoot2",
+          "label": "CircleRimFoot2",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/CircleRimFoot2.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "CircleRimFoot2",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 0.036576,
+          "mass_range_g_per_unit": [
+            0.025603199999999996,
+            0.03950208
+          ],
+          "installed_mass_g": 0.0366,
+          "installed_mass_range_g": [
+            0.0256,
+            0.0395
+          ]
+        },
+        {
+          "id": "VentGuard0",
+          "label": "VentGuard0",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard0.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard0",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard1",
+          "label": "VentGuard1",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard1.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard1",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard2",
+          "label": "VentGuard2",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard2.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard2",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "VentGuard3",
+          "label": "VentGuard3",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/VentGuard3.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 20.00 x 28.00 x 3.30 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "VentGuard3",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 1.3641070000000002,
+          "mass_range_g_per_unit": [
+            0.9548749000000001,
+            1.4732355600000002
+          ],
+          "installed_mass_g": 1.3641,
+          "installed_mass_range_g": [
+            0.9549,
+            1.4732
+          ]
+        },
+        {
+          "id": "ServiceCover",
+          "label": "ServiceCover",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 printed part",
+          "source": "hardware/enclosure/exports/ServiceCover.3mf",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 54.00 x 26.00 x 1.80 mm",
+          "material": "Opaque PETG",
+          "mass_kind": "calculated",
+          "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "ServiceCover",
+          "mass_formula": "petg_volume",
+          "mass_g_per_unit": 3.188843,
+          "mass_range_g_per_unit": [
+            2.2321901,
+            3.44395044
+          ],
+          "installed_mass_g": 3.1888,
+          "installed_mass_range_g": [
+            2.2322,
+            3.444
+          ]
+        },
+        {
+          "id": "FrontSheet",
+          "label": "FrontSheet",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 custom blank; trim waste excluded",
+          "source": "hardware/enclosure/exports/front-sheet.svg",
+          "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting; CAD bounds 249.83 x 249.92 x 1.52 mm",
+          "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
+          "status": "Physical stock thickness and finished clamp fit require measurement",
+          "group": "pendant",
+          "cad_part": "FrontSheet",
+          "mass_formula": "acrylic_volume",
+          "stock_sources": [
+            {
+              "label": "0.060 inch clear acrylic",
+              "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+            }
+          ],
+          "mass_g_per_unit": 88.604187,
+          "mass_range_g_per_unit": [
+            79.7437683,
+            97.4646057
+          ],
+          "installed_mass_g": 88.6042,
+          "installed_mass_range_g": [
+            79.7438,
+            97.4646
+          ]
+        },
+        {
+          "id": "RearMirror",
+          "label": "RearMirror",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 custom blank; trim waste excluded",
+          "source": "hardware/enclosure/exports/rear-mirror.svg",
+          "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
+          "material": "Acrylic; Full mirror on +Z",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
+          "status": "Measure finished mirror stock before cutting",
+          "group": "pendant",
+          "cad_part": "RearMirror",
+          "mass_formula": "acrylic_volume",
+          "stock_sources": [
+            {
+              "label": "Clear acrylic stock candidate",
+              "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+            }
+          ],
+          "mass_g_per_unit": 28.308434,
+          "mass_range_g_per_unit": [
+            25.4775906,
+            31.1392774
+          ],
+          "installed_mass_g": 28.3084,
+          "installed_mass_range_g": [
+            25.4776,
+            31.1393
+          ]
+        },
+        {
+          "id": "EdgeDiffuser",
+          "label": "Outside printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/EdgeDiffuser-silver.3mf",
+          "dimensions": "246.00 mm inside diameter x 2.0 mm wall x 33.0 mm high, Z=3.2 mm; CAD bounds 249.82 x 249.91 x 33.00 mm",
+          "mass_kind": "calculated",
+          "status": "Four-path wall, optical output, handling strength, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "EdgeDiffuser",
+          "mass_formula": "ring_petg_volume",
+          "material": "Extrudr PETG Silver",
+          "mass_basis": "CAD net solid volume x 1.29 g/cm3; Extrudr PETG family nominal density; verify the silver lot and printed mass; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Extrudr PETG Silver",
+              "url": "https://www.extrudr.com/en/inlt/products/petg/"
+            }
+          ],
+          "mass_g_per_unit": 66.333864,
+          "mass_range_g_per_unit": [
+            46.4337048,
+            71.64057312000001
+          ],
+          "installed_mass_g": 66.3339,
+          "installed_mass_range_g": [
+            46.4337,
+            71.6406
+          ]
+        },
+        {
+          "id": "OuterLightShield",
+          "label": "Outside opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/outer-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.38,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "OuterLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.38,
+          "installed_mass_range_g": [
+            0.15,
+            0.7
+          ]
+        },
+        {
+          "id": "HaloRing",
+          "label": "Halo printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/HaloRing-silver.3mf",
+          "dimensions": "177.02 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 179.02 x 179.02 x 10.60 mm",
+          "mass_kind": "calculated",
+          "status": "Print path, optical output, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "HaloRing",
+          "mass_formula": "ring_petg_volume",
+          "material": "Extrudr PETG Silver",
+          "mass_basis": "CAD net solid volume x 1.29 g/cm3; Extrudr PETG family nominal density; verify the silver lot and printed mass; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Extrudr PETG Silver",
+              "url": "https://www.extrudr.com/en/inlt/products/petg/"
+            }
+          ],
+          "mass_g_per_unit": 7.647378000000001,
+          "mass_range_g_per_unit": [
+            5.3531646,
+            8.259168240000001
+          ],
+          "installed_mass_g": 7.6474,
+          "installed_mass_range_g": [
+            5.3532,
+            8.2592
+          ]
+        },
+        {
+          "id": "HaloLightShield",
+          "label": "Halo opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/halo-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.22,
+          "mass_range_g_per_unit": [
+            0.1,
+            0.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "HaloLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.22,
+          "installed_mass_range_g": [
+            0.1,
+            0.5
+          ]
+        },
+        {
+          "id": "InnerRing",
+          "label": "Inner printed ring",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 whole upright printed ring",
+          "source": "hardware/enclosure/exports/InnerRing-silver.3mf",
+          "dimensions": "215.47 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 217.33 x 217.40 x 10.60 mm",
+          "mass_kind": "calculated",
+          "status": "Print path, optical output, fit and mass need physical acceptance",
+          "group": "pendant",
+          "cad_part": "InnerRing",
+          "mass_formula": "ring_petg_volume",
+          "material": "Extrudr PETG Silver",
+          "mass_basis": "CAD net solid volume x 1.29 g/cm3; Extrudr PETG family nominal density; verify the silver lot and printed mass; verify printed mass",
+          "stock_sources": [
+            {
+              "label": "Extrudr PETG Silver",
+              "url": "https://www.extrudr.com/en/inlt/products/petg/"
+            }
+          ],
+          "mass_g_per_unit": 9.299223000000001,
+          "mass_range_g_per_unit": [
+            6.5094561,
+            10.043160840000002
+          ],
+          "installed_mass_g": 9.2992,
+          "installed_mass_range_g": [
+            6.5095,
+            10.0432
+          ]
+        },
+        {
+          "id": "InnerLightShield",
+          "label": "Inner opaque LED-edge shield",
+          "installed_quantity": 1,
+          "unit": "cut film ring",
+          "purchase_quantity": "1 die-cut ring plus fit sample from stock; verify available width",
+          "source": "hardware/enclosure/exports/inner-light-shield.svg",
+          "dimensions": "0.06 mm tesa 7160 black PET tape; CAD cut radii; adhesive bonds only to glow ring top",
+          "material": "Opaque black PET and acrylic adhesive",
+          "mass_g_per_unit": 0.28,
+          "mass_range_g_per_unit": [
+            0.1,
+            0.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Cut annulus area and thin PET/adhesive allowance; weigh finished shield",
+          "status": "Die-cut stock width, adhesion, free-span shape, release-liner retention and light leakage need physical sample acceptance",
+          "group": "pendant",
+          "cad_part": "InnerLightShield",
+          "stock_sources": [
+            {
+              "label": "tesa 7160 light-blocking tape",
+              "url": "https://www.tesa.com/en-us/industry/tesa-7160.html"
+            }
+          ],
+          "installed_mass_g": 0.28,
+          "installed_mass_range_g": [
+            0.1,
+            0.5
+          ]
+        },
+        {
+          "id": "wood",
+          "label": "Wood cell grid",
+          "installed_quantity": 1,
+          "unit": "part",
+          "purchase_quantity": "1 blank at least 166 x 166 mm",
+          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
+          "dimensions": "166 mm diameter x 4 mm; 256 cells; CAD bounds 165.89 x 165.94 x 4.00 mm",
+          "material": "Plywood; opaque sealed cell walls",
+          "mass_kind": "calculated",
+          "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "cad_part": "WoodMask",
+          "mass_formula": "wood_volume",
+          "stock_sources": [
+            {
+              "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
+              "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+            }
+          ],
+          "mass_g_per_unit": 16.673939999999998,
+          "mass_range_g_per_unit": [
+            11.115960000000001,
+            22.231920000000002
+          ],
+          "installed_mass_g": 16.6739,
+          "installed_mass_range_g": [
+            11.116,
+            22.2319
+          ]
+        },
+        {
+          "id": "front_coating",
+          "label": "Front two-way coating",
+          "installed_quantity": 1,
+          "unit": "annulus",
+          "purchase_quantity": "1 custom coating application",
+          "source": "hardware/enclosure/exports/front-coating.svg",
+          "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+          "material": "Partially reflecting optical coating",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.3,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Supplier process/transmission unselected; sample required",
+          "group": "pendant",
+          "installed_mass_g": 1,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "rim_mask",
+          "label": "Front black rim mask",
+          "installed_quantity": 1,
+          "unit": "rim",
+          "purchase_quantity": "1 application",
+          "source": "hardware/enclosure/exports/front-coating.svg",
+          "dimensions": "r110.5..125 mm",
+          "material": "Opaque acrylic-compatible coating",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.3,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 1,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "rear_coating",
+          "label": "Rear mirror coating/film",
+          "installed_quantity": 1,
+          "unit": "annulus",
+          "purchase_quantity": "1 cut piece",
+          "source": "hardware/enclosure/exports/rear-mirror.svg",
+          "dimensions": "Full reflective annulus, inward facing",
+          "material": "Acrylic-compatible mirror coating/film",
+          "mass_g_per_unit": 1.5,
+          "mass_range_g_per_unit": [
+            0.5,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Film adhesive and optical flatness unresolved",
+          "group": "pendant",
+          "installed_mass_g": 1.5,
+          "installed_mass_range_g": [
+            0.5,
+            4
+          ]
+        },
+        {
+          "id": "wood_finish",
+          "label": "Wood finish and spacer tack",
+          "installed_quantity": 1,
+          "unit": "application",
+          "purchase_quantity": "1 small container, installed cure mass only",
+          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
+          "dimensions": "Seal cell walls opaque; tack three spacers to rim",
+          "material": "Opaque finish and removable acrylic-safe adhesive",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "circle",
+          "label": "Populated Fibonacci256",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "Existing board; 0 new",
+          "source": "https://www.evilgeniuslabs.org/fibonacci256",
+          "dimensions": "166 mm diameter x 1.6 mm PCB; LED height CAD 3 mm",
+          "material": "FR4, copper, 256 LEDs and passives",
+          "mass_g_per_unit": 82,
+          "mass_range_g_per_unit": [
+            65,
+            105
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimate: FR4 disc about 64 g plus copper, populated LEDs/passives; counted once, no solid clearance boxes",
+          "status": "Existing board; registration and populated mass unmeasured",
+          "group": "pendant",
+          "cad_part": "CirclePCB",
+          "installed_mass_g": 82,
+          "installed_mass_range_g": [
+            65,
+            105
+          ]
+        },
+        {
+          "id": "halo_strip",
+          "label": "Halo RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "64 pixels, 533.333 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "HaloStripSeam",
+          "length_parameter": "halo_count",
+          "installed_quantity": 0.5333333333333333,
+          "installed_mass_g": 13.3333,
+          "installed_mass_range_g": [
+            8.0,
+            21.3333
+          ]
+        },
+        {
+          "id": "inner_strip",
+          "label": "Inner RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "84 pixels, 700.000 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "InnerStripSeam",
+          "length_parameter": "inner_count",
+          "installed_quantity": 0.7,
+          "installed_mass_g": 17.5,
+          "installed_mass_range_g": [
+            10.5,
+            28.0
+          ]
+        },
+        {
+          "id": "outer_strip",
+          "label": "Outer RGB strip",
+          "unit": "m fitted strip",
+          "purchase_quantity": "Shared >=2 m raw strip plus cut waste; reel mass excluded",
+          "source": "https://dreamledstrips.com/product/5mm-ultra-narrow-ws2812b-2020-individually-addressable-ic-led-strip-120-leds-m-dc5v/",
+          "dimensions": "90 pixels, 750.000 mm cut length; CAD back 10 x 0.3 mm, package depth 2 mm",
+          "material": "5 V individually addressed 120 LED/m flexible RGB PCB",
+          "mass_g_per_unit": 25,
+          "mass_range_g_per_unit": [
+            15,
+            40
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 25 g/m of installed cut length only; range 15..40 g/m; three strips counted separately",
+          "status": "UNRESOLVED: linked candidate is 5 mm wide/2020 package and claims 10 mm cut; incompatible with current CAD strip/cut assumptions. Keep 120 LED/m baseline; select actual stock before cutting",
+          "group": "pendant",
+          "cad_part": "OuterStripSeam",
+          "length_parameter": "outer_count",
+          "installed_quantity": 0.75,
+          "installed_mass_g": 18.75,
+          "installed_mass_range_g": [
+            11.25,
+            30.0
+          ]
+        },
+        {
+          "id": "sparkle",
+          "label": "Full Sparkle Motion 6100, PCB antenna, Rev D",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 board",
+          "source": "https://www.adafruit.com/product/6100",
+          "dimensions": "CAD 50.8 x 33.147 x 15 mm, check supplied Rev D",
+          "material": "Populated FR4, ESP32, terminals, microphone",
+          "mass_g_per_unit": 18,
+          "mass_range_g_per_unit": [
+            12,
+            25
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Populated board estimate; no extra mass for built-in microphone, IR, regulator, fuse or terminals",
+          "status": "Supplier page reports out of stock; outline text differs from Rev D CAD. Confirm revision/drawing",
+          "group": "pendant",
+          "cad_part": "SparklePCBWithHoles",
+          "installed_mass_g": 18,
+          "installed_mass_range_g": [
+            12,
+            25
+          ]
+        },
+        {
+          "id": "blackpill",
+          "label": "WeAct BlackPill V3.1 STM32F411CEU6",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 F411CE board, no tall headers",
+          "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1",
+          "dimensions": "20.8 x 52.8 mm CAD; 12 mm envelope",
+          "material": "Populated FR4, MCU and USB",
+          "mass_g_per_unit": 7,
+          "mass_range_g_per_unit": [
+            4,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Manufacturer design link; exact sales listing/supplied height unresolved",
+          "group": "pendant",
+          "cad_part": "blackpillPCB",
+          "installed_mass_g": 7,
+          "installed_mass_range_g": [
+            4,
+            10
+          ]
+        },
+        {
+          "id": "gps",
+          "label": "Adafruit Ultimate GPS FeatherWing 3133 PA1616D",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 without optional coin cell",
+          "source": "https://www.adafruit.com/product/3133",
+          "dimensions": "Published 51.2 x 22.9 x 6.7 mm; CAD 50.8 x 22.86 x 8 mm",
+          "material": "Populated FR4 and ceramic antenna",
+          "mass_g_per_unit": 8.8,
+          "mass_range_g_per_unit": [
+            8,
+            10
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier populated board weight, without coin cell",
+          "status": "Nominal outline differs from the CAD reference by 0.4 x 0.04 mm. Published width leaves 0.3 mm per side in the current 51.8 mm rail gap; actual supplied board, solder joints and headers require fit measurement",
+          "group": "pendant",
+          "cad_part": "gpsPCB",
+          "installed_mass_g": 8.8,
+          "installed_mass_range_g": [
+            8,
+            10
+          ]
+        },
+        {
+          "id": "imu",
+          "label": "Adafruit LSM9DS1 3387 classic breakout",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 exact classic breakout",
+          "source": "https://www.adafruit.com/product/3387",
+          "dimensions": "Published 33.4 x 20.4 x 3 mm; CAD 25 x 25 x 8 mm",
+          "material": "Populated FR4, accel/gyro/magnetometer",
+          "mass_g_per_unit": 2.5,
+          "mass_range_g_per_unit": [
+            2,
+            4
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier board mass",
+          "status": "INCOMPATIBLE with 25 x 25 placeholder in either rotation. Keep LSM9DS1 family; layout revision/actual owned breakout needed",
+          "group": "pendant",
+          "cad_part": "imuPCB",
+          "installed_mass_g": 2.5,
+          "installed_mass_range_g": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "radio",
+          "label": "Adafruit RFM95W breakout 3072, 868/915 MHz",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 radio, use 915 MHz configuration",
+          "source": "https://www.adafruit.com/product/3072",
+          "dimensions": "Published 29 x 25 x 4 mm; rotate 25 x 29 inside 25 x 32 x 8 envelope",
+          "material": "Populated FR4 and shield",
+          "mass_g_per_unit": 3.1,
+          "mass_range_g_per_unit": [
+            2.8,
+            4.5
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier board weight",
+          "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+          "group": "pendant",
+          "cad_part": "radioPCB",
+          "installed_mass_g": 3.1,
+          "installed_mass_range_g": [
+            2.8,
+            4.5
+          ]
+        },
+        {
+          "id": "rf_antenna",
+          "label": "915 MHz quarter-wave wire antenna",
+          "installed_quantity": 1,
+          "unit": "antenna",
+          "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
+          "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
+          "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+          "material": "Insulated copper wire",
+          "mass_g_per_unit": 0.25,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+          "group": "pendant",
+          "installed_mass_g": 0.25,
+          "installed_mass_range_g": [
+            0.15,
+            0.6
+          ]
+        },
+        {
+          "id": "boost",
+          "label": "Pololu U3V70F5 item 2891",
+          "installed_quantity": 1,
+          "unit": "board",
+          "purchase_quantity": "1 regulator",
+          "source": "https://www.pololu.com/product/2891",
+          "dimensions": "40.6 x 15.2 x 4.6 mm, rotated in CAD",
+          "material": "Populated FR4 and inductor",
+          "mass_g_per_unit": 3.5,
+          "mass_range_g_per_unit": [
+            3.2,
+            4.5
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier populated board weight",
+          "status": "Nominal board envelope matches; solder joints and wiring need clearance check",
+          "group": "pendant",
+          "cad_part": "powerPCB",
+          "installed_mass_g": 3.5,
+          "installed_mass_range_g": [
+            3.2,
+            4.5
+          ]
+        },
+        {
+          "id": "battery",
+          "label": "BatterySpace CU-MM109 / 4816 protected 1S 10 Ah",
+          "installed_quantity": 1,
+          "unit": "pack",
+          "purchase_quantity": "1 factory pack",
+          "source": "https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx",
+          "dimensions": "80 x 65 x 20 mm; 18 AWG open leads",
+          "material": "LiPo, integral protection, polyswitch and leads",
+          "mass_g_per_unit": 190.0,
+          "mass_range_g_per_unit": [
+            180.006,
+            210.00699999999998
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier pack mass, including integral protection and stock leads; no second BMS mass",
+          "status": "Provisional internal baseline; confirm drawing, lead placement, pack swelling reserve and measured mass",
+          "group": "pendant",
+          "cad_part": "BatteryEnvelope0",
+          "installed_mass_g": 190.0,
+          "installed_mass_range_g": [
+            180.006,
+            210.007
+          ]
+        },
+        {
+          "id": "sense",
+          "label": "PA4 divider assembly",
+          "installed_quantity": 1,
+          "unit": "populated assembly",
+          "purchase_quantity": "1 custom 18 x 16 mm perfboard with 2 resistors and 100 nF capacitor",
+          "source": "design-v2.md",
+          "dimensions": "18 x 16 x 7 mm CAD envelope; divider values remain battery TODO",
+          "material": "FR4, copper, resistors, ceramic capacitor",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Divider values/profile unresolved; include board and parts once",
+          "group": "pendant",
+          "cad_part": "sensePCB",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "fuse",
+          "label": "Pack/branch fuse assembly",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 holder + pack fuse + halo branch fuse",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Pack path >=3 A working; fuse rating follows measured wire/connector protection",
+          "material": "Fuse links, holder and insulation",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            8
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact fuses/holder/rating and envelope unresolved",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "power_switch",
+          "label": "Latching physical power switch",
+          "installed_quantity": 1,
+          "unit": "switch",
+          "purchase_quantity": "1 DC rated switch",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "CAD body diameter 8 x 6 mm; flange diameter 12",
+          "material": "Metal/plastic contacts; >=3 A DC working candidate requirement",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable switch and fit unresolved; placeholder is not approval",
+          "group": "pendant",
+          "cad_part": "RearButton2",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            7
+          ]
+        },
+        {
+          "id": "buttons",
+          "label": "Mode and Action momentary switches",
+          "installed_quantity": 2,
+          "unit": "switch",
+          "purchase_quantity": "2 switches",
+          "source": "design-v2.md",
+          "dimensions": "CAD diameter 8 x 6 mm, flange diameter 12; active low",
+          "material": "Switch contacts and housing",
+          "mass_g_per_unit": 1,
+          "mass_range_g_per_unit": [
+            0.5,
+            3
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact switch/travel/retention unresolved",
+          "group": "pendant",
+          "cad_part": "RearButton0",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1.0,
+            6
+          ]
+        },
+        {
+          "id": "bulk_cap",
+          "label": "Supply bulk capacitor",
+          "installed_quantity": 1,
+          "unit": "capacitor",
+          "purchase_quantity": "1 electrolytic capacitor",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Provisional 1000 uF, >=6.3 V; envelope not assigned",
+          "material": "Aluminium electrolytic",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact capacitor and place/retention unresolved",
+          "group": "pendant",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "power_connectors",
+          "label": "Keyed raw-pack connector, XT60 requirement",
+          "installed_quantity": 1,
+          "unit": "mated pair",
+          "purchase_quantity": "1 pair",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "XT60 candidate; verify polarity, cable exit, DC rating and space",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 7,
+          "mass_range_g_per_unit": [
+            5,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable pair and installed envelope unresolved; 7 g allowance",
+          "group": "pendant",
+          "installed_mass_g": 7,
+          "installed_mass_range_g": [
+            5,
+            10
+          ]
+        },
+        {
+          "id": "led_connectors",
+          "label": "Four keyed display connector pairs",
+          "installed_quantity": 4,
+          "unit": "mated pair",
+          "purchase_quantity": "4 pairs",
+          "source": "https://www.adafruit.com/product/1663",
+          "dimensions": "3 pin candidate; current rating per limited branch required",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 5.4,
+          "mass_range_g_per_unit": [
+            4,
+            6
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier plug 2.8 g + receptacle 2.6 g with supplied 22 AWG pigtails, counted once; loose-wire allowances exclude these pigtails",
+          "status": "Supplier out of stock; current rating and installed envelope unresolved",
+          "group": "pendant",
+          "installed_mass_g": 21.6,
+          "installed_mass_range_g": [
+            16,
+            24
+          ]
+        },
+        {
+          "id": "logic_connectors",
+          "label": "Sensor/UART/service connector allowance",
+          "installed_quantity": 6,
+          "unit": "mated pair",
+          "purchase_quantity": "6 pairs",
+          "source": "design-v2.md",
+          "dimensions": "Low-profile 2.54 mm headers or keyed harness, final pin counts unresolved",
+          "material": "Polymer/copper contacts",
+          "mass_g_per_unit": 0.8,
+          "mass_range_g_per_unit": [
+            0.4,
+            1.5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact connector variants/counts/envelopes unresolved; estimate includes all signal joins",
+          "group": "pendant",
+          "installed_mass_g": 4.8,
+          "installed_mass_range_g": [
+            2.4,
+            9.0
+          ]
+        },
+        {
+          "id": "usb_adapter",
+          "label": "5 V Sparkle input and service lead",
+          "installed_quantity": 1,
+          "unit": "lead",
+          "purchase_quantity": "1 DC barrel input lead + USB service allowance",
+          "source": "https://www.adafruit.com/product/369",
+          "dimensions": "Sparkle 2.1 mm centre-positive DC candidate; USB service through hatch",
+          "material": "Copper, polymer, shield",
+          "mass_g_per_unit": 5,
+          "mass_range_g_per_unit": [
+            2,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact input connector/service extension and strain relief unresolved",
+          "group": "pendant",
+          "installed_mass_g": 5,
+          "installed_mass_range_g": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "power_wire",
+          "label": "Installed 18 AWG power wire",
+          "installed_quantity": 0.8,
+          "unit": "m conductor",
+          "purchase_quantity": "1 m extra stock; factory battery leads excluded",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "0.8 m total conductor, about 0.4 m paired runs",
+          "material": "Stranded copper, flexible insulation",
+          "mass_g_per_unit": 12,
+          "mass_range_g_per_unit": [
+            9,
+            18
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 12 g/m installed conductor; not retail spool; excludes factory battery leads; excludes connector pigtails",
+          "status": "18 AWG supply and installed route unresolved; do not use a thin signal-wire substitute",
+          "group": "pendant",
+          "installed_mass_g": 9.6,
+          "installed_mass_range_g": [
+            7.2,
+            14.4
+          ]
+        },
+        {
+          "id": "signal_wire",
+          "label": "Installed 26 AWG signal wire",
+          "installed_quantity": 2,
+          "unit": "m conductor",
+          "purchase_quantity": "3 m stock",
+          "source": "https://www.adafruit.com/product/1970",
+          "dimensions": "2 m total conductor; RF antenna allocated separately",
+          "material": "Stranded copper, insulation",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            2,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 3 g/m of installed conductor; not bundle/spool mass; excludes factory connector pigtails and RF antenna",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            4,
+            10
+          ]
+        },
+        {
+          "id": "wire_finish",
+          "label": "Solder, heatshrink and wire restraint",
+          "installed_quantity": 1,
+          "unit": "allowance",
+          "purchase_quantity": "Small spool/tubing stock; count cured/installed amount",
+          "source": "design-v2.md",
+          "dimensions": "All four displays and board harness joins",
+          "material": "Solder alloy, polymer tubing, ties",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            6
+          ]
+        },
+        {
+          "id": "body_screws",
+          "label": "Finished M3 body bolts from SSC-M3-45-A2 stock",
+          "installed_quantity": 6,
+          "unit": "screw",
+          "purchase_quantity": "8 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
+          "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
+          "material": "A2 stainless, natural",
+          "mass_kind": "estimated",
+          "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
+          "status": "Measure finished acrylic and washer stack before cutting; finish and deburr tips; require full nut engagement and a smooth end that does not catch fabric",
+          "group": "pendant",
+          "stock_mass_g_per_unit": 2.61,
+          "mass_formula": "finished_body_screw",
+          "mass_g_per_unit": 2.388665682299546,
+          "mass_range_g_per_unit": [
+            1.5526326934947048,
+            3.5829985234493185
+          ],
+          "installed_mass_g": 14.332,
+          "installed_mass_range_g": [
+            9.3158,
+            21.498
+          ]
+        },
+        {
+          "id": "anchor_screws",
+          "label": "SSCF-M3-12-A2 anchor screws",
+          "installed_quantity": 2,
+          "unit": "screw",
+          "purchase_quantity": "4 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3820-SSCF-M3-12-A2",
+          "dimensions": "M3 x 12 mm; 5.5 x 3 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.9,
+          "mass_range_g_per_unit": [
+            0.585,
+            1.35
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 1.8,
+          "installed_mass_range_g": [
+            1.17,
+            2.7
+          ]
+        },
+        {
+          "id": "rear_screws",
+          "label": "SSCF-M3-10-A2 rear screws",
+          "installed_quantity": 6,
+          "unit": "screw",
+          "purchase_quantity": "8 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3819-SSCF-M3-10-A2",
+          "dimensions": "M3 x 10 mm; 5.5 x 3 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.8,
+          "mass_range_g_per_unit": [
+            0.52,
+            1.2
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 4.8,
+          "installed_mass_range_g": [
+            3.12,
+            7.2
+          ]
+        },
+        {
+          "id": "service_screws",
+          "label": "SSCF-M2-8-A2 hatch/vent screws",
+          "installed_quantity": 10,
+          "unit": "screw",
+          "purchase_quantity": "12 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/metric-cap-head-screws/3793-SSCF-M2-8-A2",
+          "dimensions": "M2 x 8 mm; 3.8 x 2 mm head",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.35,
+          "mass_range_g_per_unit": [
+            0.2275,
+            0.525
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Nominal cylinder envelope x steel density; socket/thread reduce actual mass",
+          "status": "Supplier page supply/offline status requires confirmation; geometry selected, physical fit/retention unverified",
+          "group": "pendant",
+          "installed_mass_g": 3.5,
+          "installed_mass_range_g": [
+            2.275,
+            5.25
+          ]
+        },
+        {
+          "id": "M3_nuts",
+          "label": "M3 plain nuts",
+          "installed_quantity": 14,
+          "unit": "nut",
+          "purchase_quantity": "16 singles, 2 spares excluded",
+          "source": "https://www.accu.co.uk/hexagon-nuts/766459-NUT203M3",
+          "dimensions": "M3 plain DIN 934, 5.5 AF x 2.4 mm; pockets 5.9 AF x 2.7",
+          "material": "A4 stainless; M3 natural, M2 black oxide",
+          "mass_g_per_unit": 0.3968,
+          "mass_range_g_per_unit": [
+            0.2579,
+            0.5952
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier mass per 100 divided by 100",
+          "status": "Fit-test required; no taller locknut substitution",
+          "group": "pendant",
+          "installed_mass_g": 5.5552,
+          "installed_mass_range_g": [
+            3.6106,
+            8.3328
+          ]
+        },
+        {
+          "id": "M2_nuts",
+          "label": "M2 plain nuts",
+          "installed_quantity": 14,
+          "unit": "nut",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/hexagon-nuts/766448-NUT203M2-B",
+          "dimensions": "M2 plain DIN 934, 4 AF x 1.6 mm; pockets 4.4 AF x 1.9",
+          "material": "A4 stainless; M3 natural, M2 black oxide",
+          "mass_g_per_unit": 0.1474,
+          "mass_range_g_per_unit": [
+            0.0958,
+            0.2211
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier mass per 100 divided by 100",
+          "status": "Fit-test required; no taller locknut substitution",
+          "group": "pendant",
+          "installed_mass_g": 2.0636,
+          "installed_mass_range_g": [
+            1.3412,
+            3.0954
+          ]
+        },
+        {
+          "id": "M3_washers",
+          "label": "M3 HPW DIN 125 washers",
+          "installed_quantity": 14,
+          "unit": "washer",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/metric-flat-washers/72482-HPW-M3-A2",
+          "dimensions": "7 OD x 3.2 ID x 0.55 mm",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.11,
+          "mass_range_g_per_unit": [
+            0.0715,
+            0.165
+          ],
+          "mass_kind": "published",
+          "mass_basis": "Supplier 11 g/100",
+          "status": "Supply and actual thickness require confirmation",
+          "group": "pendant",
+          "installed_mass_g": 1.54,
+          "installed_mass_range_g": [
+            1.001,
+            2.31
+          ]
+        },
+        {
+          "id": "M3_front_washers",
+          "label": "9 mm OD M3 front clamp metal washers",
+          "installed_quantity": 6,
+          "unit": "washer",
+          "purchase_quantity": "8 singles, including 2 spares",
+          "source": "hardware/enclosure/hardware_spec.py",
+          "dimensions": "9 OD x 3.2 ID x 0.55 mm; above soft front washers",
+          "material": "A2 stainless steel",
+          "mass_g_per_unit": 0.24147239321250497,
+          "mass_range_g_per_unit": [
+            0.18,
+            0.31
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Annulus x 7.9 g/cm3; weigh selected hardware",
+          "status": "Select actual 9 mm washer and test clamp limit",
+          "group": "pendant",
+          "installed_mass_g": 1.4488,
+          "installed_mass_range_g": [
+            1.08,
+            1.86
+          ]
+        },
+        {
+          "id": "M2_washers",
+          "label": "M2 HPW DIN 125 washers",
+          "installed_quantity": 14,
+          "unit": "washer",
+          "purchase_quantity": "16 singles, including 2 spares",
+          "source": "https://www.accu.co.uk/metric-flat-washers/72476-HPW-M2-A2",
+          "dimensions": "5 OD x 2.2 ID x 0.35 mm",
+          "material": "A2 stainless, natural",
+          "mass_g_per_unit": 0.046,
+          "mass_range_g_per_unit": [
+            0.0299,
+            0.069
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Annulus x 7.9 g/cm3; supplier 105 g/100 conflicts with dimensions, rejected for mass",
+          "status": "Supply/offline status requires confirmation; use actual nominal maximum thickness",
+          "group": "pendant",
+          "installed_mass_g": 0.644,
+          "installed_mass_range_g": [
+            0.4186,
+            0.966
+          ]
+        },
+        {
+          "id": "sparkle_mount_hardware",
+          "label": "M2 x 6 controller screws",
+          "installed_quantity": 4,
+          "unit": "screw",
+          "purchase_quantity": "4 plus 2 spares",
+          "source": "design-v2.md",
+          "dimensions": "M2 x 6 mm; four captive plain nuts and M2 washers",
+          "material": "Stainless steel",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.15,
+            0.6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Physical board, nut insertion and driver access require fit test",
+          "group": "pendant",
+          "installed_mass_g": 1.2,
+          "installed_mass_range_g": [
+            0.6,
+            2.4
+          ]
+        },
+        {
+          "id": "joint_seals",
+          "label": "Removable body joint seals",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "~1.5 m seal stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Two whole circular joints; no bolt preload to flatten parts",
+          "material": "Closed-cell foam or removable seal tape",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1.5,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1.5,
+            7
+          ]
+        },
+        {
+          "id": "hatch_gasket",
+          "label": "Service hatch gasket",
+          "installed_quantity": 1,
+          "unit": "gasket",
+          "purchase_quantity": "1 blank, 54 x 26 mm",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "54 x 26 mm, 38 x 18 window; 0.35 mm compressed",
+          "material": "Closed-cell foam",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.1,
+            1
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Stock/compression and adhesive unresolved",
+          "group": "pendant",
+          "cad_part": "HatchGasket",
+          "installed_mass_g": 0.3,
+          "installed_mass_range_g": [
+            0.1,
+            1
+          ]
+        },
+        {
+          "id": "vents",
+          "label": "Four adhesive vent membranes",
+          "installed_quantity": 4,
+          "unit": "patch",
+          "purchase_quantity": "4 plus replacement stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "16 mm patch over 6 mm opening; 0.2 mm CAD",
+          "material": "Adhesive ePTFE membrane",
+          "mass_g_per_unit": 0.15,
+          "mass_range_g_per_unit": [
+            0.05,
+            0.4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable breathable patch and adhesion unresolved",
+          "group": "pendant",
+          "installed_mass_g": 0.6,
+          "installed_mass_range_g": [
+            0.2,
+            1.6
+          ]
+        },
+        {
+          "id": "control_membranes",
+          "label": "Three control covers",
+          "installed_quantity": 3,
+          "unit": "cover",
+          "purchase_quantity": "3 custom covers",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "Rear controls, exact travel per fitted switch",
+          "material": "Silicone/TPU membrane",
+          "mass_g_per_unit": 0.3,
+          "mass_range_g_per_unit": [
+            0.1,
+            1
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Membrane finish, bonding and switch travel unresolved",
+          "group": "pendant",
+          "installed_mass_g": 0.9,
+          "installed_mass_range_g": [
+            0.3,
+            3
+          ]
+        },
+        {
+          "id": "seam_adhesive",
+          "label": "Optical lead and joint seals",
+          "installed_quantity": 1,
+          "unit": "application",
+          "purchase_quantity": "1 small adhesive/tape supply; installed mass only",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Three internal LED lead exits and removable optical joints",
+          "material": "Removable opaque seal tape",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            1,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 3,
+          "installed_mass_range_g": [
+            1,
+            7
+          ]
+        },
+        {
+          "id": "padding",
+          "label": "Battery/back contact padding",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "1 foam blank; trim waste excluded",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Battery cradle and rear skin-contact area; electronics clearances required",
+          "material": "Closed-cell foam",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            10
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "battery_straps",
+          "label": "Two battery restraint straps",
+          "installed_quantity": 2,
+          "unit": "strap",
+          "purchase_quantity": "2 cut straps",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm wide, ~250 mm each; fit existing strap passages",
+          "material": "Hook and loop textile",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "board_ties",
+          "label": "Board restraint ties",
+          "installed_quantity": 12,
+          "unit": "tie",
+          "purchase_quantity": "1 retail pack, count 12 fitted",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Two per six rail-mounted boards; low profile",
+          "material": "Nylon",
+          "mass_g_per_unit": 0.12,
+          "mass_range_g_per_unit": [
+            0.07,
+            0.25
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "pendant",
+          "installed_mass_g": 1.44,
+          "installed_mass_range_g": [
+            0.84,
+            3.0
+          ]
+        },
+        {
+          "id": "blank",
+          "label": "External entry blank and seal",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 custom plug + seal + nut",
+          "source": "hardware/enclosure/exports/smart-compass.step",
+          "dimensions": "12 mm bore, 16 mm head/retaining envelope",
+          "material": "Polymer and elastomer",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            5
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact plug/retention/seal unresolved; internal baseline uses blank",
+          "group": "pendant",
+          "cad_part": "ExternalPowerBlank",
+          "installed_mass_g": 2,
+          "installed_mass_range_g": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "neck_webbing",
+          "label": "Necklace webbing",
+          "installed_quantity": 0.9,
+          "unit": "m",
+          "purchase_quantity": "1 m stock",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm wide, compatible with 12 x 4 mm slots; selected stock width 9.525 mm, verify thickness in 4 mm slot",
+          "material": "Soft woven polyester",
+          "mass_g_per_unit": 18,
+          "mass_range_g_per_unit": [
+            12,
+            30
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Estimated 18 g/m installed; do not count unused stock",
+          "status": "Fit and mass require measurement",
+          "group": "necklace",
+          "stock_sources": [
+            {
+              "label": "3/8 inch utility polyester webbing, black",
+              "url": "https://www.strapworks.com/38-inch-utility-polyester-webbing-black"
+            }
+          ],
+          "installed_mass_g": 16.2,
+          "installed_mass_range_g": [
+            10.8,
+            27.0
+          ]
+        },
+        {
+          "id": "wear_loops",
+          "label": "Replaceable sewn wear loops",
+          "installed_quantity": 2,
+          "unit": "loop",
+          "purchase_quantity": "0.4 m extra webbing for four 100 mm loops: 2 installed and 2 spares",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "10 mm webbing; about 100 mm each; slot lips rounded 0.5 mm; selected stock width 9.525 mm, verify thickness in 4 mm slot",
+          "material": "Polyester plus thread",
+          "mass_g_per_unit": 2,
+          "mass_range_g_per_unit": [
+            1,
+            4
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "necklace",
+          "stock_sources": [
+            {
+              "label": "3/8 inch utility polyester webbing, black",
+              "url": "https://www.strapworks.com/38-inch-utility-polyester-webbing-black"
+            }
+          ],
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            8
+          ]
+        },
+        {
+          "id": "closed_rings",
+          "label": "Two deburred closed necklace rings",
+          "installed_quantity": 2,
+          "unit": "ring",
+          "purchase_quantity": "2 rings",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Provisional 20 mm OD x 3 mm section; closed, nonmagnetic",
+          "material": "Brass, smooth finish",
+          "mass_g_per_unit": 3,
+          "mass_range_g_per_unit": [
+            2,
+            6
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact purchasable nonmagnetic fitting unresolved; supplier/load and compass checks required",
+          "group": "necklace",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            4,
+            12
+          ]
+        },
+        {
+          "id": "neck_clasp",
+          "label": "Necklace adjustment/clasp fittings",
+          "installed_quantity": 1,
+          "unit": "set",
+          "purchase_quantity": "1 set",
+          "source": "hardware/enclosure/README.md",
+          "dimensions": "Fits 10 mm tape; do not rely on open jump rings",
+          "material": "Nonmagnetic metal/polymer",
+          "mass_g_per_unit": 6,
+          "mass_range_g_per_unit": [
+            3,
+            15
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Exact clasp, adjustment and snag-release behavior unresolved",
+          "group": "necklace",
+          "installed_mass_g": 6,
+          "installed_mass_range_g": [
+            3,
+            15
+          ]
+        },
+        {
+          "id": "belt_carrier",
+          "label": "Optional belt carrier and padding",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 custom carrier, not baseline",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "Fits same 80 x 65 x 20 mm pack",
+          "material": "Textile/polymer and foam",
+          "mass_g_per_unit": 45,
+          "mass_range_g_per_unit": [
+            25,
+            90
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "external",
+          "installed_mass_g": 45,
+          "installed_mass_range_g": [
+            25,
+            90
+          ]
+        },
+        {
+          "id": "belt_cable",
+          "label": "Optional raw-pack lead and disconnects",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 paired cable/harness, not baseline",
+          "source": "hardware/enclosure/battery-options.md",
+          "dimensions": "1.2 m paired 18 AWG + keyed disconnect and fuse/switch allowance",
+          "material": "Copper, insulation and connectors",
+          "mass_g_per_unit": 55,
+          "mass_range_g_per_unit": [
+            35,
+            90
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Fit and mass require measurement",
+          "group": "external",
+          "installed_mass_g": 55,
+          "installed_mass_range_g": [
+            35,
+            90
+          ]
+        },
+        {
+          "id": "gland",
+          "label": "Optional Adafruit PG-7 gland 762",
+          "installed_quantity": 1,
+          "unit": "assembly",
+          "purchase_quantity": "1 gland replaces internal blank",
+          "source": "https://www.adafruit.com/product/762",
+          "dimensions": "PG-7; cable diameter 3..4.3 mm, CAD bore 12 mm",
+          "material": "Polymer and elastomer",
+          "mass_g_per_unit": 4,
+          "mass_range_g_per_unit": [
+            2,
+            7
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Thread/nut/paired-cable fit not verified; no external option manufacture approval",
+          "group": "external",
+          "installed_mass_g": 4,
+          "installed_mass_range_g": [
+            2,
+            7
+          ]
+        },
+        {
+          "id": "charger",
+          "label": "Adafruit 259 external 1S charger",
+          "installed_quantity": 1,
+          "unit": "charger",
+          "purchase_quantity": "1 charging tool, never installed",
+          "source": "https://www.adafruit.com/product/259",
+          "dimensions": "Set selected 4.2 V chemistry, <=1 A, pack disconnected",
+          "material": "Populated board",
+          "mass_g_per_unit": 12,
+          "mass_range_g_per_unit": [
+            8,
+            20
+          ],
+          "mass_kind": "estimated",
+          "mass_basis": "Engineering allowance; weigh installed item",
+          "status": "Charge-only adapter/pack compatibility unresolved; excluded from worn mass",
+          "group": "tool",
+          "installed_mass_g": 12,
+          "installed_mass_range_g": [
+            8,
+            20
+          ]
+        },
+        {
+          "id": "soft_front_washers",
+          "label": "Custom silicone front retention washers",
+          "installed_quantity": 6,
+          "unit": "washer",
+          "purchase_quantity": "6 knife/die-cut washers plus 2 spares; offcut excluded",
+          "source": "hardware/enclosure/exports/soft-front-washer.svg",
+          "stock_sources": [
+            {
+              "label": "Stockwell SG-30 GP 0.020 inch",
+              "url": "https://www.stockwell.com/data-sheets/sg-series-solid-silicone.pdf"
+            }
+          ],
+          "dimensions": "9 OD x 6.4 ID x 0.508 mm free; 0.3048 mm target compressed",
+          "material": "Silicone rubber, smooth faces",
+          "mass_g_per_unit": 0.017572774968008024,
+          "mass_range_g_per_unit": [
+            0.015,
+            0.035
+          ],
+          "mass_kind": "calculated",
+          "mass_basis": "Free annulus volume x estimated 1.1 g/cm3; compression changes shape, not mass",
+          "status": "Stock hardness, compression force and retention require fit testing; knife/die cut, not an acrylic laser cut",
+          "group": "pendant",
+          "installed_mass_g": 0.1054,
+          "installed_mass_range_g": [
+            0.09,
+            0.21
+          ]
+        }
+      ],
+      "mass_estimate": {
+        "complete_pendant": {
+          "nominal_g": 968.0,
+          "range_g": [
+            739.2,
+            1198.4
+          ]
+        },
+        "necklace": {
+          "nominal_g": 32.2,
+          "range_g": [
+            19.8,
+            62.0
+          ]
+        },
+        "total_worn": {
+          "nominal_g": 1000.2,
+          "range_g": [
+            759.0,
+            1260.4
+          ]
+        },
+        "external_battery_pendant": {
+          "nominal_g": 780.0,
+          "range_g": [
+            560.2,
+            990.4
+          ]
+        },
+        "external_belt_and_lead": {
+          "nominal_g": 290.0,
+          "range_g": [
+            240.0,
+            390.0
+          ]
+        },
+        "external_total_worn": {
+          "nominal_g": 1102.2,
+          "range_g": [
+            820.0,
+            1442.4
+          ]
+        },
+        "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
+        "outstanding_measurements": [
+          "OpticalDeck",
+          "BarrelFrame",
+          "RearPlate",
+          "NecklaceLink0",
+          "NecklaceLink1",
+          "CircleRimFoot0",
+          "CircleRimFoot1",
+          "CircleRimFoot2",
+          "VentGuard0",
+          "VentGuard1",
+          "VentGuard2",
+          "VentGuard3",
+          "ServiceCover",
+          "FrontSheet",
+          "RearMirror",
+          "EdgeDiffuser",
+          "OuterLightShield",
+          "HaloRing",
+          "HaloLightShield",
+          "InnerRing",
+          "InnerLightShield",
+          "wood",
+          "front_coating",
+          "rim_mask",
+          "rear_coating",
+          "wood_finish",
+          "circle",
+          "halo_strip",
+          "inner_strip",
+          "outer_strip",
+          "sparkle",
+          "blackpill",
+          "gps",
+          "imu",
+          "radio",
+          "rf_antenna",
+          "boost",
+          "battery",
+          "sense",
+          "fuse",
+          "power_switch",
+          "buttons",
+          "bulk_cap",
+          "power_connectors",
+          "led_connectors",
+          "logic_connectors",
+          "usb_adapter",
+          "power_wire",
+          "signal_wire",
+          "wire_finish",
+          "body_screws",
+          "anchor_screws",
+          "rear_screws",
+          "service_screws",
+          "M3_nuts",
+          "M2_nuts",
+          "M3_washers",
+          "M3_front_washers",
+          "M2_washers",
+          "sparkle_mount_hardware",
+          "joint_seals",
+          "hatch_gasket",
+          "vents",
+          "control_membranes",
+          "seam_adhesive",
+          "padding",
+          "battery_straps",
+          "board_ties",
+          "blank",
+          "neck_webbing",
+          "wear_loops",
+          "closed_rings",
+          "neck_clasp",
+          "belt_carrier",
+          "belt_cable",
+          "gland",
+          "soft_front_washers"
+        ]
+      }
+    }
+  },
   "components": [
     {
       "id": "OpticalDeck",
@@ -960,23 +5232,23 @@
     },
     {
       "id": "EdgeDiffuser",
-      "label": "Outside printed glow ring",
+      "label": "Outside printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/EdgeDiffuser.3mf",
       "dimensions": "246.00 mm inside diameter x 2.0 mm wall x 33.0 mm high, Z=3.2 mm; CAD bounds 249.82 x 249.91 x 33.00 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Four-path wall, optical output, handling strength, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "EdgeDiffuser",
-      "mass_formula": "glow_petg_volume",
+      "mass_formula": "ring_petg_volume",
+      "material": "Prusament PETG Ultraglow Green",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
       "stock_sources": [
         {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
+          "label": "Prusament PETG Ultraglow Green",
+          "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
         }
       ],
       "mass_g_per_unit": 77.13239999999999,
@@ -1023,23 +5295,23 @@
     },
     {
       "id": "HaloRing",
-      "label": "Halo printed glow ring",
+      "label": "Halo printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/HaloRing.3mf",
       "dimensions": "177.02 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 179.02 x 179.02 x 10.60 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "HaloRing",
-      "mass_formula": "glow_petg_volume",
+      "mass_formula": "ring_petg_volume",
+      "material": "Prusament PETG Ultraglow Green",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
       "stock_sources": [
         {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
+          "label": "Prusament PETG Ultraglow Green",
+          "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
         }
       ],
       "mass_g_per_unit": 8.8923,
@@ -1086,23 +5358,23 @@
     },
     {
       "id": "InnerRing",
-      "label": "Inner printed glow ring",
+      "label": "Inner printed ring",
       "installed_quantity": 1,
       "unit": "part",
       "purchase_quantity": "1 whole upright printed ring",
       "source": "hardware/enclosure/exports/InnerRing.3mf",
       "dimensions": "215.47 mm inside diameter x 1.0 mm wall x 10.6 mm high, Z=25.6 mm; CAD bounds 217.33 x 217.40 x 10.60 mm",
-      "material": "Prusament PETG Ultraglow Green",
       "mass_kind": "calculated",
-      "mass_basis": "CAD net solid volume x 1.5 g/cm3 per Prusament PETG Ultraglow Green technical sheet; verify printed mass",
       "status": "Print path, optical output, fit and mass need physical acceptance",
       "group": "pendant",
       "cad_part": "InnerRing",
-      "mass_formula": "glow_petg_volume",
+      "mass_formula": "ring_petg_volume",
+      "material": "Prusament PETG Ultraglow Green",
+      "mass_basis": "CAD net solid volume x 1.5 g/cm3; Prusament PETG Ultraglow technical sheet; verify printed mass",
       "stock_sources": [
         {
-          "label": "Prusa Ultraglow technical sheet",
-          "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-prusament-prod/2026/05/a150c178-prusament-petg-ultraglow-filament-technical-data-sheet.pdf"
+          "label": "Prusament PETG Ultraglow Green",
+          "url": "https://prusament.com/materials/prusament-petg-ultraglow/"
         }
       ],
       "mass_g_per_unit": 10.81305,
@@ -2704,5 +6976,43 @@
     "CircleRimFoot2": 0.08,
     "OpticalDeck": 88.91,
     "BarrelFrame": 52.64
+  },
+  "slicer_mass_by_ring_material": {
+    "glow": {
+      "NecklaceLink0": 5.52,
+      "NecklaceLink1": 3.99,
+      "VentGuard0": 1.52,
+      "VentGuard1": 1.52,
+      "VentGuard2": 1.52,
+      "VentGuard3": 1.52,
+      "ServiceCover": 3.45,
+      "RearPlate": 95.59,
+      "EdgeDiffuser": 76.83,
+      "HaloRing": 9.43,
+      "InnerRing": 11.46,
+      "CircleRimFoot0": 0.08,
+      "CircleRimFoot1": 0.08,
+      "CircleRimFoot2": 0.08,
+      "OpticalDeck": 88.91,
+      "BarrelFrame": 52.64
+    },
+    "silver": {
+      "NecklaceLink0": 5.52,
+      "NecklaceLink1": 3.99,
+      "VentGuard0": 1.52,
+      "VentGuard1": 1.52,
+      "VentGuard2": 1.52,
+      "VentGuard3": 1.52,
+      "ServiceCover": 3.45,
+      "RearPlate": 95.59,
+      "EdgeDiffuser": 66.07,
+      "HaloRing": 8.11,
+      "InnerRing": 9.86,
+      "CircleRimFoot0": 0.08,
+      "CircleRimFoot1": 0.08,
+      "CircleRimFoot2": 0.08,
+      "OpticalDeck": 88.91,
+      "BarrelFrame": 52.64
+    }
   }
 }

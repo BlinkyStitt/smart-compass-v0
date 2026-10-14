@@ -51,7 +51,7 @@ class CadWorkflowTests(unittest.TestCase):
                  cad.EXPORTS + '/amulet.glb', cad.EXPORTS + '/scene.json',
                  cad.EXPORTS + '/demo-front-indoor.png',
                  cad.EXPORTS + '/exploded.gif', cad.EXPORTS + '/exploded.mp4',
-                 cad.EXPORTS + '/smart-compass-print-service.zip', cad.CAD + '/service-guide.html')
+                 cad.EXPORTS + '/smart-compass-glow-print-service.zip', cad.CAD + '/service-guide.html')
         for path in paths:
             with self.subTest(path=path):
                 original = self.snapshot.read(path)

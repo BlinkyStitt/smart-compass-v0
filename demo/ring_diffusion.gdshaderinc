@@ -1,3 +1,7 @@
+// Material coefficients come from the selected scene material option.
+uniform vec3 ring_absorption = vec3(0.40,0.08,0.65);
+uniform float ring_prompt_green = 0.06;
+uniform float ring_stored_emission = 1.0;
 // One continuous surface model for all direct and reflected ring light.
 // The Gaussian blend and small LED peaks are unmeasured diffuser assumptions.
 vec3 ring_field(sampler2D field, vec3 p, int ring_group, int pixel_count, float ring_radius) {
@@ -31,11 +35,11 @@ vec3 diffused_ring_light(vec3 p, int ring_group, int pixel_count, float ring_rad
 
 // The same material response supplies direct rings and every reflected copy.
 // Absorption, fluorescence and stored emission are illustrative, not measured.
-vec3 glow_ring_light(vec3 p, int ring_group, int pixel_count, float ring_radius, float source_z, float thickness_mm, float led_brightness, float led_transmission) {
+vec3 ring_light(vec3 p, int ring_group, int pixel_count, float ring_radius, float source_z, float thickness_mm, float led_brightness, float led_transmission) {
     vec3 incident = diffused_ring_light(p,ring_group,pixel_count,ring_radius,source_z);
-    vec3 filtered = incident*exp(-vec3(0.40,0.08,0.65)*thickness_mm)*led_transmission;
+    vec3 filtered = incident*exp(-ring_absorption*thickness_mm)*led_transmission;
     vec3 green = vec3(0.16,1.0,0.025);
-    vec3 prompt = green*incident.b*0.06;
+    vec3 prompt = green*incident.b*ring_prompt_green;
     vec2 stored = ring_field(charges,p,ring_group,pixel_count,ring_radius).rg;
-    return (filtered+prompt)*led_brightness+green*(0.18*stored.r+0.045*stored.g);
+    return (filtered+prompt)*led_brightness+green*(0.18*stored.r+0.045*stored.g)*ring_stored_emission;
 }

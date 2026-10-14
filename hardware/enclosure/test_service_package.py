@@ -1,4 +1,5 @@
 """Check supplier quantities, process settings, archive integrity and self-contained links."""
+from copy import deepcopy
 import csv
 import io
 import json
@@ -33,14 +34,18 @@ class ServicePackageTests(unittest.TestCase):
                             {'file': 'FitSuspensionBracketLeft.stl', 'source_part': 'NecklaceLink0'}],
             'components': [{'cad_part': name, 'installed_quantity': 1,
                             'material': 'Prusament PETG Ultraglow Green' if name == 'HaloRing' else 'Opaque PETG',
-                            'mass_formula': 'glow_petg_volume' if name == 'HaloRing' else 'petg_volume'}
+                            'mass_formula': 'ring_petg_volume' if name == 'HaloRing' else 'petg_volume'}
                            for name in ('HaloRing', 'NecklaceLink0', 'OpticalDeck')],
         }
+        self.parts['material_variants']={key:{'components':deepcopy(self.parts['components'])} for key in self.spec['ring_materials']}
+        self.parts['components']=self.parts['material_variants']['glow']['components']
+        for row in self.parts['material_variants']['silver']['components']:
+            if row['mass_formula']=='ring_petg_volume': row['material']='Extrudr PETG Silver'
         self.save_parts()
-        for name in slicing.project_names(self.parts):
+        for name,project,material in slicing.project_jobs(self.parts,self.spec):
             (self.exports/name).write_bytes(('mesh '+name).encode())
-            with zipfile.ZipFile((self.exports/name).with_suffix('.3mf'), 'w') as archive:
-                profile = slicing.settings(self.spec, name)
+            with zipfile.ZipFile(self.exports/project, 'w') as archive:
+                profile = slicing.settings(self.spec, name, material)
                 archive.writestr('Metadata/Slic3r_PE.config', ''.join(f'; {key} = {value}\n' for key, value in profile.items()))
         for name in service_package.REFERENCES:
             (self.exports/name).write_bytes(('reference '+name).encode())
@@ -69,7 +74,7 @@ class ServicePackageTests(unittest.TestCase):
 
     def test_archive_is_reproducible_and_rejects_changed_or_extra_contents(self):
         service_package.generate(self.root)
-        path = self.exports/service_package.ARCHIVE
+        path = self.exports/service_package.archive_name('glow')
         original = path.read_bytes()
         service_package.generate(self.root)
         self.assertEqual(path.read_bytes(), original)
@@ -82,6 +87,21 @@ class ServicePackageTests(unittest.TestCase):
             archive.writestr('unlisted.stl', b'not ordered')
         with self.assertRaisesRegex(cad.CadError, 'inventory differs'):
             service_package.verify(path, service_package.shipment(self.root))
+
+    def test_silver_package_uses_silver_profiles_and_its_own_acceptance(self):
+        files=service_package.shipment(self.root,'silver')
+        rows=list(csv.DictReader(io.StringIO(files['ORDER.csv'].decode())))
+        ring=next(row for row in rows if row['file'].endswith('/HaloRing.3mf'))
+        self.assertEqual(ring['material'],'Extrudr PETG Silver')
+        with zipfile.ZipFile(io.BytesIO(files[ring['file']])) as archive:
+            profile=slicing.configuration(archive.read('Metadata/Slic3r_PE.config').decode())
+        self.assertEqual(float(profile['filament_density']),1.29)
+        guide=files['START-HERE.html'].decode()
+        self.assertIn('Silver PETG print service handoff',guide)
+        self.assertIn('If the silver is opaque',guide)
+        self.assertNotIn('Record green afterglow immediately',guide)
+        self.assertEqual(files['03-STL-ALTERNATIVES/02-FULL-PARTS-HOLD/HaloRing.stl'],
+                         service_package.shipment(self.root,'glow')['03-STL-ALTERNATIVES/02-FULL-PARTS-HOLD/HaloRing.stl'])
 
     def test_wrong_delivered_profile_cannot_enter_package(self):
         path = self.exports/'HaloRing.3mf'

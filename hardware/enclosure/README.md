@@ -2,35 +2,38 @@
 
 ## Send to a print service
 
-Send [smart-compass-print-service.zip](exports/smart-compass-print-service.zip).
-Ask the service to unzip it and open **START-HERE.html**. The guide contains the
-order quantities, materials, settings, reference views and acceptance checks.
-Quote both stages and print the **13 samples first**. Hold the **16 full parts**
-until the physical samples pass and you release that order.
+Choose one material package for the assembly:
 
-The package separates sample projects, held full-part projects, alternative STL
-geometry and assembly references. Use either the 3MF or matching STL for each
-part; they are the same pieces. The package covers the current glow PETG model.
-The silver material option remains under review.
+- [Glow PETG print-service ZIP](exports/smart-compass-glow-print-service.zip)
+- [Silver PETG print-service ZIP](exports/smart-compass-silver-print-service.zip)
+
+Ask the service to unzip the selected package and open **START-HERE.html**.
+Each contains the 13 samples, 16 held full parts, exact quantities, materials,
+print settings, references and acceptance checks. Quote both stages and print
+samples first. Release a full order only after that material's samples pass.
+Both versions use the same strong 2.0 mm outside wall and the same light shields.
+The silver candidate is Extrudr PETG Silver. Its transmission through these walls
+is unqualified. Do not thin the outside wall to copy a small PLA diffuser.
 
 The loose `exports` folder also contains laser-cut files and preview media.
-Use the ZIP for the print-service handoff. Run `just cad` to regenerate it with
-all checked CAD outputs; the freshness check covers the ZIP too.
+Use the selected ZIP for a print-service handoff. Run `just cad` to regenerate
+both packages and all checked CAD outputs; freshness covers both ZIPs.
 
 Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The front is one
 250 mm clear acrylic sheet with a clear centre, a 25 mm two-way mirror annulus,
 and a black masked rim. Use listed 0.060 inch (1.524 mm nominal) stock and
 measure its actual thickness before the final cut. The rear mirror uses a
-separate thickness input. The three light rings are whole printed Prusament
-PETG Ultraglow Green parts. Their pale daytime appearance, green afterglow,
-and partial loss of LED colour need physical sample review.
+separate thickness input. The three light rings are whole printed PETG parts. Select either Prusament
+PETG Ultraglow Green or the Extrudr PETG Silver sample candidate. The glow option has a pale daytime appearance, green afterglow, and partial
+loss of LED colour. The silver option has no afterglow. Both need physical
+review of production-wall samples.
 
 The reflecting planes stay at Z=25.5 and 36.7 mm, 11.2 mm apart. The collar
 top follows the measured front sheet and compressed washer height. The saved
 spreadsheet owns the dimensions after the first build. Do not approve a full
 print order until supplier fit samples and actual hardware pass.
 
-[Moving rainbow](exports/infinity-rainbow.gif) · [Green afterglow](exports/glow-afterglow.mp4) · [Ocean](exports/infinity-ocean.gif) ·
+[Glow rainbow GIF](exports/infinity-rainbow.gif) ([MP4](exports/infinity-rainbow.mp4)) · [Silver rainbow GIF](exports/infinity-rainbow-silver.gif) ([MP4](exports/infinity-rainbow-silver.mp4)) · [Green afterglow](exports/glow-afterglow.mp4) · [Ocean](exports/infinity-ocean.gif) ·
 [Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4) ·
 [Explode and reassemble](exports/exploded.gif) ([MP4](exports/exploded.mp4))
 
@@ -95,8 +98,8 @@ must use its actual qualified printer and material presets.
 | Structural parts | PETG, 0.4 mm nozzle | 0.2 mm; 0.45 mm nominal path; 5 perimeters, 25% gyroid | Delivered bed face |
 | Necklace brackets | PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
 | Optical deck | PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
-| Halo and inner rings | Prusament PETG Ultraglow Green; abrasion-resistant, non-high-flow 0.4 mm nozzle | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
-| Outside ring | Same glow PETG and nozzle | 0.2 mm; four 0.53 mm nominal paths; 0.46 mm first-layer paths | Upright on circular bottom edge |
+| Halo and inner rings | Selected PETG variant; non-high-flow 0.4 mm nozzle; abrasion-resistant for Ultraglow | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
+| Outside ring | Same selected PETG and nozzle | 0.2 mm; four 0.53 mm nominal paths; 0.46 mm first-layer paths | Upright on circular bottom edge |
 
 The outside profile accounts for overlap between adjacent extrusion paths.
 Its first-layer width also accounts for the 0.15 mm elephant-foot compensation.
@@ -144,9 +147,12 @@ cracks and layer separation. Check handling during repeated installation and
 removal. A full-size ring must also pass handling and assembly checks; an arc
 cannot establish whole-ring strength. Reject cracking or permanent distortion.
 
-Print glow-ring arc samples at all three curvatures with the production wall
+Print the selected material’s ring arc samples at all three curvatures with the production wall
 and path widths. Review LED patterns at the permitted power limit. Record
-visible afterglow immediately and at 1, 5 and 15 minutes. Stop the full order
+visible afterglow immediately and at 1, 5 and 15 minutes for the glow option.
+For silver, check white, red, green, blue and moving rainbow patterns through
+both production wall thicknesses. Stop the silver order if transmission or
+diffusion is unacceptable. Stop the full order
 if any sample fails; correct the cause and repeat its fit test.
 
 Cut trial sections from the [halo](exports/halo-light-shield.svg),
@@ -334,7 +340,7 @@ frame replacement is required.
 ## Ordering a print from a service
 
 Supply all sixteen whole printed parts and their thirteen fit samples. Require a
-300 mm printer, the specified structural PETG and Ultraglow Green, the
+300 mm printer, the specified structural PETG and selected ring filament, the
 orientations above, and an agreement to inspect functional fits. The supplier
 must print the samples with production settings and inspect the actual ring
 paths before a full order.
@@ -463,3 +469,17 @@ existing provisional 100 N per-side static target for 60 seconds in hanging and 
 directions. Use the sustained/repeated-load procedure above, then repeat with
 measured mass. Set snag and drop checks after measurement.
 These are acceptance targets, not a load rating or proof of a successful print.
+
+## Filament evidence and model limits
+
+[Adafruit’s arcade button](https://learn.adafruit.com/neopixel-arcade-button/3d-printing)
+uses ColorFabb glowFill PLA/PHA. The
+[tactile button guide](https://cdn-learn.adafruit.com/downloads/pdf/3d-printed-neopixel-tactile-switch-buttons.pdf)
+preferred glow PLA over white ABS. These support testing glow diffusers.
+[Christopher Parrott’s experiment](https://zodiusinfuser.uk/blog/2018/06/08/experimenting-with-3d-printed-light-diffusers/)
+used 0.4 mm Rigid.ink silver PLA, darker Prusa silver PLA dividers, and pearl
+PLA for cube edges. Those results do not establish transmission through our
+1.0/2.0 mm PETG walls. The [Extrudr PETG Silver](https://www.extrudr.com/en/inlt/products/petg/)
+version is a sample candidate. Keep it separate from the glow order and stop
+its full order if optical samples fail. The renderer uses neutral silver
+absorption and zero stored emission; its coefficients are unmeasured assumptions.

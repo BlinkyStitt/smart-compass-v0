@@ -32,13 +32,16 @@ INPUTS = (
     )),
 )
 FIXED_EXPORTS = frozenset('''
-smart-compass-print-service.zip amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
+smart-compass-glow-print-service.zip smart-compass-silver-print-service.zip amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
 diffusers.png edge.png electronics.png
 exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
 front.png
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
-amulet.glb scene.json lighting-demo.mp4
+amulet.glb amulet-silver.glb scene.json lighting-demo.mp4
+infinity-rainbow.mp4 infinity-rainbow-silver.mp4 infinity-rainbow-silver.gif
+HaloRing-silver.3mf InnerRing-silver.3mf EdgeDiffuser-silver.3mf
+FitRingHalo-silver.3mf FitRingInner-silver.3mf FitRingOutside-silver.3mf
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 glow-afterglow.gif glow-afterglow.mp4 glow-afterglow-poster.png
 FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
@@ -49,7 +52,7 @@ halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
 GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf', '.zip'}
-RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg'))
+RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg', 'smart-compass-print-service.zip'))
 
 
 class CadError(Exception):

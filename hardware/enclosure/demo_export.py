@@ -166,7 +166,14 @@ def export():
             'compression_stop_diameter_m':.006,'front_sheet_volume_cm3':sheet.Volume/1000,
             'fasteners_m':[[x/1000,y/1000,front/1000] for x,y in mounting_points(p)],
             'printed_part_count':len(inventory['stl_files']),'mass_estimate':inventory['mass_estimate']}}
-    glb.save(out/'amulet.glb')
+    materials=json.loads((HERE/'print-spec.json').read_text())['ring_materials']
+    metadata['ring_materials']=materials
+    for material_id,material in materials.items():
+        render=material['render']
+        for part,entry in zip(parts,glb.doc['materials']):
+            if part['role']=='sleeve':
+                entry['pbrMetallicRoughness']={'baseColorFactor':[*render['albedo'],1], 'metallicFactor':render['metallic'], 'roughnessFactor':render['roughness']}
+        glb.save(out/('amulet.glb' if material_id=='glow' else 'amulet-'+material_id+'.glb'))
     (out/'scene.json').write_text(json.dumps(metadata,indent=2)+'\n')
     App.closeDocument(source.Name)
     assert hashlib.sha256(master.read_bytes()).hexdigest()==original

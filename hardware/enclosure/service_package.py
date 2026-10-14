@@ -12,7 +12,8 @@ import zipfile
 import cad
 import slicing
 
-ARCHIVE = 'smart-compass-print-service.zip'
+def archive_name(material):
+    return 'smart-compass-'+material+'-print-service.zip'
 LABELS = MappingProxyType({
     'OpticalDeck': 'Front optical deck', 'BarrelFrame': 'Main barrel frame',
     'RearPlate': 'Removable rear plate', 'NecklaceLink0': 'Left necklace bracket',
@@ -25,15 +26,16 @@ LABELS = MappingProxyType({
 REFERENCES = ('assembly.png', 'exploded.png', 'assembly-section.svg', 'smart-compass.step')
 
 
-def shipment(root):
+def shipment(root, material='glow'):
     root = Path(root)
     directory = root/cad.CAD
     exports = root/cad.EXPORTS
     parts = json.loads((exports/'parts.json').read_text())
     spec = json.loads((directory/'print-spec.json').read_text())
     parameters = parts['parameters_for_inventory']
-    components = {row['cad_part']: row for row in parts['components']
-                  if row.get('mass_formula') in ('petg_volume', 'glow_petg_volume')}
+    choice = spec['ring_materials'][material]
+    components = {row['cad_part']: row for row in parts['material_variants'][material]['components']
+                  if row.get('mass_formula') in ('petg_volume', 'ring_petg_volume')}
     rows, files = [], {}
     groups = [('01-SAMPLES-PRINT-FIRST', [(name['file'], name['source_part']) for name in parts['fit_samples']]),
               ('02-FULL-PARTS-HOLD', [(name, Path(name).stem) for name in parts['stl_files']])]
@@ -45,9 +47,9 @@ def shipment(root):
             quantity = 1 if stage.startswith('01-') else component['installed_quantity']
             if not isinstance(quantity, (int, float)) or quantity != int(quantity) or quantity <= 0:
                 raise cad.CadError('Invalid service part quantity: '+name)
-            profile = slicing.settings(spec, name)
+            profile = slicing.settings(spec, name, material)
             project = Path(name).with_suffix('.3mf').name
-            data = (exports/project).read_bytes()
+            data = (exports/slicing.project_filename(name,material)).read_bytes()
             with zipfile.ZipFile(io.BytesIO(data)) as archive:
                 slicing.verify_settings(slicing.configuration(archive.read('Metadata/Slic3r_PE.config').decode()), profile, project)
             path = stage+'/'+project
@@ -87,7 +89,9 @@ def shipment(root):
             result.append('<tr>'+''.join('<td>'+cell+'</td>' for cell in cells)+'</tr>')
         return '\n'.join(result)
     counts = {stage: sum(row['quantity'] for row in rows if row['stage'] == stage) for stage, names in groups}
-    values = dict(package_id=identifier, samples=counts[groups[0][0]], products=counts[groups[1][0]],
+    values = dict(material_label=choice['label'], material_name=choice['filament'],
+                  nozzle_instructions=choice['nozzle'], evidence=choice['evidence'], optical_acceptance=choice['acceptance'],
+                  package_id=identifier, samples=counts[groups[0][0]], products=counts[groups[1][0]],
                   sample_rows=table(groups[0][0]), product_rows=table(groups[1][0]),
                   cavity_wall=f'{parameters["ring_diffuser_thickness"]:.1f}',
                   outside_wall=f'{parameters["edge_diffuser_thickness"]:.1f}',
@@ -101,7 +105,7 @@ def shipment(root):
                   deck_bottom=spec['optical_deck']['bottom_solid_layers'], first_layer=spec['common']['first_layer_height'])
     guide = Template(template).substitute(values)
     files['START-HERE.html'] = guide.encode()
-    files['START-HERE.txt'] = (f'SMART COMPASS - PRINT SERVICE HANDOFF\nPackage {identifier}\n\n'
+    files['START-HERE.txt'] = (f'SMART COMPASS - {choice["label"]} - PRINT SERVICE HANDOFF\nPackage {identifier}\n\n'
         'Unzip this entire package, then open START-HERE.html in a web browser.\n'
         f'Quote both stages. Print only the {values["samples"]} samples in 01-SAMPLES-PRINT-FIRST first.\n'
         f'Hold the {values["products"]} full parts in 02-FULL-PARTS-HOLD until the customer releases the order.\n'
@@ -110,7 +114,7 @@ def shipment(root):
         'Keep dimensions and supplied orientation. Use millimetres for STL import.\n'
         'Reference images and the assembly STEP are not print jobs.\n'
         '300 x 300 mm printer required. Do not split or scale the circles.\n'
-        'Use the specified opaque PETG and Prusament PETG Ultraglow Green.\n'
+        f'Use the specified opaque PETG and {choice["filament"]}.\n'
         'Projects omit heater setpoints and machine start/end programs; select your real machine/filament presets.\n'
         'CAD and slicing passed. Physical print, fit, strength and optics acceptance remain pending.\n').encode()
     files['CHECKSUMS.sha256'] = ''.join(hashlib.sha256(data).hexdigest()+'  '+name+'\n'
@@ -129,13 +133,15 @@ def verify(path, expected):
 
 def generate(root):
     root = Path(root)
-    files = shipment(root)
-    target = root/cad.EXPORTS/ARCHIVE
-    with zipfile.ZipFile(target, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
-        for name, data in sorted(files.items()):
-            entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
-            entry.compress_type = zipfile.ZIP_DEFLATED
-            entry.external_attr = 0o100644 << 16
-            archive.writestr(entry, data)
-    verify(target, files)
-    print('PRINT SERVICE PACKAGE PASS: '+str(target), flush=True)
+    spec=json.loads((root/cad.CAD/'print-spec.json').read_text())
+    for material in spec['ring_materials']:
+        files = shipment(root,material)
+        target = root/cad.EXPORTS/archive_name(material)
+        with zipfile.ZipFile(target, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+            for name, data in sorted(files.items()):
+                entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+                entry.compress_type = zipfile.ZIP_DEFLATED
+                entry.external_attr = 0o100644 << 16
+                archive.writestr(entry, data)
+        verify(target, files)
+        print('PRINT SERVICE PACKAGE PASS: '+str(target), flush=True)

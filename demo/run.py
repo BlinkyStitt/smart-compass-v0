@@ -14,7 +14,7 @@ from reference import cases
 
 VIEWS = ('front', 'steep', 'edge', 'rear')
 LIGHTS = ('night', 'indoor', 'overcast', 'sun')
-GRADIENTS = tuple(f'infinity-{style}.gif' for style in ('rainbow', 'ocean', 'sunset'))
+GRADIENTS = tuple(f'infinity-{style}.gif' for style in ('rainbow', 'ocean', 'sunset', 'rainbow-silver'))
 CAPTURES = tuple(f'demo-{view}-{light}.png' for view in VIEWS for light in LIGHTS)
 
 
@@ -73,10 +73,13 @@ def capture():
         subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'amulet-demo.mp4'),'-t','24',
                         '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                         '-loop','0',str(output/'turntable.gif')],check=True)
-        for style in ('rainbow','ocean','sunset'):
+        for style in ('rainbow','ocean','sunset','rainbow-silver'):
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'gradient-{style}-%04d.png'),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(output/f'infinity-{style}.gif')],check=True)
+        for suffix in ('','-silver'):
+            subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/('gradient-rainbow'+suffix+'-%04d.png')),
+                            '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/('infinity-rainbow'+suffix+'.mp4'))],check=True)
         subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/'exploded-%04d.png'),
                         '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'exploded.mp4')],check=True)
         subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'exploded.mp4'),
@@ -90,13 +93,13 @@ def capture():
                         '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                         '-loop','0',str(output/'glow-afterglow.gif')],check=True)
         shutil.copyfile(frames/'afterglow-poster.png',output/'glow-afterglow-poster.png')
-    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png','glow-afterglow.gif','glow-afterglow.mp4','glow-afterglow-poster.png'):
+    for name in (*CAPTURES,*GRADIENTS,'infinity-rainbow.mp4','infinity-rainbow-silver.mp4','lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png','glow-afterglow.gif','glow-afterglow.mp4','glow-afterglow-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else (1280,720)
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
-            seconds={'amulet-demo.mp4':52,'lighting-demo.mp4':12,'exploded.mp4':24,'glow-afterglow.mp4':24}[name]
+            seconds={'amulet-demo.mp4':52,'lighting-demo.mp4':12,'exploded.mp4':24,'glow-afterglow.mp4':24,'infinity-rainbow.mp4':16,'infinity-rainbow-silver.mp4':16}[name]
             assert int(probe['nb_frames'])==seconds*24 and abs(float(probe['duration'])-seconds)<.01
         if name.endswith('.gif'):
             seconds=16 if name in GRADIENTS else 24

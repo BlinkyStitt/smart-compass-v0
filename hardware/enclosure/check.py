@@ -374,7 +374,14 @@ def check():
     manifest = json.loads((HERE/'exports/parts.json').read_text())
     assert 'CellBaffle.stl' not in manifest['stl_files'], 'Superseded divider grid exported for printing'
     assert all(f'CircleRimFoot{i}.stl' in manifest['stl_files'] for i in range(3))
-    rows=inventory.resolve(json.loads((HERE/'component-inventory.json').read_text()),manifest['volumes'],p)
+    print_spec=json.loads((HERE/'print-spec.json').read_text())
+    component_spec=json.loads((HERE/'component-inventory.json').read_text())
+    for material_name,material in print_spec['ring_materials'].items():
+        variant_rows=inventory.resolve(component_spec,manifest['volumes'],p,material)
+        variant=manifest['material_variants'][material_name]
+        assert variant_rows==variant['components'], 'Material-specific component ledger differs from source inventory'
+        assert inventory.totals(variant_rows)==variant['mass_estimate'], 'Material-specific mass totals differ from component ledger'
+    rows=manifest['material_variants'][print_spec['default_ring_material']]['components']
     assert rows==manifest['components'], 'Exported component ledger differs from source inventory'
     assert inventory.totals(rows)==manifest['mass_estimate'], 'Complete mass totals differ from component ledger'
     assert manifest['mass_estimate']['complete_pendant']['nominal_g'] > 700
