@@ -1,5 +1,22 @@
 # Round compass pendant
 
+## Send to a print service
+
+Send [smart-compass-print-service.zip](exports/smart-compass-print-service.zip).
+Ask the service to unzip it and open **START-HERE.html**. The guide contains the
+order quantities, materials, settings, reference views and acceptance checks.
+Quote both stages and print the **13 samples first**. Hold the **16 full parts**
+until the physical samples pass and you release that order.
+
+The package separates sample projects, held full-part projects, alternative STL
+geometry and assembly references. Use either the 3MF or matching STL for each
+part; they are the same pieces. The package covers the current glow PETG model.
+The silver material option remains under review.
+
+The loose `exports` folder also contains laser-cut files and preview media.
+Use the ZIP for the print-service handoff. Run `just cad` to regenerate it with
+all checked CAD outputs; the freshness check covers the ZIP too.
+
 Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The front is one
 250 mm clear acrylic sheet with a clear centre, a 25 mm two-way mirror annulus,
 and a black masked rim. Use listed 0.060 inch (1.524 mm nominal) stock and

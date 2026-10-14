@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Compass — print service instructions</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;color:#18212b;max-width:1150px;margin:32px auto;padding:0 20px}h1,h2,h3{line-height:1.2}h2{margin-top:2em}.notice{padding:18px;border:3px solid #915600;background:#fff3d6}.info{padding:16px;background:#edf3f8}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #bdc8d3;padding:8px;text-align:left;vertical-align:top}th{background:#edf3f8}a{color:#064b8a;overflow-wrap:anywhere}img{max-width:100%;height:auto}.scroll{overflow-x:auto}li{margin:.5em 0}@media print{body{margin:0;max-width:none;font-size:10pt}.scroll{overflow:visible}table{font-size:8pt}tr,img,.notice{break-inside:avoid}h2,h3{break-after:avoid}}
+</style>
+<h1>Smart Compass: print service handoff</h1>
+<p>Package <strong>$package_id</strong> · All dimensions are millimetres.</p>
+<div class="notice"><strong>Print samples first. Hold the full order.</strong>
+<p>Quote both stages. Print <strong>$samples disposable samples</strong> first. Print the <strong>$products full assembly parts</strong> only after the customer confirms sample acceptance and releases that stage.</p>
+<p>CAD and slicing checks passed. Physical print, fit, strength and optical acceptance remain pending.</p></div>
+<h2>1. Confirm that you can make this job</h2>
+<ul>
+<li>Use a printer with at least a <strong>300 × 300 mm bed</strong>. The largest rear part needs at least 259 mm of usable width with its brim. Keep all circles whole. Keep the supplied scale and bed orientation.</li>
+<li>Use <strong>opaque PETG</strong> for the frame, deck, rear, brackets, spacers, guards and cover. Use <strong>Prusament PETG Ultraglow Green</strong> for the three light rings and their arc samples. Identify your proposed opaque PETG before printing. A silver material option is under review and is not included in this package.</li>
+<li>Use a <strong>0.4 mm nozzle</strong>. For Ultraglow use an abrasion-resistant, non-high-flow nozzle. Prusa recommends 0.6 mm to reduce clogging; this job uses 0.4 mm and requires inspection of the actual production paths.</li>
+<li>Use a $brim mm brim, with $brim_gap mm brim separation, and no supports. Keep elephant-foot compensation at $foot mm.</li>
+<li>Print the samples on the production machine with the production filament and settings. Agree to inspect dimensions and functional fits with the actual mating hardware.</li>
+</ul>
+<h2>2. Which files should you use?</h2>
+<table><thead><tr><th>Folder / file</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>01-SAMPLES-PRINT-FIRST</td><td>Start here. One of each sample. Both bracket arrangements are included.</td></tr>
+<tr><td>02-FULL-PARTS-HOLD</td><td>One complete $products-part set. Hold until the customer releases it.</td></tr>
+<tr><td>03-STL-ALTERNATIVES</td><td>The same parts as plain STL geometry. Use these only if your slicer cannot use the 3MF files. Apply the table settings and import in millimetres. These are not additional pieces to print.</td></tr>
+<tr><td>04-REFERENCE-DO-NOT-PRINT</td><td>Assembly views, a section drawing and the complete assembly STEP. Use them to understand the fit. The STEP includes nonprinted items and is not one print job.</td></tr>
+<tr><td>ORDER.csv</td><td>The two-stage quantity, material and settings list. Each listed 3MF contains one part.</td></tr>
+<tr><td>CHECKSUMS.sha256</td><td>File checksums for shipment integrity.</td></tr>
+</tbody></table>
+<p class="info"><strong>3MF files are slicer projects, not printer programs.</strong> They contain geometry, orientation and reference print settings. They deliberately omit heater setpoints and machine start/end programs. Select your actual machine and filament presets, then retain the specified geometry and process settings. Check the resulting paths before printing. Do not run G-code with zero heater setpoints.</p>
+<h2>3. Sample order — print these first</h2>
+<p>One of each file below. These samples are disposable and do not enter the final assembly.</p>
+<div class="scroll"><table><thead><tr><th>File</th><th>Use</th><th>Qty</th><th>Material</th><th>Layer / walls</th><th>Infill</th><th>Path / first layer</th><th>Top / bottom layers</th></tr></thead><tbody>
+$sample_rows
+</tbody></table></div>
+<h2>4. Full order — hold for sample acceptance</h2>
+<p>Print the listed quantities below for one complete $products-part printed set. The similarly named spacers and guards are distinct positioned parts; keep their file identities.</p>
+<div class="scroll"><table><thead><tr><th>File</th><th>Part</th><th>Qty</th><th>Material</th><th>Layer / walls</th><th>Infill</th><th>Path / first layer</th><th>Top / bottom layers</th></tr></thead><tbody>
+$product_rows
+</tbody></table></div>
+<h3>Orientation and path checks</h3>
+<ul>
+<li>Keep the optical deck floor down, barrel deck-joint face down, rear skin down, vent guards roof down and necklace brackets flat. Preserve the supplied orientation for the other parts and all fit samples. Centre each part on your usable bed without changing its scale.</li>
+<li>Print each light ring upright on its circular bottom edge. Keep the cavity ring walls at $cavity_wall mm and the outside wall at $outside_wall mm. Their 0% infill setting uses continuous perimeter paths to fill the walls.</li>
+<li>Inspect $cavity_paths nominal $cavity_path mm paths in each cavity ring and $outside_paths nominal $outside_path mm paths in the outside ring. The outside first-layer paths are nominally $outside_first_path mm. Check every layer for continuous complete walls, with no missing path, gap fill or internal lattice.</li>
+<li>The optical deck uses $deck_layer mm layers with $deck_top solid top layers and $deck_bottom solid bottom layers. The first layer stays at $first_layer mm. Retain the collar stops, sheet lands and existing solid skins.</li>
+</ul>
+<h2>5. Sample acceptance — agree with the customer</h2>
+<p>The customer must supply the actual boards, strips, finished acrylic and fasteners for functional checks. If you cannot do these checks, return the labelled samples for customer testing. Report the machine, filament product/lot, nozzle, settings, measured dimensions and any defects.</p>
+<ul>
+<li>Use actual M3 and M2 screws, plain nuts and washers. Check free screw passage, complete nut insertion and thread engagement, captive-nut pockets, controller mounting and screwdriver access. Keep the rear skin closed.</li>
+<li>Test both bracket arrangements and mating frame/rear samples. Check that the rear can be removed independently.</li>
+<li>Test the front clamp with the actual finished acrylic, 9 mm OD metal washers, and 9 mm OD × 6.4 mm ID soft washers cut from 0.020 inch Stockwell SG-30 GP silicone. Target 60% of measured free washer thickness. The metal washer must bear on the collar while the soft washer retains the sheet. Record the usable tightening limit.</li>
+<li>Test all three ring curvatures and seats. Retain each ring at maximum permitted lift. Require 0.2–0.8 mm measured clearance below the front sheet and at least 0.5 mm actual LED clearance. Keep the $mirror_separation mm mirror separation and at least 18 mm radial cavity width.</li>
+<li>Inspect the $outside_wall mm outside arc for voids, cracks and layer separation. Repeat installation and removal. Whole-ring handling still requires a full-size test.</li>
+<li>Fit the three opaque light shields, actual strips and front-sheet sample. Reject exposed LED edges or light leaking above the rings. Check shield adhesion, sag, sheet clearance and removal with the ring. The shields use 0.06 mm tesa 7160 black PET tape; they are separate cut parts.</li>
+<li>Review LED patterns at the customer's permitted power limit. Record glow immediately and after 1, 5 and 15 minutes. The rendered appearance is an unmeasured illustration.</li>
+</ul>
+<p><strong>If a sample fails, stop the full order, correct the cause and repeat the affected test. Do not substitute material or relax an acceptance requirement without a new customer decision.</strong></p>
+<h2>6. Full-size inspection and packing</h2>
+<ul>
+<li>Inspect cooled parts after brim removal. Reject cracks, incomplete walls, lifted edges, permanent distortion and layer separation. Do not use bolts to flatten a part.</li>
+<li>Dry-assemble the complete set on a flat reference. Require joint gaps no greater than 0.3 mm, free screw passage, full nut engagement, retained rings, the specified optical gaps, and independent rear removal.</li>
+<li>Label every part with its filename on removable packaging. Protect ring walls, collar stops, bearing faces and nut mouths. Report finished part masses after brim removal.</li>
+<li>After assembly, the customer must weigh the complete pendant and necklace and repeat the suspension, sustained-load, cyclic-load and service tests. Print acceptance does not establish thermal or dust acceptance.</li>
+</ul>
+<h2>7. What is outside this print order?</h2>
+<p>The flat acrylic front, rear mirror, wood LED stencil, coatings, light shields, soft washers, hardware, electronics, wiring and webbing are separate supplied or fabricated items. They are not plastic print jobs. The assembly references show some of these items so you can see the mating interfaces.</p>
+<h2>Assembly references</h2>
+<p><a href="04-REFERENCE-DO-NOT-PRINT/smart-compass.step">Complete assembly STEP</a> · <a href="04-REFERENCE-DO-NOT-PRINT/assembly-section.svg">Section drawing</a></p>
+<h3>Assembled</h3><img src="04-REFERENCE-DO-NOT-PRINT/assembly.png" alt="Current assembled pendant">
+<h3>Exploded reference</h3><img src="04-REFERENCE-DO-NOT-PRINT/exploded.png" alt="Separated assembly parts for fit reference">
+</html>

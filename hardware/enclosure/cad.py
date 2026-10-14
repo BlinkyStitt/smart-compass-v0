@@ -23,7 +23,7 @@ INPUTS = (
         'cad.py', 'build.py', 'check.py', 'geometry.py',
         'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
         'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
-        'test_geometry.py', 'test_cad.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
+        'test_geometry.py', 'test_cad.py', 'service_package.py', 'service-guide.html', 'test_service_package.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
@@ -32,7 +32,7 @@ INPUTS = (
     )),
 )
 FIXED_EXPORTS = frozenset('''
-amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
+smart-compass-print-service.zip amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
 diffusers.png edge.png electronics.png
 exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
 front.png
@@ -48,7 +48,7 @@ halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
 '''.split()) | frozenset(f'demo-{view}-{light}.png'
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
-GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf'}
+GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf', '.zip'}
 RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg'))
 
 
@@ -256,6 +256,8 @@ def rebuild(root):
         tools['godot'] = subprocess.check_output([godot, '--version'], text=True).strip()
         for name, executable in (('ffmpeg', ffmpeg), ('ffprobe', ffprobe)):
             tools[name] = subprocess.check_output([executable, '-version'], text=True).splitlines()[0]
+        import service_package
+        service_package.generate(staged.root)
         publish(root, staged, original, tools)
         mass = load_json(Snapshot(root), EXPORTS + '/parts.json')['mass_estimate']
         print('CAD BUILD COMPLETE: model and all exports checked; freshness manifest written.', flush=True)
