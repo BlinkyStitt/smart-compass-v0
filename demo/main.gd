@@ -149,6 +149,10 @@ func _set_explosion(amount: float):
 	for material in cavity_materials:
 		# Separated mirrors no longer form the canonical 11.2 mm cavity.
 		material.set_shader_parameter("cavity_closed", amount == 0.0)
+	# Fade both separated mirrors for the assembly illustration. Geometry
+	# transparency returns to zero when the real mirror cavity closes again.
+	for name in ["FrontMirrorCoating","RearMirror"]:
+		meshes[name].transparency = 0.65*amount
 	# These faces approximate light at the assembled diffuser plane. They are
 	# not physical pieces of the stencil or LEDs. Reveal the package emitters
 	# when the stencil lifts, rather than carrying lit aperture shapes with it.
@@ -522,6 +526,8 @@ func _run_checks():
 				assert(not camera.is_position_behind(point), "Exploded part behind camera")
 				assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)), "Exploded part clipped: %s at %s in %s (phase %s)" % [mesh.name,camera.unproject_position(point),get_viewport().get_visible_rect(),phase])
 	_exploded_pose(0.5)
+	for name in ["FrontMirrorCoating","RearMirror"]:
+		assert(meshes[name].transparency>0.0 and meshes[name].transparency<1.0,"Separated mirror must remain visible and semi-transparent: "+name)
 	assert(meshes.WoodMask.get_aabb().position.z+meshes.WoodMask.position.z > meshes.CircleLEDs.get_aabb().end.z+meshes.CircleLEDs.position.z+0.05,"Stencil must lift clear of the populated LED board")
 	assert(explosion_offsets.CirclePCB==explosion_offsets.CircleLEDs,"Soldered LED packages must stay on their board")
 	for part in metadata.parts:
@@ -538,6 +544,8 @@ func _run_checks():
 		assert(meshes[name].transform.is_equal_approx(assembled_transforms[name]), "Reassembly must restore " + name)
 		assert(meshes[name].visible,"Reassembly must restore the assembled light field")
 	assert(cavity_materials[0].get_shader_parameter("cavity_closed"), "Reassembly must restore reflections")
+	for name in ["FrontMirrorCoating","RearMirror"]:
+		assert(is_zero_approx(meshes[name].transparency),"Reassembly must restore mirror opacity: "+name)
 	_reset()
 	var saved_time=pattern_time
 	var saved_position=camera.position

@@ -49,8 +49,10 @@ same pattern in the manufacturer's pixel order. Paired printed rings and LED
 rows stay together. The camera stays on the front side.
 Parts, camera and moving rainbow return to their starting states at the loop
 boundary. These are diagram positions, not removal paths or service clearances.
-The separated front coating shows environment reflection; the infinity cavity
-returns when the mirrors come back together.
+Both mirror surfaces fade to 35% opacity as they separate, so the parts behind
+them stay visible. This transparency is an assembly illustration. The mirrors
+still reflect the environment; their normal opacity and the infinity cavity
+return when the mirrors come back together.
 
 [Spiral rainbow](../hardware/enclosure/exports/infinity-rainbow.gif) ·
 [Ocean gradient](../hardware/enclosure/exports/infinity-ocean.gif) ·
