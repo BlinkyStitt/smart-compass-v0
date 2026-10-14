@@ -149,6 +149,7 @@ def export():
             'strip_z':(p['strip_bottom_z']+p['strip_width']/2)/1000,
             'strip_half_height':.0025,'sleeves':dims,
             'ring_pitch_radii':[ring_radius(p[n+'_count'],p)/1000 for n in ('halo','inner','outer')],
+            'ring_wall_mm':[p['ring_diffuser_thickness'],p['ring_diffuser_thickness'],p['edge_diffuser_thickness']],
             'ring_seam_gap':p['ring_seam_gap']/1000,'pitch':1/p['strip_density'],
             'edge_radius':p['edge_diffuser_radius']/1000,'edge_z':(strip_bottom('Outer',p)+p['strip_width']/2)/1000},
         'design':{'selected_finish':'clear centre, mirror ring, black masked rim',

@@ -3,7 +3,10 @@ extends Node3D
 const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
 const FINISHES = ["Selected • clear centre", "Comparison • full mirror"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
-const COUNTS = [256, 64, 84, 90]
+const Glow = preload("res://glow.gd")
+const COUNTS = Glow.COUNTS
+var glow = Glow.new()
+var charge_texture: ImageTexture
 var metadata: Dictionary
 var meshes = {}
 var assembled_transforms = {}
@@ -75,6 +78,8 @@ func _ready():
 		RenderingServer.render_loop_enabled=false
 		RenderingServer.viewport_set_update_mode(get_viewport().get_viewport_rid(),RenderingServer.VIEWPORT_UPDATE_ALWAYS)
 	colour_texture = ImageTexture.create_from_image(image_data)
+	glow.reset(0.35,0.20)
+	charge_texture = ImageTexture.create_from_image(glow.image)
 	var document = GLTFDocument.new()
 	var state = GLTFState.new()
 	var error = document.append_from_file(asset_dir.path_join("amulet.glb"), state)
@@ -157,6 +162,8 @@ func _shader(path):
 	var material = ShaderMaterial.new()
 	material.shader = load(path)
 	material.set_shader_parameter("colours", colour_texture)
+	if path in ["res://sleeve.gdshader","res://optics.gdshader"]:
+		material.set_shader_parameter("charges", charge_texture)
 	return material
 
 func _make_materials():
@@ -177,6 +184,7 @@ func _make_materials():
 				material.set_shader_parameter(key, float(optics[key]))
 			material.set_shader_parameter("seam_gap", float(optics.ring_seam_gap))
 			material.set_shader_parameter("pitch_radii", Vector3(optics.ring_pitch_radii[0], optics.ring_pitch_radii[1], optics.ring_pitch_radii[2]))
+			material.set_shader_parameter("ring_wall_mm", Vector3(optics.ring_wall_mm[0],optics.ring_wall_mm[1],optics.ring_wall_mm[2]))
 			mesh.material_override = material
 			cavity_materials.append(material)
 		elif part.role == "sleeve":
@@ -190,6 +198,7 @@ func _make_materials():
 			material.set_shader_parameter("seam_gap", float(optics.ring_seam_gap))
 			material.set_shader_parameter("pitch", float(optics.pitch))
 			material.set_shader_parameter("led_z", float(optics.edge_z if group == 3 else optics.strip_z))
+			material.set_shader_parameter("wall_mm", float(optics.ring_wall_mm[group-1]))
 			mesh.material_override = material
 			sleeve_materials.append(material)
 		elif part.role == "centre":
@@ -275,6 +284,8 @@ func _make_controls():
 		_update_optics())
 	_slider(box,"Glow ring transmission (assumed)",0,1,diffuser_transmission,func(v): diffuser_transmission=v; _update_optics())
 	_slider(box,"Glow ring diffusion (assumed)",0,1,diffusion,func(v): diffusion=v; _update_optics())
+	_button(box,"Precharge glow (illustration)",func(): _reset_glow(0.85,0.65))
+	_button(box,"Clear stored glow",func(): _reset_glow())
 	_slider(box,"Centre diffusion (assumed)",0,1,central_diffusion,func(v): central_diffusion=v; _update_optics())
 	var views = HBoxContainer.new()
 	box.add_child(views)
@@ -401,6 +412,7 @@ func _process(delta):
 	if metadata.is_empty(): return
 	if not paused and not automated: pattern_time+=delta
 	_update_colours()
+	if not automated: _advance_glow(delta)
 	if status:
 		status.text="%.2f m • yaw %.1f° • tilt %.1f°\nt = %.2f s • R + T = %.2f\n%.1f fps • centre diffusion %.2f" % [distance,yaw,pitch_angle,pattern_time,reflectance+transmission,Engine.get_frames_per_second(),central_diffusion]
 
@@ -430,10 +442,50 @@ func _update_colours():
 		image_data.set_pixel(int(led.index),int(led.group),color)
 	colour_texture.update(image_data)
 
+func _reset_glow(fast: float = 0.0, slow: float = 0.0):
+	glow.reset(fast,slow)
+	charge_texture.update(glow.image)
+
+func _advance_glow(seconds: float):
+	glow.advance(seconds,image_data,brightness,ambient*0.08+sun.light_energy*0.01)
+	charge_texture.update(glow.image)
+
+func _check_glow():
+	var source=Image.create(256,4,false,Image.FORMAT_RGBAF)
+	source.fill(Color.WHITE)
+	var charged=Glow.new()
+	charged.reset()
+	charged.advance(60.0,source,2.0,0.0)
+	var lit=charged.image.get_pixel(0,1)
+	assert(lit.r>0.8 and lit.g>0.5,"Light must charge both phosphor populations")
+	var stepped=Glow.new()
+	stepped.reset()
+	for frame in range(120): stepped.advance(0.5,source,2.0,0.0)
+	assert(stepped.image.get_pixel(0,1).is_equal_approx(lit),"Glow must not depend on frame rate")
+	source.fill(Color.BLACK)
+	charged.advance(60.0,source,0.0,0.0)
+	var dark=charged.image.get_pixel(0,1)
+	assert(dark.r>0.0 and dark.r<lit.r and dark.g>0.0 and dark.g<lit.g,"Glow must persist and decay with LEDs off")
+	charged.advance(840.0,source,0.0,0.0)
+	var later=charged.image.get_pixel(0,1)
+	assert(later.r<dark.r and later.g<dark.g and later.g>0.0,"Glow must retain a weak long tail")
+	var red=Glow.new()
+	red.reset()
+	source.fill(Color.RED)
+	red.advance(10.0,source,2.0,0.0)
+	charged.reset()
+	source.fill(Color.BLUE)
+	charged.advance(10.0,source,2.0,0.0)
+	assert(charged.image.get_pixel(0,1).r>red.image.get_pixel(0,1).r,"Blue light must excite the pigment more than red")
+	print("DEMO GLOW STATE PASS: charging, dark decay, long tail, spectral response and frame-rate independence")
+
 func _run_checks():
+	_check_glow()
 	# Headless Godot starts with a 64-pixel window; test the capture resolution.
 	get_window().size = Vector2i(1280,720)
 	assert(metadata.leds.size()==494)
+	for material in sleeve_materials+cavity_materials:
+		assert(material.get_shader_parameter("charges")==charge_texture,"Direct and reflected rings must share stored glow")
 	assert(meshes.size()==metadata.parts.size())
 	for part in metadata.parts:
 		var bounds = meshes[part.name].get_aabb()
@@ -545,6 +597,7 @@ func _capture():
 		for light in range(4):
 			_set_lighting(light)
 			for on in [true,false]:
+				_reset_glow(0.35,0.20)
 				groups=[on,on,on,on]
 				_update_colours()
 				for version in range(FINISHES.size()):
@@ -555,6 +608,7 @@ func _capture():
 					assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join(filename))==OK)
 	# All movie frames come from the same Godot scene and optical shaders.
 	_reset()
+	_reset_glow(0.35,0.20)
 	groups=[true,true,true,true]
 	for frame in range(1248):
 		if frame<576:
@@ -589,6 +643,8 @@ func _capture():
 	brightness=2.0
 	groups=[true,true,true,true]
 	for style in ["rainbow","ocean","sunset"]:
+		# A uniform precharged state makes the repeating colour loop continuous.
+		_reset_glow(0.35,0.20)
 		pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
 		caption.text="%s gradient | Godot infinity mirror | diffusion 0.65" % style.capitalize()
 		for frame in range(384):
@@ -599,6 +655,7 @@ func _capture():
 			await _settle()
 			assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [style,frame]))==OK)
 	_reset()
+	_reset_glow(0.35,0.20)
 	_set_finish(0)
 	_set_lighting(1)
 	pattern=0
@@ -612,7 +669,35 @@ func _capture():
 		if frame==288:
 			assert(picture.save_png(capture_dir.path_join("exploded-poster.png"))==OK)
 	_exploded_pose(1)
-	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1152 gradient frames and 576 exploded loop frames")
+	# Show the green stored emission separately from the moving LED patterns.
+	# Compress fifteen minutes into twenty seconds; the caption states elapsed
+	# time and the assumed response. The first four seconds show white LEDs.
+	_reset()
+	distance=0.46
+	yaw=30.0
+	pitch_angle=-12.0
+	_update_camera()
+	_set_lighting(0)
+	ambient=0.0
+	sun.light_energy=0.0
+	_update_light()
+	pattern=6
+	_reset_glow(0.85,0.65)
+	for frame in range(576):
+		var on=frame<96
+		groups=[on,on,on,on]
+		_update_colours()
+		if on:
+			caption.text="Glow PETG illustration | precharged | white LEDs on"
+		else:
+			var elapsed=900.0*float(frame-96)/479.0
+			if frame>96: _advance_glow(900.0/479.0)
+			caption.text="Green afterglow (assumed) | LEDs off | %d:%02d elapsed | time compressed" % [int(elapsed)/60,int(elapsed)%60]
+		await _settle()
+		var picture=get_viewport().get_texture().get_image()
+		assert(picture.save_png(capture_dir.path_join("afterglow-%04d.png" % frame))==OK)
+		if frame==96: assert(picture.save_png(capture_dir.path_join("afterglow-poster.png"))==OK)
+	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1152 gradient frames, 576 exploded frames and 576 afterglow frames")
 	get_tree().quit()
 
 func _benchmark():
@@ -713,5 +798,41 @@ func _gpu_checks():
 			for index in range(readings.size()):
 				assert(absf(readings[index]-baseline[index])<0.009, "Ring diffuser profiles differ")
 	print("DEMO GPU DIFFUSER PASS: smooth LED gaps, gentle peaks, continuous edges and matching profiles for all three rings")
+	material.shader=load("res://glow_diagnostic.gdshader")
+	material.set_shader_parameter("colours",colour_texture)
+	material.set_shader_parameter("charges",charge_texture)
+	material.set_shader_parameter("pitch",float(metadata.optics.pitch))
+	material.set_shader_parameter("seam_gap",float(metadata.optics.ring_seam_gap))
+	material.set_shader_parameter("group",1)
+	material.set_shader_parameter("count",64)
+	material.set_shader_parameter("radius",float(radii[0]))
+	material.set_shader_parameter("led_z",float(metadata.optics.strip_z))
+	var angle=(float(metadata.optics.ring_seam_gap)*0.5+5.5*float(metadata.optics.pitch))/float(radii[0])
+	material.set_shader_parameter("sample_point",Vector3(sin(angle)*radii[0],cos(angle)*radii[0],metadata.optics.strip_z))
+	_reset_glow()
+	await _settle()
+	var thin=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(thin.g>thin.r and thin.r>thin.b,"Glow pigment must filter white light toward green")
+	material.set_shader_parameter("wall_mm",1.2)
+	await _settle()
+	var thick=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(thick.r<thin.r and thick.g<thin.g and thick.b<thin.b,"Thicker PETG must transmit less direct light")
+	groups=[false,false,false,false]
+	_update_colours()
+	_reset_glow(0.85,0.65)
+	material.set_shader_parameter("brightness",0.0)
+	await _settle()
+	var after=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(after.g>0.15 and after.g>4.0*after.r and after.g>10.0*after.b,"LED-off emission must retain a green afterglow")
+	material.set_shader_parameter("sample_point",Vector3(0.0,radii[0],metadata.optics.strip_z))
+	await _settle()
+	var joint=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(absf(joint.g-after.g)<0.009,"The strip joint must not cut a dark seam in the whole glow ring")
+	glow.advance(900.0,image_data,0.0,0.0)
+	charge_texture.update(glow.image)
+	await _settle()
+	var faded=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(faded.g>0.005 and faded.g<after.g*0.15,"GPU afterglow must fade to a weaker green tail")
+	print("DEMO GPU GLOW PASS: green spectral filtering, wall attenuation, LED-off emission and fading tail")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()

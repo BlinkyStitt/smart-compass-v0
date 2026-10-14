@@ -42,6 +42,7 @@ class DemoTests(unittest.TestCase):
         self.assertAlmostEqual(m['dimensions_m']['diameter'],.250)
         self.assertAlmostEqual(m['optics']['separation'],.0112)
         self.assertAlmostEqual(m['optics']['front_z']-m['optics']['rear_z'],.0112)
+        self.assertEqual(m['optics']['ring_wall_mm'],[1.0,1.0,1.2])
         for group,count in enumerate((256,64,84,90)):
             leds=[led for led in m['leds'] if led['group']==group]
             self.assertEqual([led['index'] for led in leds],list(range(count)))

@@ -3,6 +3,7 @@ render_mode cull_disabled;
 
 // CAD metres. Trace a view ray between finite parallel mirror planes.
 uniform sampler2D colours : filter_nearest, repeat_disable;
+uniform sampler2D charges : filter_nearest, repeat_disable;
 uniform bool cavity_closed = true;
 uniform float front_z = 0.0367;
 uniform float rear_z = 0.0255;
@@ -16,6 +17,7 @@ uniform float diffuser_transmission = 0.4;
 uniform float diffusion = 0.65;
 uniform float brightness = 2.0;
 uniform vec3 pitch_radii;
+uniform vec3 ring_wall_mm;
 uniform float seam_gap = 0.003;
 uniform float pitch = 0.008333333;
 varying vec3 world_position;
@@ -38,7 +40,7 @@ void fragment() {
         vec3 traced=trace_cavity(point,direction,hit);
         if (traced.z>0.0) {
             int group=int(traced.z);
-            light=traced.x*diffuser_transmission*diffused_ring_light(hit,group,group==1?64:84,group==1?pitch_radii.x:pitch_radii.y,strip_z);
+            light=traced.x*glow_ring_light(hit,group,group==1?64:84,group==1?pitch_radii.x:pitch_radii.y,strip_z,group==1?ring_wall_mm.x:ring_wall_mm.y,brightness,diffuser_transmission);
         }
     }
     ALBEDO = vec3(reflectance);
@@ -46,5 +48,5 @@ void fragment() {
     ROUGHNESS = 0.08;
     SPECULAR = reflectance;
     // Environment reflection is PBR; the cavity does not use SSR.
-    EMISSION = light*brightness;
+    EMISSION = light;
 }

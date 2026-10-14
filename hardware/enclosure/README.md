@@ -13,7 +13,7 @@ top follows the measured front sheet and compressed washer height. The saved
 spreadsheet owns the dimensions after the first build. Do not approve a full
 print order until supplier fit samples and actual hardware pass.
 
-[Moving rainbow](exports/infinity-rainbow.gif) · [Ocean](exports/infinity-ocean.gif) ·
+[Moving rainbow](exports/infinity-rainbow.gif) · [Green afterglow](exports/glow-afterglow.mp4) · [Ocean](exports/infinity-ocean.gif) ·
 [Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4) ·
 [Explode and reassemble](exports/exploded.gif) ([MP4](exports/exploded.mp4))
 

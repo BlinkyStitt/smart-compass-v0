@@ -28,7 +28,7 @@ INPUTS = (
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
         'sleeve.gdshader', 'cell.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
-        'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'run.py', 'reference.py', 'test_demo.py',
+        'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'glow.gd', 'glow_diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),
 )
 FIXED_EXPORTS = frozenset('''
@@ -40,6 +40,7 @@ parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
 amulet.glb scene.json lighting-demo.mp4
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
+glow-afterglow.gif glow-afterglow.mp4 glow-afterglow-poster.png
 FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
 FitSuspensionBracket.stl FitSuspensionBracketLeft.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
 FitController.stl FitRingHalo.stl FitRingInner.stl FitRingOutside.stl

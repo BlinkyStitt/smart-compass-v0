@@ -31,7 +31,13 @@ frames come from Godot, including their animated LEDs and mirror reflections.
 [Explode and reassemble (GIF)](../hardware/enclosure/exports/exploded.gif) ·
 [Full-resolution video](../hardware/enclosure/exports/exploded.mp4)
 
-The preview shows pale green glow PETG in daylight and applies an assumed green bias to LED output. It does not simulate stored afterglow.
+The preview shows pale, matte glow PETG with subtle 0.2 mm print layers and powder grain. LED light spreads through the rings, loses some colour to absorption, and gains green emission from the pigment. Direct rings and their mirror reflections use the same response, with wall thickness from CAD.
+
+[Watch the green afterglow](../hardware/enclosure/exports/glow-afterglow.mp4) ·
+[Looping GIF](../hardware/enclosure/exports/glow-afterglow.gif)
+
+The 24-second afterglow clip starts with white LEDs and an assumed precharged material. It then switches the LEDs off and compresses fifteen minutes of fading green emission into twenty seconds. The caption shows elapsed time. This is a visual illustration, not a measured decay curve or charging demonstration. Other looping animations hold a fixed initial charge so the loops join continuously.
+
 Three modeled black PET shields cover the exposed upper LED edges at the rings. The preview shows their geometry; it does not prove tape adhesion or the absence of light leaks in an assembled sample.
 
 The 24-second exploded loop separates the current assembly, pauses with its
@@ -102,10 +108,13 @@ Each circle cell uses its CAD aperture and LED position. A variable Gaussian
 spread approximates the centre diffuser. One shared ring model spreads each LED
 across neighbouring angles and height for both direct and reflected light. It
 uses a continuous surface with gentle LED peaks, without rectangular package
-masks. Mirror attenuation still reduces successive reflected copies. It treats the glow PETG as a
-transmitting, emitting surface backed by an opaque strip. These are design
-approximations; the demo does not model scattering through an acrylic volume,
-refraction, polarisation, coating angle response, wavelength response, real
+masks. Sampling wraps around the whole ring, including the electrical strip joint. Mirror attenuation still reduces successive reflected copies. The glow PETG uses thickness-dependent RGB absorption, a small prompt green emission from blue light, and two stored green emission components. Both direct and reflected rings read the same charge texture. In live playback, LED and ambient light charge the material; disabling LEDs or reducing their brightness leaves the stored light to fade. Use **Precharge glow (illustration)** to set a charged starting state or **Clear stored glow** to remove stored emission. Pausing stops the pattern while charging and decay continue.
+
+The model follows the qualitative [Prusa Ultraglow description](https://prusament.com/materials/prusament-petg-ultraglow/): light charges the pigment and its green emission fades after excitation stops. Charging weights favour blue over green and red. Assumed charge time constants are 6 and 60 seconds; dark decay time constants are 45 and 900 seconds. Initial charges are 0.35 and 0.20. These values, RGB absorption, surface grain, layer contrast and emission brightness need calibration against production-wall samples.
+
+It treats the glow PETG as a transmitting, emitting surface backed by an opaque strip. These are design
+approximations; the demo does not model volumetric scattering,
+refraction, polarisation, coating angle response, measured spectral response, real
 luminance or camera adaptation. It does not simulate firmware power limits.
 
 Default optical assumptions:

@@ -84,13 +84,19 @@ def capture():
                         '-loop','0',str(output/'exploded.gif')],check=True)
         shutil.copyfile(frames/'exploded-poster.png',output/'exploded-poster.png')
         shutil.copyfile(frames/'movie-0000.png',output/'turntable-poster.png')
-    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png'):
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/'afterglow-%04d.png'),
+                        '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/'glow-afterglow.mp4')],check=True)
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(output/'glow-afterglow.mp4'),
+                        '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
+                        '-loop','0',str(output/'glow-afterglow.gif')],check=True)
+        shutil.copyfile(frames/'afterglow-poster.png',output/'glow-afterglow-poster.png')
+    for name in (*CAPTURES,*GRADIENTS,'lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png','glow-afterglow.gif','glow-afterglow.mp4','glow-afterglow-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else (1280,720)
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
-            seconds={'amulet-demo.mp4':52,'lighting-demo.mp4':12,'exploded.mp4':24}[name]
+            seconds={'amulet-demo.mp4':52,'lighting-demo.mp4':12,'exploded.mp4':24,'glow-afterglow.mp4':24}[name]
             assert int(probe['nb_frames'])==seconds*24 and abs(float(probe['duration'])-seconds)<.01
         if name.endswith('.gif'):
             seconds=16 if name in GRADIENTS else 24

@@ -1,6 +1,7 @@
 shader_type spatial;
 render_mode unshaded, cull_disabled, fog_disabled;
 uniform sampler2D colours : filter_nearest, repeat_disable;
+uniform sampler2D charges : filter_nearest, repeat_disable;
 uniform float diffusion=0.65;
 uniform float pitch;
 uniform float seam_gap;

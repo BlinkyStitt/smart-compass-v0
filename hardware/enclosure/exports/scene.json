@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "1cb85b367dbdee0bb39e8328afb011ee47c7b6acab5c116a1f8e5e369181fd31",
+  "master_sha256": "c986c6236d34e724fbfe8429048ae80a349e72c530f60dccde731dd7878316b3",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -14752,6 +14752,11 @@
       0.08536010114495321,
       0.11188592499360243,
       0.11984367214819719
+    ],
+    "ring_wall_mm": [
+      1.0,
+      1.0,
+      1.2
     ],
     "ring_seam_gap": 0.003,
     "pitch": 0.008333333333333333,
