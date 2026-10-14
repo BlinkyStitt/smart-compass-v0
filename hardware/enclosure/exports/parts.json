@@ -180,11 +180,11 @@
     },
     {
       "name": "RearMirror",
-      "volume_cm3": 24.0551,
+      "volume_cm3": 23.7886,
       "printed": false,
       "bounds_mm": [
-        223.167,
-        223.142,
+        223.094,
+        223.084,
         1.5
       ]
     },
@@ -220,7 +220,7 @@
     },
     {
       "name": "HaloLightShield",
-      "volume_cm3": 0.1303,
+      "volume_cm3": 0.1255,
       "printed": false,
       "bounds_mm": [
         178.902,
@@ -230,17 +230,17 @@
     },
     {
       "name": "InnerLightShield",
-      "volume_cm3": 0.1634,
+      "volume_cm3": 0.1571,
       "printed": false,
       "bounds_mm": [
-        223.224,
-        223.298,
+        222.924,
+        222.998,
         0.06
       ]
     },
     {
       "name": "OuterLightShield",
-      "volume_cm3": 0.1906,
+      "volume_cm3": 0.1846,
       "printed": false,
       "bounds_mm": [
         248.235,
@@ -300,26 +300,26 @@
     },
     {
       "name": "OpticalDeck",
-      "volume_cm3": 69.7837,
+      "volume_cm3": 70.0763,
       "printed": true,
       "bounds_mm": [
-        239.383,
-        239.385,
+        239.387,
+        239.387,
         15.879
       ]
     },
     {
       "name": "BarrelFrame",
-      "volume_cm3": 40.8696,
+      "volume_cm3": 41.1561,
       "printed": true,
       "bounds_mm": [
-        243.489,
-        239.385,
+        248.0,
+        248.0,
         20.65
       ]
     }
   ],
-  "printed_volume_cm3": 243.1715,
+  "printed_volume_cm3": 243.7506,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -350,8 +350,8 @@
     "map_mirror_y": false,
     "mask_web": 1.6,
     "mask_edge_radius": 82.5,
-    "inner_count": 84.0,
-    "outer_count": 90.0,
+    "inner_count": 84,
+    "outer_count": 90,
     "strip_density": 120.0,
     "ring_seam_gap": 3.0,
     "strip_width": 10.0,
@@ -434,14 +434,14 @@
       "sense": "BlackPill PA4 divider board placeholder; sense protected/switched raw pack before boost; final divider/profile and calibration TODO; Unknown until installed",
       "external_power": "Optional belt-mounted protected raw 1S pack, no USB bank; cable follows necklace to reinforced rear entry with blanking plug for internal use; Adafruit PG-7 762 fit reference, actual gland/cable/strain relief and voltage drop TODO"
     },
-    "halo_count": 64.0,
+    "halo_count": 64,
     "vent_hole_radius": 3.0,
     "vent_patch_radius": 8.0,
     "vent_patch_thickness": 0.2,
     "rear_skin_thickness": 1.0,
     "rear_rib_width": 1.8,
     "rear_rib_height": 2.0,
-    "battery_count": 1.0,
+    "battery_count": 1,
     "battery_spacing": 100.0,
     "power_x": 72.0,
     "power_y": -28.0,
@@ -462,7 +462,7 @@
     "mirror_fit_clearance": 0.45,
     "front_acrylic_thickness": 1.524,
     "rear_acrylic_thickness": 1.5,
-    "ring_seat_play": 0.3,
+    "ring_seat_play": 0.2,
     "ring_cuff_height": 1.2,
     "ring_front_clearance": 0.5,
     "bracket_side_clearance": 0.4,
@@ -472,8 +472,8 @@
     "front_washer_compression_ratio": 0.6,
     "ring_radial_error_budget": 0.2,
     "light_shield_thickness": 0.06,
-    "light_shield_edge_clearance": 0.05,
-    "light_shield_bolt_clearance_radius": 4.2
+    "light_shield_edge_clearance": 0.2,
+    "ring_station_count": 8
   },
   "fit_samples": [
     {
@@ -560,7 +560,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/OpticalDeck.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.38 x 239.38 x 15.88 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
       "material": "Opaque PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -568,15 +568,15 @@
       "group": "pendant",
       "cad_part": "OpticalDeck",
       "mass_formula": "petg_volume",
-      "mass_g_per_unit": 88.625299,
+      "mass_g_per_unit": 88.99690100000001,
       "mass_range_g_per_unit": [
-        62.037709299999996,
-        95.71532292
+        62.2978307,
+        96.11665308000002
       ],
-      "installed_mass_g": 88.6253,
+      "installed_mass_g": 88.9969,
       "installed_mass_range_g": [
-        62.0377,
-        95.7153
+        62.2978,
+        96.1167
       ]
     },
     {
@@ -586,7 +586,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/BarrelFrame.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 243.49 x 239.38 x 20.65 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.00 x 248.00 x 20.65 mm",
       "material": "Opaque PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -594,15 +594,15 @@
       "group": "pendant",
       "cad_part": "BarrelFrame",
       "mass_formula": "petg_volume",
-      "mass_g_per_unit": 51.904392,
+      "mass_g_per_unit": 52.268247,
       "mass_range_g_per_unit": [
-        36.3330744,
-        56.056743360000006
+        36.5877729,
+        56.449706760000005
       ],
-      "installed_mass_g": 51.9044,
+      "installed_mass_g": 52.2682,
       "installed_mass_range_g": [
-        36.3331,
-        56.0567
+        36.5878,
+        56.4497
       ]
     },
     {
@@ -930,7 +930,7 @@
       "unit": "part",
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/rear-mirror.svg",
-      "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.17 x 223.14 x 1.50 mm",
+      "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
       "material": "Acrylic; Full mirror on +Z",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
@@ -944,15 +944,15 @@
           "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
         }
       ],
-      "mass_g_per_unit": 28.625569,
+      "mass_g_per_unit": 28.308434,
       "mass_range_g_per_unit": [
-        25.7630121,
-        31.4881259
+        25.4775906,
+        31.1392774
       ],
-      "installed_mass_g": 28.6256,
+      "installed_mass_g": 28.3084,
       "installed_mass_range_g": [
-        25.763,
-        31.4881
+        25.4776,
+        31.1393
       ]
     },
     {
@@ -2560,10 +2560,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 951.5,
+      "nominal_g": 951.9,
       "range_g": [
-        727.7,
-        1181.1
+        727.9,
+        1181.5
       ]
     },
     "necklace": {
@@ -2574,17 +2574,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 983.7,
+      "nominal_g": 984.1,
       "range_g": [
-        747.5,
-        1243.1
+        747.7,
+        1243.5
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 763.5,
+      "nominal_g": 763.9,
       "range_g": [
-        548.6,
-        973.1
+        548.9,
+        973.5
       ]
     },
     "external_belt_and_lead": {
@@ -2595,10 +2595,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1085.7,
+      "nominal_g": 1086.1,
       "range_g": [
-        808.5,
-        1425.1
+        808.7,
+        1425.5
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -2697,7 +2697,7 @@
     "CircleRimFoot0": 0.08,
     "CircleRimFoot1": 0.08,
     "CircleRimFoot2": 0.08,
-    "OpticalDeck": 88.54,
-    "BarrelFrame": 52.26
+    "OpticalDeck": 88.91,
+    "BarrelFrame": 52.64
   }
 }

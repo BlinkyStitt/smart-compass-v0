@@ -3,5 +3,5 @@
 <desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>
 <g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">
 <circle cx="0" cy="0" r="89.510101"/>
-<circle cx="0" cy="0" r="85.560101"/>
+<circle cx="0" cy="0" r="85.710101"/>
 </g></svg>

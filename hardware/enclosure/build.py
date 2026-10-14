@@ -20,7 +20,7 @@ from hardware_spec import nut_dimensions, hexagon
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
 
 DIFFUSER_TRANSPARENCY = 35  # CAD display only; not measured optical transmission.
 DIFFUSER_TINT = (184 / 255, 209 / 255, 138 / 255)  # Use the native file's 8-bit RGB precision.
@@ -37,7 +37,7 @@ class Builder:
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
         self.keys = [k for k in p if not k.startswith('_')]
-        scalar = {'battery_count', 'battery_mass_g', 'wood_density_g_cm3', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio'}
+        scalar = {'battery_count', 'battery_mass_g', 'wood_density_g_cm3', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio', 'ring_station_count'}
         for row, key in enumerate(self.keys, 2):
             self.sheet.set(f'A{row}', key)
             value = int(p[key]) if isinstance(p[key], bool) else p[key]
@@ -397,15 +397,22 @@ def build(p=None):
             item.Placement = App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),angle)).multiply(item.Placement)
         rear_bosses.append(boss)
         rear_tools += [pocket,entry,b.cylinder(f'RearMountBore{i}',1.7,8,rear,x,y)]
-    # Three sloping toes retain the outside sleeve when the rear is removed.
-    for i,angle in enumerate((0,120,240)):
-        toe = b.profile(f'EdgeSeat{i}',[[(outer_wall_low, rear),(p['edge_diffuser_radius']+.8,rear),(p['edge_diffuser_radius']+.8,p['edge_bottom_z']),(outer_wall_low,p['edge_bottom_z']+p['edge_diffuser_radius']+.8-outer_wall_low)]],-2,4)
+    # Radial stops retain the outside ring through its full permitted lift.
+    toe_tip=p['edge_diffuser_radius']-p['ring_seat_play']+p['ring_cuff_height']
+    for i,angle in enumerate(ring_locating_angles(p,0)):
+        toe = b.profile(f'EdgeSeat{i}',[[(outer_wall_low, rear),(toe_tip,rear),(toe_tip,p['edge_bottom_z']),(outer_wall_low,p['edge_bottom_z']+toe_tip-outer_wall_low)]],-2,4)
         toe.Placement = App.Placement(App.Vector(),App.Rotation(App.Vector(0,0,1),angle)*App.Rotation(App.Vector(1,0,0),90)).multiply(toe.Placement)
         rear_bosses.append(toe)
     # Six seats carry screw load; collar tops follow sheet stock and compressed silicone.
     seats = []
     for i,(x,y) in enumerate(points):
-        seats += [b.cylinder(f'FrontLand{i}',4,1.2,front-1.2,x,y),
+        # Keep the complete collar and most of the sheet bearing annulus.
+        # The outward trim clears the continuous moving shield at every lift.
+        land_round=b.cylinder(f'FrontLandRound{i}',4,1.2,front-1.2,x,y)
+        land_envelope=b.cylinder(f'FrontLandEnvelope{i}',p['fastener_radius']+p['post_radius'],1.2,front-1.2)
+        land=doc.addObject('Part::Common',f'FrontLand{i}')
+        land.Base,land.Tool=land_round,land_envelope
+        seats += [land,
                   b.fuse(f'FrontStop{i}',[
                       b.cylinder(f'FrontStopStem{i}',3,p['front_acrylic_thickness']+p['front_washer_compressed_height']-.15,front,x,y),
                       b.cone(f'FrontStopTip{i}',3,2.85,.15,front+p['front_acrylic_thickness']+p['front_washer_compressed_height']-.15,x,y)])]
@@ -416,7 +423,7 @@ def build(p=None):
         carrier = halo_r-p['strip_thickness']/2 if name=='Halo' else inner_back+p['strip_wall']
         lo,hi = (carrier-.2,d['outer']) if name=='Halo' else (d['inner'],carrier+.2)
         cuff_lo,cuff_hi = (d['inner']-p['ring_seat_play']-p['strip_wall'],d['inner']-p['ring_seat_play']) if name=='Halo' else (d['outer']+p['ring_seat_play'],d['outer']+p['ring_seat_play']+p['strip_wall'])
-        for i,angle in enumerate((30,150,270)):
+        for i,angle in enumerate(ring_locating_angles(p)):
             shoe = b.box(f'{name}Shoe{i}',hi-lo,3.6,d['bottom']-p['mirror_back_z'],lo,-1.8,p['mirror_back_z'])
             cuff_blank = b.annulus(f'{name}CuffBlank{i}',cuff_lo,cuff_hi,d['bottom'],p['ring_cuff_height'])
             cuff_tool = b.box(f'{name}CuffTool{i}',cuff_hi-cuff_lo+1,3.6,p['ring_cuff_height'],cuff_lo-.5,-1.8,d['bottom'])
@@ -437,7 +444,7 @@ def build(p=None):
     frame_entries += [b.cone(f'RearBossEntry{i}',2,1.7,.3,rear,x,y) for i,(x,y) in enumerate(rear_mounting_points(p))]
     for i, clearance in enumerate(suspension):
         frame = b.cut(f'FrameBracketClearance{i}',frame,clearance)
-    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + anchor_tools + rear_tools + frame_entries + [b.top_mark('DeckTopMark',113,p['mirror_back_z']-.4), b.top_mark('BarrelTopMark',outer_r-p['strip_thickness']/2-p['structural_wall']+.45,10,True), b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-.3,radius+1,p['edge_bottom_z'],depth)])
+    frame = b.cut('OpticalFrame', frame, holes('FrameBore', rear, depth-rear) + leads + anchor_tools + rear_tools + frame_entries + [b.top_mark('DeckTopMark',113,p['mirror_back_z']-.4), b.top_mark('BarrelTopMark',outer_r-p['strip_thickness']/2-p['structural_wall']+.45,10,True), b.annulus('SleeveSeatRelief',p['edge_diffuser_radius']-p['ring_seat_play'],radius+1,p['edge_bottom_z'],depth)])
     b.add(frame, 'Manufactured', '01 Hidden optical support - halo, inward mirror ring, centered outer row', (.15, .17, .20), material='Printed opaque polymer')
 
     # Six full-length bolts retain the optics. Separate screws retain the rear.
@@ -632,11 +639,7 @@ def build(p=None):
         band.Label = name+'Ring - whole glow PETG print'
         b.add(band,'Manufactured',name+'Ring - whole glow PETG print',DIFFUSER_TINT,DIFFUSER_TRANSPARENCY,material='Prusament PETG Ultraglow Green; 1.0 mm wall; optical transmission unmeasured')
     for name,d in top_light_shields(p).items():
-        shield = b.annulus(name+'LightShield'+('Blank' if name=='Outer' else ''),d['inner'],d['outer'],d['bottom'],d['height'])
-        if name == 'Outer':
-            clearances = [b.cylinder(f'OuterShieldBoltClearance{i}',p['light_shield_bolt_clearance_radius'],d['height'],d['bottom'],x,y)
-                          for i,(x,y) in enumerate(points)]
-            shield = b.cut(name+'LightShield',shield,clearances)
+        shield = b.annulus(name+'LightShield',d['inner'],d['outer'],d['bottom'],d['height'])
         b.add(shield,'Manufactured',name+' opaque LED-edge shield - die-cut tape on ring top',(.015,.015,.015),material='tesa 7160 black PET light-blocking tape, 0.06 mm; adhesive on ring end face; retain liner beneath free span')
     # One deep laser-cut wood grid supplies both the face pattern and cell walls.
     # A free gap separates it from the sheet; three spacers support its rear rim.
@@ -724,7 +727,9 @@ def validate_parameters(p):
         raise ValueError('Battery pockets overlap or leave no lead channel')
     if not 1.8 <= p['structural_wall'] <= 2.2:
         raise ValueError('Structural barrel and covers need 1.8..2.2 mm walls')
-    if not .2 <= p['ring_seat_play'] <= .3 or p['ring_radial_error_budget'] < 0 or p['ring_diffuser_led_gap']-p['ring_seat_play']-p['ring_radial_error_budget'] < .5-1e-7:
+    if int(p['ring_station_count']) != p['ring_station_count'] or p['ring_station_count'] < 3:
+        raise ValueError('Ring locating stations need an integer count of at least three')
+    if not .2 <= p['ring_seat_play'] <= .3 or p['ring_radial_error_budget'] < 0 or min(ring_led_clearances(p).values())-ring_movement_limit(p,p['ring_radial_error_budget']) < .5-1e-7:
         raise ValueError('Sleeve fit must preserve at least 0.5 mm LED clearance')
     if not .3 <= p['mirror_fit_clearance'] <= .5:
         raise ValueError('Rear mirror needs 0.3..0.5 mm outer radial clearance')
@@ -751,14 +756,22 @@ def validate_parameters(p):
     optics = optical_dimensions(p)
     if p['ring_diffuser_thickness'] != 1 or p['ring_diffuser_led_gap'] < 1 or not .05 <= p['ring_bottom_clearance'] <= .2 or p['ring_cuff_height']+1e-7 < .8+.4 or p['ring_front_clearance'] != .5 or not .5 <= p['front_washer_compression_ratio'] <= .7:
         raise ValueError('Printed rings need specified walls, LED clearance, and axial retention')
-    if not 0 < p['light_shield_thickness'] <= .1 or not 0 < p['light_shield_edge_clearance'] <= .1 or not 4.1 <= p['light_shield_bolt_clearance_radius'] < 4.4:
+    if not 0 < p['light_shield_thickness'] <= .1 or not .05 <= p['light_shield_edge_clearance'] <= .25:
         raise ValueError('Opaque LED-edge shields need thin tape and a clear frame edge')
+    outside_shield=top_light_shields(p)['Outer']
+    if outside_shield['inner']-p['fastener_radius']-p['post_radius']-ring_movement_limit(p,p['ring_radial_error_budget']) < .04-1e-7:
+        raise ValueError('Outside shield must clear the trimmed front lands at every ring position')
     for name, dim in top_light_shields(p).items():
+        count=int(p[name.lower()+'_count'])
+        (x,y),_=ring_pixel(count,0,name!='Inner',p)
+        margin=ring_movement_limit(p,p['ring_radial_error_budget'])
+        if not dim['inner']+margin < math.hypot(x,y) < dim['outer']-margin:
+            raise ValueError('Moving shield exposes an LED upper edge')
         wall_edge = (ring_radius(p['halo_count'],p)-p['strip_thickness']/2 if name == 'Halo'
                      else ring_radius(p['inner_count'],p)+p['strip_thickness']/2 if name == 'Inner'
                      else ring_radius(p['outer_count'],p)-p['strip_thickness']/2)
         radial_clearance = (dim['inner']-wall_edge if name != 'Inner' else wall_edge-dim['outer'])
-        if radial_clearance-p['ring_seat_play'] < .04-1e-7:
+        if radial_clearance-ring_movement_limit(p,p['ring_radial_error_budget']) < .04-1e-7:
             raise ValueError('Moving LED-edge shield can catch the opaque carrier')
         if dim['bottom']-(strip_bottom(name,p)+p['strip_width']) < .05-1e-7 or p['front_plane_z']-dim['bottom']-dim['height'] < .2:
             raise ValueError('LED-edge shield needs strip and front-sheet clearance')
@@ -1022,13 +1035,7 @@ def svg_files(b, cells, out):
     (out/'fit-sheet.svg').write_text(document(['<path d="M -9,-9 H 9 V 9 H -9 Z"/>','<circle cx="0" cy="0" r="3.500000"/>'],'FIT SAMPLE ONLY: 18 mm square in actual front-sheet stock; test on FitDeck collar',9))
     (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 0.060 inch clear acrylic nominal; six 7.0 mm locating holes',p['case_diameter']/2))
     for name, dim in top_light_shields(p).items():
-        if name == 'Outer':
-            shield = b.doc.OuterLightShield.Shape
-            face = next(f for f in shield.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-dim['bottom']) < 1e-7)
-            paths = ['<polygon points="'+' '.join(f'{v.x:.6f},{v.y:.6f}' for v in wire.discretize(Deflection=.01))+'"/>'
-                     for wire in face.Wires]
-        else:
-            paths = [f'<circle cx="0" cy="0" r="{dim[key]:.6f}"/>' for key in ('outer','inner')]
+        paths = [f'<circle cx="0" cy="0" r="{dim[key]:.6f}"/>' for key in ('outer','inner')]
         (out/(name.lower()+'-light-shield.svg')).write_text(document(paths,
             f'{name} opaque LED-edge shield; die-cut 0.06 mm tesa 7160; retain release liner below free span; bond only to printed ring top',dim['outer']))
     (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (r,p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: clear centre r<=83; rear-facing two-way mirror 83..110.5; black rim 110.5..125',p['case_diameter']/2))

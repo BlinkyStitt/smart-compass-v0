@@ -128,7 +128,7 @@
   "mirror_fit_clearance": 0.45,
   "front_acrylic_thickness": 1.524,
   "rear_acrylic_thickness": 1.5,
-  "ring_seat_play": 0.3,
+  "ring_seat_play": 0.2,
   "ring_cuff_height": 1.2,
   "ring_front_clearance": 0.5,
   "bracket_side_clearance": 0.4,
@@ -138,6 +138,6 @@
   "front_washer_compression_ratio": 0.6,
   "ring_radial_error_budget": 0.2,
   "light_shield_thickness": 0.06,
-  "light_shield_edge_clearance": 0.05,
-  "light_shield_bolt_clearance_radius": 4.2
+  "light_shield_edge_clearance": 0.2,
+  "ring_station_count": 8
 }

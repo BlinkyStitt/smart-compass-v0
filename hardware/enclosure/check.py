@@ -16,7 +16,7 @@ sys.path.insert(0, str(HERE))
 import build
 import inventory
 from hardware_spec import nut_dimensions, stations
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, top_light_shields, wood_bottom
 
 
 def check():
@@ -64,6 +64,9 @@ def check():
         land=Part.makeCylinder(2.80,.01,App.Vector(x,y,p['case_depth']-.02)).cut(Part.makeCylinder(1.90,.01,App.Vector(x,y,p['case_depth']-.02)))
         assert abs(doc.OpticalDeck.Shape.common(land).Volume-land.Volume)<1e-7, 'Front washer stop must retain a continuous broad bearing land'
         assert doc.OpticalDeck.Shape.isInside(App.Vector(x+2.3,y,p['case_depth']-.01),1e-7,True), 'Collar lacks flat washer stop'
+    for i,(x,y) in enumerate(mounting_points(p)):
+        sheet_land=Part.makeCylinder(4,.01,App.Vector(x,y,p['front_plane_z']-.01)).cut(Part.makeCylinder(3.5,.01,App.Vector(x,y,p['front_plane_z']-.01)))
+        assert doc.OpticalDeck.Shape.common(sheet_land).Volume/.01 >= 8, 'Trimmed sheet land lost its bearing area'
     for x,y in rear_mounting_points(p):
         assert not doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.05),1e-7,True), 'Rear screw entry lacks lead-in'
         assert doc.RearPlate.Shape.isInside(App.Vector(x+1.85,y,.6),1e-7,True)
@@ -74,6 +77,9 @@ def check():
         assert not doc.FrontSheet.Shape.isInside(App.Vector(x+3.1,y,p['front_plane_z']+.5),1e-7,True)
         # The rear can pass the optical-stack nuts without releasing them.
         assert doc.RearPlate.Shape.common(Part.makeCylinder(4,4,App.Vector(x,y,-1))).Volume<1e-7
+    for i,(x,y) in enumerate(mounting_points(p)):
+        sheet_land=Part.makeCylinder(4,.01,App.Vector(x,y,p['front_plane_z']-.01)).cut(Part.makeCylinder(3.5,.01,App.Vector(x,y,p['front_plane_z']-.01)))
+        assert doc.OpticalDeck.Shape.common(sheet_land).Volume/.01 >= 8, 'Trimmed sheet land lost its bearing area'
     for x,y in rear_mounting_points(p):
         ray=Part.makeLine(App.Vector(x,y,-4),App.Vector(x,y,10))
         assert not any(ray.common(obj.Shape).Length>1e-7 for obj in b.parts), 'Rear screw path blocked'
@@ -175,7 +181,7 @@ def check():
         gap=dim['inner']-cuff.Base.Radius.Value if name=='Halo' else cuff.Tool.Radius.Value-dim['outer']
         assert math.isclose(gap,p['ring_seat_play'],abs_tol=1e-7)
         assert math.isclose(cuff.Shape.BoundBox.ZLength,p['ring_cuff_height'],abs_tol=1e-7)
-        assert p['ring_diffuser_led_gap']-p['ring_seat_play']-p['ring_radial_error_budget']+1e-7 >= .5
+        assert min(ring_led_clearances(p).values())-ring_movement_limit(p,p['ring_radial_error_budget'])+1e-7 >= .5
         assert dim['bottom']+p['ring_cuff_height'] > dim['bottom']+.8
     for name,dim in top_light_shields(p).items():
         shield=doc.getObject(name+'LightShield')
@@ -183,6 +189,32 @@ def check():
         assert math.isclose(shield.Shape.BoundBox.ZMin,dim['bottom'],abs_tol=1e-7)
         assert math.isclose(shield.Shape.BoundBox.ZLength,p['light_shield_thickness'],abs_tol=1e-7)
         assert not doc.FrontSheet.Shape.common(shield.Shape).Volume > 1e-7
+    motion=ring_movement_limit(p)
+    clearance_motion=ring_movement_limit(p,p['ring_radial_error_budget'])
+    for name,led_name,phase in (('HaloRing','HaloLEDs',30),('InnerRing','InnerLEDs',30),('EdgeDiffuser','OuterLEDs',0)):
+        original=doc.getObject(name).Shape
+        shield_name='OuterLightShield' if name=='EdgeDiffuser' else name.removesuffix('Ring')+'LightShield'
+        for station in range(int(p['ring_station_count'])*2):
+            a=math.radians(phase+station*180/p['ring_station_count'])
+            # A larger translation must meet a rigid locator at both lift limits.
+            for lift in (0,.8):
+                beyond=original.copy();beyond.translate(App.Vector((motion+.01)*math.cos(a),(motion+.01)*math.sin(a),lift))
+                assert beyond.common(doc.OpticalFrame.Shape).Volume>1e-6, 'Ring escapes its movement limit: '+name
+            offset=App.Vector(clearance_motion*math.cos(a),clearance_motion*math.sin(a),0)
+            moved=original.copy();moved.translate(offset)
+            # Include even positions excluded by the pad width. This checks a
+            # conservative superset of every reachable optical clearance.
+            assert moved.distToShape(doc.getObject(led_name).Shape)[0] >= .5, 'Moved ring loses LED clearance: '+name
+            for lift in (0,.2,.4,.6,.8):
+                film=doc.getObject(shield_name).Shape.copy();film.translate(offset+App.Vector(0,0,lift))
+                assert film.common(doc.OpticalFrame.Shape).Volume<1e-7, 'Moved shield catches frame: '+name
+    # Outside stops must provide the same 1.2 mm axial retention as cavity cuffs.
+    contact_radius=p['edge_diffuser_radius']-p['ring_seat_play']
+    for angle in ring_locating_angles(p,0):
+        a=math.radians(angle)
+        for height in (p['ring_cuff_height']-.01,p['ring_cuff_height']+.02):
+            point=App.Vector((contact_radius-.001)*math.cos(a),(contact_radius-.001)*math.sin(a),p['edge_bottom_z']+height)
+            assert doc.BarrelFrame.Shape.isInside(point,1e-7,True)==(height<p['ring_cuff_height']), 'Outside locating height differs from cuff input'
     assert math.isclose(doc.RearMirrorBlank.Base.Radius.Value,ring_radius(p['inner_count'],p)+p['strip_thickness']/2-p['mirror_fit_clearance'],abs_tol=1e-7)
     for side in (-1,1):
         (x,y),primary,secondary = necklace_anchors(p,side)
@@ -294,7 +326,6 @@ def check():
     for name,parent in (('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate')):
         sample_shapes[name+'.stl']=doc.getObject(parent).Shape.common(Part.makeBox(40,50,25,App.Vector(70,35,0)))
     assert all(shape.isValid() and len(shape.Solids)==1 for shape in sample_shapes.values())
-    outside_shield_shape = doc.OuterLightShield.Shape.copy()
     # A native expression must follow a sheet edit after recompute.
     doc.Parameters.set('B' + str(doc.InputStatus.ParameterKeys.index('battery_height')+2), '=' + str(p['battery_height']-1) + ' mm')
     doc.recompute()
@@ -314,19 +345,9 @@ def check():
         ET.parse(HERE/'exports'/filename)
     for name,dim in top_light_shields(p).items():
         cut=ET.parse(HERE/'exports'/(name.lower()+'-light-shield.svg'))
-        if name == 'Outer':
-            polygons=cut.findall('.//s:polygon',ns)
-            assert len(polygons)==2, 'Outside shield needs outer and scalloped inner contours'
-            assert not cut.findall('.//s:circle',ns), 'Outside shield must use the actual scalloped CAD contour'
-            for polygon in polygons:
-                points=[tuple(map(float,pair.split(','))) for pair in polygon.attrib['points'].split()]
-                assert len(points)>20
-                for x,y in points:
-                    assert outside_shield_shape.distToShape(Part.Vertex(App.Vector(x,y,dim['bottom'])))[0]<.025
-        else:
-            circles=cut.findall('.//s:circle',ns)
-            assert len(circles)==2
-            assert [float(circle.attrib['r']) for circle in circles] == [round(dim['outer'],6),round(dim['inner'],6)]
+        circles=cut.findall('.//s:circle',ns)
+        assert len(circles)==2 and not cut.findall('.//s:polygon',ns)
+        assert [float(circle.attrib['r']) for circle in circles] == [round(dim['outer'],6),round(dim['inner'],6)]
     cut_circles=sorted((float(c.attrib['cx']),float(c.attrib['cy']),float(c.attrib['r'])) for c in acrylic.findall('.//s:circle',ns))
     assert cut_circles==sheet_circles, 'Front cut paths differ from native outline/locating holes'
     fit_holes=ET.parse(HERE/'exports/fit-sheet.svg').findall('.//s:circle',ns)
@@ -371,7 +392,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

@@ -122,6 +122,43 @@ def cavity_diffusers(p):
             'Inner':{'inner':inner_face-gap-thickness,'outer':inner_face-gap,'bottom':bottom,'height':top-bottom}}
 
 
+def ring_locating_angles(p, phase=30):
+    return tuple(phase+i*360/int(p['ring_station_count']) for i in range(int(p['ring_station_count'])))
+
+
+def ring_movement_limit(p, radial_error=0):
+    """Conservative centre-motion bound from the actual circular contact radii.
+
+    Ignore each pad's finite angular width, which only reduces movement. The
+    worst direction lies midway between adjacent radial restraints. Assign the
+    combined radial error to the contact clearance, where geometry amplifies
+    its effect more than the same error at an LED face.
+    """
+    bands=cavity_diffusers(p)
+    gap=p['ring_seat_play']+radial_error
+    cosine=math.cos(math.pi/int(p['ring_station_count']))
+    sine_squared=1-cosine*cosine
+    inside=[]
+    for radius in (bands['Halo']['inner'],p['edge_diffuser_radius']):
+        contact=radius-gap
+        inside.append(math.sqrt(radius*radius-contact*contact*sine_squared)-contact*cosine)
+    radius=bands['Inner']['outer']
+    contact=radius+gap
+    outside=contact*cosine-math.sqrt(radius*radius-contact*contact*sine_squared)
+    return max(*inside,outside)
+
+
+def ring_led_clearances(p):
+    """Minimum nominal gap to the complete 5 mm wide LED packages."""
+    bands=cavity_diffusers(p)
+    halo_face=ring_radius(p['halo_count'],p)+p['strip_thickness']/2+p['ring_led_depth']
+    outer_face=ring_radius(p['outer_count'],p)+p['strip_thickness']/2+p['ring_led_depth']
+    inner_face=ring_radius(p['inner_count'],p)-p['strip_thickness']/2-p['ring_led_depth']
+    return {'Halo':bands['Halo']['inner']-math.hypot(halo_face,2.5),
+            'Inner':inner_face-bands['Inner']['outer'],
+            'Outer':p['edge_diffuser_radius']-math.hypot(outer_face,2.5)}
+
+
 def top_light_shields(p):
     """Opaque tape covers the exposed axial LED edges and ring end faces."""
     bands = cavity_diffusers(p)

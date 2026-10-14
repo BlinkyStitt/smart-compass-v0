@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, strip_bottom, top_light_shields
+from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, strip_bottom, top_light_shields
 
 HERE = Path(__file__).resolve().parent
 
@@ -86,7 +86,7 @@ class GeometryTests(unittest.TestCase):
         inner_face = ring_radius(self.p['inner_count'],self.p)-self.p['strip_thickness']/2-self.p['ring_led_depth']
         self.assertAlmostEqual(bands['Halo']['inner']-halo_face,self.p['ring_diffuser_led_gap'])
         self.assertAlmostEqual(inner_face-bands['Inner']['outer'],self.p['ring_diffuser_led_gap'])
-        self.assertGreaterEqual(self.p['ring_diffuser_led_gap']-self.p['ring_seat_play']-self.p['ring_radial_error_budget']+1e-9,.5)
+        self.assertGreaterEqual(min(ring_led_clearances(self.p).values())-ring_movement_limit(self.p,self.p['ring_radial_error_budget'])+1e-9,.5)
         self.assertGreaterEqual(self.p['ring_cuff_height']-.8+1e-9,.4)
         self.assertGreaterEqual(bands['Inner']['inner']-bands['Halo']['outer'],18)
         for band in bands.values():
@@ -109,6 +109,18 @@ class GeometryTests(unittest.TestCase):
                 self.assertAlmostEqual(dim['bottom'],band['bottom']+band['height'])
             else:
                 self.assertAlmostEqual(dim['bottom'],self.p['edge_bottom_z']+33)
+
+    def test_ring_movement_uses_locator_geometry_and_package_corners(self):
+        self.assertEqual(len(ring_locating_angles(self.p)),8)
+        self.assertGreater(ring_movement_limit(self.p),self.p['ring_seat_play'])
+        self.assertLess(ring_movement_limit(self.p),.217)
+        self.assertLess(ring_movement_limit(self.p,.2),.434)
+        six=dict(self.p,ring_station_count=6)
+        self.assertLess(self.p['strip_thickness']+self.p['light_shield_edge_clearance']-ring_movement_limit(six,.2),.04)
+        old=dict(self.p,ring_station_count=3,ring_seat_play=.3)
+        self.assertGreater(ring_movement_limit(old),.59)
+        self.assertLess(ring_led_clearances(self.p)['Halo'],self.p['ring_diffuser_led_gap'])
+        self.assertGreaterEqual(min(ring_led_clearances(self.p).values())-ring_movement_limit(self.p,.2),.53)
 
     def test_excessive_web_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Web removes LED'):

@@ -58,7 +58,7 @@ bolts for battery or board service.** Six separate M3 screws at radius 112.5 mm,
 starting at 0° and spaced by 60°, attach the rear to captive nuts in the barrel.
 The nut-loading slots face the open electronics compartment.
 
-Remove only the rear screws to lift the rear and its electronics. Three integral
+Remove only the rear screws to lift the rear and its electronics. Eight integral
 barrel seats hold the outside ring while the rear is off. The two independent
 necklace screws retain the brackets. Support the pendant during all service.
 Use unplugged connectors and service slack; do not hang the rear from wires.
@@ -176,11 +176,20 @@ light-leak check; the demo is not a scattering simulation.
 The halo and inner printed rings start at Z=25.6 mm and stand 10.6 mm high.
 Their inside diameters are 177.02 and 215.47 mm, with 1.0 mm walls. The
 outside ring starts at Z=3.2 mm and stands 33.0 mm high; its inside diameter
-is 246.00 mm and its wall is 1.2 mm. Three bottom locating stations retain
-each ring. The cavity cuffs stand 1.2 mm high and give 0.30 mm nominal radial
-seat play. The front sheet leaves 0.5 mm nominal clearance above the rings.
+is 246.00 mm and its wall is 1.2 mm. Eight integral locating stations retain
+each ring. All stops provide 1.2 mm locating height and 0.20 mm nominal radial
+seat clearance. The circular contact geometry limits sideways movement to less
+than 0.217 mm nominally and 0.434 mm with the combined 0.20 mm radial
+error budget assigned to the locating clearance. Package corners and this
+amplified movement allowance leave
+at least 0.53 mm LED clearance. The front lands keep at least 8 mm² of sheet
+bearing area per station; their outward edges clear the continuous shields.
+The front sheet leaves 0.5 mm nominal clearance above the rings.
 Measure 0.2–0.8 mm after assembly. Require at least 0.5 mm actual LED-to-ring
-clearance after dimensional errors and movement. The cavity remains at least
+clearance after dimensional errors and movement. The 0.20 mm budget is
+combined across fits, ring profiles, shields and strips; it is not a separate
+allowance for each part. Reject actual assemblies below 0.5 mm clearance.
+The cavity remains at least
 18 mm wide radially. Lift the rings from the front for mirror service.
 
 Die-cut three opaque PET light shields from the supplied SVGs. Bond each
@@ -225,7 +234,7 @@ a new design decision.
    Fit the two necklace brackets and their independent
    screws. Use washers and full nut engagement. Smooth the rounded webbing slots.
 4. Fit the LED strips and rear mirror. Seat both cavity rings in their shoes.
-   Fit the whole outside ring on its three barrel seats.
+   Fit the whole outside ring on its eight barrel seats.
 5. Seat the circle PCB, three attached rim spacers and the single wood grid.
    Check all LED clearances. Fit the front sheet, soft washers and metal washers.
    Tighten the six body bolts against the stops. Check that the grid stays free
