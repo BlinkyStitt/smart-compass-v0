@@ -1,6 +1,7 @@
 """Test freshness, partial staging and failed-build protection with small fixtures."""
 
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -170,6 +171,40 @@ class CadWorkflowTests(unittest.TestCase):
             with self.assertRaisesRegex(cad.CadError, 'already running'):
                 with cad.build_lock(self.root):
                     self.fail('A second build acquired the lock')
+
+    def test_build_lock_spans_processes_and_tempdirs_without_files(self):
+        script = """import sys
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+import cad
+try:
+    with cad.build_lock(Path(sys.argv[2])):
+        print('acquired')
+except cad.CadError:
+    print('busy')
+"""
+        def child():
+            result = subprocess.run(
+                [sys.executable, '-c', script, str(Path(cad.__file__).parent), str(self.root)],
+                env=dict(os.environ, TMPDIR=str(self.root)), check=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            return result.stdout.strip()
+        before = set(self.root.iterdir())
+        with cad.build_lock(self.root):
+            self.assertEqual(child(), 'busy')
+        self.assertEqual(child(), 'acquired')
+        self.assertEqual(set(self.root.iterdir()), before)
+
+    def test_build_lock_releases_after_failure_and_allows_other_checkouts(self):
+        other = self.root/'other-checkout'
+        other.mkdir()
+        with self.assertRaisesRegex(RuntimeError, 'failed build'):
+            with cad.build_lock(self.root):
+                with cad.build_lock(other):
+                    raise RuntimeError('failed build')
+        with cad.build_lock(self.root):
+            with cad.build_lock(other):
+                pass
 
 
 if __name__ == '__main__':

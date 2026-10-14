@@ -150,17 +150,17 @@ def check_freshness(snapshot):
 
 @contextmanager
 def build_lock(root):
-    # Keep the lock file: unlinking a held lock can let two builds run at once.
-    name = 'smart-compass-cad-' + digest(str(root.resolve()).encode())[:20] + '.lock'
-    with (Path(tempfile.gettempdir()) / name).open('a') as lock:
+    # The directory inode is stable across aliases and different TMPDIR values.
+    # Closing the descriptor releases the lock without leaving a lock file.
+    descriptor = os.open(root.resolve(), os.O_RDONLY)
+    try:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise CadError('A CAD rebuild is already running for this checkout') from exc
-        try:
-            yield
-        finally:
-            fcntl.flock(lock, fcntl.LOCK_UN)
+        yield
+    finally:
+        os.close(descriptor)
 
 
 def atomic_write(path, data):
