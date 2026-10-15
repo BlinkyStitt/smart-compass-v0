@@ -27,6 +27,10 @@ class ServicePackageTests(unittest.TestCase):
         self.spec = json.loads((HERE/'print-spec.json').read_text())
         (self.directory/'print-spec.json').write_text(json.dumps(self.spec))
         (self.directory/'service-guide.html').write_bytes((HERE/'service-guide.html').read_bytes())
+        source=self.directory/'vendor/evilgeniuslabs-fibonacci256'
+        source.mkdir(parents=True)
+        for name in ('LICENSE.txt','SOURCE.md'):
+            (source/name).write_bytes((HERE/'vendor/evilgeniuslabs-fibonacci256'/name).read_bytes())
         self.parts = {
             'parameters_for_inventory': json.loads((HERE/'parameters.json').read_text()),
             'stl_files': ['HaloRing.stl', 'NecklaceLink0.stl', 'OpticalDeck.stl'],

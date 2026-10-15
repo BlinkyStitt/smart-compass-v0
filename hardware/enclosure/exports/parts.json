@@ -11,6 +11,7 @@
     "EdgeDiffuser.stl",
     "HaloRing.stl",
     "InnerRing.stl",
+    "FibonacciBaffle.stl",
     "CircleRimFoot0.stl",
     "CircleRimFoot1.stl",
     "CircleRimFoot2.stl",
@@ -249,13 +250,13 @@
       ]
     },
     {
-      "name": "WoodMask",
-      "volume_cm3": 27.7899,
-      "printed": false,
+      "name": "FibonacciBaffle",
+      "volume_cm3": 6.4445,
+      "printed": true,
       "bounds_mm": [
-        165.89,
-        165.945,
-        4.0
+        161.291,
+        161.112,
+        2.0
       ]
     },
     {
@@ -263,8 +264,8 @@
       "volume_cm3": 0.0288,
       "printed": true,
       "bounds_mm": [
-        2.0,
-        4.0,
+        2.207,
+        4.099,
         3.6
       ]
     },
@@ -273,8 +274,8 @@
       "volume_cm3": 0.0288,
       "printed": true,
       "bounds_mm": [
-        4.464,
-        3.732,
+        4.289,
+        4.191,
         3.6
       ]
     },
@@ -290,22 +291,22 @@
     },
     {
       "name": "FrontSheet",
-      "volume_cm3": 74.4573,
+      "volume_cm3": 146.5694,
       "printed": false,
       "bounds_mm": [
         249.834,
         249.917,
-        1.524
+        3.0
       ]
     },
     {
       "name": "OpticalDeck",
-      "volume_cm3": 70.0763,
+      "volume_cm3": 70.3817,
       "printed": true,
       "bounds_mm": [
         239.387,
         239.387,
-        15.879
+        17.355
       ]
     },
     {
@@ -319,7 +320,7 @@
       ]
     }
   ],
-  "printed_volume_cm3": 264.4188,
+  "printed_volume_cm3": 271.1687,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -334,24 +335,20 @@
   },
   "parameters_for_inventory": {
     "case_diameter": 250.0,
-    "case_depth": 38.528800000000004,
+    "case_depth": 40.0048,
     "shell_wall": 1.35,
     "rear_thickness": 2.0,
-    "wood_thickness": 4.0,
-    "wood_density_g_cm3": 0.6,
     "fit_clearance": 0.5,
     "circle_diameter": 166.0,
     "circle_pcb_thickness": 1.6,
-    "circle_back_z": 27.0,
+    "circle_back_z": 29,
     "led_height": 3.0,
     "led_map_radius": 79.5,
     "map_rotation_deg": 0.0,
     "map_mirror_x": false,
     "map_mirror_y": false,
-    "mask_web": 1.6,
-    "mask_edge_radius": 82.5,
-    "inner_count": 84.0,
-    "outer_count": 90.0,
+    "inner_count": 84,
+    "outer_count": 90,
     "strip_density": 120.0,
     "ring_seam_gap": 3.0,
     "strip_width": 10.0,
@@ -414,34 +411,35 @@
     "print_bed_y": 300.0,
     "print_margin": 5.0,
     "_status": {
-      "case": "250 mm single-sheet clear-centre front; whole deck, barrel and independently removable rear; 300 mm print-bed basis",
+      "case": "250 mm single-sheet black LED acrylic front; whole deck, barrel and independently removable rear; 300 mm print-bed basis",
       "battery": "BatterySpace CU-MM109 protected factory 1S 10 Ah LiPo, nominal 80 x 65 x 20 mm; provisional fit candidate, four-hour target at 1.25 A total 5 V cap; measured capacity, brightness and thermal/transient behavior TODO",
       "sparkle": "Published Rev D PCB outline and holes; component envelope provisional until probe inspection",
       "blackpill": "Published V3.1 nominal envelope; check supplied board revision",
       "gps": "Published FeatherWing footprint; module and tilted mount provisional",
       "imu": "Placeholder pending exact breakout revision",
       "radio": "Placeholder pending exact RF95 carrier board",
-      "circle": "Published 166 mm diameter and 1.6 mm PCB; mounting uses an edge support, not guessed PCB holes",
+      "circle": "Published 166 mm diameter and 1.6 mm PCB; 3 mm LED-height envelope remains provisional; measure actual supplied packages and adjust PCB Z to keep the required baffle gap; no guessed board holes",
       "led_map": "Published 8-bit XY map; 79.5 mm centre radius and orientation require a physical alignment check",
       "rings": "Whole Prusament PETG Ultraglow Green rings; physical path, seat and LED clearance checks required",
-      "wood": "One 4 mm laser-cut cell grid; 0.5 mm front-sheet gap and nominal 0.6 mm LED clearance; measure stock and fit; soft rim pads only",
-      "acrylic": "0.060 inch nominal front sheet and separate rear mirror; measure actual stock before cutting; three whole glow PETG rings",
+      "acrylic": "3 mm nominal black LED acrylic front and separate 1.5 mm rear mirror; measure actual stock before fabrication",
       "mirror": "25 mm front annulus; 11.2 mm mirror separation; concealed circle support and outward halo; no optical-performance claim",
       "ventilation": "Four 6 mm rear openings with nominal 16 mm adhesive membrane patches; screw-removable guards with M2 captive nuts; verify membrane, heat and dust physically",
       "controls": "Rear membrane-covered Mode/Action and latching power button placeholders; service hatch gasket; exact parts/actuation remain TODO",
       "power": "Pololu U3V70F5 fixed 5 V boost, nominal 15.2 x 40.6 x 4.6 mm at (72,-28); protected/switched raw-pack input; external Adafruit charger while pack is disconnected; fuse/switch/capacitor and connector fit TODO",
       "necklace": "Two replaceable 5 mm PETG brackets with primary body bolt and separate captive-nut M3 frame anchor, 12 x 4 mm rounded webbing slots; strength, webbing and metal ring selection remain physical TODO",
       "sense": "BlackPill PA4 divider board placeholder; sense protected/switched raw pack before boost; final divider/profile and calibration TODO; Unknown until installed",
-      "external_power": "Optional belt-mounted protected raw 1S pack, no USB bank; cable follows necklace to reinforced rear entry with blanking plug for internal use; Adafruit PG-7 762 fit reference, actual gland/cable/strain relief and voltage drop TODO"
+      "external_power": "Optional belt-mounted protected raw 1S pack, no USB bank; cable follows necklace to reinforced rear entry with blanking plug for internal use; Adafruit PG-7 762 fit reference, actual gland/cable/strain relief and voltage drop TODO",
+      "baffle": "Original EGL 2 mm stencil; board registration and spacer contact need physical acceptance",
+      "front": "3 mm nominal black LED acrylic; measure stock before fabrication; rear-facing mirror annulus; transmission unmeasured"
     },
-    "halo_count": 64.0,
+    "halo_count": 64,
     "vent_hole_radius": 3.0,
     "vent_patch_radius": 8.0,
     "vent_patch_thickness": 0.2,
     "rear_skin_thickness": 1.0,
     "rear_rib_width": 1.8,
     "rear_rib_height": 2.0,
-    "battery_count": 1.0,
+    "battery_count": 1,
     "battery_spacing": 100.0,
     "power_x": 72.0,
     "power_y": -28.0,
@@ -457,10 +455,9 @@
     "external_port_y": 84.0,
     "external_port_diameter": 12.0,
     "front_plane_z": 36.7,
-    "wood_to_sheet_gap": 0.5,
     "structural_wall": 1.8,
     "mirror_fit_clearance": 0.45,
-    "front_acrylic_thickness": 1.524,
+    "front_acrylic_thickness": 3.0,
     "rear_acrylic_thickness": 1.5,
     "ring_seat_play": 0.2,
     "ring_cuff_height": 1.2,
@@ -473,12 +470,19 @@
     "ring_radial_error_budget": 0.2,
     "light_shield_thickness": 0.06,
     "light_shield_edge_clearance": 0.2,
-    "ring_station_count": 8.0,
+    "ring_station_count": 8,
     "body_bolt_stock_length": 45.0,
     "body_bolt_tip_projection": 0.3,
-    "body_bolt_tip_chamfer": 0.15
+    "body_bolt_tip_chamfer": 0.15,
+    "baffle_thickness": 2.0,
+    "baffle_to_sheet_gap": 0.5
   },
   "fit_samples": [
+    {
+      "file": "FitFibonacciBaffle.stl",
+      "source_part": "FibonacciBaffle",
+      "purpose": "Disposable fit test, not an assembly part"
+    },
     {
       "file": "FitDeck.stl",
       "source_part": "OpticalDeck",
@@ -566,7 +570,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/OpticalDeck.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 17.36 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -574,15 +578,15 @@
           "group": "pendant",
           "cad_part": "OpticalDeck",
           "mass_formula": "petg_volume",
-          "mass_g_per_unit": 88.99690100000001,
+          "mass_g_per_unit": 89.38475899999999,
           "mass_range_g_per_unit": [
-            62.2978307,
-            96.11665308000002
+            62.56933129999999,
+            96.53553971999999
           ],
-          "installed_mass_g": 88.9969,
+          "installed_mass_g": 89.3848,
           "installed_mass_range_g": [
-            62.2978,
-            96.1167
+            62.5693,
+            96.5355
           ]
         },
         {
@@ -696,7 +700,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/CircleRimFoot0.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.00 x 4.00 x 3.60 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.21 x 4.10 x 3.60 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -722,7 +726,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/CircleRimFoot1.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.29 x 4.19 x 3.60 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -904,8 +908,8 @@
           "unit": "part",
           "purchase_quantity": "1 custom blank; trim waste excluded",
           "source": "hardware/enclosure/exports/front-sheet.svg",
-          "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting; CAD bounds 249.83 x 249.92 x 1.52 mm",
-          "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+          "dimensions": "3 mm nominal black LED acrylic, 250 mm round; measure actual stock; CAD bounds 249.83 x 249.92 x 3.00 mm",
+          "material": "Black LED acrylic, not opaque black acrylic",
           "mass_kind": "calculated",
           "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
           "status": "Physical stock thickness and finished clamp fit require measurement",
@@ -914,19 +918,23 @@
           "mass_formula": "acrylic_volume",
           "stock_sources": [
             {
-              "label": "0.060 inch clear acrylic",
-              "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+              "label": "EGL specified 3 mm black LED acrylic",
+              "url": "https://www.evilgeniuslabs.org/fibonacci256"
+            },
+            {
+              "label": "TAP black LED acrylic candidate; verify actual thickness",
+              "url": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668"
             }
           ],
-          "mass_g_per_unit": 88.604187,
+          "mass_g_per_unit": 174.417586,
           "mass_range_g_per_unit": [
-            79.7437683,
-            97.4646057
+            156.97582740000001,
+            191.85934460000001
           ],
-          "installed_mass_g": 88.6042,
+          "installed_mass_g": 174.4176,
           "installed_mass_range_g": [
-            79.7438,
-            97.4646
+            156.9758,
+            191.8593
           ]
         },
         {
@@ -1151,35 +1159,35 @@
           ]
         },
         {
-          "id": "wood",
-          "label": "Wood cell grid",
+          "id": "FibonacciBaffle",
+          "label": "Original EGL Fibonacci256 printed baffle",
           "installed_quantity": 1,
           "unit": "part",
-          "purchase_quantity": "1 blank at least 166 x 166 mm",
-          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-          "dimensions": "166 mm diameter x 4 mm; 256 cells; CAD bounds 165.89 x 165.94 x 4.00 mm",
-          "material": "Plywood; opaque sealed cell walls",
+          "purchase_quantity": "1 opaque black PETG print plus full-size fit sample",
+          "source": "hardware/enclosure/exports/FibonacciBaffle.3mf",
+          "dimensions": "Original EGL profile; 2 mm thickness; CAD bounds 161.29 x 161.11 x 2.00 mm",
+          "material": "Opaque black PETG",
           "mass_kind": "calculated",
-          "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+          "mass_basis": "CAD net volume x 1.27 g/cm3; weigh print",
           "status": "Fit and mass require measurement",
           "group": "pendant",
-          "cad_part": "WoodMask",
-          "mass_formula": "wood_volume",
+          "cad_part": "FibonacciBaffle",
+          "mass_formula": "petg_volume",
           "stock_sources": [
             {
-              "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
-              "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+              "label": "Original Jason Coon stencil, Creative Commons Attribution",
+              "url": "https://www.thingiverse.com/thing:4191326"
             }
           ],
-          "mass_g_per_unit": 16.673939999999998,
+          "mass_g_per_unit": 8.184515,
           "mass_range_g_per_unit": [
-            11.115960000000001,
-            22.231920000000002
+            5.729160499999999,
+            8.8392762
           ],
-          "installed_mass_g": 16.6739,
+          "installed_mass_g": 8.1845,
           "installed_mass_range_g": [
-            11.116,
-            22.2319
+            5.7292,
+            8.8393
           ]
         },
         {
@@ -1189,7 +1197,7 @@
           "unit": "annulus",
           "purchase_quantity": "1 custom coating application",
           "source": "hardware/enclosure/exports/front-coating.svg",
-          "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+          "dimensions": "Cavity-facing mirror annulus r85.5..110.5 mm; black LED centre; opaque rim and cut edge; no film in centre",
           "material": "Partially reflecting optical coating",
           "mass_g_per_unit": 1,
           "mass_range_g_per_unit": [
@@ -1255,14 +1263,14 @@
           ]
         },
         {
-          "id": "wood_finish",
-          "label": "Wood finish and spacer tack",
+          "id": "baffle_spacer_tack",
+          "label": "Baffle spacer tack",
           "installed_quantity": 1,
           "unit": "application",
           "purchase_quantity": "1 small container, installed cure mass only",
-          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-          "dimensions": "Seal cell walls opaque; tack three spacers to rim",
-          "material": "Opaque finish and removable acrylic-safe adhesive",
+          "source": "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
+          "dimensions": "Tack three spacers to original printed stencil; keep adhesive off apertures and LEDs",
+          "material": "Removable acrylic-safe adhesive",
           "mass_g_per_unit": 2,
           "mass_range_g_per_unit": [
             1,
@@ -1878,7 +1886,7 @@
           "unit": "screw",
           "purchase_quantity": "8 singles, 2 spares excluded",
           "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
-          "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
+          "dimensions": "M3, finish to 41.805 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
           "material": "A2 stainless, natural",
           "mass_kind": "estimated",
           "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
@@ -1886,15 +1894,15 @@
           "group": "pendant",
           "stock_mass_g_per_unit": 2.61,
           "mass_formula": "finished_body_screw",
-          "mass_g_per_unit": 2.388665682299546,
+          "mass_g_per_unit": 2.458602626323752,
           "mass_range_g_per_unit": [
-            1.5526326934947048,
-            3.5829985234493185
+            1.5980917071104388,
+            3.687903939485628
           ],
-          "installed_mass_g": 14.332,
+          "installed_mass_g": 14.7516,
           "installed_mass_range_g": [
-            9.3158,
-            21.498
+            9.5886,
+            22.1274
           ]
         },
         {
@@ -2568,10 +2576,10 @@
       ],
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 981.6,
+          "nominal_g": 1059.7,
           "range_g": [
-            748.7,
-            1213.0
+            821.1,
+            1295.1
           ]
         },
         "necklace": {
@@ -2582,17 +2590,17 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 1013.8,
+          "nominal_g": 1091.9,
           "range_g": [
-            768.5,
-            1275.0
+            840.9,
+            1357.1
           ]
         },
         "external_battery_pendant": {
-          "nominal_g": 793.6,
+          "nominal_g": 871.7,
           "range_g": [
-            569.7,
-            1005.0
+            642.1,
+            1087.1
           ]
         },
         "external_belt_and_lead": {
@@ -2603,10 +2611,10 @@
           ]
         },
         "external_total_worn": {
-          "nominal_g": 1115.8,
+          "nominal_g": 1193.9,
           "range_g": [
-            829.5,
-            1457.0
+            901.9,
+            1539.1
           ]
         },
         "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -2632,11 +2640,11 @@
           "HaloLightShield",
           "InnerRing",
           "InnerLightShield",
-          "wood",
+          "FibonacciBaffle",
           "front_coating",
           "rim_mask",
           "rear_coating",
-          "wood_finish",
+          "baffle_spacer_tack",
           "circle",
           "halo_strip",
           "inner_strip",
@@ -2701,7 +2709,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/OpticalDeck.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 17.36 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -2709,15 +2717,15 @@
           "group": "pendant",
           "cad_part": "OpticalDeck",
           "mass_formula": "petg_volume",
-          "mass_g_per_unit": 88.99690100000001,
+          "mass_g_per_unit": 89.38475899999999,
           "mass_range_g_per_unit": [
-            62.2978307,
-            96.11665308000002
+            62.56933129999999,
+            96.53553971999999
           ],
-          "installed_mass_g": 88.9969,
+          "installed_mass_g": 89.3848,
           "installed_mass_range_g": [
-            62.2978,
-            96.1167
+            62.5693,
+            96.5355
           ]
         },
         {
@@ -2831,7 +2839,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/CircleRimFoot0.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.00 x 4.00 x 3.60 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.21 x 4.10 x 3.60 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -2857,7 +2865,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/CircleRimFoot1.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.29 x 4.19 x 3.60 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -3039,8 +3047,8 @@
           "unit": "part",
           "purchase_quantity": "1 custom blank; trim waste excluded",
           "source": "hardware/enclosure/exports/front-sheet.svg",
-          "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting; CAD bounds 249.83 x 249.92 x 1.52 mm",
-          "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+          "dimensions": "3 mm nominal black LED acrylic, 250 mm round; measure actual stock; CAD bounds 249.83 x 249.92 x 3.00 mm",
+          "material": "Black LED acrylic, not opaque black acrylic",
           "mass_kind": "calculated",
           "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
           "status": "Physical stock thickness and finished clamp fit require measurement",
@@ -3049,19 +3057,23 @@
           "mass_formula": "acrylic_volume",
           "stock_sources": [
             {
-              "label": "0.060 inch clear acrylic",
-              "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+              "label": "EGL specified 3 mm black LED acrylic",
+              "url": "https://www.evilgeniuslabs.org/fibonacci256"
+            },
+            {
+              "label": "TAP black LED acrylic candidate; verify actual thickness",
+              "url": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668"
             }
           ],
-          "mass_g_per_unit": 88.604187,
+          "mass_g_per_unit": 174.417586,
           "mass_range_g_per_unit": [
-            79.7437683,
-            97.4646057
+            156.97582740000001,
+            191.85934460000001
           ],
-          "installed_mass_g": 88.6042,
+          "installed_mass_g": 174.4176,
           "installed_mass_range_g": [
-            79.7438,
-            97.4646
+            156.9758,
+            191.8593
           ]
         },
         {
@@ -3286,35 +3298,35 @@
           ]
         },
         {
-          "id": "wood",
-          "label": "Wood cell grid",
+          "id": "FibonacciBaffle",
+          "label": "Original EGL Fibonacci256 printed baffle",
           "installed_quantity": 1,
           "unit": "part",
-          "purchase_quantity": "1 blank at least 166 x 166 mm",
-          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-          "dimensions": "166 mm diameter x 4 mm; 256 cells; CAD bounds 165.89 x 165.94 x 4.00 mm",
-          "material": "Plywood; opaque sealed cell walls",
+          "purchase_quantity": "1 opaque black PETG print plus full-size fit sample",
+          "source": "hardware/enclosure/exports/FibonacciBaffle.3mf",
+          "dimensions": "Original EGL profile; 2 mm thickness; CAD bounds 161.29 x 161.11 x 2.00 mm",
+          "material": "Opaque black PETG",
           "mass_kind": "calculated",
-          "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+          "mass_basis": "CAD net volume x 1.27 g/cm3; weigh print",
           "status": "Fit and mass require measurement",
           "group": "pendant",
-          "cad_part": "WoodMask",
-          "mass_formula": "wood_volume",
+          "cad_part": "FibonacciBaffle",
+          "mass_formula": "petg_volume",
           "stock_sources": [
             {
-              "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
-              "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+              "label": "Original Jason Coon stencil, Creative Commons Attribution",
+              "url": "https://www.thingiverse.com/thing:4191326"
             }
           ],
-          "mass_g_per_unit": 16.673939999999998,
+          "mass_g_per_unit": 8.184515,
           "mass_range_g_per_unit": [
-            11.115960000000001,
-            22.231920000000002
+            5.729160499999999,
+            8.8392762
           ],
-          "installed_mass_g": 16.6739,
+          "installed_mass_g": 8.1845,
           "installed_mass_range_g": [
-            11.116,
-            22.2319
+            5.7292,
+            8.8393
           ]
         },
         {
@@ -3324,7 +3336,7 @@
           "unit": "annulus",
           "purchase_quantity": "1 custom coating application",
           "source": "hardware/enclosure/exports/front-coating.svg",
-          "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+          "dimensions": "Cavity-facing mirror annulus r85.5..110.5 mm; black LED centre; opaque rim and cut edge; no film in centre",
           "material": "Partially reflecting optical coating",
           "mass_g_per_unit": 1,
           "mass_range_g_per_unit": [
@@ -3390,14 +3402,14 @@
           ]
         },
         {
-          "id": "wood_finish",
-          "label": "Wood finish and spacer tack",
+          "id": "baffle_spacer_tack",
+          "label": "Baffle spacer tack",
           "installed_quantity": 1,
           "unit": "application",
           "purchase_quantity": "1 small container, installed cure mass only",
-          "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-          "dimensions": "Seal cell walls opaque; tack three spacers to rim",
-          "material": "Opaque finish and removable acrylic-safe adhesive",
+          "source": "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
+          "dimensions": "Tack three spacers to original printed stencil; keep adhesive off apertures and LEDs",
+          "material": "Removable acrylic-safe adhesive",
           "mass_g_per_unit": 2,
           "mass_range_g_per_unit": [
             1,
@@ -4013,7 +4025,7 @@
           "unit": "screw",
           "purchase_quantity": "8 singles, 2 spares excluded",
           "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
-          "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
+          "dimensions": "M3, finish to 41.805 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
           "material": "A2 stainless, natural",
           "mass_kind": "estimated",
           "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
@@ -4021,15 +4033,15 @@
           "group": "pendant",
           "stock_mass_g_per_unit": 2.61,
           "mass_formula": "finished_body_screw",
-          "mass_g_per_unit": 2.388665682299546,
+          "mass_g_per_unit": 2.458602626323752,
           "mass_range_g_per_unit": [
-            1.5526326934947048,
-            3.5829985234493185
+            1.5980917071104388,
+            3.687903939485628
           ],
-          "installed_mass_g": 14.332,
+          "installed_mass_g": 14.7516,
           "installed_mass_range_g": [
-            9.3158,
-            21.498
+            9.5886,
+            22.1274
           ]
         },
         {
@@ -4703,10 +4715,10 @@
       ],
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 968.0,
+          "nominal_g": 1046.2,
           "range_g": [
-            739.2,
-            1198.4
+            811.6,
+            1280.4
           ]
         },
         "necklace": {
@@ -4717,17 +4729,17 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 1000.2,
+          "nominal_g": 1078.4,
           "range_g": [
-            759.0,
-            1260.4
+            831.4,
+            1342.4
           ]
         },
         "external_battery_pendant": {
-          "nominal_g": 780.0,
+          "nominal_g": 858.2,
           "range_g": [
-            560.2,
-            990.4
+            632.6,
+            1072.4
           ]
         },
         "external_belt_and_lead": {
@@ -4738,10 +4750,10 @@
           ]
         },
         "external_total_worn": {
-          "nominal_g": 1102.2,
+          "nominal_g": 1180.4,
           "range_g": [
-            820.0,
-            1442.4
+            892.4,
+            1524.4
           ]
         },
         "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -4767,11 +4779,11 @@
           "HaloLightShield",
           "InnerRing",
           "InnerLightShield",
-          "wood",
+          "FibonacciBaffle",
           "front_coating",
           "rim_mask",
           "rear_coating",
-          "wood_finish",
+          "baffle_spacer_tack",
           "circle",
           "halo_strip",
           "inner_strip",
@@ -4835,7 +4847,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/OpticalDeck.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 15.88 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 239.39 x 239.39 x 17.36 mm",
       "material": "Opaque black PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -4843,15 +4855,15 @@
       "group": "pendant",
       "cad_part": "OpticalDeck",
       "mass_formula": "petg_volume",
-      "mass_g_per_unit": 88.99690100000001,
+      "mass_g_per_unit": 89.38475899999999,
       "mass_range_g_per_unit": [
-        62.2978307,
-        96.11665308000002
+        62.56933129999999,
+        96.53553971999999
       ],
-      "installed_mass_g": 88.9969,
+      "installed_mass_g": 89.3848,
       "installed_mass_range_g": [
-        62.2978,
-        96.1167
+        62.5693,
+        96.5355
       ]
     },
     {
@@ -4965,7 +4977,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/CircleRimFoot0.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.00 x 4.00 x 3.60 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 2.21 x 4.10 x 3.60 mm",
       "material": "Opaque black PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -4991,7 +5003,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/CircleRimFoot1.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.46 x 3.73 x 3.60 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 4.29 x 4.19 x 3.60 mm",
       "material": "Opaque black PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -5173,8 +5185,8 @@
       "unit": "part",
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/front-sheet.svg",
-      "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting; CAD bounds 249.83 x 249.92 x 1.52 mm",
-      "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+      "dimensions": "3 mm nominal black LED acrylic, 250 mm round; measure actual stock; CAD bounds 249.83 x 249.92 x 3.00 mm",
+      "material": "Black LED acrylic, not opaque black acrylic",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
       "status": "Physical stock thickness and finished clamp fit require measurement",
@@ -5183,19 +5195,23 @@
       "mass_formula": "acrylic_volume",
       "stock_sources": [
         {
-          "label": "0.060 inch clear acrylic",
-          "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+          "label": "EGL specified 3 mm black LED acrylic",
+          "url": "https://www.evilgeniuslabs.org/fibonacci256"
+        },
+        {
+          "label": "TAP black LED acrylic candidate; verify actual thickness",
+          "url": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668"
         }
       ],
-      "mass_g_per_unit": 88.604187,
+      "mass_g_per_unit": 174.417586,
       "mass_range_g_per_unit": [
-        79.7437683,
-        97.4646057
+        156.97582740000001,
+        191.85934460000001
       ],
-      "installed_mass_g": 88.6042,
+      "installed_mass_g": 174.4176,
       "installed_mass_range_g": [
-        79.7438,
-        97.4646
+        156.9758,
+        191.8593
       ]
     },
     {
@@ -5420,35 +5436,35 @@
       ]
     },
     {
-      "id": "wood",
-      "label": "Wood cell grid",
+      "id": "FibonacciBaffle",
+      "label": "Original EGL Fibonacci256 printed baffle",
       "installed_quantity": 1,
       "unit": "part",
-      "purchase_quantity": "1 blank at least 166 x 166 mm",
-      "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-      "dimensions": "166 mm diameter x 4 mm; 256 cells; CAD bounds 165.89 x 165.94 x 4.00 mm",
-      "material": "Plywood; opaque sealed cell walls",
+      "purchase_quantity": "1 opaque black PETG print plus full-size fit sample",
+      "source": "hardware/enclosure/exports/FibonacciBaffle.3mf",
+      "dimensions": "Original EGL profile; 2 mm thickness; CAD bounds 161.29 x 161.11 x 2.00 mm",
+      "material": "Opaque black PETG",
       "mass_kind": "calculated",
-      "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+      "mass_basis": "CAD net volume x 1.27 g/cm3; weigh print",
       "status": "Fit and mass require measurement",
       "group": "pendant",
-      "cad_part": "WoodMask",
-      "mass_formula": "wood_volume",
+      "cad_part": "FibonacciBaffle",
+      "mass_formula": "petg_volume",
       "stock_sources": [
         {
-          "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
-          "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+          "label": "Original Jason Coon stencil, Creative Commons Attribution",
+          "url": "https://www.thingiverse.com/thing:4191326"
         }
       ],
-      "mass_g_per_unit": 16.673939999999998,
+      "mass_g_per_unit": 8.184515,
       "mass_range_g_per_unit": [
-        11.115960000000001,
-        22.231920000000002
+        5.729160499999999,
+        8.8392762
       ],
-      "installed_mass_g": 16.6739,
+      "installed_mass_g": 8.1845,
       "installed_mass_range_g": [
-        11.116,
-        22.2319
+        5.7292,
+        8.8393
       ]
     },
     {
@@ -5458,7 +5474,7 @@
       "unit": "annulus",
       "purchase_quantity": "1 custom coating application",
       "source": "hardware/enclosure/exports/front-coating.svg",
-      "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+      "dimensions": "Cavity-facing mirror annulus r85.5..110.5 mm; black LED centre; opaque rim and cut edge; no film in centre",
       "material": "Partially reflecting optical coating",
       "mass_g_per_unit": 1,
       "mass_range_g_per_unit": [
@@ -5524,14 +5540,14 @@
       ]
     },
     {
-      "id": "wood_finish",
-      "label": "Wood finish and spacer tack",
+      "id": "baffle_spacer_tack",
+      "label": "Baffle spacer tack",
       "installed_quantity": 1,
       "unit": "application",
       "purchase_quantity": "1 small container, installed cure mass only",
-      "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-      "dimensions": "Seal cell walls opaque; tack three spacers to rim",
-      "material": "Opaque finish and removable acrylic-safe adhesive",
+      "source": "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
+      "dimensions": "Tack three spacers to original printed stencil; keep adhesive off apertures and LEDs",
+      "material": "Removable acrylic-safe adhesive",
       "mass_g_per_unit": 2,
       "mass_range_g_per_unit": [
         1,
@@ -6147,7 +6163,7 @@
       "unit": "screw",
       "purchase_quantity": "8 singles, 2 spares excluded",
       "source": "https://www.accu.co.uk/metric-cap-head-screws/2808-SSC-M3-45-A2",
-      "dimensions": "M3, finish to 40.329 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
+      "dimensions": "M3, finish to 41.805 mm under head from 45 mm stock; 0.3 mm nominal nut projection, 0.15 mm tip chamfer; measure actual clamp stack",
       "material": "A2 stainless, natural",
       "mass_kind": "estimated",
       "mass_basis": "Supplier stock mass 261 g/100 scaled by nominal head/shank volume after finishing; socket, threads and chamfer omitted; weigh finished screws",
@@ -6155,15 +6171,15 @@
       "group": "pendant",
       "stock_mass_g_per_unit": 2.61,
       "mass_formula": "finished_body_screw",
-      "mass_g_per_unit": 2.388665682299546,
+      "mass_g_per_unit": 2.458602626323752,
       "mass_range_g_per_unit": [
-        1.5526326934947048,
-        3.5829985234493185
+        1.5980917071104388,
+        3.687903939485628
       ],
-      "installed_mass_g": 14.332,
+      "installed_mass_g": 14.7516,
       "installed_mass_range_g": [
-        9.3158,
-        21.498
+        9.5886,
+        22.1274
       ]
     },
     {
@@ -6837,10 +6853,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 981.6,
+      "nominal_g": 1059.7,
       "range_g": [
-        748.7,
-        1213.0
+        821.1,
+        1295.1
       ]
     },
     "necklace": {
@@ -6851,17 +6867,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 1013.8,
+      "nominal_g": 1091.9,
       "range_g": [
-        768.5,
-        1275.0
+        840.9,
+        1357.1
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 793.6,
+      "nominal_g": 871.7,
       "range_g": [
-        569.7,
-        1005.0
+        642.1,
+        1087.1
       ]
     },
     "external_belt_and_lead": {
@@ -6872,10 +6888,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1115.8,
+      "nominal_g": 1193.9,
       "range_g": [
-        829.5,
-        1457.0
+        901.9,
+        1539.1
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -6901,11 +6917,11 @@
       "HaloLightShield",
       "InnerRing",
       "InnerLightShield",
-      "wood",
+      "FibonacciBaffle",
       "front_coating",
       "rim_mask",
       "rear_coating",
-      "wood_finish",
+      "baffle_spacer_tack",
       "circle",
       "halo_strip",
       "inner_strip",
@@ -6971,10 +6987,11 @@
     "EdgeDiffuser": 76.83,
     "HaloRing": 9.43,
     "InnerRing": 11.46,
+    "FibonacciBaffle": 9.2,
     "CircleRimFoot0": 0.08,
     "CircleRimFoot1": 0.08,
     "CircleRimFoot2": 0.08,
-    "OpticalDeck": 88.91,
+    "OpticalDeck": 89.3,
     "BarrelFrame": 52.64
   },
   "slicer_mass_by_ring_material": {
@@ -6990,10 +7007,11 @@
       "EdgeDiffuser": 76.83,
       "HaloRing": 9.43,
       "InnerRing": 11.46,
+      "FibonacciBaffle": 9.2,
       "CircleRimFoot0": 0.08,
       "CircleRimFoot1": 0.08,
       "CircleRimFoot2": 0.08,
-      "OpticalDeck": 88.91,
+      "OpticalDeck": 89.3,
       "BarrelFrame": 52.64
     },
     "silver": {
@@ -7008,10 +7026,11 @@
       "EdgeDiffuser": 66.07,
       "HaloRing": 8.11,
       "InnerRing": 9.86,
+      "FibonacciBaffle": 9.2,
       "CircleRimFoot0": 0.08,
       "CircleRimFoot1": 0.08,
       "CircleRimFoot2": 0.08,
-      "OpticalDeck": 88.91,
+      "OpticalDeck": 89.3,
       "BarrelFrame": 52.64
     }
   }

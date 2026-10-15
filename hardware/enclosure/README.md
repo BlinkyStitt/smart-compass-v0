@@ -42,9 +42,11 @@ Use the selected ZIP for a print-service handoff. Run `just cad` to regenerate
 both packages and all checked CAD outputs; freshness covers both ZIPs.
 
 Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The front is one
-250 mm clear acrylic sheet with a clear centre, a 25 mm two-way mirror annulus,
-and a black masked rim. Use listed 0.060 inch (1.524 mm nominal) stock and
-measure its actual thickness before the final cut. The rear mirror uses a
+250 mm black LED acrylic sheet with an uncoated LED centre, a 25 mm two-way
+mirror annulus on the cavity side, and an opaque rim and cut edge. Use the EGL
+3 mm nominal thickness and measure the actual stock before the final cut.
+Ordinary opaque black acrylic will block the LEDs. The supplier must confirm
+the black LED stock, mirror film adhesion and optical performance with a sample. The rear mirror uses a
 separate thickness input. The three light rings are whole printed PETG parts. Select either Prusament
 PETG Ultraglow Green or the Extrudr PETG Silver sample candidate. The glow option has a pale daytime appearance, green afterglow, and partial
 loss of LED colour. The silver option has no afterglow. Both need physical
@@ -63,7 +65,7 @@ All demo videos and GIFs come from Godot. The lighting loops use smooth spatial
 gradients and slow, seamless side-to-front sweeps. The exploded loop separates
 the current layers, pauses, and reassembles them. All main circles stay whole.
 The [demo guide](../../demo/README.md) lists controls and unmeasured optical assumptions. Its alternative full-mirror coating
-uses the same mechanical assembly. The saved CAD defines the selected clear-centre design.
+uses the same mechanical assembly. The saved CAD defines the selected black LED centre design.
 
 ![Assembly](exports/assembly.png)
 
@@ -79,18 +81,18 @@ uses the same mechanical assembly. The saved CAD defines the selected clear-cent
 | Vent guards | 4 | 4 |
 | USB service cover | 1 | 1 |
 | Whole glow rings | 0 | 3 |
-| **Printed pieces** | **35** | **16** |
+| Original EGL centre baffle | 0 | 1 |
+| **Printed pieces** | **35** | **17** |
 
 The three flat front acrylic pieces become one sheet. Integral ring shoes
-replace six adhesive locating pads. The single wood cell grid remains; there is
-no second full cell grid. The large printed parts have no glued quarter seams.
+replace six adhesive locating pads. The original printed EGL baffle replaces the generated plywood grid. There is
+no second physical cell grid. Its 2 mm source profile stays one connected print. The large printed parts have no glued quarter seams.
 **Keep every main circle whole.** Stack the deck, barrel and rear along their
 axis; do not split any of them into arcs to fit a smaller printer. The checks
-require full-size, connected circular parts. The front sheet and wood grid also
+require full-size, connected circular parts. The front sheet and printed EGL baffle also
 remain one piece each.
 
-Use a **300 × 300 mm printer or print service**. The 249 mm rear needs at least
-259 mm usable bed width with the specified brim. Do not scale the model to fit a
+Use a **300 × 300 mm printer or print service**. Keep each complete part, brim and skirt inside the actual usable bed. Do not scale the model to fit a
 smaller bed: that changes the optics, electronics pockets, and fasteners.
 
 Six M3 through-bolts at the original 233 mm bolt circle retain the front and
@@ -119,6 +121,7 @@ must use its actual qualified printer and material presets.
 | --- | --- | --- | --- |
 | Structural parts | Opaque black PETG, 0.4 mm nozzle | 0.2 mm; 0.45 mm nominal path; 5 perimeters, 25% gyroid | Delivered bed face |
 | Necklace brackets | Opaque black PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
+| Original EGL baffle | Opaque black PETG, 0.4 mm nozzle | 0.1 mm; 0.4 mm paths; 2 perimeters; 100% rectilinear; 10 top/bottom layers | Flat |
 | Optical deck | Opaque black PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
 | Halo and inner rings | Selected PETG variant; non-high-flow 0.4 mm nozzle; abrasion-resistant for Ultraglow | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
 | Outside ring | Same selected PETG and nozzle | 0.2 mm; four 0.53 mm nominal paths; 0.46 mm first-layer paths | Upright on circular bottom edge |
@@ -151,8 +154,9 @@ Print [FitDeck](exports/FitDeck.3mf), [FitBarrel](exports/FitBarrel.3mf),
 [rear clearance](exports/FitSuspensionRear.3mf),
 [controller mount](exports/FitController.3mf), and the
 [halo](exports/FitRingHalo.3mf), [inner](exports/FitRingInner.3mf), and
-[outside](exports/FitRingOutside.3mf) ring arcs. These thirteen disposable
-samples do not enter the 16-part assembly or worn mass.
+[outside](exports/FitRingOutside.3mf) ring arcs, plus the whole
+[original stencil](exports/FitFibonacciBaffle.3mf). These fourteen disposable
+samples do not enter the 17-part assembly or worn mass.
 
 Use actual M3 and M2 fasteners, plain nuts, metal washers, 0.020 inch
 Stockwell SG-30 GP silicone, finished acrylic stock, the supplied Sparkle
@@ -207,13 +211,46 @@ The bolts guide the parts; they must not pull a distorted ring into position.
 Dry-fit the rear and its six separate screws before wiring. Load the captive nuts
 with the electronics compartment open. A short screw can hold a loose nut during
 handling. Keep connectors unplugged and add service slack before closing the rear.
-Tack the three tiny rim spacers to the wood grid before installing that grid, so
-you handle one subassembly. Keep the single laser-cut grid aligned to the PCB with
+Tack the three tiny rim spacers to the printed EGL baffle before installing that grid, so
+you handle one subassembly. Keep the original printed stencil aligned to the PCB with
 the supplied registration overlay.
 
 Keep each printed ring whole. Seat its circular bottom edge on the specified
 locating stations. Do not split a ring into arcs or heat-form an acrylic band.
 Check the closed-ring internal lead passages before fitting the strips.
+
+## Original centre stencil and black front
+
+The [original EGL source](vendor/evilgeniuslabs-fibonacci256/SOURCE.md) supplies
+all physical stencil walls. Jason Coon released it under Creative Commons
+Attribution. The supplied STL is 2 mm thick; the native CAD uses its matching
+STL boundary profile without scaling XY. It keeps the original open edge cells.
+
+The circle PCB rear now sits at Z=29.0 mm. Its LEDs end at Z=33.6 mm; the
+stencil starts at Z=34.2 mm and ends at Z=36.2 mm. This keeps 0.6 mm LED
+clearance and 0.5 mm front-sheet clearance with the original 2 mm stencil.
+The 3 mm LED-height envelope is provisional. Measure the actual supplied
+packages and adjust PCB Z to retain the required gap before final fabrication.
+Three separate spacers bear on checked wall locations. They support the
+stencil and restrain the PCB; they do not carry the bolt clamp load. Tack them
+to the stencil for handling. Do not add guessed board holes.
+
+Print `FitFibonacciBaffle.3mf` with the production baffle settings. It contains
+the whole original stencil, so the service can check thin paths, handling and
+registration on the actual board. Use 0.1 mm layers, a 0.2 mm first layer,
+0.4 mm paths, two perimeters and 100% rectilinear infill. Print flat with a
+brim and no supports. Inspect every source wall and the small opening.
+Stop the order if walls are missing, cracked or distorted. Keep the three
+small spacers separate so the thin stencil prints flat without long legs.
+
+The 3 mm black LED acrylic is a nominal starting stock choice from
+[EGL](https://www.evilgeniuslabs.org/fibonacci256). A
+[TAP black LED sheet](https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668)
+is a candidate, with about 29% visible transmission. Confirm available stock
+and measure its thickness. The centre remains uncoated; mirror film spans
+radii 85.5–110.5 mm on the cavity side. The demo's full-mirror finish is a
+comparison with film over the centre too. Check the complete black sheet and
+film stack: it will reduce brightness and can blur the reflected pattern.
 
 ## Optical stack and load paths
 
@@ -228,11 +265,11 @@ bearing lands support it. The six 9 mm OD metal washers bear on collar tops;
 soft 9 mm OD × 6.4 mm ID washers retain the acrylic below them. The collar
 height derives from front-stock thickness and the target 60% washer
 compression. Measure actual stock and clamp retention. Bolt load travels
-through the collars and frame. Do not use wood or LED packages as stops.
+through the collars and frame. Do not use the baffle or LED packages as stops.
 
-The single wood grid uses **4 mm stock**, with **0.5 mm sheet clearance** and
+The original printed EGL baffle uses its **2 mm source thickness**, with **0.5 mm sheet clearance** and
 **0.6 mm nominal LED clearance**. Three rim spacers contact clear PCB edge areas.
-Tack the spacers to the wood rim so they lift with it. Use light, compliant rim
+Tack the spacers to the baffle rim so they lift with it. Use light, compliant rim
 pads to restrain the grid below the sheet; keep them off the cell openings.
 Measure stock and fitted gaps before assembly. The larger gaps need a physical
 light-leak check; the demo is not a scattering simulation.
@@ -296,9 +333,9 @@ a new design decision.
 ## Assembly and repair
 
 1. Measure the boards, pack, LED strips and sheet stock. Set the saved spreadsheet.
-   Rebuild. Laser-cut the one wood grid, front sheet and keyed rear mirror. Use
+   Rebuild. Cut the front sheet and keyed rear mirror. Print the original EGL baffle flat. Use
    `front-coating.svg` only as a coating map, not a cut file. Apply kerf once in CAM.
-2. Pass all thirteen fit-sample checks, then print the 16 pieces in their exported
+2. Pass all fourteen fit-sample checks, then print the 17 pieces in their exported
    orientations. Check flatness, nut slots,
    strap passages, bores, collars and ring seats. Fit-test hardware first.
 3. Load the captive nuts, including fourteen M2 nuts for the hatch, vent guards, and controller.
@@ -306,7 +343,7 @@ a new design decision.
    screws. Use washers and full nut engagement. Smooth the rounded webbing slots.
 4. Fit the LED strips and rear mirror. Seat both cavity rings in their shoes.
    Fit the whole outside ring on its eight barrel seats.
-5. Seat the circle PCB, three attached rim spacers and the single wood grid.
+5. Seat the circle PCB, three attached rim spacers and the single printed EGL baffle.
    Check all LED clearances. Fit the front sheet, soft washers and metal washers.
    Tighten the six body bolts against the stops. Check that the grid stays free
    of bolt preload. Select bolt length with the actual washer/nut stack.
@@ -347,7 +384,7 @@ Each guard uses two M2 screws, replacing the bonded feet. Its 1.5 mm stand-off
 keeps the roof clear of the membrane. The roof prints flat on the bed. Two M2
 screws also retain the thicker USB cover; its screws now enter replaceable metal
 nuts rather than plastic pilot holes. The ten side-loaded nut pockets are
-integral with the rear, so the printed part count stays **16**. This change adds
+integral with the rear, so the printed part count stays **17**. This change adds
 eight vent screws and ten nuts. Use the same M2 nut type throughout. Select screw
 length with the actual gasket, cover and nut stack; tips must clear electronics.
 
@@ -361,7 +398,7 @@ frame replacement is required.
 
 ## Ordering a print from a service
 
-Supply all sixteen whole printed parts and their thirteen fit samples. Require a
+Supply all seventeen whole printed parts and their fourteen fit samples. Require a
 300 mm printer, the specified opaque black structural PETG and selected ring filament, the
 orientations above, and an agreement to inspect functional fits. The supplier
 must print the samples with production settings and inspect the actual ring
@@ -405,7 +442,7 @@ do not enter worn mass.
 Structural PETG uses net CAD solid volume at 1.27 g/cm³. Glow PETG uses
 Prusa’s published 1.5 g/cm³ density;
 its range allows for infill and print variation. Acrylic uses 1.19 g/cm³.
-Wood uses the editable density, nominally 0.60 g/cm³, with a 0.40–0.80 range.
+The original printed baffle uses the structural PETG density. Its sample and brim do not enter worn mass.
 Slicer material estimates include brims and have a separate label in `parts.json`.
 CAD display bounds can differ slightly from exact circular dimensions. Use the
 nominal cut contours and specified stock for fabrication.
@@ -458,7 +495,7 @@ Give the print service these inspection requirements:
   0.2 mm; check that each washer stops on its collar before it loads the acrylic.
 - Pass the selected screws through every aligned hole by hand. Check all nut
   loading mouths, full nut seating, flat washer contact and thread engagement.
-- Check the 0.5 mm wood-to-sheet gap, at least 0.5 mm LED-to-wood clearance,
+- Check the 0.5 mm baffle-to-sheet gap, at least 0.5 mm LED-to-baffle clearance,
   11.2 mm nominal mirror separation, ring seats and independent rear removal.
   Reject optical contact, forced fits or a blocked service path.
 

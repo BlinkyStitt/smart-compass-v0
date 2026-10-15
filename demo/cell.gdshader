@@ -8,10 +8,10 @@ uniform float diffusion = 0.65;
 uniform vec3 led_position;
 varying vec3 pos;
 void vertex() { pos=(MODEL_MATRIX*vec4(VERTEX,1.0)).xyz; }
+#include "res://centre_diffusion.gdshaderinc"
 void fragment() {
-    float spread=mix(0.0025,0.014,diffusion);
-    float weight=exp(-dot(pos.xy-led_position.xy,pos.xy-led_position.xy)/(spread*spread));
-    ALBEDO=vec3(0.12);
+    float weight=centre_profile(pos.xy-led_position.xy,diffusion);
+    ALBEDO=vec3(0.012);
     ROUGHNESS=0.65;
     EMISSION=texelFetch(colours,ivec2(index,0),0).rgb*brightness*transmission*weight;
 }

@@ -12,6 +12,8 @@ uniform float inner_radius = 0.10824;
 uniform float strip_z = 0.0311;
 uniform float reflectance = 0.65;
 uniform float transmission = 0.25;
+uniform float substrate_transmission = 0.29;
+uniform float surface_reflectance = 0.04;
 uniform float rear_reflectance = 0.94;
 uniform float diffuser_transmission = 0.4;
 uniform float diffusion = 0.65;
@@ -24,6 +26,7 @@ varying vec3 world_position;
 
 void vertex() { world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
 
+#include "res://centre_diffusion.gdshaderinc"
 #include "res://cavity_trace.gdshaderinc"
 
 #include "res://ring_diffusion.gdshaderinc"
@@ -43,10 +46,12 @@ void fragment() {
             light=traced.x*ring_light(hit,group,group==1?64:84,group==1?pitch_radii.x:pitch_radii.y,strip_z,group==1?ring_wall_mm.x:ring_wall_mm.y,brightness,diffuser_transmission);
         }
     }
-    ALBEDO = vec3(reflectance);
+    // The film faces the cavity. External film reflection crosses the black
+    // substrate twice; outgoing cavity light crosses it once.
+    ALBEDO = vec3(black_sheet_reflection(reflectance,substrate_transmission,surface_reflectance));
     METALLIC = 1.0;
-    ROUGHNESS = 0.08;
+    ROUGHNESS = 0.3;
     SPECULAR = reflectance;
     // Environment reflection is PBR; the cavity does not use SSR.
-    EMISSION = light;
+    EMISSION = light*black_sheet_exit(1.0,substrate_transmission);
 }

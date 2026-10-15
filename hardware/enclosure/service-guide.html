@@ -11,8 +11,8 @@ body{font:16px/1.5 system-ui,sans-serif;color:#18212b;max-width:1150px;margin:32
 <p>CAD and slicing checks passed. Physical print, fit, strength and optical acceptance remain pending.</p></div>
 <h2>1. Confirm that you can make this job</h2>
 <ul>
-<li>Use a printer with at least a <strong>300 × 300 mm bed</strong>. The largest rear part needs at least 259 mm of usable width with its brim. Keep all circles whole. Keep the supplied scale and bed orientation.</li>
-<li>Use <strong>opaque black PETG</strong> for the frame, deck, rear, brackets, spacers, guards and cover. Use <strong>$material_name</strong> for the three light rings and their arc samples. Identify your proposed opaque black PETG brand and grade before printing. Check that the production-wall samples block visible LED light at the permitted power limit. Reject light transmission through the black parts. Keep this filament option separate from the other material version.</li>
+<li>Use a printer with at least a <strong>300 × 300 mm bed</strong>. Keep every complete part, brim and skirt inside the actual usable bed. Keep all circles whole. Keep the supplied scale and bed orientation.</li>
+<li>Use <strong>opaque black PETG</strong> for the frame, deck, rear, brackets, original EGL centre stencil, spacers, guards and cover. Use <strong>$material_name</strong> for the three light rings and their arc samples. Identify your proposed opaque black PETG brand and grade before printing. Check that the production-wall samples block visible LED light at the permitted power limit. Reject light transmission through the black parts. Keep this filament option separate from the other material version.</li>
 <li>Use a <strong>0.4 mm nozzle</strong>. $nozzle_instructions</li>
 <li>Use a $brim mm brim, with $brim_gap mm brim separation, and no supports. Keep elephant-foot compensation at $foot mm.</li>
 <li>Print the samples on the production machine with the production filament and settings. Agree to inspect dimensions and functional fits with the actual mating hardware.</li>
@@ -40,9 +40,10 @@ $product_rows
 </tbody></table></div>
 <h3>Orientation and path checks</h3>
 <ul>
-<li>Keep the optical deck floor down, barrel deck-joint face down, rear skin down, vent guards roof down and necklace brackets flat. Preserve the supplied orientation for the other parts and all fit samples. Centre each part on your usable bed without changing its scale.</li>
+<li>Keep the optical deck floor down, barrel deck-joint face down, rear skin down, vent guards roof down and necklace brackets flat. Preserve the supplied orientation for the other parts and all fit samples. The projects are centred on the 300 mm reference bed. Centre each part on your actual usable bed without changing its scale; check the whole brim and skirt too.</li>
 <li>Print each light ring upright on its circular bottom edge. Keep the cavity ring walls at $cavity_wall mm and the outside wall at $outside_wall mm. Their 0% infill setting uses continuous perimeter paths to fill the walls.</li>
 <li>Inspect $cavity_paths nominal $cavity_path mm paths in each cavity ring and $outside_paths nominal $outside_path mm paths in the outside ring. The outside first-layer paths are nominally $outside_first_path mm. Check every layer for continuous complete walls, with no missing path, gap fill or internal lattice.</li>
+<li>Print the original EGL centre stencil flat, 2 mm thick, with the supplied 0.1 mm layers, 0.4 mm paths and 100% rectilinear infill. Inspect all thin walls. Fit the complete stencil sample on the actual board, with its three separate spacers and the black LED acrylic front. Keep the source open edge cells.</li>
 <li>The optical deck uses $deck_layer mm layers with $deck_top solid top layers and $deck_bottom solid bottom layers. The first layer stays at $first_layer mm. Retain the collar stops, sheet lands and existing solid skins.</li>
 </ul>
 <h2>5. Sample acceptance — agree with the customer</h2>
@@ -65,7 +66,7 @@ $product_rows
 <li>After assembly, the customer must weigh the complete pendant and necklace and repeat the suspension, sustained-load, cyclic-load and service tests. Print acceptance does not establish thermal or dust acceptance.</li>
 </ul>
 <h2>7. What is outside this print order?</h2>
-<p>The flat acrylic front, rear mirror, wood LED stencil, coatings, light shields, soft washers, hardware, electronics, wiring and webbing are separate supplied or fabricated items. They are not plastic print jobs. The assembly references show some of these items so you can see the mating interfaces.</p>
+<p>The flat black LED acrylic front, rear mirror, coatings, light shields, soft washers, hardware, electronics, wiring and webbing are separate supplied or fabricated items. They are not plastic print jobs. The assembly references show some of these items so you can see the mating interfaces.</p>
 <h2>Assembly references</h2><p>These show the common geometry. Image colours show the baseline glow assembly; use the material specified in this order for printing.</p>
 <p><a href="04-REFERENCE-DO-NOT-PRINT/smart-compass.step">Complete assembly STEP</a> · <a href="04-REFERENCE-DO-NOT-PRINT/assembly-section.svg">Section drawing</a></p>
 <h3>Assembled</h3><img src="04-REFERENCE-DO-NOT-PRINT/assembly.png" alt="Current assembled pendant">

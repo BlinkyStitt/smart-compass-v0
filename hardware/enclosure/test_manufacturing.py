@@ -66,7 +66,7 @@ class ManufacturingTests(unittest.TestCase):
         component=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
         volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
-                 for r in component['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume','wood_volume')]
+                 for r in component['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume')]
         masses=[]
         for material in ('glow','silver'):
             rows=inventory.resolve(component,volumes,p,spec['ring_materials'][material])
@@ -75,11 +75,23 @@ class ManufacturingTests(unittest.TestCase):
             masses.append(ring['mass_g_per_unit'])
         self.assertGreater(masses[0],masses[1])
 
+    def test_original_baffle_profile_keeps_thin_walls_dense_and_flat(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        for name in ('FibonacciBaffle.stl','FitFibonacciBaffle.stl'):
+            profile=slicing.settings(spec,name)
+            self.assertEqual(profile['layer_height'],'0.1')
+            self.assertEqual(profile['extrusion_width'],'0.4')
+            self.assertEqual(profile['perimeters'],'2')
+            self.assertEqual(profile['fill_density'],'100%')
+            self.assertEqual(profile['filament_colour'],'#000000')
+            self.assertEqual(profile['top_solid_layers'],'10')
+            self.assertEqual(profile['bottom_solid_layers'],'10')
+
     def test_structural_products_and_samples_require_opaque_black_petg(self):
         spec=json.loads((HERE/'print-spec.json').read_text())
         rows,_=self.resolved()
         structural=[r for r in rows if r.get('mass_formula')=='petg_volume']
-        self.assertEqual(len(structural),13)
+        self.assertEqual(len(structural),14)
         for row in structural:
             self.assertEqual(row['material'],'Opaque black PETG')
             profile=slicing.settings(spec,row['cad_part']+'.stl')
@@ -89,6 +101,16 @@ class ManufacturingTests(unittest.TestCase):
             self.assertEqual(profile['filament_colour'],'#000000')
         with self.assertRaisesRegex(cad.CadError,'filament_colour'):
             slicing.verify_settings(dict(profile,filament_colour='#29B2B2'),profile,'wrong structural colour')
+
+    def test_bed_check_includes_brims_and_extrusion_width(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        bed=slicing.bed_bounds(spec)
+        self.assertEqual(bed,[0,0,300,300])
+        good="G0 X10 Y10\n;LAYER_CHANGE\n;TYPE:Skirt/Brim\n;WIDTH:0.4\nG1 X20 Y10 E1\n"
+        slicing.verify_bed(slicing.perimeter_layers(good),bed,'safe')
+        for bad in (good.replace('X20','X0.1'),good.replace('X20','X300')):
+            with self.assertRaisesRegex(cad.CadError,'outside reference bed'):
+                slicing.verify_bed(slicing.perimeter_layers(bad),bed,'bad brim')
 
     def test_perimeter_measurement_ignores_brims_travel_and_retraction(self):
         gcode="""M82
@@ -122,7 +144,7 @@ G1 X200 Y200 E10
         spec=json.loads((HERE/'component-inventory.json').read_text())
         p=json.loads((HERE/'parameters.json').read_text())
         volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
-                 for r in spec['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume','wood_volume')]
+                 for r in spec['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume')]
         return inventory.resolve(spec,volumes,p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow']),volumes
 
     def test_installed_strip_lengths_and_single_populated_boards(self):
@@ -166,7 +188,7 @@ G1 X200 Y200 E10
 
     def test_body_bolts_follow_the_measured_stack_and_full_nut_engagement(self):
         p=json.loads((HERE/'parameters.json').read_text())
-        for front_thickness in (1.45,1.524,1.65):
+        for front_thickness in (2.7,3.0,3.3):
             changed=dict(p,case_depth=p['front_plane_z']+front_thickness+p['front_washer_compressed_height'])
             body=[station for station in hardware_spec.stations(changed) if station[0].startswith('Body')]
             for name,size,x,y,seat,direction,length,nut_z in body:

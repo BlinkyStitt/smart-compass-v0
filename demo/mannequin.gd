@@ -120,5 +120,5 @@ func build():
 		neck_loop.append(Vector3(0.075*sin(angle),0.43,-0.245+0.07*cos(angle)))
 	_webbing("NeckLoop",neck_loop,black)
 	# Assumed distant camp lighting; this is not a calibrated lux environment.
-	_spot("AmberCampLight",Color(1.0,0.48,0.20),Vector3(-1.6,0.9,0.8),0.65)
-	_spot("BlueCampRim",Color(0.24,0.48,1.0),Vector3(1.1,0.8,-0.7),0.8)
+	_spot("AmberCampLight",Color(1.0,0.48,0.20),Vector3(-1.6,0.9,-0.8),0.2)
+	_spot("BlueCampRim",Color(0.24,0.48,1.0),Vector3(1.1,0.8,-0.7),0.25)

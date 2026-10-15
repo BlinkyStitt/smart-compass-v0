@@ -20,14 +20,18 @@ MANIFEST = CAD + '/exports-manifest.json'
 INPUTS = (
     'justfile', 'design-v2.md',
     *(CAD + '/' + name for name in (
-        'cad.py', 'build.py', 'check.py', 'geometry.py',
+        'cad.py', 'build.py', 'check.py', 'geometry.py', 'baffle.py',
+        'vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl',
+        'vendor/evilgeniuslabs-fibonacci256/LICENSE.txt',
+        'vendor/evilgeniuslabs-fibonacci256/README.txt',
+        'vendor/evilgeniuslabs-fibonacci256/SOURCE.md',
         'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
         'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
         'test_geometry.py', 'test_cad.py', 'service_package.py', 'service-guide.html', 'test_service_package.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (
         'project.godot', 'main.tscn', 'main.gd', 'mannequin.gd', 'assets/playa-night.png', 'optics.gdshader',
-        'sleeve.gdshader', 'cell.gdshader', 'package.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
+        'centre_diffusion.gdshaderinc', 'centre_diagnostic.gdshader', 'sleeve.gdshader', 'cell.gdshader', 'package.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
         'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'glow.gd', 'glow_diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),
 )
@@ -37,14 +41,14 @@ diffusers.png edge.png electronics.png
 exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
 front.png
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
-turntable.gif wood-fibonacci-mask.svg
+turntable.gif
 amulet.glb amulet-silver.glb scene.json lighting-demo.mp4
 infinity-rainbow.mp4 infinity-rainbow-silver.mp4 infinity-rainbow-silver.gif night-mannequin.png
 HaloRing-silver.3mf InnerRing-silver.3mf EdgeDiffuser-silver.3mf
 FitRingHalo-silver.3mf FitRingInner-silver.3mf FitRingOutside-silver.3mf
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
 glow-afterglow.gif glow-afterglow.mp4 glow-afterglow-poster.png
-FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
+FitFibonacciBaffle.stl FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
 FitSuspensionBracket.stl FitSuspensionBracketLeft.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
 FitController.stl FitRingHalo.stl FitRingInner.stl FitRingOutside.stl
 halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
@@ -52,7 +56,7 @@ halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
                         for view in ('front', 'steep', 'edge', 'rear')
                         for light in ('night', 'indoor', 'overcast', 'sun'))
 GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf', '.zip'}
-RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg', 'smart-compass-print-service.zip'))
+RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('wood-fibonacci-mask.svg', 'edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg', 'smart-compass-print-service.zip'))
 
 
 class CadError(Exception):

@@ -1,7 +1,7 @@
 extends Node3D
 
 const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
-const FINISHES = ["Selected • clear centre", "Comparison • full mirror"]
+const FINISHES = ["Selected • black LED centre", "Comparison • full mirror"]
 const RING_MATERIALS = ["glow", "silver"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
@@ -130,7 +130,7 @@ func _collect(node):
 func _prepare_explosion():
 	var layers = {
 		0.36: ["FrontCentre", "FrontMirrorCoating", "FrontRim"],
-		0.28: ["WoodMask", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
+		0.28: ["FibonacciBaffle", "CircleRimFoot0", "CircleRimFoot1", "CircleRimFoot2"],
 		0.22: ["CirclePCB", "CircleLEDs"],
 		0.19: ["HaloRing", "HaloLightShield", "HaloStripSeam", "HaloLEDs"],
 		0.14: ["InnerRing", "InnerLightShield", "InnerStripSeam", "InnerLEDs"],
@@ -336,12 +336,12 @@ func _make_controls():
 	ambient_slider = _slider(box,"Ambient intensity",0,3,ambient,func(v): ambient=v; _update_light())
 	_slider(box,"Light direction (degrees)",-180,180,light_angle,func(v): light_angle=v; _update_light())
 	_slider(box,"Exposure (fixed unless changed)",0.1,4,exposure,func(v): exposure=v; environment.tonemap_exposure=v)
-	reflect_slider = _slider(box,"Front reflectance",0,1,reflectance,func(v):
+	reflect_slider = _slider(box,"Mirror film reflectance",0,1,reflectance,func(v):
 		reflectance=v
 		transmission=minf(transmission,1-v)
 		_sync_slider(transmit_slider,transmission)
 		_update_optics())
-	transmit_slider = _slider(box,"Front transmission",0,1,transmission,func(v):
+	transmit_slider = _slider(box,"Mirror film transmission",0,1,transmission,func(v):
 		transmission=v
 		reflectance=minf(reflectance,1-v)
 		_sync_slider(reflect_slider,reflectance)
@@ -434,7 +434,7 @@ func _update_optics():
 	var choice=metadata.ring_materials[RING_MATERIALS[ring_material]]
 	for material in sleeve_materials+cavity_materials: _apply_ring_response(material,choice)
 	for material in cavity_materials:
-		for entry in [["reflectance",reflectance],["transmission",transmission],["diffuser_transmission",diffuser_transmission],["diffusion",diffusion],["brightness",brightness]]:
+		for entry in [["reflectance",reflectance],["transmission",transmission],["diffuser_transmission",diffuser_transmission],["diffusion",diffusion],["brightness",brightness],["substrate_transmission",metadata.comparison.black_acrylic_transmission],["surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance]]:
 			material.set_shader_parameter(entry[0],entry[1])
 	for material in sleeve_materials:
 		material.set_shader_parameter("ring_albedo",Vector3(choice.render.albedo[0],choice.render.albedo[1],choice.render.albedo[2]))
@@ -450,8 +450,10 @@ func _update_optics():
 	for material in package_materials:
 		material.set_shader_parameter("brightness",brightness)
 	for material in centre_materials:
-		material.set_shader_parameter("reflectance",reflectance if finish == 1 else 0.04)
-		material.set_shader_parameter("transmission",transmission if finish == 1 else 0.8)
+		material.set_shader_parameter("film_reflectance",reflectance if finish == 1 else 0.0)
+		material.set_shader_parameter("film_transmission",transmission if finish == 1 else 1.0)
+		material.set_shader_parameter("substrate_transmission",metadata.comparison.black_acrylic_transmission)
+		material.set_shader_parameter("surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance)
 
 func _set_lighting(value):
 	lighting = value
@@ -504,7 +506,7 @@ func _process(delta):
 	_update_colours()
 	if not automated: _advance_glow(delta)
 	if status:
-		status.text="%.2f m • yaw %.1f° • tilt %.1f°\nt = %.2f s • R + T = %.2f\n%.1f fps • centre diffusion %.2f" % [distance,yaw,pitch_angle,pattern_time,reflectance+transmission,Engine.get_frames_per_second(),central_diffusion]
+		status.text="%.2f m • yaw %.1f° • tilt %.1f°\nt = %.2f s • film R + T = %.2f\n%.1f fps • centre diffusion %.2f" % [distance,yaw,pitch_angle,pattern_time,reflectance+transmission,Engine.get_frames_per_second(),central_diffusion]
 
 func _pattern_colour(led,time: float):
 	var p = led.position_m
@@ -640,7 +642,7 @@ func _run_checks():
 	_exploded_pose(0.5)
 	for name in ["FrontMirrorCoating","RearMirror"]:
 		assert(meshes[name].transparency>0.0 and meshes[name].transparency<1.0,"Separated mirror must remain visible and semi-transparent: "+name)
-	assert(meshes.WoodMask.get_aabb().position.z+meshes.WoodMask.position.z > meshes.CircleLEDs.get_aabb().end.z+meshes.CircleLEDs.position.z+0.05,"Stencil must lift clear of the populated LED board")
+	assert(meshes.FibonacciBaffle.get_aabb().position.z+meshes.FibonacciBaffle.position.z > meshes.CircleLEDs.get_aabb().end.z+meshes.CircleLEDs.position.z+0.05,"Stencil must lift clear of the populated LED board")
 	assert(explosion_offsets.CirclePCB==explosion_offsets.CircleLEDs,"Soldered LED packages must stay on their board")
 	for part in metadata.parts:
 		if part.role == "cell": assert(not meshes[part.name].visible,"Exploded stencil must not carry virtual lit apertures")
@@ -665,7 +667,7 @@ func _run_checks():
 		_set_finish(value)
 		assert(pattern_time==saved_time and camera.position==saved_position)
 		assert(meshes.RearMirror.visible)
-		assert(meshes.WoodMask.visible and meshes.FrontCentre.visible)
+		assert(meshes.FibonacciBaffle.visible and meshes.FrontCentre.visible)
 		assert(meshes.HaloRing.visible and meshes.InnerRing.visible)
 		assert(meshes.OpticalDeck.visible and meshes.BarrelFrame.visible and meshes.RearPlate.visible)
 	for value in range(4):
@@ -1008,5 +1010,25 @@ func _gpu_checks():
 	var silver_off=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 	assert(silver_off.r<0.00001 and silver_off.g<0.00001 and silver_off.b<0.00001,"Silver must not emit stored green afterglow")
 	print("DEMO GPU SILVER PASS: neutral colour transmission, wall attenuation and no afterglow")
+	# Check the shared centre response and single/double substrate passes.
+	material.shader=load("res://centre_diagnostic.gdshader")
+	material.set_shader_parameter("substrate_transmission",metadata.comparison.black_acrylic_transmission)
+	material.set_shader_parameter("surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance)
+	material.set_shader_parameter("offset",Vector2.ZERO)
+	material.set_shader_parameter("film_transmission",1.0)
+	material.set_shader_parameter("film_reflectance",0.0)
+	await _settle()
+	var centre=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(absf(centre.r-0.29)<0.009 and absf(centre.b-1.0)<0.009,"Black-sheet centre must transmit once and retain a local LED peak")
+	material.set_shader_parameter("film_transmission",0.25)
+	material.set_shader_parameter("film_reflectance",0.65)
+	await _settle()
+	var coated=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(absf(coated.r-0.0725)<0.009 and absf(coated.g-0.094665)<0.009,"Film output crosses black sheet once; external film reflection crosses twice")
+	material.set_shader_parameter("offset",Vector2(0.008,0))
+	await _settle()
+	var distant=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(distant.b<0.009,"Centre diffusion must retain distinct local hotspots")
+	print("DEMO GPU CENTRE PASS: local hotspot, spatial falloff, black-sheet and film attenuation")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()

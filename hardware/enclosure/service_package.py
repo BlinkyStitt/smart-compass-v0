@@ -19,7 +19,7 @@ LABELS = MappingProxyType({
     'RearPlate': 'Removable rear plate', 'NecklaceLink0': 'Left necklace bracket',
     'NecklaceLink1': 'Right necklace bracket', 'ServiceCover': 'USB service cover',
     'HaloRing': 'Halo light ring', 'InnerRing': 'Inner light ring',
-    'EdgeDiffuser': 'Outside light ring',
+    'EdgeDiffuser': 'Outside light ring', 'FibonacciBaffle': 'Original EGL centre LED baffle',
     **{f'VentGuard{i}': f'Vent guard {i+1}' for i in range(4)},
     **{f'CircleRimFoot{i}': f'Centre rim spacer {i+1}' for i in range(3)},
 })
@@ -66,6 +66,9 @@ def shipment(root, material='glow'):
                          'top_layers': profile['top_solid_layers'], 'bottom_layers': profile['bottom_solid_layers']})
     for name in REFERENCES:
         files['04-REFERENCE-DO-NOT-PRINT/'+name] = (exports/name).read_bytes()
+    source = directory/'vendor/evilgeniuslabs-fibonacci256'
+    files['04-REFERENCE-DO-NOT-PRINT/EGL-LICENSE.txt']=(source/'LICENSE.txt').read_bytes()
+    files['04-REFERENCE-DO-NOT-PRINT/EGL-SOURCE.md']=(source/'SOURCE.md').read_bytes()
     output = io.StringIO(newline='')
     writer = csv.DictWriter(output, fieldnames=list(rows[0]))
     writer.writeheader()

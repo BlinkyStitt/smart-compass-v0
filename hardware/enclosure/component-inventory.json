@@ -261,8 +261,8 @@
       "unit": "part",
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/front-sheet.svg",
-      "dimensions": "0.060 inch (1.524 mm nominal) clear acrylic; measure actual stock before cutting",
-      "material": "Acrylic; Clear centre; two-way annulus; opaque rim",
+      "dimensions": "3 mm nominal black LED acrylic, 250 mm round; measure actual stock",
+      "material": "Black LED acrylic, not opaque black acrylic",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
       "status": "Physical stock thickness and finished clamp fit require measurement",
@@ -271,8 +271,12 @@
       "mass_formula": "acrylic_volume",
       "stock_sources": [
         {
-          "label": "0.060 inch clear acrylic",
-          "url": "https://www.usplastic.com/catalog/item.aspx?itemid=35668"
+          "label": "EGL specified 3 mm black LED acrylic",
+          "url": "https://www.evilgeniuslabs.org/fibonacci256"
+        },
+        {
+          "label": "TAP black LED acrylic candidate; verify actual thickness",
+          "url": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668"
         }
       ]
     },
@@ -419,24 +423,24 @@
       ]
     },
     {
-      "id": "wood",
-      "label": "Wood cell grid",
+      "id": "FibonacciBaffle",
+      "label": "Original EGL Fibonacci256 printed baffle",
       "installed_quantity": 1,
       "unit": "part",
-      "purchase_quantity": "1 blank at least 166 x 166 mm",
-      "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-      "dimensions": "166 mm diameter x 4 mm; 256 cells",
-      "material": "Plywood; opaque sealed cell walls",
+      "purchase_quantity": "1 opaque black PETG print plus full-size fit sample",
+      "source": "hardware/enclosure/exports/FibonacciBaffle.3mf",
+      "dimensions": "Original EGL profile; 2 mm thickness",
+      "material": "Opaque black PETG",
       "mass_kind": "calculated",
-      "mass_basis": "Net CAD volume x parameter wood density; nominal 0.60 g/cm3, range 0.40..0.80",
+      "mass_basis": "CAD net volume x 1.27 g/cm3; weigh print",
       "status": "Fit and mass require measurement",
       "group": "pendant",
-      "cad_part": "WoodMask",
-      "mass_formula": "wood_volume",
+      "cad_part": "FibonacciBaffle",
+      "mass_formula": "petg_volume",
       "stock_sources": [
         {
-          "label": "4 mm birch Laserply BB/BB, 210 x 297 mm blank",
-          "url": "https://laserply.co.uk/product/4mm-birch-laserply-plywood/"
+          "label": "Original Jason Coon stencil, Creative Commons Attribution",
+          "url": "https://www.thingiverse.com/thing:4191326"
         }
       ]
     },
@@ -447,7 +451,7 @@
       "unit": "annulus",
       "purchase_quantity": "1 custom coating application",
       "source": "hardware/enclosure/exports/front-coating.svg",
-      "dimensions": "Clear r<83; mirror r83..110.5 mm; do not coat centre",
+      "dimensions": "Cavity-facing mirror annulus r85.5..110.5 mm; black LED centre; opaque rim and cut edge; no film in centre",
       "material": "Partially reflecting optical coating",
       "mass_g_per_unit": 1,
       "mass_range_g_per_unit": [
@@ -498,14 +502,14 @@
       "group": "pendant"
     },
     {
-      "id": "wood_finish",
-      "label": "Wood finish and spacer tack",
+      "id": "baffle_spacer_tack",
+      "label": "Baffle spacer tack",
       "installed_quantity": 1,
       "unit": "application",
       "purchase_quantity": "1 small container, installed cure mass only",
-      "source": "hardware/enclosure/exports/wood-fibonacci-mask.svg",
-      "dimensions": "Seal cell walls opaque; tack three spacers to rim",
-      "material": "Opaque finish and removable acrylic-safe adhesive",
+      "source": "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
+      "dimensions": "Tack three spacers to original printed stencil; keep adhesive off apertures and LEDs",
+      "material": "Removable acrylic-safe adhesive",
       "mass_g_per_unit": 2,
       "mass_range_g_per_unit": [
         1,

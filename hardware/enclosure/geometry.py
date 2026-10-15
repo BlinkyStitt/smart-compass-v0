@@ -28,25 +28,18 @@ def led_centres(layout, p):
     return result
 
 
-def mask_cells(centres, radius, web):
-    """Inset each LED's Voronoi cell to retain a connected wood web."""
+def pixel_regions(centres, radius):
+    """Voronoi partitions for the preview only; the original baffle clips them."""
     boundary = [(radius * math.cos(i * math.tau / 192), radius * math.sin(i * math.tau / 192)) for i in range(192)]
     result = []
     for i, (x, y) in enumerate(centres):
         cell = boundary[:]
         for j, (a, b) in enumerate(centres):
             if i != j:
-                cell = clip_polygon(cell, a - x, b - y, (a * a + b * b - x * x - y * y) / 2)
-                if not cell:
-                    raise ValueError(f'Empty cell {i}')
-        opening = cell[:]
-        for a, b in zip(cell, cell[1:] + cell[:1]):
-            # The cell is counterclockwise: the right-hand normal points out.
-            nx, ny = b[1] - a[1], a[0] - b[0]
-            opening = clip_polygon(opening, nx, ny, nx * a[0] + ny * a[1] - web * math.hypot(nx, ny) / 2)
-        if len(opening) < 3 or not contains(opening, (x, y)):
-            raise ValueError(f'Web removes LED {i}')
-        result.append(opening)
+                cell = clip_polygon(cell, a-x, b-y, (a*a+b*b-x*x-y*y)/2)
+        if len(cell)<3 or not contains(cell,(x,y)):
+            raise ValueError(f'Empty optical partition {i}')
+        result.append(cell)
     return result
 
 
@@ -190,5 +183,5 @@ def rear_mounting_points(p):
     return [(112.5*math.cos(math.radians(0+60*i)),112.5*math.sin(math.radians(0+60*i))) for i in range(6)]
 
 
-def wood_bottom(p):
-    return p['front_plane_z']-p['wood_to_sheet_gap']-p['wood_thickness']
+def baffle_bottom(p):
+    return p['front_plane_z']-p['baffle_to_sheet_gap']-p['baffle_thickness']

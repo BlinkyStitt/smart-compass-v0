@@ -35,7 +35,7 @@ def project_filename(name, material):
 def settings(spec, name, material='glow'):
     bracket = name.startswith(('NecklaceLink', 'FitSuspensionBracket'))
     ring = is_ring(name)
-    profile = spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
+    profile = spec['baffle'] if name.startswith(('FibonacciBaffle','FitFibonacciBaffle')) else spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
     material_profile={'filament_density':str(spec['ring_materials'][material]['density_g_cm3']),
                       'filament_colour':spec['ring_materials'][material]['filament_colour']} if ring else {}
     return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile | material_profile
@@ -62,8 +62,22 @@ def verify_settings(actual, expected, name):
             raise cad.CadError(f'{name}: effective {key}={actual.get(key)!r}, required {value!r}')
 
 
+def bed_bounds(spec):
+    points=[tuple(map(float,point.split('x'))) for point in spec['reference_machine']['bed_shape'].split(',')]
+    return [min(p[0] for p in points),min(p[1] for p in points),max(p[0] for p in points),max(p[1] for p in points)]
+
+
+def verify_bed(layers, bed, name):
+    for index,layer in enumerate(layers,1):
+        bounds=layer['extrusion_bounds_mm']
+        if bounds is None:
+            raise cad.CadError(f'Missing extrusion on layer {index}: '+name)
+        if any(bounds[i]<bed[i]-.001 for i in (0,1)) or any(bounds[i]>bed[i]+.001 for i in (2,3)):
+            raise cad.CadError(f'Extrusion outside reference bed on layer {index}: {name}: {bounds}')
+
+
 def perimeter_layers(gcode):
-    """Measure actual perimeter travel and widths, excluding brims and infill."""
+    """Measure perimeter travel/widths and all extruded bounds, including brims and infill."""
     layers=[]
     width=None
     x=y=e=0.0
@@ -71,7 +85,7 @@ def perimeter_layers(gcode):
     role=''
     for line in gcode.splitlines():
         if line == ';LAYER_CHANGE':
-            layers.append({'length_mm':0.0,'widths_mm':set()})
+            layers.append({'length_mm':0.0,'widths_mm':set(),'extrusion_bounds_mm':None})
         elif line.startswith(';TYPE:'):
             role=line[6:]
         elif line.startswith(';WIDTH:'):
@@ -89,6 +103,11 @@ def perimeter_layers(gcode):
             nx,ny=values.get('X',x),values.get('Y',y)
             ne=e+(values.get('E',0.0)) if relative_e else values.get('E',e)
             travel=math.hypot(nx-x,ny-y)
+            if layers and ne>e and travel>0:
+                radius=(width or 0)/2
+                bounds=[min(x,nx)-radius,min(y,ny)-radius,max(x,nx)+radius,max(y,ny)+radius]
+                previous=layers[-1]['extrusion_bounds_mm']
+                layers[-1]['extrusion_bounds_mm']=bounds if previous is None else [min(previous[i],bounds[i]) if i<2 else max(previous[i],bounds[i]) for i in range(4)]
             if layers and role in ('External perimeter','Perimeter') and ne>e and travel>0:
                 layers[-1]['length_mm']+=travel
                 if width is not None:
@@ -101,13 +120,15 @@ def generate(root):
     root = Path(root)
     spec = json.loads((root/cad.CAD/'print-spec.json').read_text())
     inventory = json.loads((root/cad.EXPORTS/'parts.json').read_text())
+    bed=bed_bounds(spec)
+    centre=f'{(bed[0]+bed[2])/2:g},{(bed[1]+bed[3])/2:g}'
     with tempfile.TemporaryDirectory(prefix='compass-project-', dir=root.parent) as temporary:
         for name, project_name, material in project_jobs(inventory,spec):
             config = Path(temporary)/'settings.ini'
             config.write_text(''.join(f'{k} = {v}\n' for k,v in settings(spec,name,material).items()))
             output = root/cad.EXPORTS/project_name
             expanded = Path(temporary)/'expanded.ini'
-            result = subprocess.run([executable(), '--load', str(config), '--export-3mf',
+            result = subprocess.run([executable(), '--load', str(config), '--center', centre, '--export-3mf',
                                      '--save', str(expanded), '--output', str(output), str(root/cad.EXPORTS/name)],
                                     text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             if result.returncode:
@@ -147,10 +168,11 @@ def check(root, fresh=True):
             mass = re.search(r'; filament used \[g\] = ([\d.]+)',gcode)
             if not mass or layers<2 or ';TYPE:External perimeter' not in gcode or ';TYPE:Support material' in gcode:
                 raise cad.CadError('Missing or unsupported toolpaths: '+name)
+            perimeter=perimeter_layers(gcode)
+            verify_bed(perimeter,bed_bounds(spec),name)
             if name.startswith(('HaloRing','InnerRing','EdgeDiffuser','FitRing')):
                 # Cavity rings use two paths; the stronger outside wall uses four.
                 # Both must remain continuous perimeter walls without gap fill.
-                perimeter=perimeter_layers(gcode)
                 if len(perimeter)!=layers or any(f';TYPE:{kind}' in gcode for kind in ('Internal infill','Gap fill','Solid infill')):
                     raise cad.CadError('Ring wall needs continuous perimeter paths without infill: '+name)
                 for layer, measured in enumerate(perimeter):

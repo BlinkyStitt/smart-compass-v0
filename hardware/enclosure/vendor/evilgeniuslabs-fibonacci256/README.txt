@@ -1,0 +1,4 @@
+Fibonacci256 Voronoi by jasoncoon on Thingiverse: https://www.thingiverse.com/thing:4191326
+
+Summary:
+Fibonacci256 is a beautiful 166mm circular disc with 256 WS2812B RGB LEDs surface mounted in a Fibonacci distribution.Fully open-source software, and programmable over Wi-Fi or micro USB cable.More info: https://www.evilgeniuslabs.org/fibonacci256Controlled via a web app over Wi-Fi.Parts list:Fibonacci256 - 166mm disc with 256 WS2812B RGB LEDs3D printed caseESP8266 Level Shifter ShieldESP8266SN74HCT245N Level Shifter0.10µF Capacitor470 ohm resistors3D print the parts, print and cut out the template for the paper diffuser.Controller assembly instructions: https://www.evilgeniuslabs.org/mini-wifi-led-controllerhttps://www.youtube.com/watch?v=MeSDTm4SOHg

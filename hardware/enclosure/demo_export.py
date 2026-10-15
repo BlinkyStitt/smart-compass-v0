@@ -9,7 +9,7 @@ import math
 from pathlib import Path
 import struct
 
-from geometry import cavity_diffusers, led_centres, mask_cells, mounting_points, ring_pixel, ring_radius, strip_bottom
+from geometry import cavity_diffusers, led_centres, pixel_regions, mounting_points, ring_pixel, ring_radius, strip_bottom
 
 HERE = Path(__file__).resolve().parent
 
@@ -96,7 +96,7 @@ def export():
     front = p['front_plane_z']
     rear = p['mirror_back_z']+p['rear_acrylic_thickness']
     centers = led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()), p)
-    cells = mask_cells(centers, p['mask_edge_radius'], p['mask_web'])
+    cells = pixel_regions(centers,p['circle_diameter']/2)
     leds = []
     for i, (x,y) in enumerate(centers):
         leds.append({'group': 0, 'index': i, 'position_m': [x/1000, y/1000, (p['circle_back_z']+p['circle_pcb_thickness']+p['led_height'])/1000], 'direction': [0,0,1]})
@@ -121,15 +121,22 @@ def export():
             parts[-1]['explosion_offset_m']=obj.ExplosionOffsetM
     # Three render regions, one manufactured sheet and one CAD source.
     sheet=source.FrontSheet.Shape
-    inner=Part.makeCylinder(p['circle_diameter']/2,p['front_acrylic_thickness'],App.Vector(0,0,front))
+    inner=Part.makeCylinder(p['mirror_view_inner_radius'],p['front_acrylic_thickness'],App.Vector(0,0,front))
     outer=Part.makeCylinder(p['mirror_view_outer_radius'],p['front_acrylic_thickness'],App.Vector(0,0,front))
     regions=[sheet.common(inner),sheet.common(outer).cut(inner),sheet.cut(outer)]
     assert abs(sum(region.Volume for region in regions)-sheet.Volume)<1e-6
-    for name,region,colour,role in zip(('FrontCentre','FrontMirrorCoating','FrontRim'),regions,((.7,.8,.9),(.6,.7,.8),(.018,.018,.018)),('centre','cavity','solid')):
+    for name,region,colour,role in zip(('FrontCentre','FrontMirrorCoating','FrontRim'),regions,((.025,.025,.025),(.025,.025,.025),(.012,.012,.012)),('centre','cavity','solid')):
         add(name,region,colour,role)
     for i,polygon in enumerate(cells):
-        wire=Part.makePolygon([App.Vector(x,y,front-.015) for x,y in polygon+[polygon[0]]])
-        add(f'Cell{i:03}',Part.Face(wire),(.1,.1,.1),'cell')
+        # Optical partitions have no invented web. The actual original walls clip
+        # every partition, including the open cells at the source perimeter.
+        z=source.FibonacciBaffle.Shape.BoundBox.ZMin
+        wire=Part.makePolygon([App.Vector(x,y,z) for x,y in polygon+[polygon[0]]])
+        aperture=Part.Face(wire).cut(source.FibonacciBaffle.Shape)
+        assert not aperture.isNull() and aperture.Area>0
+        assert aperture.common(source.FibonacciBaffle.Shape).Area<1e-7
+        aperture.translate(App.Vector(0,0,front-.015-z))
+        add(f'Cell{i:03}',aperture,(.012,.012,.012),'cell')
     dims=cavity_diffusers(p)
     # Check each export against native emitting faces and count, independently
     # of GLB mesh rounding.
@@ -149,8 +156,8 @@ def export():
         'comparison':{'still_time_s':2.0,'distance_m':.6,'exposure':1.0,'brightness':2.0,
             'front_reflectance':.65,'front_transmission':.25,'rear_reflectance':.94,
             'sleeve_transmission':.4,'sleeve_diffusion':.65,'centre_diffusion':.65,
-            'clear_centre_transmission':.8,'clear_centre_reflectance':.04,
-            'status':'Unmeasured assumptions; relative preview, not photometry'},
+            'black_acrylic_transmission':.29,'black_acrylic_surface_reflectance':.04,
+            'status':'Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice'},
         'dimensions_m':{'diameter':p['case_diameter']/1000,'body_depth':p['case_depth']/1000},
         'optics':{'front_z':front/1000,'rear_z':rear/1000,'separation':(front-rear)/1000,
             'aperture_inner':p['mirror_view_inner_radius']/1000,'aperture_outer':p['mirror_view_outer_radius']/1000,
@@ -161,7 +168,7 @@ def export():
             'ring_wall_mm':[p['ring_diffuser_thickness'],p['ring_diffuser_thickness'],p['edge_diffuser_thickness']],
             'ring_seam_gap':p['ring_seam_gap']/1000,'pitch':1/p['strip_density'],
             'edge_radius':p['edge_diffuser_radius']/1000,'edge_z':(strip_bottom('Outer',p)+p['strip_width']/2)/1000},
-        'design':{'selected_finish':'clear centre, mirror ring, black masked rim',
+        'design':{'selected_finish':'black LED acrylic centre, cavity-facing mirror annulus, opaque rim',
             'sheet_thickness_m':p['front_acrylic_thickness']/1000,'locating_hole_diameter_m':.007,
             'compression_stop_diameter_m':.006,'front_sheet_volume_cm3':sheet.Volume/1000,
             'fasteners_m':[[x/1000,y/1000,front/1000] for x,y in mounting_points(p)],

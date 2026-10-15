@@ -15,8 +15,9 @@ HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
 import build
 import inventory
+import baffle
 from hardware_spec import nut_dimensions, stations
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, pixel_regions, mounting_points, necklace_anchors, optical_dimensions, rear_mounting_points, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, top_light_shields, baffle_bottom
 
 
 def check():
@@ -27,26 +28,35 @@ def check():
     b = SimpleNamespace(p=p, doc=doc, parts=list(doc.Manufactured.Group), hardware=list(doc.Electronics.Group), references=list(doc.Optics.Group))
     layout = json.loads((HERE / 'fibonacci256-layout.json').read_text())
     centres = led_centres(layout, p)
-    cells = mask_cells(centres, p['mask_edge_radius'], p['mask_web'])
+    cells = pixel_regions(centres,p['circle_diameter']/2)
     build.check_model(b, centres, cells)
-    wood_z = wood_bottom(p)
-    assert math.isclose(doc.WoodMask.Shape.BoundBox.ZMin, wood_z, abs_tol=1e-7), 'Master retained an exploded wood placement'
+    baffle_z = baffle_bottom(p)
+    assert math.isclose(doc.FibonacciBaffle.Shape.BoundBox.ZMin, baffle_z, abs_tol=1e-7), 'Master retained an exploded baffle placement'
     assert doc.getObject('CellBaffle') is None, 'A second full cell grid remains in the model'
     led_top = doc.CircleLEDs.Shape.BoundBox.ZMax
-    assert .5-1e-7 <= wood_z-led_top <= .8+1e-7, 'Wood grid leaves an excessive light-leak gap or touches LEDs'
-    assert math.isclose(doc.WoodMask.Shape.BoundBox.ZLength,p['wood_thickness'],abs_tol=1e-7)
+    assert .5-1e-7 <= baffle_z-led_top <= .8+1e-7, 'Printed baffle leaves an excessive LED gap or touches LEDs'
+    assert math.isclose(doc.FibonacciBaffle.Shape.BoundBox.ZLength,p['baffle_thickness'],abs_tol=1e-7)
+    original_stencil=Mesh.Mesh(str(HERE/'vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl'))
+    stencil_volume=baffle.source_volume()
+    assert math.isclose(doc.FibonacciBaffle.Shape.Volume,stencil_volume,abs_tol=.05), 'Original stencil volume changed'
+    assert len(doc.FibonacciBaffle.Shape.Solids)==1
     for i in range(3):
         foot = doc.getObject(f'CircleRimFoot{i}')
         assert foot in b.parts and len(foot.Shape.Solids) == 1
         assert math.isclose(foot.Shape.BoundBox.ZMin,p['circle_back_z']+p['circle_pcb_thickness'],abs_tol=1e-7)
-        assert math.isclose(foot.Shape.BoundBox.ZMax,wood_z,abs_tol=1e-7)
+        assert math.isclose(foot.Shape.BoundBox.ZMax,baffle_z,abs_tol=1e-7)
         assert foot.Shape.common(doc.CircleLEDs.Shape).Volume < 1e-7, 'Rim spacer touches an LED body'
-        tops = [f for f in foot.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_z) < 1e-7]
-        bases = [f for f in doc.WoodMask.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-wood_z) < 1e-7]
-        assert sum(top.common(base).Area for top in tops for base in bases) >= 1.5, 'Rim spacer misses the wood grid rim'
+        # The source photograph shows rotated 5050 packages. A circumscribed
+        # circle checks every possible package rotation around each centre.
+        for x,y in centres:
+            point=Part.Vertex(App.Vector(x,y,p['circle_back_z']+p['circle_pcb_thickness']+p['led_height']/2))
+            assert point.distToShape(foot.Shape)[0]>=5/math.sqrt(2), 'Rim spacer enters a rotated 5050 package envelope'
+        tops = [f for f in foot.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-baffle_z) < 1e-7]
+        bases = [f for f in doc.FibonacciBaffle.Shape.Faces if f.BoundBox.ZLength < 1e-7 and abs(f.BoundBox.ZMin-baffle_z) < 1e-7]
+        assert sum(top.common(base).Area for top in tops for base in bases) >= 1.5, 'Rim spacer misses the original baffle walls'
     assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZMin,p['front_plane_z'],abs_tol=1e-7)
     assert math.isclose(doc.FrontSheet.Shape.BoundBox.ZLength,p['front_acrylic_thickness'],abs_tol=1e-7)
-    assert math.isclose(p['front_plane_z']-doc.WoodMask.Shape.BoundBox.ZMax,p['wood_to_sheet_gap'],abs_tol=1e-7)
+    assert math.isclose(p['front_plane_z']-doc.FibonacciBaffle.Shape.BoundBox.ZMax,p['baffle_to_sheet_gap'],abs_tol=1e-7)
     for name in ('OpticalDeck','BarrelFrame','RearPlate','FrontSheet'):
         obj=doc.getObject(name)
         assert obj in b.parts and len(obj.Shape.Solids)==1
@@ -290,15 +300,15 @@ def check():
             a = i*math.tau/12
             point = App.Vector(r*math.cos(a),r*math.sin(a),p['front_plane_z']-.05)
             assert not any(obj.Shape.isInside(point,1e-7,True) for obj in b.parts), 'Mirror view is masked by a manufactured part'
-    wood_mid = wood_bottom(p)+p['wood_thickness']/2
+    baffle_mid = baffle_bottom(p)+p['baffle_thickness']/2
     for x, y in centres:
-        assert not doc.WoodMask.Shape.isInside(App.Vector(x,y,wood_mid), 1e-7, True), 'LED centre blocked by native wood'
+        assert not doc.FibonacciBaffle.Shape.isInside(App.Vector(x,y,baffle_mid), 1e-7, True), 'LED centre blocked by original native baffle'
     for x,y in centres:
         ray = Part.makeLine(App.Vector(x,y,led_top),App.Vector(x,y,doc.FrontSheet.Shape.BoundBox.ZMin))
         assert all(ray.common(obj.Shape).Length < 1e-7 for obj in b.parts if obj.Name != 'FrontSheet'), 'Opaque part blocks a circle pixel'
     # Front service sequence: lift sheet, grid/spacers, sleeves and rear mirror.
     # Check actual translated solids through the complete axial exit path.
-    for name in ('HaloRing','InnerRing','EdgeDiffuser','RearMirror','WoodMask','CirclePCB'):
+    for name in ('HaloRing','InnerRing','EdgeDiffuser','RearMirror','FibonacciBaffle','CirclePCB'):
         shape=doc.getObject(name).Shape
         if name in ('HaloRing','InnerRing','EdgeDiffuser'):
             shield_name='OuterLightShield' if name=='EdgeDiffuser' else name.removesuffix('Ring')+'LightShield'
@@ -326,6 +336,7 @@ def check():
     mirror_outline=Part.makeCompound([e.copy() for f in doc.RearMirror.Shape.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-p['mirror_back_z'])<1e-7 for e in f.Edges])
     sample_shapes={name:build.fit_sample(doc.getObject(parent).Shape,p) for name,parent in
                    (('FitDeck.stl','OpticalDeck'),('FitBarrel.stl','BarrelFrame'),('FitRear.stl','RearPlate'))}
+    sample_shapes['FitFibonacciBaffle.stl']=doc.FibonacciBaffle.Shape.copy()
     sample_shapes['FitOptics.stl']=build.optical_fit_sample(doc.OpticalDeck.Shape)
     sample_shapes['FitService.stl']=build.service_fit_sample(doc.RearPlate.Shape)
     sample_shapes['FitController.stl']=build.controller_fit_sample(doc.RearPlate.Shape,p)
@@ -342,13 +353,7 @@ def check():
     assert math.isclose(doc.BatteryEnvelope0.Shape.BoundBox.ZLength, p['battery_height']-1, abs_tol=1e-7)
     App.closeDocument(doc.Name)  # Do not save this test edit.
     ns = {'s':'http://www.w3.org/2000/svg'}
-    wood = ET.parse(HERE / 'exports/wood-fibonacci-mask.svg')
-    assert len(wood.findall('.//s:polygon',ns)) == 256
-    assert len(wood.findall('.//s:circle',ns)) == 1
-    for node, cell in zip(wood.findall('.//s:polygon',ns)[:256], cells):
-        points = [tuple(map(float, pair.split(','))) for pair in node.attrib['points'].split()]
-        assert len(points) == len(cell)
-        assert all(math.dist(a,b) < 1e-5 for a,b in zip(points,cell)), 'Laser contour differs from native cell'
+    assert not (HERE/'exports/wood-fibonacci-mask.svg').exists(), 'Retired plywood cut file remains'
     acrylic = ET.parse(HERE / 'exports/front-sheet.svg')
     assert len(acrylic.findall('.//s:circle',ns))==7, 'One outline and six locating holes'
     for filename in ('circle-alignment-overlay.svg','assembly-section.svg','front-coating.svg','rear-mirror.svg','fit-sheet.svg','soft-front-washer.svg','halo-light-shield.svg','inner-light-shield.svg','outer-light-shield.svg'):
@@ -372,7 +377,7 @@ def check():
     assembly = Part.read(str(HERE / 'exports/smart-compass.step'))
     assert assembly.isValid() and len(assembly.Solids) >= 256+p['halo_count']+p['inner_count']+p['outer_count']
     manifest = json.loads((HERE/'exports/parts.json').read_text())
-    assert 'CellBaffle.stl' not in manifest['stl_files'], 'Superseded divider grid exported for printing'
+    assert 'FibonacciBaffle.stl' in manifest['stl_files'] and 'CellBaffle.stl' not in manifest['stl_files'], 'Superseded divider grid exported for printing'
     assert all(f'CircleRimFoot{i}.stl' in manifest['stl_files'] for i in range(3))
     print_spec=json.loads((HERE/'print-spec.json').read_text())
     component_spec=json.loads((HERE/'component-inventory.json').read_text())
@@ -389,7 +394,7 @@ def check():
     for name in ('HaloLightShield','InnerLightShield','OuterLightShield'):
         assert not next(v['printed'] for v in manifest['volumes'] if v['name']==name)
         assert any(row.get('cad_part')==name for row in rows)
-    assert len(manifest['stl_files'])==16, 'Unexpected printed assembly part count'
+    assert len(manifest['stl_files'])==17, 'Unexpected printed assembly part count'
     assert all(name+'.stl' in manifest['stl_files'] for name in ('OpticalDeck','BarrelFrame','RearPlate'))
     assert not any('Q1' in name or name.startswith(('SeamStraps','CircleBezel','FrontBezel')) for name in manifest['stl_files'])
     assert not any(name.startswith(('BoardMounts','BatteryStrapSlots','HatchStandoff')) for name in manifest['stl_files']), 'Integral support exported twice'
@@ -404,16 +409,24 @@ def check():
         assert mesh.isSolid(), 'STL is not closed: ' + file.name
         if filename in sample_shapes:
             assert abs(abs(mesh.Volume)-sample_shapes[filename].Volume)<8, 'Fit STL differs from native cut'
-            if not filename.startswith('FitSuspensionBracket'):
+            if filename!='FitFibonacciBaffle.stl' and not filename.startswith('FitSuspensionBracket'):
                 assert max(mesh.BoundBox.XLength,mesh.BoundBox.YLength)<60, 'Fit sample is no longer small'
+        if filename in ('FibonacciBaffle.stl','FitFibonacciBaffle.stl'):
+            vertices,triangles=mesh.Topology
+            points=[(v.x,v.y,v.z) for v in vertices]
+            measured=baffle.triangle_volume(tuple(points[i] for i in triangle) for triangle in triangles)
+            assert math.isclose(measured,stencil_volume,abs_tol=.05), 'Printed stencil differs from original STL'
+            assert math.isclose(mesh.BoundBox.XLength,original_stencil.BoundBox.XLength,abs_tol=1e-4)
+            assert math.isclose(mesh.BoundBox.YLength,original_stencil.BoundBox.YLength,abs_tol=1e-4)
+            assert math.isclose(mesh.BoundBox.ZLength,2,abs_tol=1e-5)
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'wood_thickness':2}, {'wood_thickness':4.8}, {'wood_density_g_cm3':0}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mask_web':-1}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':1.2}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'baffle_thickness':1}, {'baffle_thickness':4.8}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':1.2}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:
             pass
         else:
             raise AssertionError('Invalid parameters accepted: ' + repr(changes))
-    print('CAD CHECK PASS: saved native geometry, single wood grid, spacer contact and LED clearance, clear circle/radial light paths, mirror gap, 256 apertures, sheet expression, laser contours, STEP, closed bed-sized STL meshes and invalid-fit rejection', flush=True)
+    print('CAD CHECK PASS: saved native geometry, original printed EGL baffle, spacer contact and LED clearance, clear circle/radial light paths, mirror gap, 256 unobstructed centres, sheet expression, laser contours, STEP, closed bed-sized STL meshes and invalid-fit rejection', flush=True)

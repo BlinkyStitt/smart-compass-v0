@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 import unittest
 
-from geometry import cavity_diffusers, contains, led_centres, mask_cells, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, top_light_shields
+from geometry import cavity_diffusers, contains, led_centres, pixel_regions, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, top_light_shields
 
 HERE = Path(__file__).resolve().parent
 
@@ -15,7 +15,7 @@ class GeometryTests(unittest.TestCase):
         cls.p = json.loads((HERE / 'parameters.json').read_text())
         cls.layout = json.loads((HERE / 'fibonacci256-layout.json').read_text())
         cls.centres = led_centres(cls.layout, cls.p)
-        cls.cells = mask_cells(cls.centres, cls.p['mask_edge_radius'], cls.p['mask_web'])
+        cls.cells = pixel_regions(cls.centres,cls.p['circle_diameter']/2)
 
     def test_every_pixel_has_one_opening_and_no_other_pixel(self):
         self.assertEqual(len(self.centres), 256)
@@ -24,16 +24,29 @@ class GeometryTests(unittest.TestCase):
             contained = [j for j, centre in enumerate(self.centres) if contains(cell, centre)]
             self.assertEqual(contained, [i])
 
-    def test_openings_leave_the_specified_web_between_neighbour_cells(self):
-        # Every opening stays at least half a web inside each Voronoi bisector.
-        for i, ((x, y), cell) in enumerate(zip(self.centres, self.cells)):
-            for j, (a, b) in enumerate(self.centres):
-                if i == j:
-                    continue
-                separation = math.hypot(a - x, b - y)
-                limit = (a*a + b*b - x*x - y*y) / 2
-                for vx, vy in cell:
-                    self.assertGreaterEqual((limit - (a-x)*vx - (b-y)*vy) / separation + 1e-7, self.p['mask_web']/2)
+    def test_original_stencil_registration_and_open_edge_cells(self):
+        import baffle
+        polygons=baffle.polygons(self.p)
+        self.assertEqual(len(polygons),222)
+        enclosed=0
+        for centre in self.centres:
+            hits=sum(baffle.inside(polygon,centre) for polygon in polygons)
+            self.assertEqual(hits%2,0,'Original wall blocks a published LED centre')
+            self.assertIn(hits,(0,2))
+            enclosed+=hits==2
+        self.assertEqual(enclosed,221)
+        self.assertEqual(self.p['baffle_thickness'],2)
+        bottom=self.p['front_plane_z']-self.p['baffle_to_sheet_gap']-self.p['baffle_thickness']
+        self.assertAlmostEqual(bottom-(self.p['circle_back_z']+self.p['circle_pcb_thickness']+self.p['led_height']),.6)
+
+    def test_stencil_volume_uses_closed_triangles_and_stable_translation(self):
+        import baffle
+        self.assertAlmostEqual(baffle.source_volume(),6444.464351948,places=6)
+        faces=[((0,0,0),(0,1,0),(1,0,0)),((0,0,0),(1,0,0),(0,0,1)),
+               ((0,0,0),(0,0,1),(0,1,0)),((1,0,0),(0,1,0),(0,0,1))]
+        self.assertAlmostEqual(baffle.triangle_volume(faces),1/6)
+        moved=[tuple(tuple(v+d for v,d in zip(point,(83,-83,34.2))) for point in face) for face in faces]
+        self.assertAlmostEqual(baffle.triangle_volume(moved),1/6,places=8)
 
     def test_rotation_and_mirror_preserve_pixel_identity(self):
         p = dict(self.p, map_rotation_deg=90, map_mirror_x=True)
@@ -137,9 +150,12 @@ class GeometryTests(unittest.TestCase):
             y=offset*math.sin(a)
             self.assertLessEqual(math.hypot(x,y),self.p['case_diameter']/2)
 
-    def test_excessive_web_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, 'Web removes LED'):
-            mask_cells(self.centres, self.p['mask_edge_radius'], 20)
+    def test_original_stencil_rotates_with_the_board_map(self):
+        import baffle
+        p=dict(self.p,map_rotation_deg=90,map_mirror_x=True)
+        polygons=baffle.polygons(p)
+        for centre in led_centres(self.layout,p):
+            self.assertEqual(sum(baffle.inside(polygon,centre) for polygon in polygons)%2,0)
 
 
 if __name__ == '__main__':

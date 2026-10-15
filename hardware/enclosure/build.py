@@ -17,10 +17,11 @@ import Part
 import Sketcher
 
 from hardware_spec import nut_dimensions, hexagon, body_bolt_length
+import baffle
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, cavity_diffusers, led_centres, mask_cells, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, rear_mounting_points, top_light_shields, wood_bottom
+from geometry import battery_centres, cavity_diffusers, led_centres, pixel_regions, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, rear_mounting_points, top_light_shields, baffle_bottom
 
 DIFFUSER_TRANSPARENCY = 35  # CAD display only; not measured optical transmission.
 DIFFUSER_TINT = (184 / 255, 209 / 255, 138 / 255)  # Use the native file's 8-bit RGB precision.
@@ -37,7 +38,7 @@ class Builder:
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
         self.keys = [k for k in p if not k.startswith('_')]
-        scalar = {'battery_count', 'battery_mass_g', 'wood_density_g_cm3', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio', 'ring_station_count'}
+        scalar = {'battery_count', 'battery_mass_g', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio', 'ring_station_count'}
         for row, key in enumerate(self.keys, 2):
             self.sheet.set(f'A{row}', key)
             value = int(p[key]) if isinstance(p[key], bool) else p[key]
@@ -261,13 +262,13 @@ def build(p=None):
     doc = b.doc
     E = lambda key: 'Parameters.' + key
     depth, wall, rear = p['case_depth'], p['shell_wall'], p['rear_thickness']
-    wood_z = wood_bottom(p)
+    baffle_z = baffle_bottom(p)
     front = p['front_plane_z']
     deck_bottom = p['mirror_back_z']-p['strip_wall']
-    wood_expr = E('front_plane_z')+'-'+E('wood_to_sheet_gap')+'-'+E('wood_thickness')
+    baffle_expr = E('front_plane_z')+'-'+E('baffle_to_sheet_gap')+'-'+E('baffle_thickness')
     radius = p['case_diameter'] / 2
     centres = led_centres(json.loads((HERE / 'fibonacci256-layout.json').read_text()), p)
-    cells = mask_cells(centres, p['mask_edge_radius'], p['mask_web'])
+    cells = pixel_regions(centres, p['circle_diameter']/2)
     points = mounting_points(p)
     # Rev D Eagle coordinates, rotated about the actual outline centre.
     a = math.radians(p['sparkle_rotation'])
@@ -633,7 +634,7 @@ def build(p=None):
     b.add(edge, 'Manufactured', 'OutsideRing - whole glow PETG print', DIFFUSER_TINT, DIFFUSER_TRANSPARENCY, material=f"Prusament PETG Ultraglow Green; {p['edge_diffuser_thickness']:g} mm wall; optical transmission unmeasured")
 
     # Curved bands diffuse the radial emitting faces. They do not cover the
-    # flat front mirror annulus or replace the Fibonacci wood face.
+    # flat front mirror annulus or replace the original printed Fibonacci baffle.
     for name,d in cavity_diffusers(p).items():
         band = b.annulus(name+'Ring',d['inner'],d['outer'],d['bottom'],d['height'])
         band.Label = name+'Ring - whole glow PETG print'
@@ -641,30 +642,31 @@ def build(p=None):
     for name,d in top_light_shields(p).items():
         shield = b.annulus(name+'LightShield',d['inner'],d['outer'],d['bottom'],d['height'])
         b.add(shield,'Manufactured',name+' opaque LED-edge shield - die-cut tape on ring top',(.015,.015,.015),material='tesa 7160 black PET light-blocking tape, 0.06 mm; adhesive on ring end face; retain liner beneath free span')
-    # One deep laser-cut wood grid supplies both the face pattern and cell walls.
-    # A free gap separates it from the sheet; three spacers support its rear rim.
-    openings = b.profile('FibonacciApertures', cells, wood_expr, E('wood_thickness'))
-    wood = b.cylinder('WoodBlank', 'Parameters.circle_diameter/2', E('wood_thickness'), wood_expr)
-    wood = b.cut('WoodMask', wood, openings)
-    b.add(wood, 'Manufactured', '08 Laser-cut wood cell grid - face pattern and light dividers', (.53, .32, .13), material='Nominal 4 mm plywood; seal cell walls opaque; measure stock, kerf and density')
+    # Original EGL STL walls, at the original STL's 2 mm thickness.
+    stencil = b.profile('FibonacciBaffle', baffle.polygons(p), baffle_expr, E('baffle_thickness'))
+    b.add(stencil, 'Manufactured', '08 Original EGL Fibonacci256 printed baffle', (.012,.012,.012), material='Opaque black PETG; original Jason Coon / Evil Genius Labs profile, CC Attribution; 2 mm flat print')
+    doc.recompute()
+    bases = [f for f in stencil.Shape.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-baffle_z)<1e-7]
     # Three rim feet hold the PCB down. Select clear positions against the LED
     # package references rather than covering an assumed empty edge sector.
     top = p['circle_back_z'] + p['circle_pcb_thickness']
     for i in range(3):
         for delta in [0] + [s*d for d in range(1, 41) for s in (-1, 1)]:
             angle = i*120 + delta
-            trial = Part.makeBox(2, 4, wood_z-top, App.Vector(p['circle_diameter']/2-2, -2, top))
+            trial = Part.makeBox(2, 4, baffle_z-top, App.Vector(p['circle_diameter']/2-4, -2, top))
             trial.rotate(App.Vector(), App.Vector(0, 0, 1), angle)
-            if trial.common(leds.Shape).Volume < 1e-7:
-                foot = b.box(f'CircleRimFoot{i}', 2, 4, wood_z-top, p['circle_diameter']/2-2, -2, top)
+            tops = [f for f in trial.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMin-baffle_z)<1e-7]
+            contact = sum(top.common(base).Area for top in tops for base in bases)
+            if trial.common(leds.Shape).Volume < 1e-7 and contact>=1.5:
+                foot = b.box(f'CircleRimFoot{i}', 2, 4, baffle_z-top, p['circle_diameter']/2-4, -2, top)
                 foot.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0,0,1), angle)).multiply(foot.Placement)
-                b.add(foot, 'Manufactured', f'Circle rim spacer {i+1} - supports wood grid above LED packages', (.12, .12, .13), material='Printed opaque PETG; tack to wood rim for service, not to LEDs; fit and contact TODO')
+                b.add(foot, 'Manufactured', f'Circle rim spacer {i+1} - supports original printed baffle above LED packages', (.12, .12, .13), material='Opaque black PETG; tack to baffle for service, not to LEDs; inspect actual bearing and board clearance')
                 break
         else:
             raise ValueError('No clear PCB rim retention position')
     sheet = b.cylinder('FrontSheetBlank','Parameters.case_diameter/2',E('front_acrylic_thickness'),front_expr)
     sheet = b.cut('FrontSheet',sheet,[b.cylinder(f'FrontSheetHole{i}',3.5,E('front_acrylic_thickness'),front_expr,x,y) for i,(x,y) in enumerate(points)])
-    b.add(sheet,'Manufactured','09 One-piece front - clear centre, mirror ring, black masked rim',(.55,.7,.8),65,material='0.060 inch clear acrylic sheet; clear centre r<=83, rear-facing two-way coating 83..110.5, black masked rim 110.5..125 mm')
+    b.add(sheet,'Manufactured','09 One-piece black LED acrylic front with mirror annulus',(.025,.025,.025),0,material='3 mm nominal black LED acrylic, not opaque black acrylic; rear-facing two-way coating 85.5..110.5, opaque outer rim and cut edge; measure stock')
     # Print the optical deck on its floor. Print the lower skirt separately,
     # so the wide annular floor is not a large unsupported radial overhang.
     b.parts.remove(frame)
@@ -710,8 +712,8 @@ def validate_parameters(p):
     if (abs(p['mirror_back_z']-(p['rear_mirror_front_z']-p['rear_acrylic_thickness']))>1e-6
             or abs(p['front_washer_compressed_height']-p['front_washer_free_thickness']*p['front_washer_compression_ratio'])>1e-6
             or abs(p['case_depth']-(p['front_plane_z']+p['front_acrylic_thickness']+p['front_washer_compressed_height']))>1e-6
-            or p['wood_to_sheet_gap'] < .3):
-        raise ValueError('Front needs compression-stop height and free wood clearance')
+            or p['baffle_to_sheet_gap'] < .3):
+        raise ValueError('Front needs compression-stop height and free baffle clearance')
     if (not .25 <= p['body_bolt_tip_projection'] <= .4
             or not .1 <= p['body_bolt_tip_chamfer'] <= .2
             or p['body_bolt_tip_projection']-p['body_bolt_tip_chamfer'] < .1-1e-7
@@ -719,8 +721,8 @@ def validate_parameters(p):
         raise ValueError('Finished body bolts need full nut engagement, a deburred lead and adequate stock')
     if not (0 < p['assumed_efficiency'] <= 1):
         raise ValueError('Efficiency must lie in (0,1]')
-    if p['battery_mass_g'] <= 0 or p['wood_density_g_cm3'] <= 0 or not math.isfinite(p['wood_density_g_cm3']):
-        raise ValueError('Battery mass and wood density must be positive and finite')
+    if p['battery_mass_g'] <= 0:
+        raise ValueError('Battery mass must be positive')
     if not 10 <= p['external_port_diameter'] <= 14 or math.hypot(p['external_port_x'],p['external_port_y'])+10 >= p['case_diameter']/2-p['fit_clearance']:
         raise ValueError('External battery entry needs a bore within its reinforced rear land')
     for key in ('halo_count', 'inner_count', 'outer_count'):
@@ -746,13 +748,15 @@ def validate_parameters(p):
         raise ValueError('Necklace brackets need 5..6 mm thickness below the optical floor')
     if p['sparkle_rotation'] not in (0, 180):
         raise ValueError('The axis-aligned Sparkle footprint supports rotations 0 or 180 only')
-    for key in ('battery_width', 'battery_length', 'battery_height', 'wood_thickness', 'strip_density', 'mask_web', 'shell_wall', 'rear_thickness', 'strip_wall', 'ring_led_depth', 'print_bed_x', 'print_bed_y'):
+    for key in ('battery_width', 'battery_length', 'battery_height', 'baffle_thickness', 'strip_density', 'shell_wall', 'rear_thickness', 'strip_wall', 'ring_led_depth', 'print_bed_x', 'print_bed_y'):
         if p[key] <= 0 or not math.isfinite(p[key]):
             raise ValueError(key + ' must be finite and positive')
+    if p['baffle_thickness'] != 2 or p['circle_diameter'] != 166:
+        raise ValueError('Retain original 166 mm board and 2 mm EGL stencil thickness')
     led_top = p['circle_back_z'] + p['circle_pcb_thickness'] + p['led_height']
-    wood_z = wood_bottom(p)
-    if not .5-1e-7 <= wood_z-led_top <= .8+1e-7:
-        raise ValueError('Single wood cell grid must end 0.5..0.8 mm above LED packages')
+    baffle_z = baffle_bottom(p)
+    if not .5-1e-7 <= baffle_z-led_top <= .8+1e-7:
+        raise ValueError('Original printed baffle must end 0.5..0.8 mm above LED packages')
     if p['rear_thickness']+1.5+p['battery_height']+2.5+1 > p['circle_back_z']:
         raise ValueError('Battery fit/headroom and strap leave less than 1 mm circle PCB clearance')
     for x,y in battery_centres(p):
@@ -830,13 +834,13 @@ def check_model(b, centres, cells):
     for obj in b.parts + b.hardware + b.references:
         if obj.Shape.isNull() or not obj.Shape.isValid() or obj.Shape.Volume <= 0:
             raise ValueError('Invalid solid geometry: ' + obj.Name)
-    if len(b.doc.WoodMask.Shape.Solids) != 1:
-        raise ValueError('Wood mask contains detached islands')
+    if len(b.doc.FibonacciBaffle.Shape.Solids) != 1:
+        raise ValueError('Original baffle contains detached islands')
     for obj in b.parts:
         if obj.Name not in {'BoardMounts'} and len(obj.Shape.Solids) != 1:
             raise ValueError(obj.Name + ' is not one connected manufactured part: '+repr([(round(s.Volume,4),str(s.BoundBox)) for s in obj.Shape.Solids]))
     if len(centres) != 256 or len(cells) != 256:
-        raise ValueError('Circle mask must preserve 256 LED apertures')
+        raise ValueError('Preview partitions must preserve 256 LED identities')
     check_partition(b.doc.OpticalFrame,[b.doc.OpticalDeck,b.doc.BarrelFrame])
     # Intersections of separate manufactured parts and hardware are defects.
     # References are not measured solids; board rails/lugs meet the rear plate by design.
@@ -952,7 +956,7 @@ def export_files(b, centres, cells):
         return MeshPart.meshFromShape(Shape=shape,LinearDeflection=.02,AngularDeflection=.08,Relative=False)
     mesh_names = []
     volumes = []
-    nonprinted = {'WoodMask','FrontSheet','RearMirror','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloRingPad','InnerRingPad')) or o.Name.endswith('LightShield')}
+    nonprinted = {'FrontSheet','RearMirror','HatchGasket'} | {o.Name for o in b.parts if o.Name.startswith(('VentMembrane','ControlMembrane','HaloRingPad','InnerRingPad')) or o.Name.endswith('LightShield')}
     for obj in b.parts:
         volumes.append({'name':obj.Name,'volume_cm3':round(obj.Shape.Volume/1000,4),'printed':obj.Name not in nonprinted,'bounds_mm':[round(getattr(obj.Shape.BoundBox,a+'Length'),3) for a in 'XYZ']})
         if obj.Name in nonprinted:
@@ -972,9 +976,9 @@ def export_files(b, centres, cells):
             print_mesh(shape).write(str(out/name))
             mesh_names.append(name)
     fit_samples = []
-    for name, parent in (('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate'),('FitOptics','OpticalDeck'),('FitService','RearPlate'),('FitSuspensionBracket','NecklaceLink1'),('FitSuspensionBracketLeft','NecklaceLink0'),('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate'),('FitController','RearPlate'),('FitRingHalo','HaloRing'),('FitRingInner','InnerRing'),('FitRingOutside','EdgeDiffuser')):
+    for name, parent in (('FitFibonacciBaffle','FibonacciBaffle'),('FitDeck','OpticalDeck'),('FitBarrel','BarrelFrame'),('FitRear','RearPlate'),('FitOptics','OpticalDeck'),('FitService','RearPlate'),('FitSuspensionBracket','NecklaceLink1'),('FitSuspensionBracketLeft','NecklaceLink0'),('FitSuspensionFrame','BarrelFrame'),('FitSuspensionRear','RearPlate'),('FitController','RearPlate'),('FitRingHalo','HaloRing'),('FitRingInner','InnerRing'),('FitRingOutside','EdgeDiffuser')):
         source = b.doc.getObject(parent).Shape
-        sample = (source.copy() if name.startswith('FitSuspensionBracket') else source.common(Part.makeBox(40,50,25,App.Vector(70,35,0))) if name.startswith('FitSuspension') else optical_fit_sample(source) if name=='FitOptics' else service_fit_sample(source) if name=='FitService' else controller_fit_sample(source,b.p) if name=='FitController' else ring_fit_sample(source) if name.startswith('FitRing') else fit_sample(source,b.p))
+        sample = (source.copy() if name=='FitFibonacciBaffle' or name.startswith('FitSuspensionBracket') else source.common(Part.makeBox(40,50,25,App.Vector(70,35,0))) if name.startswith('FitSuspension') else optical_fit_sample(source) if name=='FitOptics' else service_fit_sample(source) if name=='FitService' else controller_fit_sample(source,b.p) if name=='FitController' else ring_fit_sample(source) if name.startswith('FitRing') else fit_sample(source,b.p))
         if not sample.isValid() or len(sample.Solids)!=1:
             raise ValueError('Disconnected fit sample: '+name)
         if parent == 'BarrelFrame':
@@ -1019,7 +1023,7 @@ def section_drawing(b, out):
 </g><g font-family="sans-serif" font-size="3.5" fill="#1765a1">
 <text x="-10" y="9">Ø {2*r:g}</text><text x="{r+14}" y="{-depth/2}">{depth:g}</text>
 <text x="{-r}" y="{-depth-13}">Y=0 section • rear Z=0 • front Z={depth:g} • nominal geometry</text>
-<text x="{-r}" y="20">Circle: LEDs → single {b.p['wood_thickness']:g} mm wood cell grid → {b.p['front_acrylic_thickness']:g} mm acrylic.</text>
+<text x="{-r}" y="20">Circle: LEDs → single {b.p['baffle_thickness']:g} mm original printed baffle → {b.p['front_acrylic_thickness']:g} mm acrylic.</text>
 </g></svg>'''
     (out / 'assembly-section.svg').write_text(drawing)
 
@@ -1031,8 +1035,6 @@ def svg_files(b, cells, out):
     def document(paths, description, r=r):
         return '<svg xmlns="http://www.w3.org/2000/svg" width="%gmm" height="%gmm" viewBox="%g %g %g %g">\n<title>%s</title>\n<desc>PROVISIONAL alignment and material fit; nominal paths, no kerf compensation. Front view, X right, Y up.</desc>\n<g transform="scale(1,-1)" fill="none" stroke="#ff0000" stroke-width="0.08">\n%s\n</g></svg>\n' % (2*r, 2*r, -r, -r, 2*r, 2*r, escape(description), '\n'.join(paths))
     outline = f'<circle cx="0" cy="0" r="{r:.6f}"/>'
-    polygons = ['<polygon points="' + ' '.join(f'{x:.6f},{y:.6f}' for x,y in poly) + '"/>' for poly in cells]
-    (out / 'wood-fibonacci-mask.svg').write_text(document([outline] + polygons, f'Single wood cell grid - 256 Fibonacci cells, {p["wood_thickness"]:g} mm nominal'))
     sheet_paths = [f'<circle cx="0" cy="0" r="{p["case_diameter"]/2:.6f}"/>']
     sheet_paths += [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="3.500000"/>' for x,y in mounting_points(p)]
     from hardware_spec import SOFT_WASHER
@@ -1040,12 +1042,12 @@ def svg_files(b, cells, out):
     (out/'soft-front-washer.svg').write_text(document(washer_paths,
         f'Six soft front retention washers; {SOFT_WASHER["free_thickness"]:g} mm silicone stock; knife/die cut; compression must be tested',SOFT_WASHER['od']/2+1))
     (out/'fit-sheet.svg').write_text(document(['<path d="M -9,-9 H 9 V 9 H -9 Z"/>','<circle cx="0" cy="0" r="3.500000"/>'],'FIT SAMPLE ONLY: 18 mm square in actual front-sheet stock; test on FitDeck collar',9))
-    (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 0.060 inch clear acrylic nominal; six 7.0 mm locating holes',p['case_diameter']/2))
+    (out/'front-sheet.svg').write_text(document(sheet_paths,'One front sheet; 3 mm black LED acrylic nominal; six 7.0 mm locating holes',p['case_diameter']/2))
     for name, dim in top_light_shields(p).items():
         paths = [f'<circle cx="0" cy="0" r="{dim[key]:.6f}"/>' for key in ('outer','inner')]
         (out/(name.lower()+'-light-shield.svg')).write_text(document(paths,
             f'{name} opaque LED-edge shield; die-cut 0.06 mm tesa 7160; retain release liner below free span; bond only to printed ring top',dim['outer']))
-    (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (r,p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: clear centre r<=83; rear-facing two-way mirror 83..110.5; black rim 110.5..125',p['case_diameter']/2))
+    (out/'front-coating.svg').write_text(document([f'<circle cx="0" cy="0" r="{v:.6f}"/>' for v in (p['mirror_view_inner_radius'],p['mirror_view_outer_radius'],p['case_diameter']/2)],'COATING MAP ONLY, DO NOT CUT: black LED centre; rear-facing two-way mirror 85.5..110.5; opaque rim 110.5..125 and cut edge',p['case_diameter']/2))
     inner_r = ring_radius(p['inner_count'],p)
     rear_outer = inner_r+p['strip_thickness']/2
     # Export the actual keyed mirror contour. Polygon chord error <=0.02 mm.
@@ -1058,7 +1060,9 @@ def svg_files(b, cells, out):
         paths.append('<polygon points="'+' '.join(f'{v.x:.6f},{v.y:.6f}' for v in points)+'"/>')
     (out/'rear-mirror.svg').write_text(document(paths,'Rear mirror with printed-ring locating notches; reflective face toward front',rear_outer))
     # The inspection overlay never enters a laser cut file.
-    overlay = [outline, '<path d="M -50,-92 L 50,-92 M -50,-90 L -50,-94 M 50,-90 L 50,-94"/>'] + polygons + [f'<circle cx="{x:.6f}" cy="{y:.6f}" r="0.5"/>' for x,y in led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()),p)]
+    overlay=[outline, '<path d="M -50,-92 L 50,-92 M -50,-90 L -50,-94 M 50,-90 L 50,-94"/>']
+    overlay += ['<polygon points="'+' '.join(f'{x:.6f},{y:.6f}' for x,y in polygon)+'"/>' for polygon in baffle.polygons(p)]
+    overlay += [f'<rect x="{x-2.5:.6f}" y="{y-2.5:.6f}" width="5" height="5"/>' for x,y in led_centres(json.loads((HERE/'fibonacci256-layout.json').read_text()),p)]
     (out / 'circle-alignment-overlay.svg').write_text(document(overlay, 'Print at 100 percent and check 166 mm circle / LED registration',98))
 
 
@@ -1077,17 +1081,22 @@ def export_previews(b, out):
     # A real exploded placement, saved only in the preview, never in the master.
     moved = []
     for obj in b.parts:
-        offset = 65 if obj.Name in {'FrontSheet'} else {'WoodMask':35}.get(obj.Name,20 if obj.Name.startswith('CircleRimFoot') else 0)
+        offset = 65 if obj.Name in {'FrontSheet'} else {'FibonacciBaffle':35}.get(obj.Name,20 if obj.Name.startswith('CircleRimFoot') else 0)
         if not offset:
             continue
         moved.append((obj, obj.Placement))
         pl = obj.Placement
         pl.Base.z += offset
         obj.Placement = pl
+    transparent=[(obj,obj.ViewObject.Transparency) for obj in (b.doc.FrontSheet,b.doc.RearMirror)]
+    for obj,_ in transparent:
+        obj.ViewObject.Transparency=65
     b.doc.recompute()
     Gui.updateGui()
     view.fitAll()
     view.saveImage(str(out / 'exploded.png'), 1600, 1400, 'White')
+    for obj,alpha in transparent:
+        obj.ViewObject.Transparency=alpha
     for obj, pl in moved:
         obj.Placement = pl
     b.doc.recompute()

@@ -103,12 +103,12 @@ class DemoTests(unittest.TestCase):
             x,y,_=m['leds'][index]['position_m']
             self.assertTrue(all(abs(point[0]-x)<.00251 and abs(point[1]-y)<.00251 for point in positions[offset:offset+3]),'Package colour index differs from the published board map')
         self.assertEqual({node['name'] for node in glb['nodes']},{part['name'] for part in m['parts']})
-        # All 256 light contours derive from the one CAD wood grid.
+        # All 256 optical regions are clipped by the original CAD baffle.
         self.assertEqual(sum(part['role']=='cell' for part in m['parts']),256)
         design=m['design']
         self.assertEqual(len(design['fasteners_m']),6)
-        self.assertAlmostEqual(design['sheet_thickness_m'],.001524)
-        self.assertEqual(design['printed_part_count'],16)
+        self.assertAlmostEqual(design['sheet_thickness_m'],.003)
+        self.assertEqual(design['printed_part_count'],17)
         self.assertTrue({'HaloLightShield','InnerLightShield','OuterLightShield'} <= {part['name'] for part in m['parts']})
         inventory=json.loads((path/'parts.json').read_text())
         quantities={row['id']:row['installed_quantity'] for row in inventory['components']}

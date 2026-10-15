@@ -14,13 +14,13 @@ just demo
 
 ![Night mannequin presentation](../hardware/enclosure/exports/night-mannequin.png)
 
-The saved FreeCAD model now uses the selected clear-centre finish on one
-250 mm sheet of 0.060 inch clear acrylic. The demo compares that coating with a full-mirror coating on
+The saved FreeCAD model now uses the selected black LED centre finish on one
+250 mm sheet of 3 mm nominal black LED acrylic. The demo compares that coating with a full-mirror coating on
 the same mechanical assembly. Both have a black masked outer rim.
 
 ![Indoor front comparison](../hardware/enclosure/exports/demo-front-indoor.png)
 
-Columns: selected clear centre, alternative full mirror coating. Top row: LEDs on. Bottom row: LEDs off. The view, pattern time, brightness,
+Columns: selected black LED centre, alternative full mirror coating. Top row: LEDs on. Bottom row: LEDs off. The view, pattern time, brightness,
 exposure and environment match within each comparison.
 
 [Watch the twelve-second Godot finish comparison](../hardware/enclosure/exports/lighting-demo.mp4).
@@ -63,7 +63,7 @@ Three modeled black PET shields cover the exposed upper LED edges at the rings. 
 
 The 24-second exploded loop separates the current assembly, pauses with its
 layers apart, then brings it back together. It keeps the front sheet and each
-large printed circle whole. The wood stencil and its rim spacers lift separately
+large printed circle whole. The printed EGL stencil and its rim spacers lift separately
 from the Fibonacci256 PCB and its soldered LEDs. Display-only lit aperture faces
 disappear while the stencil lifts; the exposed 256 LED package fronts show the
 same pattern in the manufacturer's pixel order. Paired printed rings and LED
@@ -142,10 +142,10 @@ Godot loads the GLB at runtime through `GLTFDocument`.
 
 The board's 256 positions and pixel order come from [Evil Genius Labs' existing
 Fibonacci256 Pixelblaze map](https://www.evilgeniuslabs.org/fibonacci256#pixelblaze-map).
-The local coordinate table matches all 256 published entries. The present wood
-stencil is generated from that map with a 1.6 mm inset web; it is not an imported
-manufacturer stencil file. Its contour has not been checked against Evil Genius
-Labs' original stencil.
+The local coordinate table matches all 256 published entries. The native stencil
+uses the original EGL STL from the supplied Thingiverse archive. Its 2 mm
+thickness and volume match the original STL. All LED centres clear its walls;
+actual board registration still needs a physical check.
 
 The cavity shader follows rays between Z=25.5 and Z=36.7 mm. It intersects the
 finite annular cavity, central obstruction and cylindrical diffuser boundaries.
@@ -188,8 +188,8 @@ coating, diffusion, fit, strength, dust and thermal tests in the existing
 
 ## Selected mechanical assembly
 
-The [enclosure guide](../hardware/enclosure/README.md) explains the 16 printed
-parts, one-piece clear-centre front, assembly order, print settings and separate
+The [enclosure guide](../hardware/enclosure/README.md) explains the 17 printed
+parts, one-piece black LED acrylic front, assembly order, print settings and separate
 rear service screws. The [section](../hardware/enclosure/exports/assembly-section.svg)
 comes from the actual saved solids. The old quarter panels, seam straps, centre
 snap rim and separate front acrylic cut files have been removed.
@@ -244,3 +244,27 @@ The runtime import and renderer follow the official Godot documentation:
 [GLTFDocument](https://docs.godotengine.org/en/stable/classes/class_gltfdocument.html),
 [Forward+ and Metal](https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html),
 and [reflection limits](https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html#screen-space-reflections-ssr).
+
+## Black LED acrylic and original stencil
+
+The physical stencil now comes from Jason Coon's original EGL STL, at the
+original 2 mm STL thickness. See the [source attribution](../hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md).
+The 256 preview regions partition LED light only. The original native walls
+clip every region; these regions are not an extra printed part. A Gaussian
+spread gives each LED a local hotspot instead of filling its cell uniformly.
+This approximates the source photographs; it is not measured scattering.
+
+One black LED acrylic sheet covers the front. Its assumed visible transmission
+is 0.29, based on the supplier's approximate figure. We have no RGB spectrum
+for our actual stock. The centre light crosses it once. Cavity light also
+crosses the black substrate once after the mirror film. External film
+reflection crosses it twice. The internal mirror reflectance stays unchanged.
+The full-mirror centre comparison includes both film and black-sheet losses.
+Surface roughness, Gaussian spread, phosphor charging and decay remain
+unmeasured assumptions. The manufacturer glow test used UV; RGB LEDs will
+charge this material differently. Approve diffusion and afterglow from samples.
+
+The amber camp light now sits behind the wearer. A fixed-camera comparison
+identified the former front light as the source of the large right-side glare.
+The blue rim light is also lower. Camera sweep, exposure and LED brightness
+stay fixed.
