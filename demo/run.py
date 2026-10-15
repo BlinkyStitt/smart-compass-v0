@@ -77,6 +77,7 @@ def capture():
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'gradient-{style}-%04d.png'),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(output/f'infinity-{style}.gif')],check=True)
+        shutil.copyfile(frames/'gradient-rainbow-0000.png',output/'night-mannequin.png')
         for suffix in ('','-silver'):
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/('gradient-rainbow'+suffix+'-%04d.png')),
                             '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/('infinity-rainbow'+suffix+'.mp4'))],check=True)
@@ -93,7 +94,7 @@ def capture():
                         '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                         '-loop','0',str(output/'glow-afterglow.gif')],check=True)
         shutil.copyfile(frames/'afterglow-poster.png',output/'glow-afterglow-poster.png')
-    for name in (*CAPTURES,*GRADIENTS,'infinity-rainbow.mp4','infinity-rainbow-silver.mp4','lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png','glow-afterglow.gif','glow-afterglow.mp4','glow-afterglow-poster.png'):
+    for name in (*CAPTURES,*GRADIENTS,'night-mannequin.png','infinity-rainbow.mp4','infinity-rainbow-silver.mp4','lighting-demo.mp4','amulet-demo.mp4','turntable.gif','turntable-poster.png','exploded.gif','exploded.mp4','exploded-poster.png','glow-afterglow.gif','glow-afterglow.mp4','glow-afterglow-poster.png'):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else (1280,720)

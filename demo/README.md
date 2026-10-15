@@ -1,7 +1,9 @@
 # Amulet lighting preview
 
-Run `just demo` from the repository root. The demo starts at 0.6 m, facing the
-front, with indoor light and spiral rainbow. It needs Godot 4 with Forward+
+Run `just demo` from the repository root. The app starts with a posed mannequin
+wearing the pendant on the night-time playa, with spiral rainbow. Use
+**Presentation** to choose the worn night scene, a night pendant close-up, or
+isolated design inspection. It needs Godot 4 with Forward+
 and Metal on macOS:
 
 ```sh
@@ -9,6 +11,8 @@ brew install --cask godot
 just cad
 just demo
 ```
+
+![Night mannequin presentation](../hardware/enclosure/exports/night-mannequin.png)
 
 The saved FreeCAD model now uses the selected clear-centre finish on one
 250 mm sheet of 0.060 inch clear acrylic. The demo compares that coating with a full-mirror coating on
@@ -75,23 +79,31 @@ return when the mirrors come back together.
 [Ocean gradient](../hardware/enclosure/exports/infinity-ocean.gif) ·
 [Sunset gradient](../hardware/enclosure/exports/infinity-sunset.gif)
 
-Each sixteen-second loop moves from a 65° side view through the front, across to
-the other side and back. Camera position, velocity and LED state join at the
+Each sixteen-second loop starts with the full mannequin pose, moves into a
+pendant close-up, then returns. The camera uses a gentle ±14° arc and a smooth
+3.5 m to 0.52 m distance change. Position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
-colour cycles per camera sweep. Emission scale stays at 2: no pulsing, blackout
-intervals or abrupt colour changes. Each loop shows the centre and all three
-rings against a Burning Man inspired night-time playa background, with night
-light, a 0.46 m distance, fixed exposure 1, and assumed printed-ring
-diffusion 0.65. The [night backdrop](assets/playa-night.png) is a generated
-illustration of dark desert, distant camp lights and stars. It is a display
-background; the existing sky still supplies mirror reflections. These are
-illustration settings, not measurements.
+colour cycles per camera loop. Emission scale stays at 2, exposure at 1, and
+assumed ring diffusion at 0.65.
+
+The featureless mannequin is approximately 1.85 m tall. Its backward lean,
+raised hand, pointing hand and plain backward cap give the oversized pendant a
+Flavor Flav inspired wearing pose. The 250 mm pendant retains its CAD size.
+The black 10 mm webbing and neck loop illustrate wearing context. The mannequin
+and straps are display geometry; they are not extra print jobs or proof of fit.
+
+The [night backdrop](assets/playa-night.png) is a generated illustration of dark
+desert, distant camp lights and stars. Subtle amber and blue spotlights make the
+wearer's pose visible. These lights and the existing sky reflections are
+assumptions, not a measured reconstruction of the background or LED brightness.
 
 The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
 rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
 
 ## Controls
 
+- **Presentation** selects the worn night scene, isolated night close-up, or
+  design inspection. Reset restores the framing for that presentation.
 - Drag to orbit. Right-drag to pan. Use the wheel to change distance. Press `R`
   to reset the view.
 - Use Front, ¾, Edge and Rear for fixed angles. Distance buttons select 0.3,
@@ -113,8 +125,9 @@ exposure. For a stationary comparison, pause first.
 
 ## What the image means
 
-`hardware/enclosure/exports/amulet.glb` is the only generated scene asset.
-`scene.json` holds part names, exact native bounds, dimensions, mirror planes,
+`hardware/enclosure/exports/amulet.glb` and `amulet-silver.glb` contain the
+generated CAD assembly. `mannequin.gd` adds the display-only wearer and webbing
+at runtime. `scene.json` holds CAD part names, exact native bounds, dimensions, mirror planes,
 494 emitting positions and directions, assumptions, and current mass estimates.
 The exporter tessellates the saved assembled FreeCAD model in metres, with X
 right, Y up and Z toward the front. It never uses print-bed STL translations.
@@ -189,7 +202,8 @@ just cad-check
 ```
 
 `just demo-check` checks freshness, metadata and LED directions, imports every
-named GLB mesh, compares imported bounds with CAD, exercises finish and optical
+named GLB mesh, compares imported bounds with CAD, checks full mannequin framing
+and the closed zoom loop, exercises presentation, finish and optical
 controls, and checks shared patterns and fixed exposure. On the GPU, 105 ray
 cases compare the actual cavity tracing code with an independent unfolded-mirror
 reference. The cases include spacing, attenuation, cutoff, the reflection limit,

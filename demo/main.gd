@@ -5,6 +5,8 @@ const FINISHES = ["Selected • clear centre", "Comparison • full mirror"]
 const RING_MATERIALS = ["glow", "silver"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
+const Mannequin = preload("res://mannequin.gd")
+const PRESENTATIONS = ["Night • worn mannequin", "Night • pendant close-up", "Design inspection"]
 const COUNTS = Glow.COUNTS
 var glow = Glow.new()
 var ring_material = 0
@@ -28,6 +30,10 @@ var environment = Environment.new()
 var sun = DirectionalLight3D.new()
 var sky_material = ProceduralSkyMaterial.new()
 var infinity_backdrop = CanvasLayer.new()
+var mannequin = Mannequin.new()
+var presentation = 2
+var presentation_option: OptionButton
+var lighting_option: OptionButton
 var distance = 0.6
 var yaw = 0.0
 var pitch_angle = 0.0
@@ -105,6 +111,7 @@ func _ready():
 	_set_lighting(1)
 	_update_camera()
 	_update_colours()
+	if not automated: _set_presentation(0)
 	if args.has("--check"):
 		_run_checks()
 	elif args.has("--gpu-check"):
@@ -269,10 +276,29 @@ func _make_world():
 	environment.glow_intensity = 0.45
 	add_child(sun)
 	sun.shadow_enabled = true
+	add_child(mannequin)
+	mannequin.build()
+	mannequin.visible = false
 
 func _set_infinity_backdrop(enabled):
 	infinity_backdrop.visible = enabled
 	environment.background_mode = Environment.BG_CANVAS if enabled else Environment.BG_SKY
+
+func _set_presentation(value):
+	presentation = value
+	if presentation_option: presentation_option.select(value)
+	mannequin.visible = value == 0
+	_set_infinity_backdrop(value < 2)
+	_set_lighting(0 if value < 2 else 1)
+	_reset()
+
+func _night_pose(phase: float):
+	var close_up = 0.5-0.5*cos(TAU*phase)
+	distance = lerpf(3.5,0.52,close_up)
+	target = Vector3(0,lerpf(-0.10,0.0,close_up),float(metadata.optics.front_z))
+	yaw = -14.0*cos(TAU*phase)
+	pitch_angle = -3.0
+	_update_camera()
 
 func _make_controls():
 	var layer = CanvasLayer.new()
@@ -290,6 +316,7 @@ func _make_controls():
 	scroll.add_child(box)
 	_label(box,"AMULET / OPTICAL PREVIEW",18)
 	_label(box,"Assumed optics • no measured brightness",12)
+	presentation_option = _option(box,"Presentation",PRESENTATIONS,presentation,_set_presentation)
 	_option(box,"Ring material",[metadata.ring_materials.glow.label,metadata.ring_materials.silver.label],0,_set_ring_material)
 	_option(box,"Front finish",FINISHES,0,_set_finish)
 	_option(box,"Pattern",PATTERNS,0,func(v): pattern=v)
@@ -307,7 +334,7 @@ func _make_controls():
 		button.button_pressed = true
 		button.toggled.connect(func(v): groups[i]=v; _update_colours())
 		switches.add_child(button)
-	_option(box,"Viewing light",LIGHTING,1,_set_lighting)
+	lighting_option = _option(box,"Viewing light",LIGHTING,1,_set_lighting)
 	ambient_slider = _slider(box,"Ambient intensity",0,3,ambient,func(v): ambient=v; _update_light())
 	_slider(box,"Light direction (degrees)",-180,180,light_angle,func(v): light_angle=v; _update_light())
 	_slider(box,"Exposure (fixed unless changed)",0.1,4,exposure,func(v): exposure=v; environment.tonemap_exposure=v)
@@ -360,6 +387,7 @@ func _option(parent,title,items,selected,callback):
 	option.select(selected)
 	option.item_selected.connect(callback)
 	parent.add_child(option)
+	return option
 
 func _slider(parent,title,low,high,value,callback):
 	var row = HBoxContainer.new()
@@ -429,6 +457,7 @@ func _update_optics():
 
 func _set_lighting(value):
 	lighting = value
+	if lighting_option: lighting_option.select(value)
 	ambient = [0.015,0.35,1.2,2.0][value]
 	sun.light_energy = [0.03,0.8,0.65,6.0][value]
 	sky_material.sky_top_color = [Color(0.003,0.005,0.015),Color(0.11,0.14,0.20),Color(0.52,0.60,0.68),Color(0.14,0.36,0.75)][value]
@@ -450,6 +479,9 @@ func _update_camera():
 	camera.look_at(target,Vector3.UP)
 
 func _reset():
+	if presentation == 0:
+		_night_pose(0.0)
+		return
 	distance=0.6
 	yaw=0
 	pitch_angle=0
@@ -560,6 +592,24 @@ func _run_checks():
 	for material in sleeve_materials+cavity_materials:
 		assert(material.get_shader_parameter("charges")==charge_texture,"Direct and reflected rings must share stored glow")
 	assert(meshes.size()==metadata.parts.size())
+	_set_presentation(0)
+	assert(mannequin.visible and infinity_backdrop.visible and lighting==0,"Worn presentation must use the night scene")
+	_night_pose(0)
+	var night_start=camera.transform
+	for surface in mannequin.surfaces:
+		for corner in range(8):
+			var point=surface.global_transform*surface.get_aabb().get_endpoint(corner)
+			assert(not camera.is_position_behind(point),"Mannequin behind the camera")
+			assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Full pose clipped: "+str(surface.name))
+	_night_pose(0.5)
+	assert(distance<0.6,"Night loop must show a close view of the actual pendant")
+	_night_pose(1)
+	assert(camera.transform.is_equal_approx(night_start),"Worn camera loop must close")
+	_set_presentation(1)
+	assert(not mannequin.visible and infinity_backdrop.visible,"Night close-up must hide the wearer")
+	_set_presentation(2)
+	assert(not mannequin.visible and not infinity_backdrop.visible,"Design inspection must show the isolated CAD assembly")
+	print("DEMO MANNEQUIN PASS: full-pose framing, closed zoom loop, night and inspection controls")
 	for part in metadata.parts:
 		var bounds = meshes[part.name].get_aabb()
 		for axis in range(3):
@@ -717,11 +767,10 @@ func _capture():
 		await _settle()
 		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
 	# All 494 LEDs share a moving spatial gradient at constant brightness.
-	# Two eight-second colour cycles close with the slow sixteen-second camera.
-	_set_infinity_backdrop(true)
+	# Two eight-second colour cycles close with the full-pose-to-pendant camera loop.
+	_set_presentation(0)
 	_set_finish(0)
 	_set_lighting(0)
-	distance=0.46
 	diffusion=0.65
 	brightness=2.0
 	groups=[true,true,true,true]
@@ -732,15 +781,15 @@ func _capture():
 			# A uniform precharged state makes the repeating colour loop continuous.
 			_reset_glow(0.35,0.20)
 			pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
-			caption.text="%s | %s gradient | unmeasured optics" % [metadata.ring_materials[RING_MATERIALS[material_index]].label,style.capitalize()]
+			caption.text="%s | %s | worn night preview | unmeasured optics" % [metadata.ring_materials[RING_MATERIALS[material_index]].label,style.capitalize()]
 			for frame in range(384):
-				_sweep(frame/384.0,65.0)
+				_night_pose(frame/384.0)
 				pattern_time=frame/24.0
 				_update_optics()
 				_update_colours()
 				await _settle()
 				assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [capture_style,frame]))==OK)
-	_set_infinity_backdrop(false)
+	_set_presentation(2)
 	_set_ring_material(0)
 	_reset()
 	_reset_glow(0.35,0.20)

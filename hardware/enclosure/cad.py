@@ -26,7 +26,7 @@ INPUTS = (
         'test_geometry.py', 'test_cad.py', 'service_package.py', 'service-guide.html', 'test_service_package.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (
-        'project.godot', 'main.tscn', 'main.gd', 'assets/playa-night.png', 'optics.gdshader',
+        'project.godot', 'main.tscn', 'main.gd', 'mannequin.gd', 'assets/playa-night.png', 'optics.gdshader',
         'sleeve.gdshader', 'cell.gdshader', 'package.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
         'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'glow.gd', 'glow_diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),
@@ -39,7 +39,7 @@ front.png
 parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
 turntable.gif wood-fibonacci-mask.svg
 amulet.glb amulet-silver.glb scene.json lighting-demo.mp4
-infinity-rainbow.mp4 infinity-rainbow-silver.mp4 infinity-rainbow-silver.gif
+infinity-rainbow.mp4 infinity-rainbow-silver.mp4 infinity-rainbow-silver.gif night-mannequin.png
 HaloRing-silver.3mf InnerRing-silver.3mf EdgeDiffuser-silver.3mf
 FitRingHalo-silver.3mf FitRingInner-silver.3mf FitRingOutside-silver.3mf
 infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
