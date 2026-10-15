@@ -26,7 +26,7 @@ INPUTS = (
         'test_geometry.py', 'test_cad.py', 'service_package.py', 'service-guide.html', 'test_service_package.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (
-        'project.godot', 'main.tscn', 'main.gd', 'optics.gdshader',
+        'project.godot', 'main.tscn', 'main.gd', 'assets/playa-night.png', 'optics.gdshader',
         'sleeve.gdshader', 'cell.gdshader', 'package.gdshader', 'centre.gdshader', 'cavity_trace.gdshaderinc',
         'diagnostic.gdshader', 'diffuser_diagnostic.gdshader', 'ring_diffusion.gdshaderinc', 'glow.gd', 'glow_diagnostic.gdshader', 'run.py', 'reference.py', 'test_demo.py',
     )),

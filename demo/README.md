@@ -80,10 +80,12 @@ the other side and back. Camera position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
 colour cycles per camera sweep. Emission scale stays at 2: no pulsing, blackout
 intervals or abrupt colour changes. Each loop shows the centre and all three
-rings against a dark charcoal grey background, with night light, a 0.46 m
-distance, fixed exposure 1, and assumed printed-ring
-diffusion 0.65. The grey canvas is a display background; the existing sky still
-supplies mirror reflections. These are illustration settings, not measurements.
+rings against a Burning Man inspired night-time playa background, with night
+light, a 0.46 m distance, fixed exposure 1, and assumed printed-ring
+diffusion 0.65. The [night backdrop](assets/playa-night.png) is a generated
+illustration of dark desert, distant camp lights and stars. It is a display
+background; the existing sky still supplies mirror reflections. These are
+illustration settings, not measurements.
 
 The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
 rainbow cycles and no rear dwell. It also loops without a camera or colour jump.

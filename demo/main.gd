@@ -248,11 +248,14 @@ func _make_world():
 	infinity_backdrop.layer = -1
 	infinity_backdrop.visible = false
 	add_child(infinity_backdrop)
-	var grey = ColorRect.new()
-	grey.color = Color("#404040")
-	grey.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	infinity_backdrop.add_child(grey)
-	grey.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var backdrop = TextureRect.new()
+	var background_image = Image.load_from_file(ProjectSettings.globalize_path("res://assets/playa-night.png"))
+	backdrop.texture = ImageTexture.create_from_image(background_image)
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	infinity_backdrop.add_child(backdrop)
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	environment.background_canvas_max_layer = -1
 	var sky = Sky.new()
 	sky.sky_material = sky_material
