@@ -80,7 +80,7 @@ the other side and back. Camera position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
 colour cycles per camera sweep. Emission scale stays at 2: no pulsing, blackout
 intervals or abrupt colour changes. Each loop shows the centre and all three
-rings against a soft neutral grey background, with night light, a 0.46 m
+rings against a dark charcoal grey background, with night light, a 0.46 m
 distance, fixed exposure 1, and assumed printed-ring
 diffusion 0.65. The grey canvas is a display background; the existing sky still
 supplies mirror reflections. These are illustration settings, not measurements.

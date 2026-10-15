@@ -249,7 +249,7 @@ func _make_world():
 	infinity_backdrop.visible = false
 	add_child(infinity_backdrop)
 	var grey = ColorRect.new()
-	grey.color = Color("#969696")
+	grey.color = Color("#404040")
 	grey.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	infinity_backdrop.add_child(grey)
 	grey.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
