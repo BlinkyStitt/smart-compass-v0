@@ -70,10 +70,10 @@ class Snapshot:
 
     def read(self, path):
         if self.staged:
-            result = subprocess.run(['git', 'show', ':' + path], cwd=self.root,
+            result = subprocess.run(['git', 'cat-file', '--filters', ':' + path], cwd=self.root,
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.returncode:
-                raise CadError('Missing staged file: ' + path)
+                raise CadError('Cannot read staged file: ' + path)
             return result.stdout
         try:
             return (self.root / path).read_bytes()

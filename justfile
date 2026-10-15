@@ -35,3 +35,4 @@ demo-benchmark:
 # Enable the tracked commit hook in this checkout.
 install-hooks:
     git config --local core.hooksPath .githooks
+    git lfs install --local

@@ -1,5 +1,21 @@
 # Round compass pendant
 
+## Get the CAD and media assets
+
+Install Git LFS before you build or open the assets:
+
+```sh
+brew install git-lfs
+git lfs install --local
+git lfs pull
+just install-hooks
+```
+
+Git LFS stores the binary CAD, mesh, image, video and archive content. The
+working files keep their usual formats. The commit hook checks the full staged
+content, and the push hook uploads the LFS objects. A pointer file is not a
+usable CAD or media asset; run `git lfs pull` if the content is missing.
+
 ## Send to a print service
 
 Choose one material package for the assembly:

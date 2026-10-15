@@ -114,6 +114,32 @@ class CadWorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(cad.CadError, 'Missing export'):
             cad.check_freshness(staged)
 
+    def test_staged_lfs_content_and_partial_staging(self):
+        def git(*args):
+            return subprocess.run(['git', *args], cwd=self.root, check=True,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
+
+        git('init', '-q')
+        git('lfs', 'install', '--local')
+        self.write('.gitattributes', b'*.FCStd filter=lfs diff=lfs merge=lfs -text\n')
+        git('add', '.')
+        pointer = git('show', ':' + cad.MASTER)
+        self.assertTrue(pointer.startswith(b'version https://git-lfs.github.com/spec/v1\n'))
+        staged = cad.Snapshot(self.root, staged=True)
+        self.assertEqual(staged.read(cad.MASTER), self.snapshot.read(cad.MASTER))
+        cad.check_freshness(staged)
+        self.write(cad.MASTER, b'new LFS model')
+        self.record()
+        git('add', cad.MASTER)
+        with self.assertRaisesRegex(cad.CadError, cad.MASTER):
+            cad.check_freshness(staged)
+        git('add', cad.MANIFEST)
+        cad.check_freshness(staged)
+        oid = git('show', ':' + cad.MASTER).decode().split('oid sha256:')[1].splitlines()[0]
+        (self.root / '.git/lfs/objects' / oid[:2] / oid[2:4] / oid).unlink()
+        with self.assertRaisesRegex(cad.CadError, cad.MASTER):
+            staged.read(cad.MASTER)
+
     def test_zero_exit_without_native_completion_is_failure(self):
         with patch.object(cad.subprocess, 'run'):
             with self.assertRaisesRegex(cad.CadError, 'did not finish'):
