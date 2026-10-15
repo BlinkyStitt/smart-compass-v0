@@ -27,6 +27,7 @@ var camera = Camera3D.new()
 var environment = Environment.new()
 var sun = DirectionalLight3D.new()
 var sky_material = ProceduralSkyMaterial.new()
+var infinity_backdrop = CanvasLayer.new()
 var distance = 0.6
 var yaw = 0.0
 var pitch_angle = 0.0
@@ -243,6 +244,16 @@ func _make_world():
 	world.environment = environment
 	add_child(world)
 	environment.background_mode = Environment.BG_SKY
+	# A display backdrop keeps the black face visible without lighting the model.
+	infinity_backdrop.layer = -1
+	infinity_backdrop.visible = false
+	add_child(infinity_backdrop)
+	var grey = ColorRect.new()
+	grey.color = Color("#969696")
+	grey.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	infinity_backdrop.add_child(grey)
+	grey.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	environment.background_canvas_max_layer = -1
 	var sky = Sky.new()
 	sky.sky_material = sky_material
 	environment.sky = sky
@@ -255,6 +266,10 @@ func _make_world():
 	environment.glow_intensity = 0.45
 	add_child(sun)
 	sun.shadow_enabled = true
+
+func _set_infinity_backdrop(enabled):
+	infinity_backdrop.visible = enabled
+	environment.background_mode = Environment.BG_CANVAS if enabled else Environment.BG_SKY
 
 func _make_controls():
 	var layer = CanvasLayer.new()
@@ -700,6 +715,7 @@ func _capture():
 		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
 	# All 494 LEDs share a moving spatial gradient at constant brightness.
 	# Two eight-second colour cycles close with the slow sixteen-second camera.
+	_set_infinity_backdrop(true)
 	_set_finish(0)
 	_set_lighting(0)
 	distance=0.46
@@ -721,6 +737,7 @@ func _capture():
 				_update_colours()
 				await _settle()
 				assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [capture_style,frame]))==OK)
+	_set_infinity_backdrop(false)
 	_set_ring_material(0)
 	_reset()
 	_reset_glow(0.35,0.20)
