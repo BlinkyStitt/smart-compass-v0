@@ -159,7 +159,14 @@ colour texture, in the CAD pixel order.
 The first three patterns use the formulas in `design-v2.md`, in linear RGB.
 Each circle cell uses its CAD aperture and LED position. A variable Gaussian
 spread approximates the centre diffuser. One shared ring model spreads each LED
-across neighbouring angles and height for both direct and reflected light. It
+across neighbouring angles and height for both direct and reflected light. The
+axial profile keeps a 5 mm central LED band and uses a smooth Gaussian tail.
+Its maximum scatter scale is an unmeasured 3 mm assumption (about 2.0 mm at
+the default diffusion). This leaves darker valleys between mirror copies and
+makes the tunnel appear deeper at the fixed 11.2 mm mirror gap. Direct rings
+use the same profile. The previous 8 mm scatter scale blended the copies
+together. Mirror reflectance, transmission, exposure and glow decay remain
+unchanged. Production samples must establish the actual axial spread. It
 uses a continuous surface with gentle LED peaks, without rectangular package
 masks. Sampling wraps around the whole ring, including the electrical strip joint. Mirror attenuation still reduces successive reflected copies. The glow PETG uses thickness-dependent RGB absorption, a small prompt green emission from blue light, and two stored green emission components. Both direct and reflected rings read the same charge texture. In live playback, LED and ambient light charge the material; disabling LEDs or reducing their brightness leaves the stored light to fade. Use **Precharge glow (illustration)** to set a charged starting state or **Clear stored glow** to remove stored emission. Pausing stops the pattern while charging and decay continue.
 
@@ -176,7 +183,7 @@ Default optical assumptions:
 | --- | ---: |
 | Front mirror reflectance / transmission | 0.65 / 0.25 |
 | Rear mirror reflectance | 0.94 |
-| Clear centre reflectance / transmission | 0.04 / 0.80 |
+| Black LED centre surface reflectance / transmission | 0.04 / 0.29 |
 | Glow-ring transmission | 0.40 |
 | Glow-ring diffusion / centre diffusion | 0.65 / 0.65 |
 | LED emission scale / exposure | 2.0 / 1.0 |

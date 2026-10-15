@@ -157,7 +157,7 @@ def export():
             'front_reflectance':.65,'front_transmission':.25,'rear_reflectance':.94,
             'sleeve_transmission':.4,'sleeve_diffusion':.65,'centre_diffusion':.65,
             'black_acrylic_transmission':.29,'black_acrylic_surface_reflectance':.04,
-            'status':'Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice'},
+            'status':'Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion (3 mm maximum axial scatter scale) and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice'},
         'dimensions_m':{'diameter':p['case_diameter']/1000,'body_depth':p['case_depth']/1000},
         'optics':{'front_z':front/1000,'rear_z':rear/1000,'separation':(front-rear)/1000,
             'aperture_inner':p['mirror_view_inner_radius']/1000,'aperture_outer':p['mirror_view_outer_radius']/1000,

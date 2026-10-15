@@ -29,7 +29,10 @@ vec3 diffused_ring_light(vec3 p, int ring_group, int pixel_count, float ring_rad
     // rectangular package mask. Neighbouring LEDs still blend their colours.
     float peak=0.5+0.5*cos(6.28318530718*coord);
     float hotspot=mix(1.0-0.15*(1.0-diffusion),1.0,peak);
-    float vertical=exp(-pow(max(0.0,abs(p.z-source_z)-0.0025)/mix(0.00015,0.008,diffusion),2.0));
+    // Keep a soft 5 mm LED band. An assumed 3 mm maximum axial scatter
+    // scale leaves visible valleys between mirror copies at the real gap.
+    // The previous 8 mm scale blended those copies into one broad wall.
+    float vertical=exp(-pow(max(0.0,abs(p.z-source_z)-0.0025)/mix(0.00015,0.003,diffusion),2.0));
     return ring_field(colours,p,ring_group,pixel_count,ring_radius)*hotspot*vertical;
 }
 

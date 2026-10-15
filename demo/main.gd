@@ -939,7 +939,7 @@ func _gpu_checks():
 		material.set_shader_parameter("radius",radius)
 		material.set_shader_parameter("led_z",led_z)
 		var readings=[]
-		for offset in [Vector2(0,0),Vector2(0.299,0),Vector2(0.301,0),Vector2(0.5,0),Vector2(0,0.0055)]:
+		for offset in [Vector2(0,0),Vector2(0.299,0),Vector2(0.301,0),Vector2(0.5,0),Vector2(0,0.002499),Vector2(0,0.002501),Vector2(0,0.0035),Vector2(0,0.0055),Vector2(0,-0.0055),Vector2(0,0.0075)]:
 			var angle=(float(metadata.optics.ring_seam_gap)*0.5+(5.5+offset.x)*float(metadata.optics.pitch))/radius
 			material.set_shader_parameter("sample_point",Vector3(sin(angle)*radius,cos(angle)*radius,led_z+offset.y))
 			await _settle()
@@ -947,12 +947,18 @@ func _gpu_checks():
 		assert(readings[3]>0.90, "Dark gap between diffused LEDs")
 		assert(readings[0]-readings[3]>0.02 and readings[0]-readings[3]<0.10, "LED peaks must be gentle")
 		assert(absf(readings[1]-readings[2])<0.009, "Hard package edge in diffuser")
-		assert(readings[4]>0.65, "Cavity sleeve edge must remain diffused")
+		# The axial band has a smooth package boundary and a soft tail. At the
+		# cavity edge it must leave a dark valley between repeated LED rows.
+		assert(readings[4]>0.97 and absf(readings[4]-readings[5])<0.009, "Hard axial package edge in diffuser")
+		assert(readings[6]>0.5 and readings[6]<0.95, "LED band must have a soft axial shoulder")
+		assert(readings[7]>0.05 and readings[7]<0.2, "Axial spill must retain contrast between mirror copies")
+		assert(absf(readings[7]-readings[8])<0.009, "Axial diffusion must be symmetric")
+		assert(readings[9]<0.01, "Distant LED spill must not fill the reflection valleys")
 		if baseline.is_empty(): baseline=readings
 		else:
 			for index in range(readings.size()):
 				assert(absf(readings[index]-baseline[index])<0.009, "Ring diffuser profiles differ")
-	print("DEMO GPU DIFFUSER PASS: smooth LED gaps, gentle peaks, continuous edges and matching profiles for all three rings")
+	print("DEMO GPU DIFFUSER PASS: smooth LED gaps, gentle peaks, continuous edges, axial reflection contrast and matching profiles for all three rings")
 	material.shader=load("res://glow_diagnostic.gdshader")
 	_apply_ring_response(material,metadata.ring_materials.glow)
 	material.set_shader_parameter("colours",colour_texture)

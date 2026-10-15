@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "367c5793b4475928e9f97eea94315b076f196ec9c2904ba03cdd6ad9681ad6ee",
+  "master_sha256": "da3cc29916154bf4007a74ca186481db85d0d44b2393eb74e56a845a77b41e2a",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -14718,7 +14718,7 @@
     "centre_diffusion": 0.65,
     "black_acrylic_transmission": 0.29,
     "black_acrylic_surface_reflectance": 0.04,
-    "status": "Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice"
+    "status": "Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion (3 mm maximum axial scatter scale) and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice"
   },
   "dimensions_m": {
     "diameter": 0.25,
