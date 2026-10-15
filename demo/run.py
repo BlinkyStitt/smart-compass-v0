@@ -77,7 +77,7 @@ def capture():
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/f'gradient-{style}-%04d.png'),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(output/f'infinity-{style}.gif')],check=True)
-        shutil.copyfile(frames/'gradient-rainbow-0000.png',output/'night-mannequin.png')
+        shutil.copyfile(frames/'night-mannequin.png',output/'night-mannequin.png')
         for suffix in ('','-silver'):
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/('gradient-rainbow'+suffix+'-%04d.png')),
                             '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(output/('infinity-rainbow'+suffix+'.mp4'))],check=True)

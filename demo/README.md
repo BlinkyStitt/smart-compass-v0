@@ -79,9 +79,10 @@ return when the mirrors come back together.
 [Ocean gradient](../hardware/enclosure/exports/infinity-ocean.gif) ·
 [Sunset gradient](../hardware/enclosure/exports/infinity-sunset.gif)
 
-Each sixteen-second loop starts with the full mannequin pose, moves into a
-pendant close-up, then returns. The camera uses a gentle ±14° arc and a smooth
-3.5 m to 0.52 m distance change. Position, velocity and LED state join at the
+Each sixteen-second loop shows a pendant close-up at a fixed 0.46 m distance.
+The camera sweeps from +65° to −65° and back, crossing the front twice.
+The mannequin stays visible behind the pendant. The separate full-body view
+shows the complete pose at 3.5 m. Position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
 colour cycles per camera loop. Emission scale stays at 2, exposure at 1, and
 assumed ring diffusion at 0.65.
@@ -97,12 +98,18 @@ desert, distant camp lights and stars. Subtle amber and blue spotlights make the
 wearer's pose visible. These lights and the existing sky reflections are
 assumptions, not a measured reconstruction of the background or LED brightness.
 
-The twenty-four-second `turntable.gif` now uses a ±70° front sweep, with two complete
+Every assembled render includes the mannequin, including the static comparisons,
+finish and lighting movies, and afterglow clip. Night views use the playa
+background. The exploded diagram and **Design inspection** keep the CAD assembly
+isolated. Rear views show the wearer between the camera and the pendant; use
+**Design inspection** to examine the rear hardware.
+
+The twenty-four-second `turntable.gif` uses a ±70° front sweep, with two complete
 rainbow cycles and no rear dwell. It also loops without a camera or colour jump.
 
 ## Controls
 
-- **Presentation** selects the worn night scene, isolated night close-up, or
+- **Presentation** selects the worn night scene, worn night close-up, or
   design inspection. Reset restores the framing for that presentation.
 - Drag to orbit. Right-drag to pan. Use the wheel to change distance. Press `R`
   to reset the view.
@@ -203,7 +210,7 @@ just cad-check
 
 `just demo-check` checks freshness, metadata and LED directions, imports every
 named GLB mesh, compares imported bounds with CAD, checks full mannequin framing
-and the closed zoom loop, exercises presentation, finish and optical
+and the fixed-distance ±65° sweep, exercises presentation, finish and optical
 controls, and checks shared patterns and fixed exposure. On the GPU, 105 ray
 cases compare the actual cavity tracing code with an independent unfolded-mirror
 reference. The cases include spacing, attenuation, cutoff, the reflection limit,

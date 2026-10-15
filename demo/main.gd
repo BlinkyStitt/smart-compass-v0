@@ -287,18 +287,16 @@ func _set_infinity_backdrop(enabled):
 func _set_presentation(value):
 	presentation = value
 	if presentation_option: presentation_option.select(value)
-	mannequin.visible = value == 0
+	mannequin.visible = value < 2
 	_set_infinity_backdrop(value < 2)
 	_set_lighting(0 if value < 2 else 1)
 	_reset()
 
 func _night_pose(phase: float):
-	var close_up = 0.5-0.5*cos(TAU*phase)
-	distance = lerpf(3.5,0.52,close_up)
-	target = Vector3(0,lerpf(-0.10,0.0,close_up),float(metadata.optics.front_z))
-	yaw = -14.0*cos(TAU*phase)
-	pitch_angle = -3.0
-	_update_camera()
+	# Restore the original detail sweep without zooming away from the pendant.
+	distance = 0.46
+	target = Vector3(0,0,float(metadata.optics.front_z))
+	_sweep(phase,65.0)
 
 func _make_controls():
 	var layer = CanvasLayer.new()
@@ -479,13 +477,10 @@ func _update_camera():
 	camera.look_at(target,Vector3.UP)
 
 func _reset():
-	if presentation == 0:
-		_night_pose(0.0)
-		return
-	distance=0.6
+	distance=3.5 if presentation==0 else (0.46 if presentation==1 else 0.6)
 	yaw=0
-	pitch_angle=0
-	target=Vector3(0,0,float(metadata.optics.front_z))
+	pitch_angle=-3.0 if presentation==0 else 0.0
+	target=Vector3(0,-0.10 if presentation==0 else 0.0,float(metadata.optics.front_z))
 	_update_camera()
 
 func _unhandled_input(event):
@@ -594,22 +589,33 @@ func _run_checks():
 	assert(meshes.size()==metadata.parts.size())
 	_set_presentation(0)
 	assert(mannequin.visible and infinity_backdrop.visible and lighting==0,"Worn presentation must use the night scene")
-	_night_pose(0)
-	var night_start=camera.transform
 	for surface in mannequin.surfaces:
 		for corner in range(8):
 			var point=surface.global_transform*surface.get_aabb().get_endpoint(corner)
 			assert(not camera.is_position_behind(point),"Mannequin behind the camera")
 			assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Full pose clipped: "+str(surface.name))
-	_night_pose(0.5)
-	assert(distance<0.6,"Night loop must show a close view of the actual pendant")
-	_night_pose(1)
-	assert(camera.transform.is_equal_approx(night_start),"Worn camera loop must close")
 	_set_presentation(1)
-	assert(not mannequin.visible and infinity_backdrop.visible,"Night close-up must hide the wearer")
+	assert(mannequin.visible and infinity_backdrop.visible,"Night close-up must retain the wearer")
+	_night_pose(0)
+	var night_start=camera.transform
+	for sample in range(33):
+		var phase=sample/32.0
+		_night_pose(phase)
+		assert(is_equal_approx(distance,0.46),"Night sweep must hold its detail distance")
+		assert(is_equal_approx(yaw,65.0*cos(TAU*phase)),"Night sweep must show both 65 degree sides")
+		for name in ["FrontCentre","FrontMirrorCoating","FrontRim","EdgeDiffuser"]:
+			var mesh=meshes[name]
+			# Check the circular surfaces themselves, not empty AABB corners.
+			for surface in range(mesh.mesh.get_surface_count()):
+				for vertex in mesh.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]:
+					var point=mesh.global_transform*vertex
+					assert(not camera.is_position_behind(point),"Pendant behind the camera")
+					assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Night pendant clipped: "+name)
+
+	assert(camera.transform.is_equal_approx(night_start),"Night sweep must close")
 	_set_presentation(2)
 	assert(not mannequin.visible and not infinity_backdrop.visible,"Design inspection must show the isolated CAD assembly")
-	print("DEMO MANNEQUIN PASS: full-pose framing, closed zoom loop, night and inspection controls")
+	print("DEMO MANNEQUIN PASS: full-pose framing, fixed-distance 65 degree left/right sweep, night and inspection controls")
 	for part in metadata.parts:
 		var bounds = meshes[part.name].get_aabb()
 		for axis in range(3):
@@ -722,12 +728,15 @@ func _capture():
 	caption.add_theme_color_override("font_outline_color",Color.BLACK)
 	caption.add_theme_constant_override("outline_size",5)
 	captions.add_child(caption)
+	_set_presentation(1)
+	distance=0.6
 	for view in [["front",0,0],["steep",72,-12],["edge",90,0],["rear",180,0]]:
 		yaw=view[1]
 		pitch_angle=view[2]
 		_update_camera()
 		for light in range(4):
 			_set_lighting(light)
+			_set_infinity_backdrop(light==0)
 			for on in [true,false]:
 				_reset_glow(0.35,0.20)
 				groups=[on,on,on,on]
@@ -738,8 +747,9 @@ func _capture():
 					await _settle()
 					var filename="%s-light%d-%s-v%d.png" % [view[0],light,"on" if on else "off",version]
 					assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join(filename))==OK)
-	# All movie frames come from the same Godot scene and optical shaders.
-	_reset()
+	# All assembled views retain the same wearer, including the lighting comparisons.
+	_set_presentation(1)
+	distance=0.6
 	_reset_glow(0.35,0.20)
 	groups=[true,true,true,true]
 	for frame in range(1248):
@@ -761,14 +771,20 @@ func _capture():
 			_set_lighting(local_frame/96)
 			_sweep(float(local_frame%96)/96.0,60.0)
 			pattern_time=16.0*float(local_frame%96)/96.0
+		_set_infinity_backdrop(lighting==0)
+		assert(mannequin.visible,"Every assembled movie view must retain the wearer")
 		caption.text="%s | %s | Godot optical preview" % [FINISHES[finish],LIGHTING[lighting]]
 		_update_camera()
 		_update_colours()
 		await _settle()
 		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
 	# All 494 LEDs share a moving spatial gradient at constant brightness.
-	# Two eight-second colour cycles close with the full-pose-to-pendant camera loop.
+	# Two eight-second colour cycles close with the fixed-distance left/right sweep.
 	_set_presentation(0)
+	caption.text="Worn night preview | full pose | unmeasured optics"
+	await _settle()
+	assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("night-mannequin.png"))==OK)
+	_set_presentation(1)
 	_set_finish(0)
 	_set_lighting(0)
 	diffusion=0.65
@@ -809,7 +825,7 @@ func _capture():
 	# Show the green stored emission separately from the moving LED patterns.
 	# Compress fifteen minutes into twenty seconds; the caption states elapsed
 	# time and the assumed response. The first four seconds show white LEDs.
-	_reset()
+	_set_presentation(1)
 	distance=0.46
 	yaw=30.0
 	pitch_angle=-12.0
