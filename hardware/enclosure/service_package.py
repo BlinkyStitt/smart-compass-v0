@@ -114,7 +114,7 @@ def shipment(root, material='glow'):
         'Keep dimensions and supplied orientation. Use millimetres for STL import.\n'
         'Reference images and the assembly STEP are not print jobs.\n'
         '300 x 300 mm printer required. Do not split or scale the circles.\n'
-        f'Use the specified opaque PETG and {choice["filament"]}.\n'
+        f'Use the specified opaque black PETG and {choice["filament"]}.\n'
         'Projects omit heater setpoints and machine start/end programs; select your real machine/filament presets.\n'
         'CAD and slicing passed. Physical print, fit, strength and optics acceptance remain pending.\n').encode()
     files['CHECKSUMS.sha256'] = ''.join(hashlib.sha256(data).hexdigest()+'  '+name+'\n'

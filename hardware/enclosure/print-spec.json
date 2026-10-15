@@ -19,7 +19,8 @@
     "infill_speed": "50",
     "bridge_speed": "20",
     "first_layer_speed": "20",
-    "elefant_foot_compensation": "0.15"
+    "elefant_foot_compensation": "0.15",
+    "filament_colour": "#000000"
   },
   "bracket": {
     "perimeters": "6",
@@ -39,7 +40,7 @@
     "start_gcode": "",
     "end_gcode": ""
   },
-  "service_requirements": "300 mm bed; choose one named ring material option per assembly. Print whole rings upright, 0.4 mm non-high-flow nozzle, brim, no supports. Inspect two nominal 0.5 mm cavity paths and four nominal 0.53 mm outside paths (0.46 mm first layer). Qualify fit, handling strength and light transmission separately for each filament; no full-order release before samples pass. Service selects actual machine heater settings.",
+  "service_requirements": "Use opaque black PETG for structural parts and their fit samples. 300 mm bed; choose one named ring material option per assembly. Print whole rings upright, 0.4 mm non-high-flow nozzle, brim, no supports. Inspect two nominal 0.5 mm cavity paths and four nominal 0.53 mm outside paths (0.46 mm first layer). Qualify fit, handling strength and light transmission separately for each filament; no full-order release before samples pass. Service selects actual machine heater settings.",
   "ring_cavity": {
     "extrusion_width": "0.5",
     "first_layer_extrusion_width": "0.5",
@@ -88,7 +89,8 @@
         "transmission": 0.4,
         "diffusion": 0.65
       },
-      "id": "glow"
+      "id": "glow",
+      "filament_colour": "#CCD6A8"
     },
     "silver": {
       "label": "Silver PETG",
@@ -117,7 +119,8 @@
         "transmission": 0.4,
         "diffusion": 0.65
       },
-      "id": "silver"
+      "id": "silver",
+      "filament_colour": "#94999E"
     }
   }
 }

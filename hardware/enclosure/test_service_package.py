@@ -33,7 +33,7 @@ class ServicePackageTests(unittest.TestCase):
             'fit_samples': [{'file': 'FitRingHalo.stl', 'source_part': 'HaloRing'},
                             {'file': 'FitSuspensionBracketLeft.stl', 'source_part': 'NecklaceLink0'}],
             'components': [{'cad_part': name, 'installed_quantity': 1,
-                            'material': 'Prusament PETG Ultraglow Green' if name == 'HaloRing' else 'Opaque PETG',
+                            'material': 'Prusament PETG Ultraglow Green' if name == 'HaloRing' else 'Opaque black PETG',
                             'mass_formula': 'ring_petg_volume' if name == 'HaloRing' else 'petg_volume'}
                            for name in ('HaloRing', 'NecklaceLink0', 'OpticalDeck')],
         }
@@ -102,6 +102,21 @@ class ServicePackageTests(unittest.TestCase):
         self.assertNotIn('Record green afterglow immediately',guide)
         self.assertEqual(files['03-STL-ALTERNATIVES/02-FULL-PARTS-HOLD/HaloRing.stl'],
                          service_package.shipment(self.root,'glow')['03-STL-ALTERNATIVES/02-FULL-PARTS-HOLD/HaloRing.stl'])
+
+    def test_both_packages_keep_structural_parts_black_and_rings_distinct(self):
+        for material,colour in (('glow','#CCD6A8'),('silver','#94999E')):
+            files=service_package.shipment(self.root,material)
+            rows=list(csv.DictReader(io.StringIO(files['ORDER.csv'].decode())))
+            for row in rows:
+                ring=Path(row['file']).stem in ('HaloRing','FitRingHalo')
+                if not ring:
+                    self.assertEqual(row['material'],'Opaque black PETG')
+                with zipfile.ZipFile(io.BytesIO(files[row['file']])) as archive:
+                    profile=slicing.configuration(archive.read('Metadata/Slic3r_PE.config').decode())
+                self.assertEqual(profile['filament_colour'],colour if ring else '#000000')
+            for guide in ('START-HERE.html','START-HERE.txt'):
+                self.assertIn('opaque black PETG',files[guide].decode())
+            self.assertIn('Reject light transmission through the black parts.',files['START-HERE.html'].decode())
 
     def test_wrong_delivered_profile_cannot_enter_package(self):
         path = self.exports/'HaloRing.3mf'

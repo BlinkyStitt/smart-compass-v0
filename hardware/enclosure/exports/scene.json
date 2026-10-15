@@ -6,7 +6,7 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "master_sha256": "afa49a2ea2fb05f39356390a2b6107d9bf70c50ead0c9496889fe558db253277",
+  "master_sha256": "b0b9ad45ae94770e3c452540fd72aab059629f5cfeee6db1731ffa66af6efb0a",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -14955,7 +14955,8 @@
         "transmission": 0.4,
         "diffusion": 0.65
       },
-      "id": "glow"
+      "id": "glow",
+      "filament_colour": "#CCD6A8"
     },
     "silver": {
       "label": "Silver PETG",
@@ -14984,7 +14985,8 @@
         "transmission": 0.4,
         "diffusion": 0.65
       },
-      "id": "silver"
+      "id": "silver",
+      "filament_colour": "#94999E"
     }
   }
 }

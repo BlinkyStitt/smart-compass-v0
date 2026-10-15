@@ -11,6 +11,12 @@ Ask the service to unzip the selected package and open **START-HERE.html**.
 Each contains the 13 samples, 16 held full parts, exact quantities, materials,
 print settings, references and acceptance checks. Quote both stages and print
 samples first. Release a full order only after that material's samples pass.
+Both versions use opaque black PETG for all structural parts and their fit samples.
+The service must identify the black filament brand and grade. Check that the
+production-wall samples block visible LED light at the permitted power limit.
+Reject light transmission through the black parts. A black slicer preview does
+not prove opacity.
+
 Both versions use the same strong 2.0 mm outside wall and the same light shields.
 The silver candidate is Extrudr PETG Silver. Its transmission through these walls
 is unqualified. Do not thin the outside wall to copy a small PLA diffuser.
@@ -95,9 +101,9 @@ must use its actual qualified printer and material presets.
 
 | Parts | Material and nozzle | Layer / paths | Orientation |
 | --- | --- | --- | --- |
-| Structural parts | PETG, 0.4 mm nozzle | 0.2 mm; 0.45 mm nominal path; 5 perimeters, 25% gyroid | Delivered bed face |
-| Necklace brackets | PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
-| Optical deck | PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
+| Structural parts | Opaque black PETG, 0.4 mm nozzle | 0.2 mm; 0.45 mm nominal path; 5 perimeters, 25% gyroid | Delivered bed face |
+| Necklace brackets | Opaque black PETG, 0.4 mm nozzle | 0.2 mm; 6 perimeters, solid fill | Flat |
+| Optical deck | Opaque black PETG, 0.4 mm nozzle | 0.1 mm; 10 top and bottom solid layers | Floor down |
 | Halo and inner rings | Selected PETG variant; non-high-flow 0.4 mm nozzle; abrasion-resistant for Ultraglow | 0.2 mm; two 0.5 mm nominal paths | Upright on circular bottom edge |
 | Outside ring | Same selected PETG and nozzle | 0.2 mm; four 0.53 mm nominal paths; 0.46 mm first-layer paths | Upright on circular bottom edge |
 
@@ -340,7 +346,7 @@ frame replacement is required.
 ## Ordering a print from a service
 
 Supply all sixteen whole printed parts and their thirteen fit samples. Require a
-300 mm printer, the specified structural PETG and selected ring filament, the
+300 mm printer, the specified opaque black structural PETG and selected ring filament, the
 orientations above, and an agreement to inspect functional fits. The supplier
 must print the samples with production settings and inspect the actual ring
 paths before a full order.

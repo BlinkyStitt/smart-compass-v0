@@ -50,13 +50,15 @@ class ManufacturingTests(unittest.TestCase):
         cavity=slicing.settings(spec,'HaloRing.stl')
         self.assertEqual((cavity['perimeters'],cavity['extrusion_width']),('2','0.5'))
 
-    def test_silver_and_glow_keep_same_paths_but_use_correct_densities(self):
+    def test_silver_and_glow_keep_same_paths_but_use_correct_material_settings(self):
         spec=json.loads((HERE/'print-spec.json').read_text())
         for name in ('HaloRing.stl','InnerRing.stl','EdgeDiffuser.stl','FitRingHalo.stl','FitRingInner.stl','FitRingOutside.stl'):
             glow=slicing.settings(spec,name,'glow')
             silver=slicing.settings(spec,name,'silver')
             self.assertEqual(float(glow.pop('filament_density')),spec['ring_materials']['glow']['density_g_cm3'])
             self.assertEqual(float(silver.pop('filament_density')),spec['ring_materials']['silver']['density_g_cm3'])
+            self.assertEqual(glow.pop('filament_colour'),'#CCD6A8')
+            self.assertEqual(silver.pop('filament_colour'),'#94999E')
             self.assertEqual(glow,silver)
             self.assertNotEqual(slicing.project_filename(name,'glow'),slicing.project_filename(name,'silver'))
         for name in ('RearPlate.stl','NecklaceLink0.stl'):
@@ -72,6 +74,21 @@ class ManufacturingTests(unittest.TestCase):
             self.assertEqual(ring['material'],spec['ring_materials'][material]['filament'])
             masses.append(ring['mass_g_per_unit'])
         self.assertGreater(masses[0],masses[1])
+
+    def test_structural_products_and_samples_require_opaque_black_petg(self):
+        spec=json.loads((HERE/'print-spec.json').read_text())
+        rows,_=self.resolved()
+        structural=[r for r in rows if r.get('mass_formula')=='petg_volume']
+        self.assertEqual(len(structural),13)
+        for row in structural:
+            self.assertEqual(row['material'],'Opaque black PETG')
+            profile=slicing.settings(spec,row['cad_part']+'.stl')
+            self.assertEqual(profile['filament_colour'],'#000000')
+        for sample in ('FitSuspensionBracketLeft','FitSuspensionBracketRight','FitControllerMount','FitDeck','FitOptics'):
+            profile=slicing.settings(spec,sample+'.stl')
+            self.assertEqual(profile['filament_colour'],'#000000')
+        with self.assertRaisesRegex(cad.CadError,'filament_colour'):
+            slicing.verify_settings(dict(profile,filament_colour='#29B2B2'),profile,'wrong structural colour')
 
     def test_perimeter_measurement_ignores_brims_travel_and_retraction(self):
         gcode="""M82
