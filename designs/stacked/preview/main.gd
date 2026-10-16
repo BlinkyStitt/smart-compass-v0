@@ -2,6 +2,8 @@ extends Node3D
 
 const Mannequin = preload("res://mannequin.gd")
 const Patterns = preload("res://patterns.gd")
+const CaptureView = preload("res://capture_view.gd")
+const Playa = preload("res://playa.gd")
 const PATTERNS = ["Spiral rainbow", "Ocean gradient", "Sunset gradient", "White", "Single pixel"]
 # Match design one's camera world coordinates; keep actual pendant dimensions.
 const COMPARISON_FRONT_Z = 0.0367
@@ -11,7 +13,7 @@ var camera = Camera3D.new()
 var environment = Environment.new()
 var sky_material = ProceduralSkyMaterial.new()
 var sun = DirectionalLight3D.new()
-var backdrop = CanvasLayer.new()
+var backdrop = Playa.new()
 var mannequin = Mannequin.new()
 var meshes = {}
 var transforms = {}
@@ -134,16 +136,8 @@ func _make_world():
 	environment.tonemap_exposure=float(metadata.comparison.exposure)
 	environment.glow_enabled=true
 	environment.glow_intensity=0.45
-	backdrop.layer=-1
 	add_child(backdrop)
-	var image=TextureRect.new()
-	image.texture=ImageTexture.create_from_image(Image.load_from_file(ProjectSettings.globalize_path("res://assets/playa-night.png")))
-	image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-	image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	image.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	backdrop.add_child(image)
-	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	environment.background_canvas_max_layer=-1
+	backdrop.build()
 	add_child(sun)
 	sun.shadow_enabled=true
 	add_child(mannequin)
@@ -162,7 +156,7 @@ func _make_world():
 
 func _lighting(night: bool):
 	backdrop.visible=night
-	environment.background_mode=Environment.BG_CANVAS if night else Environment.BG_SKY
+	environment.background_mode=Environment.BG_SKY
 	environment.ambient_light_energy=0.015 if night else 0.35
 	environment.background_energy_multiplier=0.06 if night else 0.7
 	sun.light_energy=0.03 if night else 0.8
@@ -186,6 +180,13 @@ func _update_camera():
 	var el=deg_to_rad(pitch_angle)
 	camera.position=target+distance*Vector3(sin(az)*cos(el),sin(el),cos(az)*cos(el))
 	camera.look_at(target,Vector3.UP)
+
+func _night_pose(frame: float):
+	distance=CaptureView.DISTANCE
+	target=CaptureView.TARGET
+	yaw=CaptureView.yaw(frame)
+	pitch_angle=CaptureView.pitch(frame)
+	_update_camera()
 
 func _pattern_colour(led,time: float):
 	var p=led.position_m
@@ -346,11 +347,9 @@ func _capture():
 	enabled.fill(true)
 	pattern=0
 	caption.text="Glow PETG | Rainbow | worn night preview | unmeasured optics"
-	for frame in range(384):
-		yaw=65.0*cos(TAU*frame/384.0)
-		pitch_angle=-12
-		pattern_time=frame/24.0
-		_update_camera()
+	for frame in range(CaptureView.FRAMES):
+		_night_pose(frame)
+		pattern_time=frame/CaptureView.FPS
 		await _save("gradient-rainbow-%04d.png" % frame)
 		if frame%96==0: print("STACKED CAPTURE: rainbow "+str(frame)+"/384",true)
 	_set_presentation(2)
@@ -393,6 +392,24 @@ func _check():
 	assert(is_equal_approx(camera.near,0.005) and is_equal_approx(camera.far,30.0))
 	assert(is_equal_approx(brightness,float(metadata.comparison.brightness)))
 	assert(is_equal_approx(target.z,COMPARISON_FRONT_Z))
+	yaw=65
+	pitch_angle=20
+	_update_camera()
+	assert(CaptureView.hand_overlaps(camera,mannequin,float(metadata.dimensions_m.diameter)/2,float(metadata.optics.front_z)),"Clearance check must detect an obstructed hand-side view")
+	_night_pose(0)
+	var camera_start=camera.transform
+	var body_start=mannequin.global_transform
+	var field_start=backdrop.global_transform
+	for frame in range(CaptureView.FRAMES+1):
+		_night_pose(frame)
+		assert(mannequin.global_transform.is_equal_approx(body_start))
+		assert(backdrop.global_transform.is_equal_approx(field_start))
+		assert(not CaptureView.hand_overlaps(camera,mannequin,float(metadata.dimensions_m.diameter)/2,float(metadata.optics.front_z)),"Pointing hand covers the case at frame "+str(frame))
+	assert(camera.transform.is_equal_approx(camera_start),"Figure-eight camera must close")
+	_night_pose(96)
+	assert(is_equal_approx(yaw,20) and is_equal_approx(pitch_angle,0))
+	_night_pose(288)
+	assert(is_equal_approx(yaw,-50) and is_equal_approx(pitch_angle,0))
 	for selection in range(3):
 		pattern=selection
 		var moving=0

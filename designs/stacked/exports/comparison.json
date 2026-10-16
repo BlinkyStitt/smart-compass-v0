@@ -1,5 +1,5 @@
 {
-  "reference_commit": "56c6e5b8bf50a142a9e4e8a9780479ba0a2deeaa",
+  "reference_commit": "6b2bec8f2e3580a2369c7880286b4ad11eca06d2",
   "reference_design": "hardware/enclosure/exports",
   "separate_files": true,
   "width_px": 1280,
@@ -19,8 +19,9 @@
   },
   "closeup": {
     "distance_m": 0.46,
-    "pitch_deg": -12,
-    "yaw_formula": "65*cos(2*pi*frame/384)",
+    "yaw_formula": "35*sin(2*pi*frame/384)-15*sin(2*pi*frame/384)^2",
+    "pitch_formula": "20*sin(4*pi*frame/384)",
+    "background": "World-space 210-degree curved playa at 20 m, with stationary ground",
     "fps": 24,
     "frames": 384
   },

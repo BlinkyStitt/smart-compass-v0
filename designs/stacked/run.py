@@ -34,6 +34,8 @@ SHARED = (
     "demo/mannequin.gd",
     "demo/main.gd",
     "demo/patterns.gd",
+    "demo/capture_view.gd",
+    "demo/playa.gd",
     "demo/media.py",
     "demo/assets/playa-night.png",
     "demo/ring_diffusion.gdshaderinc",
@@ -160,6 +162,8 @@ def prepare_preview():
     for name in (
         "mannequin.gd",
         "patterns.gd",
+        "capture_view.gd",
+        "playa.gd",
         "ring_diffusion.gdshaderinc",
         "centre_diffusion.gdshaderinc",
         "package.gdshader",
@@ -307,7 +311,7 @@ def capture(assets, stage):
                 "-",
             ]
         )
-        verify_rainbow_motion(assets / f"infinity-{style}.mp4")
+        verify_rainbow_motion(assets / f"infinity-{style}.mp4", assets / "scene.json")
     comparison = {
         "reference_commit": subprocess.check_output(
             ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure", "demo"],
@@ -333,8 +337,9 @@ def capture(assets, stage):
         },
         "closeup": {
             "distance_m": 0.46,
-            "pitch_deg": -12,
-            "yaw_formula": "65*cos(2*pi*frame/384)",
+            "yaw_formula": "35*sin(2*pi*frame/384)-15*sin(2*pi*frame/384)^2",
+            "pitch_formula": "20*sin(4*pi*frame/384)",
+            "background": "World-space 210-degree curved playa at 20 m, with stationary ground",
             "fps": 24,
             "frames": 384,
         },

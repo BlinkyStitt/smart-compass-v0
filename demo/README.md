@@ -46,11 +46,19 @@ continuous black acrylic cover and the original stencil still define the face.
 This diffusion profile is qualitative; it is not measured photometry.
 
 Each sixteen-second loop shows a pendant close-up at a fixed 0.46 m distance.
-The camera sweeps from +65° to −65° and back, crossing the front twice.
+The camera follows a closed figure eight and crosses the centre head on twice.
+The pointing-hand side stops at +20° to keep the finger clear of the display;
+the other side reaches −50°. Elevation ranges from −20° to +20°. The mannequin
+and a curved 3D playa panorama stay fixed in world space. A ground plane
+continues beneath the wearer. Both designs use the same scenery and camera.
 The mannequin stays visible behind the pendant. The separate full-body view
 shows the complete pose at 3.5 m. Position, velocity and LED state join at the
 loop boundary. All 494 LEDs show a moving spatial gradient, with two eight-second
-colour cycles per camera loop. Emission scale stays at 2, exposure at 1, and
+colour cycles per camera loop. The movie check tracks the spatial rainbow
+phase across the Fibonacci board and outside ring through the changing views.
+The check first normalizes each observed RGB channel range to remove the fixed
+material tint and phosphor offset; it does not use time to fit that normalization.
+Each surface must complete two turns; uniform colour cycling or a frozen ring fails. Emission scale stays at 2, exposure at 1, and
 assumed ring diffusion at 0.65.
 
 The featureless mannequin is approximately 1.85 m tall. Its backward lean,
@@ -64,7 +72,7 @@ desert, distant camp lights and stars. Subtle amber and blue spotlights make the
 wearer's pose visible. These lights and the existing sky reflections are
 assumptions, not a measured reconstruction of the background or LED brightness.
 
-Every assembled rainbow frame includes the mannequin and the playa background.
+Every assembled rainbow frame includes the stationary mannequin and curved 3D playa background.
 Use **Design inspection** to examine the rear hardware or exploded assembly.
 
 ## Controls
@@ -204,7 +212,7 @@ just cad-check
 
 `just demo-check` checks freshness, metadata and LED directions, imports every
 named GLB mesh, compares imported bounds with CAD, checks full mannequin framing
-and the fixed-distance ±65° sweep, exercises presentation, finish and optical
+and the fixed-distance figure eight with hand clearance at every saved view, exercises presentation, finish and optical
 controls, and checks shared patterns and fixed exposure. On the GPU, 105 ray
 cases compare the actual cavity tracing code with an independent unfolded-mirror
 reference. The cases include spacing, attenuation, cutoff, the reflection limit,

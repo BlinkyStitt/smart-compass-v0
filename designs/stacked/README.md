@@ -74,7 +74,7 @@ Additional separate stills show [front](exports/night-front.png),
 and [exploded layers](exports/exploded.png).
 
 The playa backdrop, body pose, camp lights, world camera positions, source
-brightness, exposure, 38-degree field of view, gradient formulas and 16-second sweeps match the first
+brightness, exposure, 38-degree field of view, gradient formulas and 16-second camera sequence match the first
 design. The final webbing segments meet the compact rear anchors. The compact
 pendant keeps its actual size; the camera does not enlarge it to fill the frame.
 `exports/comparison.json` records the settings and shared asset hashes.
@@ -143,6 +143,10 @@ into the outer rim cannot lower the full-face mirror stack at 200 mm diameter.
 The capture uploads the current LED colour field before each saved frame.
 Both designs load `demo/patterns.gd` for their eight-second rainbow cycle.
 The GPU check disables automatic updates and checks actual central cell RGB
-at a fixed camera angle. The movie check compares the central cells at equal
-camera poses with opposite hues, then checks identical hues as a noise control.
-Camera motion alone cannot pass these animation checks.
+at a fixed camera angle. Both captures use the same closed figure-eight camera path, crossing the
+centre head on twice. The pointing-hand side stops at +20°; the clear side
+reaches −50°, with −20° to +20° elevation. The mannequin and curved 3D playa remain fixed in world space;
+only the camera moves. The movie check registers the actual CAD source locations
+through those views and requires two spatial rainbow turns on both the Fibonacci
+board and outside ring. A frozen ring, slow hue drift, wrong direction or uniform
+colour cycling fails.
