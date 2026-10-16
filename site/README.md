@@ -1,0 +1,34 @@
+# Smart compass on GitHub Pages
+
+The site compares the canonical wide and narrow rainbow MP4s, explains the
+hardware, and shows native CAD size and assembly images. It uses plain HTML,
+CSS and JavaScript. The build needs Python 3.9+, Git LFS, FFmpeg and FFprobe.
+
+```sh
+python3 site/build.py --output /path/to/compass-pages
+python3 -m http.server 8080 --bind 127.0.0.1 --directory /path/to/compass-pages
+```
+
+Rebuild changed enclosure outputs with their owning commands before building
+the site. `build.py` checks each MP4's dimensions, duration and spatial rainbow
+rotation on the board and outside ring. It rejects missing LFS media. Asset
+filenames include their content hash so revised clips cannot reuse stale URLs.
+The front comparison uses the 250 mm wide and 200 mm narrow native CAD renders
+at the same scale, with dimension lines.
+
+The `GitHub Pages` workflow builds on pull requests, and deploys on pushes to
+`master` or a manual run from `master`. Repository Pages must use GitHub Actions
+as its source. The build fetches only the LFS media needed by the site.
+
+Both primary videos loop. Play both aligns their times, Pause both stops paired
+playback, and Restart together resets both to frame zero. Individual video
+controls and direct MP4 links remain available. Visitors who request reduced
+motion start with paused videos.
+
+Weight cards include the battery. The wide mass comes from the generated installed
+inventory. `estimates.py` applies that inventory's density and uncertainty model to
+the narrow CAD materials and strip lengths, and transfers the electronics, harness
+and fitting allowances provisionally. The narrow design has no final fitting BOM.
+Runtime uses the documented 37 Wh pack, 85% efficiency and 1.25 A total at 5 V. It
+is an energy calculation before reserve, aging, temperature and cutoff losses;
+useful brightness at that cap remains unverified. The design target is four hours.

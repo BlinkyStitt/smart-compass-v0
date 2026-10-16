@@ -1,0 +1,50 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg git-lfs
+      - name: Fetch site media from Git LFS
+        run: >-
+          git lfs pull --include='hardware/enclosure/exports/infinity-rainbow*.mp4,hardware/enclosure/exports/night-mannequin.png,designs/stacked/exports/infinity-rainbow.mp4,designs/stacked/exports/night-mannequin.png,designs/stacked/exports/night-side.png,designs/stacked/exports/exploded.png,site/assets/size-comparison.png'
+      - name: Build and verify site media
+        run: |
+          python3 -m unittest discover -s site -p 'test_*.py' -v
+          python3 site/build.py --output "$RUNNER_TEMP/compass-pages"
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/compass-pages
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        id: deployment
