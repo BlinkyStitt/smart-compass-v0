@@ -1,5 +1,5 @@
 {
-  "reference_commit": "e5f34b59abbb52d922bf4eb4c9c71cdf85ab4e72",
+  "reference_commit": "3ca8f73045b351cb4c25b47b3cd4be9c88c58d1c",
   "reference_design": "hardware/enclosure/exports",
   "separate_files": true,
   "width_px": 1280,
@@ -15,7 +15,7 @@
     "distance_m": 3.5,
     "target_y_m": -0.1,
     "pitch_deg": -3,
-    "pattern_time_s": 15.833333333333334
+    "pattern_time_s": 2.0
   },
   "closeup": {
     "distance_m": 0.46,

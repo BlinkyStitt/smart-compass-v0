@@ -102,10 +102,12 @@ def build(out):
             p["side_bottom_z"],
         )
     )
-    shell = shell.fuse(annulus(82.5, 88.3, 2, 36))
+    shell = shell.fuse(annulus(82.5, 88.3, 2, p["circle_back_z"] - 2))
     # Captive M3 nuts insert from the open rear, below each support post.
     for x, y in rear_points:
-        post = cylinder(3, 34, 2, x, y).cut(cylinder(1.7, 35, 1.5, x, y))
+        post = cylinder(3, p["circle_back_z"] - 4, 2, x, y).cut(
+            cylinder(1.7, p["circle_back_z"] - 3, 1.5, x, y)
+        )
         pocket = polygon_face(
             [(x + a, y + b) for a, b in hexagon(0, 0, 5.8)], 2
         ).extrude(App.Vector(0, 0, 2.6))
@@ -124,16 +126,18 @@ def build(out):
         )
     )
     for i in range(3):
-        pocket = box(6.1, 4.2, 1.4, 85.25, 0, 39.5)
-        boss = cylinder(1.8, 1.6, 38, 85.5, 0)
-        bore = cylinder(1.1, 5, 35.5, 85.5, 0)
+        pocket = box(6.1, 4.2, 1.4, 85.25, 0, p["circle_back_z"] + 1.5)
+        boss = cylinder(1.8, 1.6, p["circle_back_z"], 85.5, 0)
+        bore = cylinder(1.1, 5, p["circle_back_z"] - 2.5, 85.5, 0)
         for shape in (pocket, boss, bore):
             shape.rotate(App.Vector(), App.Vector(0, 0, 1), i * 120)
         shell = shell.cut(pocket).fuse(boss).cut(bore)
     add("ElectronicsShell", shell, "Manufactured", (0.025, 0.025, 0.03))
     # Three shallow edge clips retain the unmodified board; no invented PCB holes.
     for i in range(3):
-        clip = box(5.0, 4, 1.2, 84.8, 0, 39.6).cut(cylinder(1.1, 2, 39.5, 85.5, 0))
+        clip = box(
+            5.0, 4, 1.2, 84.8, 0, p["circle_back_z"] + p["circle_pcb_thickness"]
+        ).cut(cylinder(1.1, 2, p["circle_back_z"] + 1.5, 85.5, 0))
         clip.rotate(App.Vector(), App.Vector(0, 0, 1), i * 120)
         add("BoardEdgeClip" + str(i), clip, "Manufactured", (0.03, 0.03, 0.035))
     frame = annulus(
@@ -147,7 +151,15 @@ def build(out):
     pocket_flats, pocket_height = nut_dimensions("M2", pocket=True)
     nut_bottom = d["front_z"] - 1.0
     for x, y in front_points:
-        frame = frame.cut(cylinder(1.1, 30, d["rear_bottom"] - 0.5, x, y))
+        frame = frame.cut(
+            cylinder(
+                1.1,
+                d["front_z"] + p["front_mirror_thickness"] - d["rear_bottom"] + 1,
+                d["rear_bottom"] - 0.5,
+                x,
+                y,
+            )
+        )
         pocket = polygon_face(hexagon(x, y, pocket_flats), nut_bottom)
         angle = math.degrees(math.atan2(y, x))
         entry = box(
@@ -519,7 +531,7 @@ def build(out):
     }
     (out / "scene.json").write_text(json.dumps(metadata, indent=2) + "\n")
     print(
-        f"STACKED CAD PASS: 190 x {d['depth']:.1f} mm; {len(leds)} LEDs; no solid collisions",
+        f"STACKED CAD PASS: {p['case_diameter']:g} x {d['depth']:.1f} mm; {len(leds)} LEDs; no solid collisions",
         flush=True,
     )
     App.closeDocument(doc.Name)

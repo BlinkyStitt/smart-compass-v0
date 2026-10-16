@@ -32,6 +32,7 @@ SHARED = (
     "demo/main.gd",
     "demo/assets/playa-night.png",
     "demo/ring_diffusion.gdshaderinc",
+    "demo/centre_diffusion.gdshaderinc",
     "demo/package.gdshader",
     "hardware/enclosure/exports/scene.json",
 )
@@ -54,7 +55,7 @@ EXPECTED = frozenset(
 )
 EXPECTED = EXPECTED | frozenset(
     "infinity-" + style + suffix
-    for style in ("rainbow", "ocean", "sunset")
+    for style in ("rainbow",)
     for suffix in (".mp4", ".gif")
 )
 
@@ -151,7 +152,12 @@ def execute(command, *, env=None, log=None):
 def prepare_preview():
     destination = HERE / ".build/preview"
     shutil.copytree(HERE / "preview", destination, dirs_exist_ok=True)
-    for name in ("mannequin.gd", "ring_diffusion.gdshaderinc", "package.gdshader"):
+    for name in (
+        "mannequin.gd",
+        "ring_diffusion.gdshaderinc",
+        "centre_diffusion.gdshaderinc",
+        "package.gdshader",
+    ):
         shutil.copyfile(ROOT / "demo" / name, destination / name)
     (destination / "assets").mkdir(exist_ok=True)
     shutil.copyfile(
@@ -223,7 +229,7 @@ def capture(assets, stage):
     for name in EXPECTED:
         if name.endswith(".png") and name != "cell-map.png":
             shutil.copyfile(frames / name, assets / name)
-    for style in ("rainbow", "ocean", "sunset"):
+    for style in ("rainbow",):
         source = str(frames / f"gradient-{style}-%04d.png")
         execute(
             [
@@ -282,6 +288,19 @@ def capture(assets, stage):
             stream["r_frame_rate"],
         ) != (1280, 720, "384", "24/1"):
             raise RuntimeError("Invalid matched movie dimensions or timing")
+        execute(
+            [
+                "ffmpeg",
+                "-v",
+                "error",
+                "-xerror",
+                "-i",
+                str(assets / f"infinity-{style}.mp4"),
+                "-f",
+                "null",
+                "-",
+            ]
+        )
     comparison = {
         "reference_commit": subprocess.check_output(
             ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure", "demo"],
@@ -303,7 +322,7 @@ def capture(assets, stage):
             "distance_m": 3.5,
             "target_y_m": -0.1,
             "pitch_deg": -3,
-            "pattern_time_s": 16 * 95 / 96,
+            "pattern_time_s": 2.0,
         },
         "closeup": {
             "distance_m": 0.46,

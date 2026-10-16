@@ -319,7 +319,7 @@ func _capture():
 	paused=true
 	DirAccess.make_dir_recursive_absolute(capture_dir)
 	_set_presentation(0)
-	pattern_time=16.0*95.0/96.0
+	pattern_time=2.0
 	caption.text="Worn night preview | full pose | unmeasured optics"
 	await _save("night-mannequin.png")
 	_set_presentation(1)
@@ -338,17 +338,15 @@ func _capture():
 	enabled.fill(false)
 	await _save("night-leds-off.png")
 	enabled.fill(true)
-	for style in range(3):
-		pattern=style
-		var name=["rainbow","ocean","sunset"][style]
-		caption.text="Glow PETG | "+name.capitalize()+" | worn night preview | unmeasured optics"
-		for frame in range(384):
-			yaw=65.0*cos(TAU*frame/384.0)
-			pitch_angle=-12
-			pattern_time=frame/24.0
-			_update_camera()
-			await _save("gradient-%s-%04d.png" % [name,frame])
-			if frame%96==0: print("STACKED CAPTURE: "+name+" "+str(frame)+"/384",true)
+	pattern=0
+	caption.text="Glow PETG | Rainbow | worn night preview | unmeasured optics"
+	for frame in range(384):
+		yaw=65.0*cos(TAU*frame/384.0)
+		pitch_angle=-12
+		pattern_time=frame/24.0
+		_update_camera()
+		await _save("gradient-rainbow-%04d.png" % frame)
+		if frame%96==0: print("STACKED CAPTURE: rainbow "+str(frame)+"/384",true)
 	_set_presentation(2)
 	pattern=0
 	pattern_time=2
@@ -363,11 +361,14 @@ func _capture():
 	get_tree().quit()
 
 func _check():
-	assert(metadata.leds.size()==520)
-	assert(metadata.counts.size()==5 and int(metadata.counts[0])==256)
-	for i in range(1,5): assert(int(metadata.counts[i])==66)
+	var rows=int(metadata.validation.side_strip_count)
+	assert(metadata.counts.size()==2+rows and int(metadata.counts[0])==256)
+	var led_count=0
+	for count in metadata.counts: led_count+=int(count)
+	assert(metadata.leds.size()==led_count)
+	for i in range(1,metadata.counts.size()): assert(int(metadata.counts[i])==66)
 	var band=meshes.SideDiffuser.get_aabb()
-	assert(is_equal_approx(band.size.z,0.030))
+	assert(is_equal_approx(band.size.z,float(metadata.validation.side_band_width_mm)/1000))
 	for led in metadata.leds:
 		if int(led.group)>=2:
 			assert(is_equal_approx(float(led.position_m[2]),float(metadata.optics.side_first_z)+(int(led.group)-2)*float(metadata.optics.side_pitch)))
@@ -377,8 +378,8 @@ func _check():
 		var p=metadata.centres_m[i]
 		var pixel=mask.get_pixel(int(1024*(0.5+p[0]/0.166)),int(1024*(0.5-p[1]/0.166)))
 		assert(pixel.g>0.5 and int(round(pixel.r*255))==i,"Cell map loses manufacturer index "+str(i))
-	assert(is_equal_approx(float(metadata.dimensions_m.diameter),0.190))
-	assert(is_equal_approx(float(metadata.optics.front_z)-float(metadata.optics.rear_z),0.020))
+	assert(is_equal_approx(float(metadata.dimensions_m.diameter),float(metadata.validation.maximum_width_mm)/1000))
+	assert(is_equal_approx(float(metadata.optics.front_z)-float(metadata.optics.rear_z),float(metadata.validation.mirror_gap_mm)/1000))
 	assert(mannequin.visible and backdrop.visible)
 	_set_presentation(1)
 	assert(is_equal_approx(distance,0.46))
@@ -421,7 +422,7 @@ func _check():
 	assert(meshes.FrontMirror.position.z>transforms.FrontMirror.origin.z)
 	_explode(0)
 	assert(meshes.FrontMirror.transform==transforms.FrontMirror)
-	print("STACKED SCENE PASS: CAD meshes, 520 LEDs, three side rows, controls, pose, world cameras and loops")
+	print("STACKED SCENE PASS: CAD meshes, %d LEDs, %d side rows, configurable mirror gap, controls, pose, world cameras and loops" % [led_count,rows])
 	get_tree().quit()
 
 func _gpu_check(reference_path):

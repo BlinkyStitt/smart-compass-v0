@@ -2,7 +2,7 @@
   "case_diameter": 190.0,
   "circle_diameter": 166.0,
   "circle_pcb_thickness": 1.6,
-  "circle_back_z": 38.0,
+  "circle_back_z": 28.0,
   "led_height": 3.0,
   "led_map_radius": 79.5,
   "map_rotation_deg": 0.0,
@@ -12,7 +12,7 @@
   "led_baffle_gap": 0.6,
   "rear_black_acrylic_thickness": 3.0,
   "stencil_mirror_gap": 1.0,
-  "mirror_gap": 20.0,
+  "mirror_gap": 14.0,
   "front_mirror_thickness": 3.0,
   "bezel_thickness": 1.4,
   "mirror_radius": 88.0,
@@ -24,7 +24,7 @@
   "ring_led_depth": 2.0,
   "inner_count": 66,
   "side_count": 66,
-  "side_rows": 3,
+  "side_rows": 2,
   "ring_diffuser_thickness": 1.0,
   "ring_diffuser_led_gap": 1.0,
   "side_diffuser_thickness": 2.0,
@@ -40,8 +40,8 @@
     {"name":"BlackPill", "size":[20.8,52.8,12.0], "centre":[-30.0,31.0], "z":8.0},
     {"name":"GPS", "size":[22.86,50.8,8.0], "centre":[0.0,56.0], "rotation_deg":90.0, "z":9.0},
     {"name":"IMU", "size":[25.0,25.0,8.0], "centre":[-61.0,7.0], "z":9.0},
-    {"name":"Radio", "size":[25.0,32.0,8.0], "centre":[60.0,-17.0], "z":27.0},
-    {"name":"BatterySense", "size":[18.0,16.0,7.0], "centre":[0.0,10.0], "z":27.0},
+    {"name":"Radio", "size":[25.0,32.0,8.0], "centre":[60.0,-17.0], "z":8.0},
+    {"name":"BatterySense", "size":[18.0,16.0,7.0], "centre":[0.0,10.0], "z":8.0},
     {"name":"Boost5V", "size":[15.2,40.6,4.6], "centre":[-57.0,-30.0], "z":9.0}
   ]
 }

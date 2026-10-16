@@ -1,11 +1,11 @@
 # Compact stacked Fibonacci concept
 
 This is the second enclosure design. The original 250 mm design and its exports
-stay in `hardware/enclosure`. This concept is 190 mm wide and 73.6 mm deep. It
+stay in `hardware/enclosure`. This concept is 190 mm wide and 57.6 mm deep. It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,
-a 3 mm coated black LED acrylic rear mirror, a full-face 20 mm mirror cavity,
+a 3 mm coated black LED acrylic rear mirror, a full-face 14 mm mirror cavity,
 a 66-LED inward ring,
-and three 66-LED outside strips behind one continuous 30 mm side diffuser. The GPS footprint rotates 90 degrees; all
+and two 66-LED outside strips behind one continuous 20 mm side diffuser. The GPS footprint rotates 90 degrees; all
 component envelopes keep their original dimensions.
 
 From front to back: front two-way mirror, empty cavity with inward ring, rear
@@ -16,16 +16,16 @@ part. The separate front bezel uses six M2 × 6 countersunk screws and captive
 M2 nuts with side insertion; the rear cover remains independent. The rear coating transmits the cell light
 into the cavity and reflects returning light. Both coatings face the cavity.
 The inward ring has 0.86 mm nominal clearance from the full 166 mm source.
-The 30 mm side band spans Z=14 to 44 mm. Its three 10 mm strips sit side by side
-across the case depth, with LED rows at Z=19, 29 and 39 mm. The case stays
-190 mm wide and 73.6 mm deep. One side-band switch controls all three rows; the
+The 20 mm side band spans Z=14 to 34 mm. Its two 10 mm strips sit side by side
+across the case depth, with LED rows at Z=19 and 29 mm. The case stays
+190 mm wide and 57.6 mm deep. One side-band switch controls both rows; the
 preview blends their emitted light through the full sleeve and blends stored
 afterglow without tripling it. The outside sleeve has its own broad axial scatter
 profile; the inner mirror ring keeps its narrow profile. The outside model
 conserves each row's integrated source light as it spreads. Its assumed maximum
 RMS scatter scale is 7.5 mm, scaled by the diffusion control. This is an
 unmeasured material assumption, not a prediction for the printed sleeve.
-The outside rows form one 198-LED side chain. The CAD keeps the board clips
+The outside rows form one 132-LED side chain. The CAD keeps the board clips
 inside that chain; actual jumper routing and fastening still need physical checks.
 
 ## Build and view
@@ -62,8 +62,6 @@ combines both designs. The first design remains at its original paths.
 | --- | --- | --- |
 | Full pose | [Night mannequin](exports/night-mannequin.png) | [Night mannequin](../../hardware/enclosure/exports/night-mannequin.png) |
 | Rainbow | [MP4](exports/infinity-rainbow.mp4) · [GIF](exports/infinity-rainbow.gif) | [MP4](../../hardware/enclosure/exports/infinity-rainbow.mp4) · [GIF](../../hardware/enclosure/exports/infinity-rainbow.gif) |
-| Ocean | [MP4](exports/infinity-ocean.mp4) · [GIF](exports/infinity-ocean.gif) | [GIF](../../hardware/enclosure/exports/infinity-ocean.gif) |
-| Sunset | [MP4](exports/infinity-sunset.mp4) · [GIF](exports/infinity-sunset.gif) | [GIF](../../hardware/enclosure/exports/infinity-sunset.gif) |
 
 Additional separate stills show [front](exports/night-front.png),
 [angled](exports/night-angled.png), [side](exports/night-side.png),
@@ -106,12 +104,11 @@ no published measurement establishes the custom coated black sheet.
 The first cell image passes both mirrors: 0.09 × 0.30 = 2.7% before other losses.
 The black-mirror value already includes substrate absorption; applying 29%
 again would count it twice. The inner ring bypasses the black substrate. The
-source brightness stays fixed. The case is 190 mm wide and 73.6 mm deep, with
-1 mm between the original stencil and coated black sheet. The 20 mm mirror
-separation and continuous 30 mm outside band stay fixed.
+source brightness stays fixed. The case is 190 mm wide and 57.6 mm deep, with
+1 mm between the original stencil and coated black sheet. The default mirror gap is 14 mm. The continuous outside band is 20 mm.
 
 A mirror coating does not diffuse the LEDs. Scattering remains a qualitative
-Gaussian approximation because the black-sheet supplier gives no haze or
+flat central profile with soft falloff because the black-sheet supplier gives no haze or
 angular scatter data. Thin-sheet transport omits refraction and substrate
 ghosting. Glow colour and stored emission also remain estimates. CAD and the
 preview do not establish physical fit, brightness, optical flatness or thermal
@@ -120,3 +117,19 @@ performance.
 The original stencil, attribution and source remain in
 `hardware/enclosure/vendor/evilgeniuslabs-fibonacci256`. The compact model uses
 the exact source contours and volume, including the open perimeter cells.
+
+
+## Depth and mirror-gap input
+
+Set `mirror_gap` in `parameters.json` in millimetres, then rebuild. The front
+mirror, cavity, frame, bezel and total body depth follow that value. The board
+and electronics do not move when you change the gap. With the lowered Z28 PCB,
+12, 14, 16 and 20 mm gaps give 55.6, 57.6, 59.6 and 63.6 mm body depths.
+The default 14 mm allows 2 mm clearance at each side of the 10 mm inner strip.
+A 20 mm gap is an appearance choice, not an optical optimum proven by data.
+
+The Radio and BatterySense shelves now sit at Z8 instead of Z27. Their XY
+footprints do not overlap the other electronics. The original 20 mm battery
+and SparkleMotion end at Z23, leaving 5 mm below the PCB. All board clips and
+support posts derive their height from `circle_back_z`. Moving this battery
+into the outer rim cannot lower the full-face mirror stack at 190 mm diameter.
