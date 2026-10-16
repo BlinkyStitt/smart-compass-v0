@@ -43,7 +43,19 @@ def dimensions(p):
     side_radius = (
         p["side_count"] * 1000 / p["strip_density"] + p["ring_seam_gap"]
     ) / math.tau
+    case_radius = p["case_diameter"] / 2
+    suspension_scale = (case_radius - 3.6) / math.hypot(55, 73)
     return {
+        "case_radius": case_radius,
+        "shell_inner_radius": case_radius - 9,
+        "board_support_outer_radius": case_radius - 6.7,
+        "rear_fastener_radius": case_radius - 10,
+        "front_fastener_radius": (case_radius + p["mirror_radius"]) / 2,
+        "mirror_seat_radius": p["mirror_radius"] + 0.3,
+        "mirror_lip_radius": p["mirror_radius"] - 0.6,
+        "inner_foot_radius": p["mirror_radius"] - 0.1,
+        "suspension_x": 55 * suspension_scale,
+        "suspension_y": 73 * suspension_scale,
         "baffle_z": baffle_z,
         "source_z": source_z,
         "rear_bottom": rear_bottom,
@@ -89,6 +101,15 @@ def validate(p):
         or p["mirror_radius"] >= p["case_diameter"] / 2 - 2
     ):
         raise ValueError("Mirror does not fit its seat")
+    if (
+        d["mirror_seat_radius"]
+        - d["pitch_radius"]
+        - p["strip_thickness"] / 2
+        < 0.1
+    ):
+        raise ValueError("Mirror seat blocks the inner strip")
+    if d["mirror_lip_radius"] <= d["inner_outer"]:
+        raise ValueError("Mirror lip blocks the inner diffuser")
     side_face = d["side_radius"] + p["strip_thickness"] / 2 + p["ring_led_depth"]
     if p["case_diameter"] / 2 - p["side_diffuser_thickness"] - side_face < 1:
         raise ValueError("Side diffuser blocks its LED packages")

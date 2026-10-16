@@ -77,13 +77,19 @@ def build(out):
         objects.append(obj)
         return obj
 
-    R = p["case_diameter"] / 2
+    R = d["case_radius"]
     rear_points = [
-        (85 * math.cos(i * math.tau / 6), 85 * math.sin(i * math.tau / 6))
+        (
+            d["rear_fastener_radius"] * math.cos(i * math.tau / 6),
+            d["rear_fastener_radius"] * math.sin(i * math.tau / 6),
+        )
         for i in range(6)
     ]
     front_points = [
-        (91.5 * math.cos(i * math.tau / 6), 91.5 * math.sin(i * math.tau / 6))
+        (
+            d["front_fastener_radius"] * math.cos(i * math.tau / 6),
+            d["front_fastener_radius"] * math.sin(i * math.tau / 6),
+        )
         for i in range(6)
     ]
     rear = cylinder(R, 2)
@@ -93,7 +99,7 @@ def build(out):
     for x, y in ((-45, 0), (45, 0), (-30, 60), (30, 60)):
         rear = rear.cut(cylinder(3, 3, -0.5, x, y))
     add("RearCover", rear, "Manufactured", (0.025, 0.025, 0.03), offset=-0.035)
-    shell = annulus(86, R, d["rear_bottom"] - 2.8, 2)
+    shell = annulus(d["shell_inner_radius"], R, d["rear_bottom"] - 2.8, 2)
     shell = shell.cut(
         annulus(
             d["side_radius"] - p["strip_thickness"] / 2,
@@ -102,7 +108,9 @@ def build(out):
             p["side_bottom_z"],
         )
     )
-    shell = shell.fuse(annulus(82.5, 88.3, 2, p["circle_back_z"] - 2))
+    shell = shell.fuse(
+        annulus(82.5, d["board_support_outer_radius"], 2, p["circle_back_z"] - 2)
+    )
     # Captive M3 nuts insert from the open rear, below each support post.
     for x, y in rear_points:
         post = cylinder(3, p["circle_back_z"] - 4, 2, x, y).cut(
@@ -115,7 +123,7 @@ def build(out):
     for side in (-1, 1):
         slot = box(9, 3, 11, 0, 0, 2)
         slot.rotate(App.Vector(), App.Vector(0, 0, 1), 143 if side == 1 else 37)
-        slot.translate(App.Vector(side * 55, 73, 0))
+        slot.translate(App.Vector(side * d["suspension_x"], d["suspension_y"], 0))
         shell = shell.cut(slot)
     shell = shell.cut(
         annulus(
@@ -141,12 +149,14 @@ def build(out):
         clip.rotate(App.Vector(), App.Vector(0, 0, 1), i * 120)
         add("BoardEdgeClip" + str(i), clip, "Manufactured", (0.03, 0.03, 0.035))
     frame = annulus(
-        88.3,
+        d["mirror_seat_radius"],
         R,
         d["front_z"] + p["front_mirror_thickness"] - d["rear_bottom"],
         d["rear_bottom"],
     )
-    frame = frame.fuse(annulus(87.4, R, 0.8, d["rear_bottom"] - 0.8))
+    frame = frame.fuse(
+        annulus(d["mirror_lip_radius"], R, 0.8, d["rear_bottom"] - 0.8)
+    )
     nut_flats, nut_height = nut_dimensions("M2")
     pocket_flats, pocket_height = nut_dimensions("M2", pocket=True)
     nut_bottom = d["front_z"] - 1.0
@@ -163,7 +173,12 @@ def build(out):
         pocket = polygon_face(hexagon(x, y, pocket_flats), nut_bottom)
         angle = math.degrees(math.atan2(y, x))
         entry = box(
-            R + 1 - 91.5, pocket_flats, pocket_height, (R + 1 + 91.5) / 2, 0, nut_bottom
+            R + 1 - d["front_fastener_radius"],
+            pocket_flats,
+            pocket_height,
+            (R + 1 + d["front_fastener_radius"]) / 2,
+            0,
+            nut_bottom,
         )
         entry.rotate(App.Vector(), App.Vector(0, 0, 1), angle)
         frame = frame.cut(pocket.extrude(App.Vector(0, 0, pocket_height)).fuse(entry))
@@ -228,7 +243,9 @@ def build(out):
     inner = annulus(
         d["wall_radius"], d["inner_outer"], p["mirror_gap"] - 1, d["rear_z"] + 0.5
     )
-    inner = inner.fuse(annulus(d["inner_outer"] - 0.05, 87.9, 0.5, d["rear_z"]))
+    inner = inner.fuse(
+        annulus(d["inner_outer"] - 0.05, d["inner_foot_radius"], 0.5, d["rear_z"])
+    )
     add(
         "InnerDiffuser",
         inner,
@@ -498,6 +515,11 @@ def build(out):
         "dimensions_m": {
             "diameter": p["case_diameter"] / 1000,
             "body_depth": d["depth"] / 1000,
+        },
+        "suspension": {
+            "anchor_x": d["suspension_x"] / 1000,
+            "anchor_y": d["suspension_y"] / 1000,
+            "anchor_z": 0.004,
         },
         "comparison": {
             "brightness": p["brightness"],

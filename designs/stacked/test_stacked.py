@@ -12,14 +12,37 @@ class FitTests(unittest.TestCase):
     def test_lower_board_inner_ring_and_two_side_strips_fit(self):
         p = parameters()
         d = validate(p)
-        self.assertAlmostEqual(p["case_diameter"], 190)
-        self.assertGreater(d["wall_radius"] - 83, 0.5)
+        self.assertAlmostEqual(p["case_diameter"], 200)
+        self.assertGreater(d["wall_radius"] - 83, 6)
+        self.assertEqual(p["inner_count"], 70)
+        self.assertEqual(p["side_count"], 70)
         self.assertAlmostEqual(d["front_z"] - d["rear_z"], p["mirror_gap"])
         self.assertEqual(p["side_rows"], 2)
         self.assertAlmostEqual(d["side_height"], 20)
         self.assertEqual(d["side_row_z"], [19, 29])
         self.assertLess(p["side_bottom_z"] + d["side_height"], d["rear_bottom"] - 0.8)
         self.assertAlmostEqual(d["depth"], p["circle_back_z"] + p["mirror_gap"] + 15.6)
+
+    def test_wider_optics_keep_seats_posts_and_board_support_connected(self):
+        p = parameters()
+        d = validate(p)
+        self.assertGreater(
+            d["mirror_seat_radius"], d["pitch_radius"] + p["strip_thickness"] / 2
+        )
+        self.assertGreater(p["mirror_radius"], d["inner_foot_radius"])
+        self.assertGreater(d["inner_foot_radius"], d["inner_outer"])
+        self.assertGreater(d["mirror_lip_radius"], d["inner_outer"])
+        self.assertGreater(d["board_support_outer_radius"], d["shell_inner_radius"])
+        self.assertGreater(d["rear_fastener_radius"] + 3, d["shell_inner_radius"])
+        self.assertLess(d["rear_fastener_radius"] + 3, d["case_radius"])
+        self.assertLess(d["mirror_seat_radius"], d["front_fastener_radius"] - 2.5)
+        self.assertLess(d["front_fastener_radius"] + 2.5, d["case_radius"])
+        self.assertAlmostEqual(d["case_radius"] - d["shell_inner_radius"], 9)
+        self.assertAlmostEqual(
+            math.hypot(d["suspension_x"], d["suspension_y"]), d["case_radius"] - 3.6
+        )
+        with self.assertRaisesRegex(ValueError, "seat blocks"):
+            validate(dict(p, mirror_radius=93.0))
 
     def test_side_strip_limits_preserve_slots_and_mirror_seat(self):
         p = parameters()
