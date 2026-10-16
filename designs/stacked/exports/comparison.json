@@ -1,0 +1,31 @@
+{
+  "reference_commit": "5b978693a0066ff5de6007c95f4fc5742077b67d",
+  "reference_design": "hardware/enclosure/exports",
+  "separate_files": true,
+  "width_px": 1280,
+  "height_px": 720,
+  "source_brightness": 2.0,
+  "exposure": 1.0,
+  "pattern_formula": "Shared spatial gradients; eight-second colour cycles",
+  "world_target_z_m": 0.0367,
+  "camera_fov_deg": 38.0,
+  "camera_near_m": 0.005,
+  "camera_far_m": 30.0,
+  "full_pose": {
+    "distance_m": 3.5,
+    "target_y_m": -0.1,
+    "pitch_deg": -3,
+    "pattern_time_s": 15.833333333333334
+  },
+  "closeup": {
+    "distance_m": 0.46,
+    "pitch_deg": -12,
+    "yaw_formula": "65*cos(2*pi*frame/384)",
+    "fps": 24,
+    "frames": 384
+  },
+  "backdrop_sha256": "d97e75745cdf66657fadea1218deb33def14f0927fbe9a8616a88b4b64e6611f",
+  "pose_source_sha256": "0c2991f19f25233f017bd59bd6948a41aa87805b07b46ddd597775f1746ef8b9",
+  "pose_changes": "Only the final webbing segments meet the compact rear anchors; body pose unchanged",
+  "optics_status": "Unmeasured film and material response; no brightness compensation between designs"
+}
