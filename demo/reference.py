@@ -6,7 +6,7 @@ unfolded copies of the cavity. Each copy is one mirror separation deep.
 import math
 
 
-def reference(point, direction, optics, front_r=.65, front_t=.25, rear_r=.94):
+def reference(point, direction, optics, front_r=.70, front_t=.09, rear_r=.70):
     norm = math.sqrt(sum(v*v for v in direction))
     dx,dy,dz = [v/norm for v in direction]
     x,y,_ = point
@@ -48,9 +48,9 @@ def cases(optics):
             depth=(reflections+.35)*(z-optics['rear_z'])
             direction=[(-1 if group==1 else 1)*radial,0,-depth]
             point=[middle,0,z]
-            for reflectance,transmission in ((.65,.25),(.999,.001),(.99,.01),(0,1),(1,0)):
-                samples.append({'point':point,'direction':direction,'reflectance':reflectance,'transmission':transmission,
-                                'expected':reference(point,direction,optics,reflectance,transmission)})
+            for reflectance,transmission,rear_reflectance in ((.70,.09,.70),(.999,.001,.999),(.99,.01,.99),(0,1,.70),(1,0,.70)):
+                samples.append({'point':point,'direction':direction,'reflectance':reflectance,'transmission':transmission,'rear_reflectance':rear_reflectance,
+                                'expected':reference(point,direction,optics,reflectance,transmission,rear_reflectance)})
     for point,direction in (([middle,0,z],[0,0,-1]),([0,0,z],[.5,0,-1]),([middle,0,z],[1,0,0]),([middle,0,z],[1,0,1]),([.13,0,z],[-.2,0,-1])):
-        samples.append({'point':point,'direction':direction,'reflectance':.65,'transmission':.25,'expected':reference(point,direction,optics)})
+        samples.append({'point':point,'direction':direction,'reflectance':.70,'transmission':.09,'rear_reflectance':.70,'expected':reference(point,direction,optics)})
     return samples

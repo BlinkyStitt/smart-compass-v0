@@ -1,0 +1,19 @@
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['STACKED_SOURCE'])
+sys.path.insert(0,str(source))
+sys.path.insert(0,str(source.parents[1]/'hardware/enclosure'))
+try:
+    import native
+    native.build(Path(os.environ['STACKED_OUTPUT']))
+    Path(os.environ['STACKED_RESULT']).write_text(json.dumps({'freecad':App.Version(),'complete':True}))
+except Exception:
+    traceback.print_exc()
+finally:
+    QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

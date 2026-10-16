@@ -1,0 +1,12 @@
+config_version=5
+[application]
+config/name="Compact Fibonacci • stacked mirror concept"
+run/main_scene="res://main.tscn"
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/vsync/vsync_mode=0
+[rendering]
+renderer/rendering_method="forward_plus"
+rendering_device/driver.macos="metal"
+rendering_device/fallback_to_opengl3=false

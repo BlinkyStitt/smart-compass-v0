@@ -19,7 +19,7 @@ class DemoTests(unittest.TestCase):
             weight,bounces,group=reference([.099,0,.0367],[.01,0,-depth],optics)
             self.assertEqual(bounces,count)
             self.assertEqual(group,2)
-            self.assertAlmostEqual(weight,.25*.94**((count+1)//2)*.65**(count//2))
+            self.assertAlmostEqual(weight,.09*.70**count)
         self.assertEqual(reference([.099,0,.0367],[0,0,-1],optics),[0,0,0])
         self.assertEqual(reference([0,0,.0367],[1,0,-1],optics),[0,0,0])
         self.assertEqual(reference([.099,0,.0367],[1,0,0],optics),[0,0,0])
@@ -28,8 +28,8 @@ class DemoTests(unittest.TestCase):
     def test_reflection_limit_and_energy_cutoff(self):
         optics={'front_z':.0367,'rear_z':.0255,'halo_radius':.089,'inner_radius':.109}
         for count in (31,32):
-            self.assertEqual(reference([.099,0,.0367],[.01,0,-(count+.2)*.0112],optics,.99,.01)[1],count)
-        self.assertEqual(reference([.099,0,.0367],[.01,0,-33.2*.0112],optics,.99,.01),[0,0,0])
+            self.assertEqual(reference([.099,0,.0367],[.01,0,-(count+.2)*.0112],optics,.99,.01,.99)[1],count)
+        self.assertEqual(reference([.099,0,.0367],[.01,0,-33.2*.0112],optics,.99,.01,.99),[0,0,0])
         self.assertEqual(reference([.099,0,.0367],[.01,0,-.025],optics,1,0),[0,0,0])
         self.assertGreater(len(cases(optics)),100)
 

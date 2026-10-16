@@ -181,12 +181,39 @@ Default optical assumptions:
 
 | Control | Value |
 | --- | ---: |
-| Front mirror reflectance / transmission | 0.65 / 0.25 |
-| Rear mirror reflectance | 0.94 |
-| Black LED centre surface reflectance / transmission | 0.04 / 0.29 |
+| Coated black front, cavity reflectance / transmission (estimate) | 0.70 / 0.09 |
+| Rear mirror reflectance / transmission | 0.70 / 0.30 |
+| Black LED centre surface reflectance / transmission | 0.039 / 0.29 |
 | Glow-ring transmission | 0.40 |
 | Glow-ring diffusion / centre diffusion | 0.65 / 0.65 |
 | LED emission scale / exposure | 2.0 / 1.0 |
+
+The shared `hardware/enclosure/acrylic-optics.json` records values and their sources.
+[Two Way Mirrors](https://www.twowaymirrors.com/acrylic/) publishes nominal 70% reflection
+and 30% transmission for its finished mirror sheet. The rear mirror uses this
+model; transmitted rear light leaves the cavity. These are supplier values, not
+independent measurements of the selected assembly.
+
+The first design retains its custom one-piece black front. Its coated annulus
+uses an **engineering estimate**, requested by Bryan: cavity-side reflection
+70%, transmission 9%, absorption 21%; reverse-side reflection 10%, transmission
+9%, absorption 81%. These values describe the complete coated black sheet.
+They are not a measured specification for this custom coating.
+
+[TAP/Chemcast](https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668)
+publishes approximately 29% transmission for uncoated Black LED acrylic. Clear
+acrylic transmits about 92%, per the [PERSPEX Design Guide](https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Design-Guide.pdf).
+Assuming a similar mirror coating, 0.30 × 0.29 / 0.92 = 9.46%; the model rounds
+that to 9%. The uncoated centre keeps 29% transmission. Its 3.9% surface
+reflection is a Fresnel estimate using PMMA index 1.49, not a black-sheet
+measurement. Reverse reflection of the coated sheet rounds to 10% after a
+surface reflection plus a coating return through the black substrate twice.
+
+Both designs share this coated-black-sheet estimate. The narrow design uses
+it for its combined black cover/rear mirror, with clear 70/30 acrylic in front.
+The complete-sheet coefficients include acrylic absorption: do not apply an
+extra 29% or 92% factor. Scattering, spectral and assembled response remain
+unmeasured.
 
 The four light presets use relative scene intensities, not measured lux. The
 CAD display transparency has no role in these values. Keep brightness,
