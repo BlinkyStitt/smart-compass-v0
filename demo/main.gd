@@ -733,56 +733,6 @@ func _capture():
 	caption.add_theme_color_override("font_outline_color",Color.BLACK)
 	caption.add_theme_constant_override("outline_size",5)
 	captions.add_child(caption)
-	_set_presentation(1)
-	distance=0.6
-	for view in [["front",0,0],["steep",72,-12],["edge",90,0],["rear",180,0]]:
-		yaw=view[1]
-		pitch_angle=view[2]
-		_update_camera()
-		for light in range(4):
-			_set_lighting(light)
-			_set_infinity_backdrop(light==0)
-			for on in [true,false]:
-				_reset_glow(0.35,0.20)
-				groups=[on,on,on,on]
-				_update_colours()
-				for version in range(FINISHES.size()):
-					_set_finish(version)
-					caption.text="%s | %s | LEDs %s" % [FINISHES[version],LIGHTING[light],"on" if on else "off"]
-					await _settle()
-					var filename="%s-light%d-%s-v%d.png" % [view[0],light,"on" if on else "off",version]
-					assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join(filename))==OK)
-	# All assembled views retain the same wearer, including the lighting comparisons.
-	_set_presentation(1)
-	distance=0.6
-	_reset_glow(0.35,0.20)
-	groups=[true,true,true,true]
-	for frame in range(1248):
-		if frame<576:
-			_set_finish(0)
-			_set_lighting(1)
-			_sweep(frame/576.0)
-			# Two complete eight-second rainbow cycles in the 24-second loop.
-			pattern_time=16.0*frame/576.0
-		elif frame<864:
-			var local_frame=frame-576
-			_set_finish(local_frame/144)
-			_set_lighting(1)
-			_sweep(float(local_frame%144)/144.0,60.0)
-			pattern_time=16.0*float(local_frame%144)/144.0
-		else:
-			var local_frame=frame-864
-			_set_finish(0)
-			_set_lighting(local_frame/96)
-			_sweep(float(local_frame%96)/96.0,60.0)
-			pattern_time=16.0*float(local_frame%96)/96.0
-		_set_infinity_backdrop(lighting==0)
-		assert(mannequin.visible,"Every assembled movie view must retain the wearer")
-		caption.text="%s | %s | Godot optical preview" % [FINISHES[finish],LIGHTING[lighting]]
-		_update_camera()
-		_update_colours()
-		await _settle()
-		assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("movie-%04d.png" % frame))==OK)
 	# All 494 LEDs share a moving spatial gradient at constant brightness.
 	# Two eight-second colour cycles close with the fixed-distance left/right sweep.
 	_set_presentation(0)
@@ -797,7 +747,7 @@ func _capture():
 	groups=[true,true,true,true]
 	for material_index in range(RING_MATERIALS.size()):
 		_set_ring_material(material_index)
-		for style in (["rainbow","ocean","sunset"] if material_index==0 else ["rainbow"]):
+		for style in ["rainbow"]:
 			var capture_style=style+("-silver" if material_index==1 else "")
 			# A uniform precharged state makes the repeating colour loop continuous.
 			_reset_glow(0.35,0.20)
@@ -810,52 +760,7 @@ func _capture():
 				_update_colours()
 				await _settle()
 				assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [capture_style,frame]))==OK)
-	_set_presentation(2)
-	_set_ring_material(0)
-	_reset()
-	_reset_glow(0.35,0.20)
-	_set_finish(0)
-	_set_lighting(1)
-	pattern=0
-	caption.text="Exploded assembly | stencil above the Fibonacci256 LED board"
-	for frame in range(576):
-		_exploded_pose(frame/576.0)
-		_update_colours()
-		await _settle()
-		var picture=get_viewport().get_texture().get_image()
-		assert(picture.save_png(capture_dir.path_join("exploded-%04d.png" % frame))==OK)
-		if frame==288:
-			assert(picture.save_png(capture_dir.path_join("exploded-poster.png"))==OK)
-	_exploded_pose(1)
-	# Show the green stored emission separately from the moving LED patterns.
-	# Compress fifteen minutes into twenty seconds; the caption states elapsed
-	# time and the assumed response. The first four seconds show white LEDs.
-	_set_presentation(1)
-	distance=0.46
-	yaw=30.0
-	pitch_angle=-12.0
-	_update_camera()
-	_set_lighting(0)
-	ambient=0.0
-	sun.light_energy=0.0
-	_update_light()
-	pattern=6
-	_reset_glow(0.85,0.65)
-	for frame in range(576):
-		var on=frame<96
-		groups=[on,on,on,on]
-		_update_colours()
-		if on:
-			caption.text="Glow PETG illustration | precharged | white LEDs on"
-		else:
-			var elapsed=900.0*float(frame-96)/479.0
-			if frame>96: _advance_glow(900.0/479.0)
-			caption.text="Green afterglow (assumed) | LEDs off | %d:%02d elapsed | time compressed" % [int(elapsed)/60,int(elapsed)%60]
-		await _settle()
-		var picture=get_viewport().get_texture().get_image()
-		assert(picture.save_png(capture_dir.path_join("afterglow-%04d.png" % frame))==OK)
-		if frame==96: assert(picture.save_png(capture_dir.path_join("afterglow-poster.png"))==OK)
-	print("DEMO CAPTURE PASS: 64 matched stills, 1248 movie frames, 1536 gradient frames, 576 exploded frames and 576 afterglow frames")
+	print("DEMO CAPTURE PASS: two matched rainbow material loops, 384 frames each")
 	get_tree().quit()
 
 func _benchmark():
@@ -1033,10 +938,14 @@ func _gpu_checks():
 	await _settle()
 	var coated=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 	assert(absf(coated.r-0.09)<0.009 and absf(coated.g-0.10)<0.009,"Coated black sheet uses complete-sheet T9 and external R10 without a second substrate factor")
+	material.set_shader_parameter("offset",Vector2(0.0015,0))
+	await _settle()
+	var plateau=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+	assert(plateau.b>0.96,"Diffused cells need a flat luminous centre, without a rounded hotspot")
 	material.set_shader_parameter("offset",Vector2(0.008,0))
 	await _settle()
 	var distant=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
-	assert(distant.b<0.009,"Centre diffusion must retain distinct local hotspots")
-	print("DEMO GPU CENTRE PASS: local hotspot, spatial falloff, uncoated T29 and coated T9/R10")
+	assert(distant.b<0.009,"Cell diffusion must stay local to its flat aperture")
+	print("DEMO GPU CENTRE PASS: flat cell plateau, spatial falloff, uncoated T29 and coated T9/R10")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()

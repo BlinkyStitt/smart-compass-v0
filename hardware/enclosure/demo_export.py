@@ -89,7 +89,7 @@ def export():
     import build
     master = HERE/'smart-compass.FCStd'
     original = hashlib.sha256(master.read_bytes()).hexdigest()
-    p = build.read_parameters(master)
+    p = build.load_parameters()
     source = App.openDocument(str(master))
     out = HERE/'exports'
     glb, parts = GLB(), []

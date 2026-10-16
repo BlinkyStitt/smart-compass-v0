@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import unittest
+from geometry import load_parameters, resolve_parameters
 
 import cad
 import hardware_spec
@@ -64,7 +65,7 @@ class ManufacturingTests(unittest.TestCase):
         for name in ('RearPlate.stl','NecklaceLink0.stl'):
             self.assertEqual(slicing.settings(spec,name,'glow'),slicing.settings(spec,name,'silver'))
         component=json.loads((HERE/'component-inventory.json').read_text())
-        p=json.loads((HERE/'parameters.json').read_text())
+        p=load_parameters()
         volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
                  for r in component['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume')]
         masses=[]
@@ -142,7 +143,7 @@ G1 X200 Y200 E10
 
     def resolved(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
-        p=json.loads((HERE/'parameters.json').read_text())
+        p=load_parameters()
         volumes=[{'name':r['cad_part'],'volume_cm3':1,'printed':r['mass_formula'] in ('petg_volume','ring_petg_volume')}
                  for r in spec['components'] if r.get('mass_formula') in ('petg_volume','ring_petg_volume','acrylic_volume')]
         return inventory.resolve(spec,volumes,p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow']),volumes
@@ -177,7 +178,7 @@ G1 X200 Y200 E10
 
     def test_mass_formula_has_no_conflicting_literal_or_unknown_density(self):
         spec=json.loads((HERE/'component-inventory.json').read_text())
-        p=json.loads((HERE/'parameters.json').read_text())
+        p=load_parameters()
         spec['components'][0]['mass_g_per_unit']=1
         with self.assertRaisesRegex(ValueError,'formula or a literal mass'):
             inventory.resolve(spec,[],p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow'])
@@ -187,7 +188,7 @@ G1 X200 Y200 E10
             inventory.resolve(spec,[],p,json.loads((HERE/'print-spec.json').read_text())['ring_materials']['glow'])
 
     def test_body_bolts_follow_the_measured_stack_and_full_nut_engagement(self):
-        p=json.loads((HERE/'parameters.json').read_text())
+        p=load_parameters()
         for front_thickness in (2.7,3.0,3.3):
             changed=dict(p,case_depth=p['front_plane_z']+front_thickness+p['front_washer_compressed_height'])
             body=[station for station in hardware_spec.stations(changed) if station[0].startswith('Body')]
@@ -202,7 +203,7 @@ G1 X200 Y200 E10
 
     def test_fastener_quantities_match_modeled_joints(self):
         rows,_=self.resolved(); quantities={r['id']:r['installed_quantity'] for r in rows}
-        p=json.loads((HERE/'parameters.json').read_text())
+        p=load_parameters()
         stations=hardware_spec.stations(p)
         m3=[r for r in stations if r[1]=='M3'];m2=[r for r in stations if r[1]=='M2']
         self.assertEqual(len(m3),quantities['body_screws']+quantities['anchor_screws']+quantities['rear_screws'])

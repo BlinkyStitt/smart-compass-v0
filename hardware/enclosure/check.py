@@ -21,7 +21,7 @@ from geometry import battery_centres, cavity_diffusers, led_centres, pixel_regio
 
 
 def check():
-    p = build.read_parameters(HERE / 'smart-compass.FCStd')
+    p = build.load_parameters()
     doc = App.openDocument(str(HERE / 'smart-compass.FCStd'))
     doc.recompute()
     assert set(doc.InputStatus.ParameterKeys) == {k for k in p if not k.startswith('_')}, 'Saved parameter schema differs from the generator'
@@ -422,7 +422,7 @@ def check():
         assert math.isclose(mesh.BoundBox.ZMin,0,abs_tol=1e-5), 'STL is not on bed: '+filename
         assert mesh.BoundBox.XLength+2*p['print_margin'] <= p['print_bed_x']
         assert mesh.BoundBox.YLength+2*p['print_margin'] <= p['print_bed_y']
-    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'baffle_thickness':1}, {'baffle_thickness':4.8}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':24}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':1.2}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
+    for changes in ({'body_bolt_tip_projection':0}, {'body_bolt_stock_length':35}, {'body_bolt_tip_chamfer':.4}, {'ring_station_count':3}, {'ring_station_count':6}, {'ring_station_count':6.5}, {'ring_seat_play':.3}, {'ring_seat_play':.4}, {'mirror_fit_clearance':.8}, {'structural_wall':1.2}, {'baffle_thickness':1}, {'baffle_thickness':4.8}, {'external_port_diameter':18}, {'external_port_x':200}, {'battery_mass_g':0}, {'ring_diffuser_thickness':3}, {'ring_diffuser_led_gap':.1}, {'ring_bottom_clearance':.5}, {'battery_count':3}, {'battery_spacing':30}, {'rear_skin_thickness':2}, {'rear_rib_height':4}, {'necklace_link_thickness':3}, {'battery_width':500}, {'battery_x':200}, {'battery_height':p['circle_back_z']-p['rear_thickness']-4}, {'inner_count':72.5}, {'assumed_efficiency':0}, {'mirror_view_outer_radius':100}, {'inner_count':72}, {'front_plane_z':p['front_plane_z']-3}, {'edge_diffuser_radius':121}, {'edge_diffuser_thickness':1.2}, {'edge_diffuser_thickness':4}, {'halo_count':60}, {'halo_count':80}, {'edge_bottom_z':30.5}, {'vent_patch_radius':4}):
         try:
             build.validate_parameters(dict(p, **changes))
         except ValueError:

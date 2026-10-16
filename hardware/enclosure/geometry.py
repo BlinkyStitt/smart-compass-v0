@@ -1,5 +1,28 @@
 """Millimetre geometry shared by the FreeCAD builder and its checks."""
 import math
+import json
+from pathlib import Path
+
+
+def resolve_parameters(p):
+    """Derive the optical stack from the reflecting-plane gap in millimetres."""
+    p = dict(p)
+    if not math.isfinite(p["mirror_gap"]) or p["mirror_gap"] <= 0:
+        raise ValueError("mirror_gap must be finite and positive")
+    p["front_plane_z"] = p["rear_mirror_front_z"] + p["mirror_gap"]
+    p["circle_back_z"] = (p["front_plane_z"] - p["circle_pcb_thickness"]
+                          - p["led_height"] - p["led_baffle_gap"]
+                          - p["baffle_thickness"] - p["baffle_to_sheet_gap"])
+    p["mirror_back_z"] = p["rear_mirror_front_z"] - p["rear_acrylic_thickness"]
+    p["strip_bottom_z"] = p["rear_mirror_front_z"] + (p["mirror_gap"] - p["strip_width"]) / 2
+    p["front_washer_compressed_height"] = p["front_washer_free_thickness"] * p["front_washer_compression_ratio"]
+    p["case_depth"] = p["front_plane_z"] + p["front_acrylic_thickness"] + p["front_washer_compressed_height"]
+    return p
+
+
+def load_parameters():
+    """JSON is the sole input owner; the CAD spreadsheet records this stack."""
+    return resolve_parameters(json.loads((Path(__file__).resolve().parent / "parameters.json").read_text()))
 
 
 def clip_polygon(polygon, nx, ny, limit):

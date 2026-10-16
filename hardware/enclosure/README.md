@@ -56,14 +56,13 @@ PETG Ultraglow Green or the Extrudr PETG Silver sample candidate. The glow optio
 loss of LED colour. The silver option has no afterglow. Both need physical
 review of production-wall samples.
 
-The reflecting planes stay at Z=25.5 and 36.7 mm, 11.2 mm apart. The collar
+The reflecting planes stay at Z=23.5 and 34.7 mm, 11.2 mm apart. The collar
 top follows the measured front sheet and compressed washer height. The saved
-spreadsheet owns the dimensions after the first build. Do not approve a full
+JSON owns the dimensions; the spreadsheet records the generated values. Do not approve a full
 print order until supplier fit samples and actual hardware pass.
 
-[Glow rainbow GIF](exports/infinity-rainbow.gif) ([MP4](exports/infinity-rainbow.mp4)) · [Silver rainbow GIF](exports/infinity-rainbow-silver.gif) ([MP4](exports/infinity-rainbow-silver.mp4)) · [Green afterglow](exports/glow-afterglow.mp4) · [Ocean](exports/infinity-ocean.gif) ·
-[Sunset](exports/infinity-sunset.gif) · [Godot video](exports/amulet-demo.mp4) ·
-[Explode and reassemble](exports/exploded.gif) ([MP4](exports/exploded.mp4))
+[Glow rainbow MP4](exports/infinity-rainbow.mp4) · [Silver rainbow MP4](exports/infinity-rainbow-silver.mp4)
+
 
 All demo videos and GIFs come from Godot. The lighting loops use smooth spatial
 gradients and slow, seamless side-to-front sweeps. The exploded loop separates
@@ -260,7 +259,7 @@ film stack: it will reduce brightness and can blur the reflected pattern.
 
 ![Assembly section](exports/assembly-section.svg)
 
-The reflecting surfaces stay at **Z=25.5 and 36.7 mm**, with **11.2 mm separation**.
+The reflecting surfaces stay at **Z=23.5 and 34.7 mm**, with **11.2 mm separation**.
 The useful front mirror annulus spans radii 85.5..110.5 mm. Keep opaque supports
 outside the useful paths. The circle remains a floating island on its hidden seat.
 
@@ -336,7 +335,7 @@ a new design decision.
 
 ## Assembly and repair
 
-1. Measure the boards, pack, LED strips and sheet stock. Set the saved spreadsheet.
+1. Measure the boards, pack, LED strips and sheet stock. Set parameters.json.
    Rebuild. Cut the front sheet and keyed rear mirror. Print the original EGL baffle flat. Use
    `front-coating.svg` only as a coating map, not a cut file. Apply kerf once in CAM.
 2. Pass all fourteen fit-sample checks, then print the 17 pieces in their exported
@@ -418,8 +417,10 @@ and dust acceptance separate from print and assembly approval.
 
 ## Sources, exports and checks
 
-The saved `Parameters` spreadsheet owns dimensions. `parameters.json` supplies
-initial values. Run `just cad` after editing and closing the master. It rebuilds
+`parameters.json` owns dimensions. Set `mirror_gap` in millimetres, then run
+`just cad`. The generator derives the front plane, PCB height, strip position,
+body depth and bolt length. The saved `Parameters` spreadsheet records the
+result; edits to that generated sheet do not change regeneration. It rebuilds
 CAD, checks collisions/removal paths and meshes, slices all printed parts and
 fit samples, then
 renders Godot media. It publishes only after all stages pass. `just cad-check`
@@ -474,7 +475,7 @@ Print both bracket arrangements, their frame seat, and their rear clearance
 samples listed above. Use the finished M3 body bolt from 45 mm stock,
 M3 × 12 mm anchor screws, nuts, washers and webbing. Finish each body bolt to the under-head
 length in the generated inventory after measuring the actual front sheet and
-washer stack. The baseline length is 40.329 mm, with 0.30 mm projection past
+washer stack. The baseline length is 39.805 mm, with 0.30 mm projection past
 the rear nut and a 0.15 mm chamfer. Deburr and smooth the cut end. Reject a
 bolt that catches fabric or lacks full nut engagement. Do not install uncut
 45 mm body bolts. Check the 5 mm thick brackets and 14 mm main
@@ -546,3 +547,19 @@ PLA for cube edges. Those results do not establish transmission through our
 version is a sample candidate. Keep it separate from the glow order and stop
 its full order if optical samples fail. The renderer uses neutral silver
 absorption and zero stored emission; its coefficients are unmeasured assumptions.
+
+
+## Thinner optical stack
+
+The 250 mm body is now 38.0048 mm deep, down from 40.0048 mm. The rear mirror
+moves from Z25.5 to Z23.5. The default mirror gap stays 11.2 mm; the derived
+Fibonacci PCB plane moves from Z29 to Z27. Battery dimensions, padding and
+2.5 mm strap/headroom reserve stay fixed. This leaves 1 mm below the PCB.
+Increasing `mirror_gap` adds the same amount to body depth. Reducing it below
+the default with this pack fails the existing battery clearance guard.
+
+Moving the 80 × 65 × 20 mm pack to the edge does not reduce depth while it
+remains below the mirror. A flat pack entirely outside the 166 mm PCB needs
+more than 320 mm diameter once its cradle is included. Placing it outside the
+optical annulus needs still more width. Keep the current pack under the board;
+a thinner factory protected pack is a separate component choice.
