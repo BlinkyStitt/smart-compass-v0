@@ -73,7 +73,7 @@ def capture():
             assert b'NETSCAPE2.0\x03\x01\x00\x00' in file.read_bytes(), 'GIF must repeat forever'
         subprocess.run(['ffmpeg','-v','error','-xerror','-i',str(file),'-f','null','-'],check=True)
         if name.endswith('.mp4'):
-            verify_rainbow_motion(file)
+            verify_rainbow_motion(file, output/"scene.json")
     print('DEMO MEDIA PASS: matched rainbow loops decoded',flush=True)
 
 

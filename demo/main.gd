@@ -7,6 +7,8 @@ const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
 const Mannequin = preload("res://mannequin.gd")
 const Patterns = preload("res://patterns.gd")
+const CaptureView = preload("res://capture_view.gd")
+const Playa = preload("res://playa.gd")
 const PRESENTATIONS = ["Night • worn mannequin", "Night • pendant close-up", "Design inspection"]
 const COUNTS = Glow.COUNTS
 var glow = Glow.new()
@@ -30,7 +32,7 @@ var camera = Camera3D.new()
 var environment = Environment.new()
 var sun = DirectionalLight3D.new()
 var sky_material = ProceduralSkyMaterial.new()
-var infinity_backdrop = CanvasLayer.new()
+var infinity_backdrop = Playa.new()
 var mannequin = Mannequin.new()
 var presentation = 2
 var presentation_option: OptionButton
@@ -257,19 +259,9 @@ func _make_world():
 	world.environment = environment
 	add_child(world)
 	environment.background_mode = Environment.BG_SKY
-	# A display backdrop keeps the black face visible without lighting the model.
-	infinity_backdrop.layer = -1
-	infinity_backdrop.visible = false
+	infinity_backdrop.visible=false
 	add_child(infinity_backdrop)
-	var backdrop = TextureRect.new()
-	var background_image = Image.load_from_file(ProjectSettings.globalize_path("res://assets/playa-night.png"))
-	backdrop.texture = ImageTexture.create_from_image(background_image)
-	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	infinity_backdrop.add_child(backdrop)
-	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	environment.background_canvas_max_layer = -1
+	infinity_backdrop.build()
 	var sky = Sky.new()
 	sky.sky_material = sky_material
 	environment.sky = sky
@@ -288,7 +280,7 @@ func _make_world():
 
 func _set_infinity_backdrop(enabled):
 	infinity_backdrop.visible = enabled
-	environment.background_mode = Environment.BG_CANVAS if enabled else Environment.BG_SKY
+	environment.background_mode = Environment.BG_SKY
 
 func _set_presentation(value):
 	presentation = value
@@ -298,11 +290,12 @@ func _set_presentation(value):
 	_set_lighting(0 if value < 2 else 1)
 	_reset()
 
-func _night_pose(phase: float):
-	# Restore the original detail sweep without zooming away from the pendant.
-	distance = 0.46
-	target = Vector3(0,0,float(metadata.optics.front_z))
-	_sweep(phase,65.0)
+func _night_pose(frame: float):
+	distance=CaptureView.DISTANCE
+	target=CaptureView.TARGET
+	yaw=CaptureView.yaw(frame)
+	pitch_angle=CaptureView.pitch(frame)
+	_update_camera()
 
 func _make_controls():
 	var layer = CanvasLayer.new()
@@ -602,13 +595,23 @@ func _run_checks():
 			assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Full pose clipped: "+str(surface.name))
 	_set_presentation(1)
 	assert(mannequin.visible and infinity_backdrop.visible,"Night close-up must retain the wearer")
+	yaw=65
+	pitch_angle=20
+	_update_camera()
+	assert(CaptureView.hand_overlaps(camera,mannequin,0.125,float(metadata.optics.front_z)),"Clearance check must detect an obstructed hand-side view")
 	_night_pose(0)
 	var night_start=camera.transform
-	for sample in range(33):
-		var phase=sample/32.0
-		_night_pose(phase)
+	var body_start=mannequin.global_transform
+	var field_start=infinity_backdrop.global_transform
+	for sample in range(CaptureView.FRAMES+1):
+		var phase=sample/float(CaptureView.FRAMES)
+		_night_pose(phase*CaptureView.FRAMES)
 		assert(is_equal_approx(distance,0.46),"Night sweep must hold its detail distance")
-		assert(is_equal_approx(yaw,65.0*cos(TAU*phase)),"Night sweep must show both 65 degree sides")
+		assert(is_equal_approx(yaw,35.0*sin(TAU*phase)-15.0*pow(sin(TAU*phase),2)),"Figure eight must show both sides")
+		assert(is_equal_approx(pitch_angle,20*sin(2*TAU*phase)),"Figure eight must cross the centre head on")
+		assert(mannequin.global_transform.is_equal_approx(body_start),"Mannequin must remain stationary")
+		assert(infinity_backdrop.global_transform.is_equal_approx(field_start),"Field must remain in world space")
+		assert(not CaptureView.hand_overlaps(camera,mannequin,0.125,float(metadata.optics.front_z)),"Pointing hand covers the case at frame "+str(sample))
 		for name in ["FrontCentre","FrontMirrorCoating","FrontRim","EdgeDiffuser"]:
 			var mesh=meshes[name]
 			# Check the circular surfaces themselves, not empty AABB corners.
@@ -619,9 +622,13 @@ func _run_checks():
 					assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Night pendant clipped: "+name)
 
 	assert(camera.transform.is_equal_approx(night_start),"Night sweep must close")
+	_night_pose(96)
+	assert(is_equal_approx(yaw,20.0) and is_equal_approx(pitch_angle,0.0),"Hand-side swing must stop at 20 degrees")
+	_night_pose(288)
+	assert(is_equal_approx(yaw,-50.0) and is_equal_approx(pitch_angle,0.0),"Clear-side swing must reach 50 degrees")
 	_set_presentation(2)
 	assert(not mannequin.visible and not infinity_backdrop.visible,"Design inspection must show the isolated CAD assembly")
-	print("DEMO MANNEQUIN PASS: full-pose framing, fixed-distance 65 degree left/right sweep, night and inspection controls")
+	print("DEMO MANNEQUIN PASS: full-pose framing, fixed-distance figure eight with stationary wearer and field, night and inspection controls")
 	for part in metadata.parts:
 		var bounds = meshes[part.name].get_aabb()
 		for axis in range(3):
@@ -735,7 +742,7 @@ func _capture():
 	caption.add_theme_constant_override("outline_size",5)
 	captions.add_child(caption)
 	# All 494 LEDs share a moving spatial gradient at constant brightness.
-	# Two eight-second colour cycles close with the fixed-distance left/right sweep.
+	# Two colour rotations share the closed figure-eight camera orbit.
 	_set_presentation(0)
 	caption.text="Worn night preview | full pose | unmeasured optics"
 	await _settle()
@@ -754,9 +761,9 @@ func _capture():
 			_reset_glow(0.35,0.20)
 			pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
 			caption.text="%s | %s | worn night preview | unmeasured optics" % [metadata.ring_materials[RING_MATERIALS[material_index]].label,style.capitalize()]
-			for frame in range(384):
-				_night_pose(frame/384.0)
-				pattern_time=frame/24.0
+			for frame in range(CaptureView.FRAMES):
+				_night_pose(frame)
+				pattern_time=frame/CaptureView.FPS
 				_update_optics()
 				_update_colours()
 				await _settle()
