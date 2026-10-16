@@ -151,13 +151,19 @@ def export():
             faces = [face for face in solid.Faces if point.distToShape(face)[0]<1e-6]
             assert any(face.normalAt(0,0).dot(normal)>.999999 for face in faces), 'Wrong emitting face normal'
     inventory=json.loads((out/'parts.json').read_text())
+    acrylic=json.loads((HERE/'acrylic-optics.json').read_text())
+    mirror=acrylic['materials']['two_way_mirror']
+    black=acrylic['materials']['black_led']
+    black_mirror=acrylic['materials']['black_mirror']
     metadata={'format_version':1,'units':'metres','axes':{'right':'+X','up':'+Y','front':'+Z'},
-        'master_sha256':original,'parts':parts,'leds':leds,'groups':['Circle','Halo','Inner','Outer'],
+        'acrylic_materials':acrylic,'master_sha256':original,'parts':parts,'leds':leds,'groups':['Circle','Halo','Inner','Outer'],
         'comparison':{'still_time_s':2.0,'distance_m':.6,'exposure':1.0,'brightness':2.0,
-            'front_reflectance':.65,'front_transmission':.25,'rear_reflectance':.94,
+            'front_reflectance':black_mirror['reflectance'],'front_transmission':black_mirror['transmission'],
+            'front_external_reflectance':black_mirror['reverse_reflectance'],
+            'rear_reflectance':mirror['reflectance'],'rear_transmission':mirror['transmission'],
             'sleeve_transmission':.4,'sleeve_diffusion':.65,'centre_diffusion':.65,
-            'black_acrylic_transmission':.29,'black_acrylic_surface_reflectance':.04,
-            'status':'Unmeasured assumptions: 0.29 black-sheet transmission is a supplier visible-light estimate, not an RGB measurement; Gaussian diffusion (3 mm maximum axial scatter scale) and glow charge/decay are qualitative; mirror output crosses the black substrate once, external film reflection twice'},
+            'black_acrylic_transmission':black['transmission'],'black_acrylic_surface_reflectance':black['surface_reflectance'],
+            'status':'Rear clear mirror: supplier-nominal R70/T30. Custom coated black front: estimated cavity-side R70/T9/absorption21, reverse-side R10/T9/absorption81. This complete-sheet estimate already includes black substrate loss. Uncoated black centre T29 is supplier nominal. No measured data establish the custom coated black sheet; scattering, RGB, glow and assembly response remain unmeasured'},
         'dimensions_m':{'diameter':p['case_diameter']/1000,'body_depth':p['case_depth']/1000},
         'optics':{'front_z':front/1000,'rear_z':rear/1000,'separation':(front-rear)/1000,
             'aperture_inner':p['mirror_view_inner_radius']/1000,'aperture_outer':p['mirror_view_outer_radius']/1000,

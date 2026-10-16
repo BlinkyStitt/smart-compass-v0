@@ -1,0 +1,36 @@
+{
+  "format_version": 1,
+  "scope": "Visible-light scalar approximations. Supplier nominal values are not independent RGB or angle-resolved measurements. Finished-sheet values already include the substrate; do not apply an extra acrylic transmission factor.",
+  "materials": {
+    "two_way_mirror": {
+      "reflectance": 0.7,
+      "transmission": 0.3,
+      "evidence": "Supplier nominal technical specification for finished clear acrylic mirror. Spectral and directional response are not published.",
+      "source": "https://www.twowaymirrors.com/acrylic/"
+    },
+    "black_led": {
+      "transmission": 0.29,
+      "surface_reflectance": 0.038725181851905606,
+      "evidence": "Chemcast Black LED sheet: approximately 29% light transmission. Surface reflectance is a normal-incidence Fresnel estimate from PMMA n=1.49, not a measured black-sheet reflectance. This is a source cover, not a 70/30 mirror.",
+      "source": "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668",
+      "index_source": "https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Design-Guide.pdf"
+    },
+    "clear_reference": {
+      "transmission": 0.92,
+      "refractive_index": 1.49,
+      "evidence": "PERSPEX Design Guide Table 18 reports >92% transmission at 3 mm (ASTM D1003), refractive index 1.49 (ISO 489 A). 0.92 is a rounded conservative reference for uncoated clear stock; do not multiply it into finished mirror transmission.",
+      "source": "https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Design-Guide.pdf"
+    },
+    "black_mirror": {
+      "reflectance": 0.7,
+      "transmission": 0.09,
+      "reverse_reflectance": 0.1,
+      "evidence": "Engineering estimate requested by Bryan, not measured data. Assume similar cavity-facing coating reflectance to the clear mirror. Clear finished mirror T=.30, black LED stock T=.29, clear stock T=.92 imply .30*.29/.92=.0946, rounded to .09. Cavity-facing absorption is then .21. Reverse-side reflection is rounded to .10 from PMMA surface reflection plus the attenuated coating return; reverse absorption is .81. Values describe the complete coated black sheet: never multiply by .29 again.",
+      "sources": [
+        "https://www.twowaymirrors.com/acrylic/",
+        "https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668",
+        "https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Design-Guide.pdf"
+      ]
+    }
+  }
+}

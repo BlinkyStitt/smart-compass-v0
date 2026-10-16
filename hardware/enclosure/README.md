@@ -46,7 +46,11 @@ Open [smart-compass.FCStd](smart-compass.FCStd) in FreeCAD. The front is one
 mirror annulus on the cavity side, and an opaque rim and cut edge. Use the EGL
 3 mm nominal thickness and measure the actual stock before the final cut.
 Ordinary opaque black acrylic will block the LEDs. The supplier must confirm
-the black LED stock, mirror film adhesion and optical performance with a sample. The rear mirror uses a
+the black LED stock, mirror film adhesion and optical performance with a sample.
+The custom coated front is not a finished 70/30 mirror: its model uses an
+estimated complete-sheet cavity R70/T9/absorption21 and reverse R10/T9.
+The 9% transmission already includes black-sheet absorption. Published data do not establish this custom coating
+assembly. The rear uses a finished 70/30 two-way mirror model and a
 separate thickness input. The three light rings are whole printed PETG parts. Select either Prusament
 PETG Ultraglow Green or the Extrudr PETG Silver sample candidate. The glow option has a pale daytime appearance, green afterglow, and partial
 loss of LED colour. The silver option has no afterglow. Both need physical

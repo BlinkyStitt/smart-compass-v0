@@ -45,8 +45,8 @@ var lighting = 1
 var paused = false
 var brightness = 2.0
 var groups = [true, true, true, true]
-var reflectance = 0.65
-var transmission = 0.25
+var reflectance = 0.70
+var transmission = 0.09
 var diffuser_transmission = 0.4
 var diffusion = 0.65
 var central_diffusion = 0.65
@@ -84,6 +84,8 @@ func _ready():
 		get_tree().quit(1)
 		return
 	metadata = parsed
+	reflectance=float(metadata.comparison.front_reflectance)
+	transmission=float(metadata.comparison.front_transmission)
 	if automated:
 		get_tree().create_timer(600).timeout.connect(func(): push_error("Automation timed out"); get_tree().quit(1))
 	if not capture_dir.is_empty() or args.has("--gpu-check"):
@@ -235,7 +237,10 @@ func _make_materials():
 			centre_materials.append(material)
 		elif part.name == "RearMirror":
 			var material = StandardMaterial3D.new()
-			material.albedo_color = Color(0.94,0.94,0.94)
+			var r=float(metadata.comparison.rear_reflectance)
+			var t=float(metadata.comparison.rear_transmission)
+			material.albedo_color = Color(r/(1.0-t),r/(1.0-t),r/(1.0-t),1.0-t)
+			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			material.metallic = 1.0
 			material.roughness = 0.06
 			mesh.material_override = material
@@ -434,7 +439,7 @@ func _update_optics():
 	var choice=metadata.ring_materials[RING_MATERIALS[ring_material]]
 	for material in sleeve_materials+cavity_materials: _apply_ring_response(material,choice)
 	for material in cavity_materials:
-		for entry in [["reflectance",reflectance],["transmission",transmission],["diffuser_transmission",diffuser_transmission],["diffusion",diffusion],["brightness",brightness],["substrate_transmission",metadata.comparison.black_acrylic_transmission],["surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance]]:
+		for entry in [["reflectance",reflectance],["transmission",transmission],["rear_reflectance",metadata.comparison.rear_reflectance],["diffuser_transmission",diffuser_transmission],["diffusion",diffusion],["brightness",brightness],["external_reflectance",metadata.comparison.front_external_reflectance]]:
 			material.set_shader_parameter(entry[0],entry[1])
 	for material in sleeve_materials:
 		material.set_shader_parameter("ring_albedo",Vector3(choice.render.albedo[0],choice.render.albedo[1],choice.render.albedo[2]))
@@ -450,10 +455,8 @@ func _update_optics():
 	for material in package_materials:
 		material.set_shader_parameter("brightness",brightness)
 	for material in centre_materials:
-		material.set_shader_parameter("film_reflectance",reflectance if finish == 1 else 0.0)
-		material.set_shader_parameter("film_transmission",transmission if finish == 1 else 1.0)
-		material.set_shader_parameter("substrate_transmission",metadata.comparison.black_acrylic_transmission)
-		material.set_shader_parameter("surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance)
+		material.set_shader_parameter("sheet_reflectance",metadata.comparison.front_external_reflectance if finish == 1 else metadata.comparison.black_acrylic_surface_reflectance)
+		material.set_shader_parameter("sheet_transmission",transmission if finish == 1 else metadata.comparison.black_acrylic_transmission)
 
 func _set_lighting(value):
 	lighting = value
@@ -912,6 +915,7 @@ func _gpu_checks():
 		material.set_shader_parameter("ray_direction",Vector3(sample.direction[0],sample.direction[1],sample.direction[2]))
 		material.set_shader_parameter("reflectance",float(sample.reflectance))
 		material.set_shader_parameter("transmission",float(sample.transmission))
+		material.set_shader_parameter("rear_reflectance",float(sample.rear_reflectance))
 		await _settle()
 		var measured=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 		var expected=Color(sample.expected[0],sample.expected[1]/32.0,sample.expected[2]/2.0)
@@ -1016,25 +1020,23 @@ func _gpu_checks():
 	var silver_off=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 	assert(silver_off.r<0.00001 and silver_off.g<0.00001 and silver_off.b<0.00001,"Silver must not emit stored green afterglow")
 	print("DEMO GPU SILVER PASS: neutral colour transmission, wall attenuation and no afterglow")
-	# Check the shared centre response and single/double substrate passes.
+	# Complete-sheet coefficients must not acquire a second black-substrate loss.
 	material.shader=load("res://centre_diagnostic.gdshader")
-	material.set_shader_parameter("substrate_transmission",metadata.comparison.black_acrylic_transmission)
-	material.set_shader_parameter("surface_reflectance",metadata.comparison.black_acrylic_surface_reflectance)
 	material.set_shader_parameter("offset",Vector2.ZERO)
-	material.set_shader_parameter("film_transmission",1.0)
-	material.set_shader_parameter("film_reflectance",0.0)
+	material.set_shader_parameter("sheet_transmission",float(metadata.comparison.black_acrylic_transmission))
+	material.set_shader_parameter("sheet_reflectance",float(metadata.comparison.black_acrylic_surface_reflectance))
 	await _settle()
 	var centre=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
-	assert(absf(centre.r-0.29)<0.009 and absf(centre.b-1.0)<0.009,"Black-sheet centre must transmit once and retain a local LED peak")
-	material.set_shader_parameter("film_transmission",0.25)
-	material.set_shader_parameter("film_reflectance",0.65)
+	assert(absf(centre.r-0.29)<0.009 and absf(centre.b-1.0)<0.009,"Uncoated black centre must transmit 29% once and retain a local LED peak")
+	material.set_shader_parameter("sheet_transmission",float(metadata.comparison.front_transmission))
+	material.set_shader_parameter("sheet_reflectance",float(metadata.comparison.front_external_reflectance))
 	await _settle()
 	var coated=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
-	assert(absf(coated.r-0.0725)<0.009 and absf(coated.g-0.094665)<0.009,"Film output crosses black sheet once; external film reflection crosses twice")
+	assert(absf(coated.r-0.09)<0.009 and absf(coated.g-0.10)<0.009,"Coated black sheet uses complete-sheet T9 and external R10 without a second substrate factor")
 	material.set_shader_parameter("offset",Vector2(0.008,0))
 	await _settle()
 	var distant=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
 	assert(distant.b<0.009,"Centre diffusion must retain distinct local hotspots")
-	print("DEMO GPU CENTRE PASS: local hotspot, spatial falloff, black-sheet and film attenuation")
+	print("DEMO GPU CENTRE PASS: local hotspot, spatial falloff, uncoated T29 and coated T9/R10")
 	print("DEMO GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases; spacing, attenuation, obstruction, exits, 0.1 percent cutoff, 32 reflections")
 	get_tree().quit()

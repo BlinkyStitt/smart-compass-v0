@@ -254,6 +254,7 @@ def read_parameters(master):
 
 
 def build(p=None):
+    acrylic = json.loads((HERE/'acrylic-optics.json').read_text())['materials']
     master = HERE / 'smart-compass.FCStd'
     if p is None:
         p = read_parameters(master)
@@ -628,7 +629,7 @@ def build(p=None):
 
     rear_mirror = b.annulus('RearMirrorBlank', E('mirror_inner_radius'), inner_back-p['mirror_fit_clearance'], E('mirror_back_z'), E('rear_acrylic_thickness'))
     rear_mirror = b.cut('RearMirror',rear_mirror,[b.box('MirrorLeadNotch',E('ring_seam_gap'),6,E('rear_acrylic_thickness'),-p['ring_seam_gap']/2,inner_r-3,E('mirror_back_z'))]+mirror_keys)
-    b.add(rear_mirror, 'Manufactured', '05 Rear mirror annulus - reflective face toward front', (.60,.65,.72), material='1.5 mm acrylic with full mirror film on +Z face')
+    b.add(rear_mirror, 'Manufactured', '05 Rear mirror annulus - reflective face toward front', (.60,.65,.72),round(100*acrylic['two_way_mirror']['transmission']), material='1.5 mm two-way acrylic; nominal 70% reflection / 30% transmission; coating on +Z face')
     edge = b.annulus('EdgeDiffuser', E('edge_diffuser_radius'), E('edge_diffuser_radius')+'+'+E('edge_diffuser_thickness'), E('edge_bottom_z'), E('front_plane_z')+'-'+E('edge_bottom_z')+'-'+E('ring_front_clearance'))
 
     b.add(edge, 'Manufactured', 'OutsideRing - whole glow PETG print', DIFFUSER_TINT, DIFFUSER_TRANSPARENCY, material=f"Prusament PETG Ultraglow Green; {p['edge_diffuser_thickness']:g} mm wall; optical transmission unmeasured")
@@ -666,7 +667,7 @@ def build(p=None):
             raise ValueError('No clear PCB rim retention position')
     sheet = b.cylinder('FrontSheetBlank','Parameters.case_diameter/2',E('front_acrylic_thickness'),front_expr)
     sheet = b.cut('FrontSheet',sheet,[b.cylinder(f'FrontSheetHole{i}',3.5,E('front_acrylic_thickness'),front_expr,x,y) for i,(x,y) in enumerate(points)])
-    b.add(sheet,'Manufactured','09 One-piece black LED acrylic front with mirror annulus',(.025,.025,.025),0,material='3 mm nominal black LED acrylic, not opaque black acrylic; rear-facing two-way coating 85.5..110.5, opaque outer rim and cut edge; measure stock')
+    b.add(sheet,'Manufactured','09 One-piece black LED acrylic front with mirror annulus',(.025,.025,.025),round(100*acrylic['black_led']['transmission']),material='3 mm nominal black LED acrylic, not opaque black acrylic; cavity-facing mirror coating 85.5..110.5; estimated complete-sheet cavity R70/T9, reverse R10/T9; opaque rim and cut edge; custom coating data unmeasured')
     # Print the optical deck on its floor. Print the lower skirt separately,
     # so the wide annular floor is not a large unsupported radial overhang.
     b.parts.remove(frame)

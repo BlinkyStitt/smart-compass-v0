@@ -26,7 +26,7 @@ INPUTS = (
         'vendor/evilgeniuslabs-fibonacci256/README.txt',
         'vendor/evilgeniuslabs-fibonacci256/SOURCE.md',
         'Run.FCMacro', 'Build.FCMacro', 'Check.FCMacro',
-        'parameters.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
+        'parameters.json', 'acrylic-optics.json', 'fibonacci256-layout.json', 'smart-compass.FCStd',
         'test_geometry.py', 'test_cad.py', 'service_package.py', 'service-guide.html', 'test_service_package.py', 'demo_export.py', 'slicing.py', 'print-spec.json', 'hardware_spec.py', 'inventory.py', 'component-inventory.json', 'test_manufacturing.py',
     )),
     *('demo/' + name for name in (

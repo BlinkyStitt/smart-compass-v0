@@ -6,7 +6,7 @@ uniform float halo_radius;
 uniform float inner_radius;
 uniform float reflectance;
 uniform float transmission;
-uniform float rear_reflectance=0.94;
+uniform float rear_reflectance=0.70;
 uniform float seam_gap=0.003;
 uniform vec3 pitch_radii;
 uniform vec3 ray_point;

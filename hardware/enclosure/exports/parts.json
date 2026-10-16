@@ -945,7 +945,7 @@
           "purchase_quantity": "1 custom blank; trim waste excluded",
           "source": "hardware/enclosure/exports/rear-mirror.svg",
           "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
-          "material": "Acrylic; Full mirror on +Z",
+          "material": "Two-way acrylic; nominal 70% reflection / 30% transmission on +Z",
           "mass_kind": "calculated",
           "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
           "status": "Measure finished mirror stock before cutting",
@@ -954,8 +954,8 @@
           "mass_formula": "acrylic_volume",
           "stock_sources": [
             {
-              "label": "Clear acrylic stock candidate",
-              "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+              "label": "Two-way acrylic mirror; published 70/30; nominal CAD thickness is provisional",
+              "url": "https://www.twowaymirrors.com/acrylic/"
             }
           ],
           "mass_g_per_unit": 28.308434,
@@ -1206,7 +1206,7 @@
           ],
           "mass_kind": "estimated",
           "mass_basis": "Engineering allowance; weigh installed item",
-          "status": "Supplier process/transmission unselected; sample required",
+          "status": "Custom coated black sheet: engineering estimate cavity R70/T9/absorption21, reverse R10/T9; no measured coating data",
           "group": "pendant",
           "installed_mass_g": 1,
           "installed_mass_range_g": [
@@ -1245,8 +1245,8 @@
           "unit": "annulus",
           "purchase_quantity": "1 cut piece",
           "source": "hardware/enclosure/exports/rear-mirror.svg",
-          "dimensions": "Full reflective annulus, inward facing",
-          "material": "Acrylic-compatible mirror coating/film",
+          "dimensions": "Two-way mirror annulus; nominal 70% reflection / 30% transmission; inward facing",
+          "material": "Acrylic-compatible two-way mirror coating/film",
           "mass_g_per_unit": 1.5,
           "mass_range_g_per_unit": [
             0.5,
@@ -3084,7 +3084,7 @@
           "purchase_quantity": "1 custom blank; trim waste excluded",
           "source": "hardware/enclosure/exports/rear-mirror.svg",
           "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
-          "material": "Acrylic; Full mirror on +Z",
+          "material": "Two-way acrylic; nominal 70% reflection / 30% transmission on +Z",
           "mass_kind": "calculated",
           "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
           "status": "Measure finished mirror stock before cutting",
@@ -3093,8 +3093,8 @@
           "mass_formula": "acrylic_volume",
           "stock_sources": [
             {
-              "label": "Clear acrylic stock candidate",
-              "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+              "label": "Two-way acrylic mirror; published 70/30; nominal CAD thickness is provisional",
+              "url": "https://www.twowaymirrors.com/acrylic/"
             }
           ],
           "mass_g_per_unit": 28.308434,
@@ -3345,7 +3345,7 @@
           ],
           "mass_kind": "estimated",
           "mass_basis": "Engineering allowance; weigh installed item",
-          "status": "Supplier process/transmission unselected; sample required",
+          "status": "Custom coated black sheet: engineering estimate cavity R70/T9/absorption21, reverse R10/T9; no measured coating data",
           "group": "pendant",
           "installed_mass_g": 1,
           "installed_mass_range_g": [
@@ -3384,8 +3384,8 @@
           "unit": "annulus",
           "purchase_quantity": "1 cut piece",
           "source": "hardware/enclosure/exports/rear-mirror.svg",
-          "dimensions": "Full reflective annulus, inward facing",
-          "material": "Acrylic-compatible mirror coating/film",
+          "dimensions": "Two-way mirror annulus; nominal 70% reflection / 30% transmission; inward facing",
+          "material": "Acrylic-compatible two-way mirror coating/film",
           "mass_g_per_unit": 1.5,
           "mass_range_g_per_unit": [
             0.5,
@@ -5222,7 +5222,7 @@
       "purchase_quantity": "1 custom blank; trim waste excluded",
       "source": "hardware/enclosure/exports/rear-mirror.svg",
       "dimensions": "Separate 1.5 mm nominal rear mirror acrylic; CAD bounds 223.09 x 223.08 x 1.50 mm",
-      "material": "Acrylic; Full mirror on +Z",
+      "material": "Two-way acrylic; nominal 70% reflection / 30% transmission on +Z",
       "mass_kind": "calculated",
       "mass_basis": "Net CAD volume x 1.19 g/cm3; stock and finished part unmeasured",
       "status": "Measure finished mirror stock before cutting",
@@ -5231,8 +5231,8 @@
       "mass_formula": "acrylic_volume",
       "stock_sources": [
         {
-          "label": "Clear acrylic stock candidate",
-          "url": "https://www.acmeplastics.com/acrylic-sheets/clear-cast-acrylic-sheet"
+          "label": "Two-way acrylic mirror; published 70/30; nominal CAD thickness is provisional",
+          "url": "https://www.twowaymirrors.com/acrylic/"
         }
       ],
       "mass_g_per_unit": 28.308434,
@@ -5483,7 +5483,7 @@
       ],
       "mass_kind": "estimated",
       "mass_basis": "Engineering allowance; weigh installed item",
-      "status": "Supplier process/transmission unselected; sample required",
+      "status": "Custom coated black sheet: engineering estimate cavity R70/T9/absorption21, reverse R10/T9; no measured coating data",
       "group": "pendant",
       "installed_mass_g": 1,
       "installed_mass_range_g": [
@@ -5522,8 +5522,8 @@
       "unit": "annulus",
       "purchase_quantity": "1 cut piece",
       "source": "hardware/enclosure/exports/rear-mirror.svg",
-      "dimensions": "Full reflective annulus, inward facing",
-      "material": "Acrylic-compatible mirror coating/film",
+      "dimensions": "Two-way mirror annulus; nominal 70% reflection / 30% transmission; inward facing",
+      "material": "Acrylic-compatible two-way mirror coating/film",
       "mass_g_per_unit": 1.5,
       "mass_range_g_per_unit": [
         0.5,
