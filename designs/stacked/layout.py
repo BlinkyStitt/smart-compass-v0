@@ -59,6 +59,8 @@ def validate(p):
     if not isinstance(p["side_rows"], int) or p["side_rows"] < 1:
         raise ValueError("Side band needs a positive whole number of strips")
     d = dimensions(p)
+    if not math.isfinite(p["side_axial_scatter_mm"]) or p["side_axial_scatter_mm"] <= 0:
+        raise ValueError("Side diffuser needs a finite positive axial scatter scale")
     if (
         p["side_bottom_z"] < 14
         or p["side_bottom_z"] + d["side_height"] > d["rear_bottom"] - 1.8

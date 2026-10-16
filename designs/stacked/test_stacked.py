@@ -1,10 +1,11 @@
 """Behavior checks for compact fit and a separately derived optical reference."""
 
 import json
+import math
 import unittest
 
 from layout import ROOT, dimensions, parameters, validate
-from optics import reference
+from optics import reference, side_weight
 
 
 class FitTests(unittest.TestCase):
@@ -23,7 +24,12 @@ class FitTests(unittest.TestCase):
     def test_side_strip_limits_preserve_slots_and_mirror_seat(self):
         p = parameters()
         self.assertEqual(validate(dict(p, side_rows=2))["side_height"], 20)
-        for change in ({"side_rows": 4}, {"side_rows": 0}, {"side_bottom_z": 13}):
+        for change in (
+            {"side_rows": 4},
+            {"side_rows": 0},
+            {"side_bottom_z": 13},
+            {"side_axial_scatter_mm": 0},
+        ):
             with self.assertRaises(ValueError):
                 validate(dict(p, **change))
 
@@ -65,6 +71,7 @@ class OpticalTests(unittest.TestCase):
             k: d[k] / 1000 for k in ("front_z", "rear_z", "wall_radius", "ring_z")
         }
         self.o["diffusion"] = 0.65
+        self.o["side_axial_scatter"] = parameters()["side_axial_scatter_mm"] / 1000
         self.point = [0, 0, self.o["front_z"]]
 
     def test_head_on_is_two_transmissions_and_round_trip_series(self):
@@ -96,6 +103,24 @@ class OpticalTests(unittest.TestCase):
         self.assertAlmostEqual(result[0], 0)
         self.assertAlmostEqual(result[1], 0.25)
         self.assertEqual(result[2], 0)
+
+    def test_side_sleeve_blends_the_gaps_without_more_source_power(self):
+        step = 0.010
+        values = [
+            sum(side_weight(z * step / 100, row * step, self.o) for row in range(3))
+            for z in range(50, 151)
+        ]
+        self.assertGreater(min(values) / max(values), 0.95)
+        # The new profile retains the narrow profile's integrated source light.
+        dz = 0.0001
+        integrated = sum(
+            side_weight(i * dz, 0, self.o) * dz for i in range(-1000, 1001)
+        )
+        original = 0.005 + math.sqrt(math.pi) * (
+            0.00015 + 0.00285 * self.o["diffusion"]
+        )
+        self.assertAlmostEqual(integrated, original, places=8)
+        self.assertLess(side_weight(0.040, 0, self.o), 1e-10)
 
     def test_reflection_cap_terminates_low_loss_case(self):
         result = reference(self.point, [0, 0, -1], self.o, 0.999, 0.001, 0.999, 0.001)

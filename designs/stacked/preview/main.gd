@@ -78,7 +78,7 @@ func _ready():
 		assert(meshes.has(part.name),"Missing CAD mesh "+str(part.name))
 		var mesh = meshes[part.name]
 		if part.role in ["mirror","source","side","inner","packages"]:
-			var path = {"mirror":"mirror", "source":"source", "side":"ring", "inner":"ring", "packages":"package"}[part.role]
+			var path = {"mirror":"mirror", "source":"source", "side":"side", "inner":"ring", "packages":"package"}[part.role]
 			var material = ShaderMaterial.new()
 			material.shader=load("res://"+path+".gdshader")
 			material.set_shader_parameter("colours",colours)
@@ -98,8 +98,10 @@ func _ready():
 				material.set_shader_parameter("pitch_radius",float(metadata.optics.pitch_radius if is_inner else metadata.optics.side_radius))
 				material.set_shader_parameter("led_z",float(metadata.optics.ring_z) if is_inner else float(metadata.optics.side_first_z))
 				material.set_shader_parameter("wall_mm",1.0 if is_inner else 2.0)
-				material.set_shader_parameter("row_count",1 if is_inner else int(metadata.optics.side_rows))
-				material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
+				if not is_inner:
+					material.set_shader_parameter("row_count",int(metadata.optics.side_rows))
+					material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
+					material.set_shader_parameter("axial_scatter",float(metadata.optics.side_axial_scatter))
 			mesh.material_override=material
 			materials.append(material)
 			if part.role=="mirror": mirror_material=material
@@ -467,6 +469,7 @@ func _gpu_check(reference_path):
 	material.set_shader_parameter("count",66)
 	material.set_shader_parameter("led_z",float(metadata.optics.side_first_z))
 	material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
+	material.set_shader_parameter("axial_scatter",float(metadata.optics.side_axial_scatter))
 	material.set_shader_parameter("pitch_radius",float(metadata.optics.side_radius))
 	material.set_shader_parameter("diffusion",float(metadata.comparison.diffusion))
 	material.set_shader_parameter("brightness",0.25)
@@ -481,7 +484,10 @@ func _gpu_check(reference_path):
 	material.set_shader_parameter("charges",charge_texture)
 	plane.material_override=material
 	for sample in samples.side:
-		field.fill(Color.WHITE if sample.lit else Color.BLACK)
+		field.fill(Color.BLACK)
+		for row in range(int(sample.rows)):
+			var rgb=sample.row_colours[row]
+			for pixel in range(66): field.set_pixel(pixel,2+row,Color(rgb[0],rgb[1],rgb[2],1))
 		charge_field.fill(Color(0,0,0,1) if sample.lit else Color(0.35,0.20,0,1))
 		field_texture.update(field)
 		charge_texture.update(charge_field)

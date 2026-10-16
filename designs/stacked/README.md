@@ -17,7 +17,12 @@ The inward ring has 0.86 mm nominal clearance from the full 166 mm source.
 The 30 mm side band spans Z=14 to 44 mm. Its three 10 mm strips sit side by side
 across the case depth, with LED rows at Z=19, 29 and 39 mm. The case stays
 190 mm wide and 72.6 mm deep. One side-band switch controls all three rows; the
-preview adds their emitted light and blends stored afterglow without tripling it.
+preview blends their emitted light through the full sleeve and blends stored
+afterglow without tripling it. The outside sleeve has its own broad axial scatter
+profile; the inner mirror ring keeps its narrow profile. The outside model
+conserves each row's integrated source light as it spreads. Its assumed maximum
+RMS scatter scale is 7.5 mm, scaled by the diffusion control. This is an
+unmeasured material assumption, not a prediction for the printed sleeve.
 The outside rows form one 198-LED side chain. The CAD keeps the board clips
 inside that chain; actual jumper routing and fastening still need physical checks.
 

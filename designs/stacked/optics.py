@@ -83,40 +83,51 @@ def cases(o):
     return samples
 
 
+def side_weight(z, source_z, o):
+    """Unit-source profile with conserved axial flux through the broad sleeve."""
+    sigma = math.hypot(0.005 / math.sqrt(12), o["side_axial_scatter"] * o["diffusion"])
+    area = 0.005 + math.sqrt(math.pi) * (0.00015 + 0.00285 * o["diffusion"])
+    return (
+        area
+        * math.exp(-0.5 * ((z - source_z) / sigma) ** 2)
+        / (math.sqrt(math.tau) * sigma)
+    )
+
+
 def side_cases(o):
-    """White rows test source addition; dark rows test afterglow invariance."""
+    """Check additive sources, row colour mixing, gaps and stored glow."""
     first = o["side_first_z"]
     step = o["side_pitch"]
     angle = (0.003 / 2 + (1 / 120) / 2) / o["side_radius"]
     samples = []
     for rows in (1, o["side_rows"]):
+        colours = [[1.0, 1.0, 1.0]] * rows
+        palettes = [colours, [[0.0, 0.0, 0.0]] * rows]
+        if rows == 3:
+            palettes += [
+                [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
+            ]
         for z in (
             first - step / 2,
             first,
             first + step / 2,
             first + step,
+            first + 1.5 * step,
             first + 2 * step,
             first + 2.5 * step,
         ):
-            for lit in (True, False):
-                spread = 0.00015 + (0.003 - 0.00015) * o["diffusion"]
+            for palette in palettes:
+                lit = any(any(rgb) for rgb in palette)
                 expected = (
                     [
                         0.25
                         * sum(
-                            math.exp(
-                                -(
-                                    (
-                                        max(0, abs(z - first - row * step) - 0.0025)
-                                        / spread
-                                    )
-                                    ** 2
-                                )
-                            )
-                            for row in range(rows)
+                            rgb[channel] * side_weight(z, first + row * step, o)
+                            for row, rgb in enumerate(palette)
                         )
+                        for channel in range(3)
                     ]
-                    * 3
                     if lit
                     else [0.16 * 0.072, 0.072, 0.025 * 0.072]
                 )
@@ -125,6 +136,7 @@ def side_cases(o):
                         "point": [0.094 * math.sin(angle), 0.094 * math.cos(angle), z],
                         "rows": rows,
                         "lit": lit,
+                        "row_colours": palette,
                         "expected": expected,
                     }
                 )

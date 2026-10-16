@@ -29,6 +29,7 @@
   "ring_diffuser_thickness": 1.0,
   "ring_diffuser_led_gap": 1.0,
   "side_diffuser_thickness": 2.0,
+  "side_axial_scatter_mm": 7.5,
   "side_bottom_z": 14.0,
   "front_reflectance": 0.65,
   "front_transmission": 0.25,

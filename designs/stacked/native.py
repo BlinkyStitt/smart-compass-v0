@@ -469,6 +469,7 @@ def build(out):
         side_first_z=d["side_row_z"][0] / 1000,
         side_pitch=p["strip_width"] / 1000,
         side_rows=p["side_rows"],
+        side_axial_scatter=p["side_axial_scatter_mm"] / 1000,
     )
     optics.update(
         diffusion=p["diffusion"], strip_half_height=0.005, source_diameter=0.166
