@@ -18,6 +18,7 @@ from optics import cases, side_cases
 EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
 SHARED = (
+    "hardware/enclosure/acrylic-optics.json",
     "hardware/enclosure/baffle.py",
     "hardware/enclosure/geometry.py",
     "hardware/enclosure/demo_export.py",
@@ -314,7 +315,7 @@ def capture(assets, stage):
         "backdrop_sha256": digest(ROOT / "demo/assets/playa-night.png"),
         "pose_source_sha256": digest(ROOT / "demo/mannequin.gd"),
         "pose_changes": "Only the final webbing segments meet the compact rear anchors; body pose unchanged",
-        "optics_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission; actual mirror and material response unmeasured; no brightness compensation between designs",
+        "optics_status": "Clear outer mirror: supplier-nominal R70/T30. Coated black inner mirror: complete-sheet estimate cavity R70/T9/absorption21, reverse R10/T9. Same black-mirror estimate in the wide front. No separate black filter or brightness compensation. Custom coatings, RGB and scattering remain unmeasured.",
     }
     (assets / "comparison.json").write_text(json.dumps(comparison, indent=2) + "\n")
 

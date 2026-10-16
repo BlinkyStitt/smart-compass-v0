@@ -69,8 +69,11 @@ def build(out):
         obj.addProperty("App::PropertyFloat", "ExplodeOffsetM").ExplodeOffsetM = offset
         groups[group].addObject(obj)
         obj.ViewObject.ShapeColor = colour
-        if role in ("mirror", "source", "side"):
-            obj.ViewObject.Transparency = 25
+        if role in ("mirror", "rear_mirror"):
+            face = "rear" if role == "rear_mirror" else "front"
+            obj.ViewObject.Transparency = round(100 * p[face + "_transmission"])
+        elif role == "side":
+            obj.ViewObject.Transparency = 25  # Diagram-only diffuser visibility.
         objects.append(obj)
         return obj
 
@@ -261,21 +264,14 @@ def build(out):
     )
     add("EGLStencil", stencil, "Manufactured", (0.02, 0.02, 0.025), offset=0.04)
     add(
-        "CellDiffuser",
-        cylinder(83, p["diffuser_thickness"], d["source_z"] - p["diffuser_thickness"]),
-        "Manufactured",
-        (0.75, 0.75, 0.75),
-        "source",
-        "Neutral diffusing sheet; transmission unmeasured",
-        0.055,
-    )
-    add(
         "RearCouplingMirror",
-        cylinder(p["mirror_radius"], p["rear_mirror_thickness"], d["rear_bottom"]),
+        cylinder(
+            p["mirror_radius"], p["rear_black_acrylic_thickness"], d["rear_bottom"]
+        ),
         "Manufactured",
-        (0.35, 0.35, 0.38),
+        (0.025, 0.025, 0.025),
         "rear_mirror",
-        "Two-way film on clear acrylic; coating faces cavity",
+        "3 mm nominal Black LED acrylic with cavity-facing mirror coating; complete-sheet estimate R70/T9/absorption21; reverse R10/T9; coating unmeasured",
         0.065,
     )
     add(
@@ -284,7 +280,7 @@ def build(out):
         "Manufactured",
         (0.35, 0.35, 0.38),
         "mirror",
-        "Two-way film on clear acrylic; coating faces cavity",
+        "Two-way acrylic mirror; finished-sheet nominal 70% reflection / 30% transmission; coating faces cavity",
         0.10,
     )
     leds = [
@@ -472,7 +468,10 @@ def build(out):
         side_axial_scatter=p["side_axial_scatter_mm"] / 1000,
     )
     optics.update(
-        diffusion=p["diffusion"], strip_half_height=0.005, source_diameter=0.166
+        diffusion=p["diffusion"],
+        strip_half_height=0.005,
+        source_diameter=0.166,
+        rear_external_reflectance=p["rear_external_reflectance"],
     )
     metadata = {
         "format_version": 1,
@@ -501,8 +500,11 @@ def build(out):
             "still_distance_m": 0.6,
             "night_distance_m": 0.46,
             "full_pose_distance_m": 3.5,
-            "source_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission. Actual mirror, diffuser and glow response remain unmeasured. Same source brightness and exposure as the first design.",
+            "source_status": "Outer clear mirror uses supplier-nominal R70/T30. Inner coated Black LED acrylic combines source cover and rear mirror: complete-sheet estimate cavity R70/T9/absorption21, reverse R10/T9. First cell image T=.09*.30=.027; do not multiply by black stock T29 again. Custom coating, scattering, RGB, glow and assembly response remain unmeasured. Source brightness and exposure match the first design.",
         },
+        "acrylic_materials": json.loads(
+            (ROOT / "hardware/enclosure/acrylic-optics.json").read_text()
+        ),
         "validation": {
             "collisions": collisions,
             "original_stencil_volume_mm3": stencil.Volume,

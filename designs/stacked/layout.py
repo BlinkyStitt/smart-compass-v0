@@ -9,7 +9,15 @@ ROOT = HERE.parents[1]
 
 
 def parameters():
-    return json.loads((HERE / "parameters.json").read_text())
+    p = json.loads((HERE / "parameters.json").read_text())
+    acrylic = json.loads((ROOT / "hardware/enclosure/acrylic-optics.json").read_text())[
+        "materials"
+    ]
+    for face, material in (("front", "two_way_mirror"), ("rear", "black_mirror")):
+        for quantity in ("reflectance", "transmission"):
+            p[face + "_" + quantity] = acrylic[material][quantity]
+    p["rear_external_reflectance"] = acrylic["black_mirror"]["reverse_reflectance"]
+    return p
 
 
 def dimensions(p):
@@ -19,9 +27,9 @@ def dimensions(p):
         + p["led_height"]
         + p["led_baffle_gap"]
     )
-    source_z = baffle_z + p["baffle_thickness"] + p["diffuser_thickness"]
-    rear_bottom = source_z + p["diffuser_mirror_gap"]
-    rear_z = rear_bottom + p["rear_mirror_thickness"]
+    rear_bottom = baffle_z + p["baffle_thickness"] + p["stencil_mirror_gap"]
+    rear_z = rear_bottom + p["rear_black_acrylic_thickness"]
+    source_z = rear_z  # Thin-sheet equivalent source at the cavity-facing coating.
     front_z = rear_z + p["mirror_gap"]
     pitch_radius = (
         p["inner_count"] * 1000 / p["strip_density"] + p["ring_seam_gap"]

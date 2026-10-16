@@ -77,19 +77,19 @@ func _ready():
 	for part in metadata.parts:
 		assert(meshes.has(part.name),"Missing CAD mesh "+str(part.name))
 		var mesh = meshes[part.name]
-		if part.role in ["mirror","source","side","inner","packages"]:
-			var path = {"mirror":"mirror", "source":"source", "side":"side", "inner":"ring", "packages":"package"}[part.role]
+		if part.role in ["mirror","rear_mirror","side","inner","packages"]:
+			var path = {"mirror":"mirror", "rear_mirror":"source", "side":"side", "inner":"ring", "packages":"package"}[part.role]
 			var material = ShaderMaterial.new()
 			material.shader=load("res://"+path+".gdshader")
 			material.set_shader_parameter("colours",colours)
 			if part.role != "packages":
 				material.set_shader_parameter("charges",charges)
-			if part.role in ["mirror","source"]:
+			if part.role in ["mirror","rear_mirror"]:
 				material.set_shader_parameter("positions",positions)
 				material.set_shader_parameter("cell_map",cell_map)
 				material.set_shader_parameter("source_plane_z",float(metadata.optics.source_z))
 				material.set_shader_parameter("inner_count",int(metadata.counts[1]))
-				for key in ["front_z","rear_z","wall_radius","ring_z","pitch_radius"]:
+				for key in ["front_z","rear_z","wall_radius","ring_z","pitch_radius","rear_external_reflectance"]:
 					material.set_shader_parameter(key,float(metadata.optics[key]))
 			if part.role in ["side","inner"]:
 				var is_inner = part.role=="inner"
@@ -105,12 +105,6 @@ func _ready():
 			mesh.material_override=material
 			materials.append(material)
 			if part.role=="mirror": mirror_material=material
-		elif part.role=="rear_mirror":
-			var material=StandardMaterial3D.new()
-			material.albedo_color=Color(0.65,0.65,0.65)
-			material.metallic=1.0
-			material.roughness=0.3
-			mesh.material_override=material
 	_make_world()
 	add_child(camera)
 	camera.fov=38.0
@@ -447,7 +441,7 @@ func _gpu_check(reference_path):
 	plane.mesh=quad
 	var material=ShaderMaterial.new()
 	material.shader=load("res://diagnostic.gdshader")
-	for key in ["front_z","rear_z","wall_radius","ring_z","pitch_radius"]:
+	for key in ["front_z","rear_z","wall_radius","ring_z","pitch_radius","rear_external_reflectance"]:
 		material.set_shader_parameter(key,float(metadata.optics[key]))
 	material.set_shader_parameter("diffusion",float(metadata.comparison.diffusion))
 	plane.material_override=material

@@ -1,15 +1,17 @@
 uniform int inner_count=66;
-uniform float front_z=0.0682;
-uniform float rear_z=0.0482;
-uniform float source_plane_z=0.0462;
+uniform float front_z=0.0692;
+uniform float rear_z=0.0492;
+uniform float source_plane_z=0.0492;
 uniform float wall_radius=0.08386;
-uniform float ring_z=0.0582;
+uniform float ring_z=0.0592;
 uniform float front_r=0.70;
 uniform float front_t=0.30;
 uniform float rear_r=0.70;
-uniform float rear_t=0.30;
+uniform float rear_t=0.09;
 uniform float diffusion=0.65;
 uniform float brightness=2.0;
+// Complete coated-black-sheet coefficients already include substrate loss.
+uniform float rear_external_reflectance=0.10;
 uniform float diffuser_transmission=0.4;
 uniform float seam_gap=0.003;
 uniform float pitch=0.00833333333;

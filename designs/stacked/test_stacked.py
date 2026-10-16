@@ -19,7 +19,7 @@ class FitTests(unittest.TestCase):
         self.assertAlmostEqual(d["side_height"], 30)
         self.assertEqual(d["side_row_z"], [19, 29, 39])
         self.assertLess(p["side_bottom_z"] + d["side_height"], d["rear_bottom"] - 0.8)
-        self.assertAlmostEqual(d["depth"], 72.6)
+        self.assertAlmostEqual(d["depth"], 73.6)
 
     def test_side_strip_limits_preserve_slots_and_mirror_seat(self):
         p = parameters()
@@ -81,9 +81,9 @@ class OpticalTests(unittest.TestCase):
         expected = sum(0.25 * 0.25**n for n in range(5))
         self.assertAlmostEqual(actual[0], expected)
         self.assertEqual(actual[1], 0)
-        # Supplier-nominal acrylic: 9% first image, 49% per round trip.
+        # Coated black rear T9 and clear front T30: 2.7% first image; 49% per round trip.
         # Eight rear encounters remain above the unchanged .001 path cutoff.
-        self.assertAlmostEqual(measured[0], sum(0.09 * 0.49**n for n in range(8)))
+        self.assertAlmostEqual(measured[0], sum(0.027 * 0.49**n for n in range(8)))
         self.assertEqual(measured[2], 16)
 
     def test_no_reflection_gives_one_source_image(self):

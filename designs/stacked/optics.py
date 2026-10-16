@@ -11,7 +11,7 @@ MIN_WEIGHT = 0.001
 
 
 def reference(
-    point, direction, o, front_r=0.70, front_t=0.30, rear_r=0.70, rear_t=0.30
+    point, direction, o, front_r=0.70, front_t=0.30, rear_r=0.70, rear_t=0.09
 ):
     x, y, _z = point
     dx, dy, dz = direction
@@ -66,9 +66,9 @@ def cases(o):
             [0, 0, 1],
         ):
             for coefficients in (
-                (0.70, 0.30, 0.70, 0.30),
+                (0.70, 0.30, 0.70, 0.09),
                 (0, 1, 0, 1),
-                (1, 0, 0.70, 0.30),
+                (1, 0, 0.70, 0.09),
                 (0.99, 0.01, 0.99, 0.01),
                 (0.70, 0.30, 0, 1),
             ):

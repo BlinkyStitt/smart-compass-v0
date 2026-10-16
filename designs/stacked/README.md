@@ -1,14 +1,16 @@
 # Compact stacked Fibonacci concept
 
 This is the second enclosure design. The original 250 mm design and its exports
-stay in `hardware/enclosure`. This concept is 190 mm wide and 72.6 mm deep. It
+stay in `hardware/enclosure`. This concept is 190 mm wide and 73.6 mm deep. It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,
-a neutral cell diffuser, a full-face 20 mm mirror cavity, a 66-LED inward ring,
+a 3 mm coated black LED acrylic rear mirror, a full-face 20 mm mirror cavity,
+a 66-LED inward ring,
 and three 66-LED outside strips behind one continuous 30 mm side diffuser. The GPS footprint rotates 90 degrees; all
 component envelopes keep their original dimensions.
 
 From front to back: front two-way mirror, empty cavity with inward ring, rear
-two-way coupling mirror, cell diffuser, original stencil, LED board, electronics
+coated black LED acrylic coupling mirror, 1 mm air gap, original stencil, LED
+board, electronics
 and internal battery, removable rear. The body and cavity frame form one printed
 part. The separate front bezel uses six M2 × 6 countersunk screws and captive
 M2 nuts with side insertion; the rear cover remains independent. The rear coating transmits the cell light
@@ -16,7 +18,7 @@ into the cavity and reflects returning light. Both coatings face the cavity.
 The inward ring has 0.86 mm nominal clearance from the full 166 mm source.
 The 30 mm side band spans Z=14 to 44 mm. Its three 10 mm strips sit side by side
 across the case depth, with LED rows at Z=19, 29 and 39 mm. The case stays
-190 mm wide and 72.6 mm deep. One side-band switch controls all three rows; the
+190 mm wide and 73.6 mm deep. One side-band switch controls all three rows; the
 preview blends their emitted light through the full sleeve and blends stored
 afterglow without tripling it. The outside sleeve has its own broad axial scatter
 profile; the inner mirror ring keeps its narrow profile. The outside model
@@ -39,7 +41,8 @@ python3 designs/stacked/run.py preview-check
 python3 designs/stacked/run.py preview
 ```
 
-Edit `parameters.json`, then rebuild. The saved CAD spreadsheet records the
+Edit `parameters.json`, then rebuild. All mirror and black acrylic coefficients come
+from `hardware/enclosure/acrylic-optics.json`, shared with the first design. The saved CAD spreadsheet records the
 inputs; the JSON owns regeneration. The build checks native solid collisions,
 original stencil volume, runtime GLB meshes, pixel identities, bounded mirror
 transport against an independent unfolded-ray calculation, and movie timing.
@@ -86,15 +89,33 @@ fastening, wiring, vents, suspension and actual supplied revisions still need
 physical checks. No thermal, electrical, brightness, strength or assembly claim
 follows from these renders.
 
-Front and rear acrylic mirrors each use 0.70 reflection and 0.30 transmission,
-following [Two Way Mirrors' published nominal specifications](https://www.twowaymirrors.com/acrylic/).
-These are supplier values; the actual sheets remain unmeasured. The cell image
-crosses both mirrors, giving 9% transmission for its first image before other
-losses. The preview includes both losses and keeps the source brightness fixed. Thin-sheet transport
-omits refraction and internal substrate ghosting. Diffusion, glow colour and
-stored glow use the first preview's unmeasured material model. Printed and
-optical samples must establish transmission, colour loss, cell separation,
-mirror flatness and the visible depth effect before fabrication approval.
+The outer clear acrylic mirror uses nominal 70% reflection and 30% transmission
+from [Two Way Mirrors](https://www.twowaymirrors.com/acrylic/). The inner mirror
+combines the black cover and rear mirror in one 3 mm nominal sheet. Its coating
+faces the cavity. No separate clear rear mirror or black filter remains.
+
+The coated black sheet uses an **engineering estimate**, requested by Bryan:
+70% reflection, 9% transmission and 21% absorption from the cavity. From the
+black substrate side, the estimate is 10% reflection, 9% transmission and 81%
+absorption. [Chemcast Black LED acrylic](https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668)
+has about 29% transmission without a coating. Combining that with the clear
+mirror specification and clear acrylic's roughly 92% transmission gives
+0.30 × 0.29 / 0.92 = 9.46%, rounded to 9%. This assumes a similar coating;
+no published measurement establishes the custom coated black sheet.
+
+The first cell image passes both mirrors: 0.09 × 0.30 = 2.7% before other losses.
+The black-mirror value already includes substrate absorption; applying 29%
+again would count it twice. The inner ring bypasses the black substrate. The
+source brightness stays fixed. The case is 190 mm wide and 73.6 mm deep, with
+1 mm between the original stencil and coated black sheet. The 20 mm mirror
+separation and continuous 30 mm outside band stay fixed.
+
+A mirror coating does not diffuse the LEDs. Scattering remains a qualitative
+Gaussian approximation because the black-sheet supplier gives no haze or
+angular scatter data. Thin-sheet transport omits refraction and substrate
+ghosting. Glow colour and stored emission also remain estimates. CAD and the
+preview do not establish physical fit, brightness, optical flatness or thermal
+performance.
 
 The original stencil, attribution and source remain in
 `hardware/enclosure/vendor/evilgeniuslabs-fibonacci256`. The compact model uses
