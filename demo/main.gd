@@ -6,6 +6,7 @@ const RING_MATERIALS = ["glow", "silver"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
 const Mannequin = preload("res://mannequin.gd")
+const Patterns = preload("res://patterns.gd")
 const PRESENTATIONS = ["Night • worn mannequin", "Night • pendant close-up", "Design inspection"]
 const COUNTS = Glow.COUNTS
 var glow = Glow.new()
@@ -516,7 +517,7 @@ func _pattern_colour(led,time: float):
 	var angle = fposmod(atan2(p[0],p[1])/TAU,1.0)
 	var radius = sqrt(p[0]*p[0]+p[1]*p[1])/0.0795 if int(led.group)==0 else 1.0
 	match pattern:
-		0: return Color.from_hsv(fposmod(angle+2*radius-time/8,1.0),1,1)
+		0: return Patterns.rainbow(Vector2(p[0],p[1]),int(led.group)==0,time)
 		1: return Color.from_hsv(fposmod(angle-time/8,1.0),1,1)*pow(maxf(0,cos(TAU*(3*angle-3*time/8))),8)
 		2: return Color.from_hsv(fposmod(radius-time/8,1.0),1,1)*(0.1+0.9*(1-absf(2*fposmod(2*radius-time/4,1.0)-1)))
 		8: return Color.from_hsv(0.55+0.12*sin(TAU*(angle+2*radius-time/8)),1,1)

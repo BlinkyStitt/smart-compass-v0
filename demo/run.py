@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'hardware/enclosure'))
 import cad
 from reference import cases
+from media import verify_rainbow_motion
 
 
 
@@ -71,6 +72,8 @@ def capture():
             assert int(probe['nb_frames'])==192 and abs(float(probe['duration'])-16)<.1
             assert b'NETSCAPE2.0\x03\x01\x00\x00' in file.read_bytes(), 'GIF must repeat forever'
         subprocess.run(['ffmpeg','-v','error','-xerror','-i',str(file),'-f','null','-'],check=True)
+        if name.endswith('.mp4'):
+            verify_rainbow_motion(file)
     print('DEMO MEDIA PASS: matched rainbow loops decoded',flush=True)
 
 

@@ -1,6 +1,7 @@
 extends Node3D
 
 const Mannequin = preload("res://mannequin.gd")
+const Patterns = preload("res://patterns.gd")
 const PATTERNS = ["Spiral rainbow", "Ocean gradient", "Sunset gradient", "White", "Single pixel"]
 # Match design one's camera world coordinates; keep actual pendant dimensions.
 const COMPARISON_FRONT_Z = 0.0367
@@ -186,12 +187,12 @@ func _update_camera():
 	camera.position=target+distance*Vector3(sin(az)*cos(el),sin(el),cos(az)*cos(el))
 	camera.look_at(target,Vector3.UP)
 
-func _pattern_colour(led,time):
+func _pattern_colour(led,time: float):
 	var p=led.position_m
 	var angle=fposmod(atan2(p[0],p[1])/TAU,1.0)
 	var radius=sqrt(p[0]*p[0]+p[1]*p[1])/0.0795 if int(led.group)==0 else 1.0
 	match pattern:
-		0: return Color.from_hsv(fposmod(angle+2*radius-time/8,1.0),1,1)
+		0: return Patterns.rainbow(Vector2(p[0],p[1]),int(led.group)==0,time)
 		1: return Color.from_hsv(0.55+0.12*sin(TAU*(angle+2*radius-time/8)),1,1)
 		2: return Color.from_hsv(fposmod(0.98+0.14*(0.5+0.5*sin(TAU*(angle+2*radius-time/8))),1),1,1)
 		3: return Color.WHITE
@@ -310,9 +311,14 @@ func _settle():
 		await get_tree().process_frame
 		RenderingServer.force_draw(false)
 
-func _save(name):
+func _render_frame() -> Image:
+	_update_colours()
 	await _settle()
-	assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join(name))==OK)
+	return get_viewport().get_texture().get_image()
+
+func _save(name):
+	var picture=await _render_frame()
+	assert(picture.save_png(capture_dir.path_join(name))==OK)
 
 func _capture():
 	panel.visible=false
@@ -495,5 +501,34 @@ func _gpu_check(reference_path):
 			push_error("Side-row GPU mismatch: "+str(sample)+" measured "+str(measured)+" expected "+str(expected))
 			get_tree().quit(1)
 			return
+	# Exercise the actual capture path without autonomous colour uploads.
+	# Fixed camera: only the LED phase can change the central cell image.
+	viewport.queue_free()
+	await get_tree().process_frame
+	set_process(false)
+	panel.visible=false
+	_set_presentation(1)
+	yaw=0.0
+	pitch_angle=-12.0
+	_update_camera()
+	pattern=0
+	enabled.fill(true)
+	var pictures: Array[Image]=[]
+	for seconds in [0.0,2.0,8.0]:
+		pattern_time=seconds
+		pictures.append(await _render_frame())
+	var changed=0.0
+	var loop_error=0.0
+	for y in range(328,392):
+		for x in range(608,672):
+			var first=pictures[0].get_pixel(x,y)
+			var moving=pictures[1].get_pixel(x,y)
+			var closed=pictures[2].get_pixel(x,y)
+			changed+=absf(first.r-moving.r)+absf(first.g-moving.g)+absf(first.b-moving.b)
+			loop_error+=absf(first.r-closed.r)+absf(first.g-closed.g)+absf(first.b-closed.b)
+	changed/=64.0*64.0*3.0
+	loop_error/=64.0*64.0*3.0
+	assert(changed>0.01 and changed>10.0*loop_error,"Captured LED colours are frozen or the eight-second rainbow loop does not close")
+	print("STACKED GPU MOTION PASS: fixed-camera cell RGB change %.5f; eight-second loop error %.5f" % [changed,loop_error])
 	print("STACKED GPU OPTICS PASS: %d cavity and %d side-row cases" % [samples.cavity.size(),samples.side.size()])
 	get_tree().quit()

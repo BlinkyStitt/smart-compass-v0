@@ -133,3 +133,11 @@ footprints do not overlap the other electronics. The original 20 mm battery
 and SparkleMotion end at Z23, leaving 5 mm below the PCB. All board clips and
 support posts derive their height from `circle_back_z`. Moving this battery
 into the outer rim cannot lower the full-face mirror stack at 190 mm diameter.
+
+
+The capture uploads the current LED colour field before each saved frame.
+Both designs load `demo/patterns.gd` for their eight-second rainbow cycle.
+The GPU check disables automatic updates and checks actual central cell RGB
+at a fixed camera angle. The movie check compares the central cells at equal
+camera poses with opposite hues, then checks identical hues as a noise control.
+Camera motion alone cannot pass these animation checks.
