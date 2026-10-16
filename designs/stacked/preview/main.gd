@@ -16,7 +16,7 @@ var meshes = {}
 var transforms = {}
 var mirror_material: ShaderMaterial
 var materials: Array[ShaderMaterial] = []
-var colour_image = Image.create(256,4,false,Image.FORMAT_RGBAF)
+var colour_image: Image
 var colours: ImageTexture
 var charges: ImageTexture
 var positions: ImageTexture
@@ -30,7 +30,7 @@ var front_r = 0.65
 var front_t = 0.25
 var rear_r = 0.65
 var rear_t = 0.25
-var enabled = [true,true,true]
+var enabled: Array[bool] = []
 var toggles: Array[CheckButton] = []
 var paused = false
 var automated = false
@@ -52,9 +52,12 @@ func _ready():
 	automated = args.has("--check") or args.has("--gpu-check") or args.has("--capture")
 	if args.has("--capture"): capture_dir = args[args.find("--capture")+1]
 	get_tree().create_timer(1800).timeout.connect(func(): push_error("Compact preview timed out"); get_tree().quit(1))
+	colour_image = Image.create(256,metadata.counts.size(),false,Image.FORMAT_RGBAF)
+	enabled.resize(metadata.counts.size())
+	enabled.fill(true)
 	colour_image.fill(Color.BLACK)
 	colours = ImageTexture.create_from_image(colour_image)
-	var charge_image = Image.create(256,4,false,Image.FORMAT_RGBAF)
+	var charge_image = Image.create(256,metadata.counts.size(),false,Image.FORMAT_RGBAF)
 	charge_image.fill(Color(0.35,0.20,0,1))
 	charges = ImageTexture.create_from_image(charge_image)
 	var position_image = Image.create(256,1,false,Image.FORMAT_RGBAF)
@@ -93,8 +96,10 @@ func _ready():
 				material.set_shader_parameter("group",1 if is_inner else 2)
 				material.set_shader_parameter("count",int(metadata.counts[1 if is_inner else 2]))
 				material.set_shader_parameter("pitch_radius",float(metadata.optics.pitch_radius if is_inner else metadata.optics.side_radius))
-				material.set_shader_parameter("led_z",float(metadata.optics.ring_z) if is_inner else float(metadata.optics.side_z))
+				material.set_shader_parameter("led_z",float(metadata.optics.ring_z) if is_inner else float(metadata.optics.side_first_z))
 				material.set_shader_parameter("wall_mm",1.0 if is_inner else 2.0)
+				material.set_shader_parameter("row_count",1 if is_inner else int(metadata.optics.side_rows))
+				material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
 			mesh.material_override=material
 			materials.append(material)
 			if part.role=="mirror": mirror_material=material
@@ -195,7 +200,8 @@ func _pattern_colour(led,time):
 		2: return Color.from_hsv(fposmod(0.98+0.14*(0.5+0.5*sin(TAU*(angle+2*radius-time/8))),1),1,1)
 		3: return Color.WHITE
 		4:
-			var offset=[0,int(metadata.counts[0]),int(metadata.counts[0])+int(metadata.counts[1])][int(led.group)]
+			var offset=0
+			for g in range(int(led.group)): offset+=int(metadata.counts[g])
 			return Color.WHITE if int(time*20)%metadata.leds.size()==offset+int(led.index) else Color.BLACK
 	return Color.BLACK
 
@@ -240,7 +246,7 @@ func _make_controls():
 		var switch=CheckButton.new()
 		switch.text=["Fibonacci cells","Inner mirror ring","Side band"][group]
 		switch.button_pressed=true
-		switch.toggled.connect(func(v): enabled[group]=v)
+		switch.toggled.connect(func(v): _set_group(group,v))
 		box.add_child(switch)
 		toggles.append(switch)
 	var pause=CheckButton.new()
@@ -260,6 +266,11 @@ func _make_controls():
 	caption.add_theme_constant_override("outline_size",5)
 	caption.add_theme_color_override("font_color",Color(0.9,0.9,0.9))
 	layer.add_child(caption)
+
+func _set_group(group: int, value: bool):
+	if group < 2: enabled[group]=value
+	else:
+		for row in range(2,enabled.size()): enabled[row]=value
 
 func _slider(box,text,low,high,value,callback):
 	var label=Label.new()
@@ -328,9 +339,9 @@ func _capture():
 	_update_camera()
 	enabled[1]=false
 	await _save("night-inner-off.png")
-	enabled=[false,false,false]
+	enabled.fill(false)
 	await _save("night-leds-off.png")
-	enabled=[true,true,true]
+	enabled.fill(true)
 	for style in range(3):
 		pattern=style
 		var name=["rainbow","ocean","sunset"][style]
@@ -356,8 +367,14 @@ func _capture():
 	get_tree().quit()
 
 func _check():
-	assert(metadata.leds.size()==388)
-	for i in range(3): assert(int(metadata.counts[i])==[256,66,66][i])
+	assert(metadata.leds.size()==520)
+	assert(metadata.counts.size()==5 and int(metadata.counts[0])==256)
+	for i in range(1,5): assert(int(metadata.counts[i])==66)
+	var band=meshes.SideDiffuser.get_aabb()
+	assert(is_equal_approx(band.size.z,0.030))
+	for led in metadata.leds:
+		if int(led.group)>=2:
+			assert(is_equal_approx(float(led.position_m[2]),float(metadata.optics.side_first_z)+(int(led.group)-2)*float(metadata.optics.side_pitch)))
 	assert(meshes.size()==metadata.parts.size())
 	var mask=cell_map.get_image()
 	for i in range(256):
@@ -383,7 +400,7 @@ func _check():
 				assert(is_equal_approx(_pattern_colour(led,t).v,1.0))
 				if not _pattern_colour(led,0).is_equal_approx(_pattern_colour(led,t)): changes=true
 			if changes: moving+=1
-		assert(moving==388)
+		assert(moving==metadata.leds.size())
 	pattern=4
 	pattern_time=0
 	_update_colours()
@@ -397,11 +414,18 @@ func _check():
 	_update_colours()
 	assert(colour_image.get_pixel(0,1)==Color.BLACK)
 	assert(colour_image.get_pixel(0,0)!=Color.BLACK)
+	toggles[2].button_pressed=false
+	_update_colours()
+	for row in range(2,enabled.size()):
+		assert(not enabled[row] and colour_image.get_pixel(0,row)==Color.BLACK)
+	assert(enabled[0] and not enabled[1])
+	toggles[2].button_pressed=true
+	for row in range(2,enabled.size()): assert(enabled[row])
 	_explode(1)
 	assert(meshes.FrontMirror.position.z>transforms.FrontMirror.origin.z)
 	_explode(0)
 	assert(meshes.FrontMirror.transform==transforms.FrontMirror)
-	print("STACKED SCENE PASS: CAD meshes, 388 LEDs, controls, pose, world cameras and loops")
+	print("STACKED SCENE PASS: CAD meshes, 520 LEDs, three side rows, controls, pose, world cameras and loops")
 	get_tree().quit()
 
 func _gpu_check(reference_path):
@@ -426,7 +450,7 @@ func _gpu_check(reference_path):
 	material.set_shader_parameter("diffusion",float(metadata.comparison.diffusion))
 	plane.material_override=material
 	viewport.add_child(plane)
-	for sample in samples:
+	for sample in samples.cavity:
 		material.set_shader_parameter("ray_point",Vector3(sample.point[0],sample.point[1],sample.point[2]))
 		material.set_shader_parameter("ray_direction",Vector3(sample.direction[0],sample.direction[1],sample.direction[2]))
 		for i in range(4): material.set_shader_parameter(["front_r","front_t","rear_r","rear_t"][i],float(sample.coefficients[i]))
@@ -437,5 +461,38 @@ func _gpu_check(reference_path):
 			push_error("Stacked GPU mismatch: "+str(sample)+" measured "+str(measured)+" expected "+str(expected))
 			get_tree().quit(1)
 			return
-	print("STACKED GPU OPTICS PASS: "+str(samples.size())+" independent unfolded-ray cases")
+	material=ShaderMaterial.new()
+	material.shader=load("res://side_diagnostic.gdshader")
+	material.set_shader_parameter("group",2)
+	material.set_shader_parameter("count",66)
+	material.set_shader_parameter("led_z",float(metadata.optics.side_first_z))
+	material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
+	material.set_shader_parameter("pitch_radius",float(metadata.optics.side_radius))
+	material.set_shader_parameter("diffusion",float(metadata.comparison.diffusion))
+	material.set_shader_parameter("brightness",0.25)
+	material.set_shader_parameter("transmission",1.0)
+	material.set_shader_parameter("ring_absorption",Vector3.ZERO)
+	material.set_shader_parameter("ring_prompt_green",0.0)
+	var field=Image.create(256,metadata.counts.size(),false,Image.FORMAT_RGBAF)
+	var charge_field=Image.create(256,metadata.counts.size(),false,Image.FORMAT_RGBAF)
+	var field_texture=ImageTexture.create_from_image(field)
+	var charge_texture=ImageTexture.create_from_image(charge_field)
+	material.set_shader_parameter("colours",field_texture)
+	material.set_shader_parameter("charges",charge_texture)
+	plane.material_override=material
+	for sample in samples.side:
+		field.fill(Color.WHITE if sample.lit else Color.BLACK)
+		charge_field.fill(Color(0,0,0,1) if sample.lit else Color(0.35,0.20,0,1))
+		field_texture.update(field)
+		charge_texture.update(charge_field)
+		material.set_shader_parameter("row_count",int(sample.rows))
+		material.set_shader_parameter("sample_point",Vector3(sample.point[0],sample.point[1],sample.point[2]))
+		await _settle()
+		var measured=viewport.get_texture().get_image().get_pixel(8,8).srgb_to_linear()
+		var expected=Color(sample.expected[0],sample.expected[1],sample.expected[2])
+		if absf(measured.r-expected.r)>0.009 or absf(measured.g-expected.g)>0.009 or absf(measured.b-expected.b)>0.009:
+			push_error("Side-row GPU mismatch: "+str(sample)+" measured "+str(measured)+" expected "+str(expected))
+			get_tree().quit(1)
+			return
+	print("STACKED GPU OPTICS PASS: %d cavity and %d side-row cases" % [samples.cavity.size(),samples.side.size()])
 	get_tree().quit()

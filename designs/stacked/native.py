@@ -95,7 +95,7 @@ def build(out):
         annulus(
             d["side_radius"] - p["strip_thickness"] / 2,
             R + 1,
-            p["strip_width"],
+            d["side_height"],
             p["side_bottom_z"],
         )
     )
@@ -116,7 +116,7 @@ def build(out):
         annulus(
             d["side_radius"] - p["strip_thickness"] / 2,
             R + 1,
-            p["strip_width"],
+            d["side_height"],
             p["side_bottom_z"],
         )
     )
@@ -130,7 +130,7 @@ def build(out):
     add("ElectronicsShell", shell, "Manufactured", (0.025, 0.025, 0.03))
     # Three shallow edge clips retain the unmodified board; no invented PCB holes.
     for i in range(3):
-        clip = box(5.9, 4, 1.2, 85.25, 0, 39.6).cut(cylinder(1.1, 2, 39.5, 85.5, 0))
+        clip = box(5.0, 4, 1.2, 84.8, 0, 39.6).cut(cylinder(1.1, 2, 39.5, 85.5, 0))
         clip.rotate(App.Vector(), App.Vector(0, 0, 1), i * 120)
         add("BoardEdgeClip" + str(i), clip, "Manufactured", (0.03, 0.03, 0.035))
     frame = annulus(
@@ -202,7 +202,7 @@ def build(out):
     add(
         "SideDiffuser",
         annulus(
-            R - p["side_diffuser_thickness"], R, p["strip_width"], p["side_bottom_z"]
+            R - p["side_diffuser_thickness"], R, d["side_height"], p["side_bottom_z"]
         ),
         "Manufactured",
         (0.72, 0.82, 0.54),
@@ -300,10 +300,12 @@ def build(out):
         }
         for i, (x, y) in enumerate(centres)
     ]
-    for group, name, count, outward, z in (
-        (1, "Inner", p["inner_count"], False, d["ring_z"]),
-        (2, "Side", p["side_count"], True, p["side_bottom_z"] + p["strip_width"] / 2),
-    ):
+    strips = [(1, "Inner", p["inner_count"], False, d["ring_z"])]
+    strips.extend(
+        (2 + row, f"Side{row}", p["side_count"], True, z)
+        for row, z in enumerate(d["side_row_z"])
+    )
+    for group, name, count, outward, z in strips:
         pitch_radius = (
             count * 1000 / p["strip_density"] + p["ring_seam_gap"]
         ) / math.tau
@@ -463,15 +465,20 @@ def build(out):
             "side_radius",
         )
     }
-    optics["side_z"] = (p["side_bottom_z"] + p["strip_width"] / 2) / 1000
+    optics.update(
+        side_first_z=d["side_row_z"][0] / 1000,
+        side_pitch=p["strip_width"] / 1000,
+        side_rows=p["side_rows"],
+    )
     optics.update(
         diffusion=p["diffusion"], strip_half_height=0.005, source_diameter=0.166
     )
     metadata = {
         "format_version": 1,
         "units": "metres",
-        "groups": ["Fibonacci", "Inner", "Side"],
-        "counts": [256, p["inner_count"], p["side_count"]],
+        "groups": ["Fibonacci", "Inner"]
+        + [f"Side{row}" for row in range(p["side_rows"])],
+        "counts": [256, p["inner_count"]] + [p["side_count"]] * p["side_rows"],
         "parts": parts,
         "leds": leds,
         "centres_m": [[x / 1000, y / 1000] for x, y in centres],
@@ -502,6 +509,8 @@ def build(out):
             "mirror_gap_mm": p["mirror_gap"],
             "maximum_width_mm": p["case_diameter"],
             "depth_mm": d["depth"],
+            "side_band_width_mm": d["side_height"],
+            "side_strip_count": p["side_rows"],
             "electronics": "Unscaled envelopes; GPS rotated 90 degrees. Fastening and wiring remain provisional.",
         },
     }

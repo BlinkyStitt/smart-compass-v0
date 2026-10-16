@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from layout import HERE, ROOT
-from optics import cases
+from optics import cases, side_cases
 
 EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
@@ -185,8 +185,9 @@ def preview_check(assets=EXPORTS):
     if "STACKED SCENE PASS" not in output:
         raise RuntimeError("Compact scene check did not finish")
     reference = HERE / ".build/reference.json"
+    optics = json.loads((assets / "scene.json").read_text())["optics"]
     reference.write_text(
-        json.dumps(cases(json.loads((assets / "scene.json").read_text())["optics"]))
+        json.dumps({"cavity": cases(optics), "side": side_cases(optics)})
     )
     output = godot(project, assets, "--gpu-check", "--reference", reference)
     if "STACKED GPU OPTICS PASS" not in output:

@@ -81,3 +81,51 @@ def cases(o):
                     }
                 )
     return samples
+
+
+def side_cases(o):
+    """White rows test source addition; dark rows test afterglow invariance."""
+    first = o["side_first_z"]
+    step = o["side_pitch"]
+    angle = (0.003 / 2 + (1 / 120) / 2) / o["side_radius"]
+    samples = []
+    for rows in (1, o["side_rows"]):
+        for z in (
+            first - step / 2,
+            first,
+            first + step / 2,
+            first + step,
+            first + 2 * step,
+            first + 2.5 * step,
+        ):
+            for lit in (True, False):
+                spread = 0.00015 + (0.003 - 0.00015) * o["diffusion"]
+                expected = (
+                    [
+                        0.25
+                        * sum(
+                            math.exp(
+                                -(
+                                    (
+                                        max(0, abs(z - first - row * step) - 0.0025)
+                                        / spread
+                                    )
+                                    ** 2
+                                )
+                            )
+                            for row in range(rows)
+                        )
+                    ]
+                    * 3
+                    if lit
+                    else [0.16 * 0.072, 0.072, 0.025 * 0.072]
+                )
+                samples.append(
+                    {
+                        "point": [0.094 * math.sin(angle), 0.094 * math.cos(angle), z],
+                        "rows": rows,
+                        "lit": lit,
+                        "expected": expected,
+                    }
+                )
+    return samples

@@ -8,14 +8,24 @@ from optics import reference
 
 
 class FitTests(unittest.TestCase):
-    def test_full_board_and_both_strips_fit(self):
+    def test_full_board_inner_ring_and_three_side_strips_fit(self):
         p = parameters()
         d = validate(p)
         self.assertAlmostEqual(p["case_diameter"], 190)
         self.assertGreater(d["wall_radius"] - 83, 0.5)
         self.assertAlmostEqual(d["front_z"] - d["rear_z"], 20)
-        self.assertLess(p["side_bottom_z"] + p["strip_width"], d["rear_bottom"])
+        self.assertEqual(p["side_rows"], 3)
+        self.assertAlmostEqual(d["side_height"], 30)
+        self.assertEqual(d["side_row_z"], [19, 29, 39])
+        self.assertLess(p["side_bottom_z"] + d["side_height"], d["rear_bottom"] - 0.8)
         self.assertAlmostEqual(d["depth"], 72.6)
+
+    def test_side_strip_limits_preserve_slots_and_mirror_seat(self):
+        p = parameters()
+        self.assertEqual(validate(dict(p, side_rows=2))["side_height"], 20)
+        for change in ({"side_rows": 4}, {"side_rows": 0}, {"side_bottom_z": 13}):
+            with self.assertRaises(ValueError):
+                validate(dict(p, **change))
 
     def test_electronics_keep_original_dimensions(self):
         old = json.loads((ROOT / "hardware/enclosure/parameters.json").read_text())

@@ -4,7 +4,7 @@ This is the second enclosure design. The original 250 mm design and its exports
 stay in `hardware/enclosure`. This concept is 190 mm wide and 72.6 mm deep. It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,
 a neutral cell diffuser, a full-face 20 mm mirror cavity, a 66-LED inward ring,
-and a separate 66-LED side band. The GPS footprint rotates 90 degrees; all
+and three 66-LED outside strips behind one continuous 30 mm side diffuser. The GPS footprint rotates 90 degrees; all
 component envelopes keep their original dimensions.
 
 From front to back: front two-way mirror, empty cavity with inward ring, rear
@@ -14,7 +14,12 @@ part. The separate front bezel uses six M2 × 6 countersunk screws and captive
 M2 nuts with side insertion; the rear cover remains independent. The rear coating transmits the cell light
 into the cavity and reflects returning light. Both coatings face the cavity.
 The inward ring has 0.86 mm nominal clearance from the full 166 mm source.
-The side band sits behind the optical cavity at a different depth.
+The 30 mm side band spans Z=14 to 44 mm. Its three 10 mm strips sit side by side
+across the case depth, with LED rows at Z=19, 29 and 39 mm. The case stays
+190 mm wide and 72.6 mm deep. One side-band switch controls all three rows; the
+preview adds their emitted light and blends stored afterglow without tripling it.
+The outside rows form one 198-LED side chain. The CAD keeps the board clips
+inside that chain; actual jumper routing and fastening still need physical checks.
 
 ## Build and view
 

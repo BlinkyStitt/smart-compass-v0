@@ -44,6 +44,11 @@ def dimensions(p):
         "depth": front_z + p["front_mirror_thickness"] + p["bezel_thickness"],
         "pitch_radius": pitch_radius,
         "side_radius": side_radius,
+        "side_height": p["side_rows"] * p["strip_width"],
+        "side_row_z": [
+            p["side_bottom_z"] + (row + 0.5) * p["strip_width"]
+            for row in range(p["side_rows"])
+        ],
         "inner_outer": inner_outer,
         "wall_radius": inner_outer - p["ring_diffuser_thickness"],
         "ring_z": (rear_z + front_z) / 2,
@@ -51,7 +56,14 @@ def dimensions(p):
 
 
 def validate(p):
+    if not isinstance(p["side_rows"], int) or p["side_rows"] < 1:
+        raise ValueError("Side band needs a positive whole number of strips")
     d = dimensions(p)
+    if (
+        p["side_bottom_z"] < 14
+        or p["side_bottom_z"] + d["side_height"] > d["rear_bottom"] - 1.8
+    ):
+        raise ValueError("Side strips block the suspension slots or mirror frame seat")
     if not p["circle_diameter"] < p["case_diameter"] < 250:
         raise ValueError("Body must fit the 166 mm board and remain below 250 mm")
     if d["wall_radius"] - p["circle_diameter"] / 2 < 0.5:
