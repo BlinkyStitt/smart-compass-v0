@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 from estimates import estimate_masses, runtime_hours
+from inventory import totals
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,6 +23,21 @@ class EstimateTests(unittest.TestCase):
         changed = deepcopy(self.narrow)
         next(p for p in changed["parts"] if p["name"] == "Battery")["volume_cm3"] *= 10
         self.assertEqual(self.mass(changed), self.mass(self.narrow))
+
+    def test_battery_is_in_pendant_and_worn_totals_once(self):
+        # Change the supplier mass without changing the CAD envelope. Both
+        # headline assemblies must gain exactly that mass, not zero or twice it.
+        before = estimate_masses(self.wide, self.narrow, self.parameters, self.material)
+        changed = deepcopy(self.wide)
+        changed["parameters_for_inventory"]["battery_mass_g"] += 50
+        pack = next(row for row in changed["components"] if row["id"] == "battery")
+        pack["installed_mass_g"] += 50
+        changed["mass_estimate"] = totals(changed["components"])
+        after = estimate_masses(changed, self.narrow, self.parameters, self.material)
+        for design in ("wide", "narrow"):
+            for assembly in ("complete_pendant", "total_worn"):
+                self.assertAlmostEqual(after[design][assembly]["nominal_g"] - before[design][assembly]["nominal_g"], 50, places=1)
+            self.assertEqual(after[design]["necklace"], before[design]["necklace"])
 
     def test_case_material_is_counted_once_at_structural_density(self):
         changed = deepcopy(self.narrow)

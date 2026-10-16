@@ -88,6 +88,8 @@ def build(output):
         values[name + "_weight"] = f"{mass['complete_pendant']['nominal_g'] / 1000:.2f}"
         values[name + "_worn_weight"] = f"{mass['total_worn']['nominal_g'] / 1000:.2f}"
         values[name + "_weight_range"] = "–".join(f"{n / 1000:.2f}" for n in mass["complete_pendant"]["range_g"])
+    pack = next(row for row in wide_parts["components"] if row["id"] == "battery")
+    values["battery_weight"] = f"{pack['installed_mass_g']:.0f}"
     values["runtime"] = f"{hours:.1f}"
     (output / "estimates.json").write_text(json.dumps({
         "masses": masses, "runtime_assumptions": battery, "calculated_hours": hours,
