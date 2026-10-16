@@ -1,5 +1,5 @@
 uniform int group=2;
-uniform int count=66;
+uniform int count=70;
 uniform int row_count=3;
 uniform float row_pitch=0.010;
 uniform float led_z=0.019;

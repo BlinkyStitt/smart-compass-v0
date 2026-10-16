@@ -1,5 +1,5 @@
 uniform int group=1;
-uniform int count=66;
+uniform int count=70;
 uniform float led_z=0.0582;
 uniform float wall_mm=1.0;
 uniform float diffusion=0.65;

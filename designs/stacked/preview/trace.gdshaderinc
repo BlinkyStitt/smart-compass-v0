@@ -1,4 +1,4 @@
-uniform int inner_count=66;
+uniform int inner_count=70;
 uniform float front_z=0.0692;
 uniform float rear_z=0.0492;
 uniform float source_plane_z=0.0492;

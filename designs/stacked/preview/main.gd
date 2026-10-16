@@ -155,7 +155,7 @@ func _make_world():
 			if surface.position.is_equal_approx(Vector3(side*0.102,0.107,-0.016)): node=surface
 		assert(node != null,"Missing final webbing segment")
 		var start=Vector3(side*0.12,0.15,-0.020)
-		var end=Vector3(side*0.055,0.073,0.004)
+		var end=Vector3(side*float(metadata.suspension.anchor_x),float(metadata.suspension.anchor_y),float(metadata.suspension.anchor_z))
 		node.mesh.size=Vector3(0.010,start.distance_to(end)+0.002,0.0015)
 		node.position=(start+end)*0.5
 		node.quaternion=Quaternion(Vector3.UP,(end-start).normalized())
@@ -372,7 +372,7 @@ func _check():
 	var led_count=0
 	for count in metadata.counts: led_count+=int(count)
 	assert(metadata.leds.size()==led_count)
-	for i in range(1,metadata.counts.size()): assert(int(metadata.counts[i])==66)
+	for i in range(1,metadata.counts.size()): assert(int(metadata.counts[i])==70)
 	var band=meshes.SideDiffuser.get_aabb()
 	assert(is_equal_approx(band.size.z,float(metadata.validation.side_band_width_mm)/1000))
 	for led in metadata.leds:
@@ -467,7 +467,7 @@ func _gpu_check(reference_path):
 	material=ShaderMaterial.new()
 	material.shader=load("res://side_diagnostic.gdshader")
 	material.set_shader_parameter("group",2)
-	material.set_shader_parameter("count",66)
+	material.set_shader_parameter("count",int(metadata.counts[2]))
 	material.set_shader_parameter("led_z",float(metadata.optics.side_first_z))
 	material.set_shader_parameter("row_pitch",float(metadata.optics.side_pitch))
 	material.set_shader_parameter("axial_scatter",float(metadata.optics.side_axial_scatter))
@@ -488,7 +488,7 @@ func _gpu_check(reference_path):
 		field.fill(Color.BLACK)
 		for row in range(int(sample.rows)):
 			var rgb=sample.row_colours[row]
-			for pixel in range(66): field.set_pixel(pixel,2+row,Color(rgb[0],rgb[1],rgb[2],1))
+			for pixel in range(int(metadata.counts[2])): field.set_pixel(pixel,2+row,Color(rgb[0],rgb[1],rgb[2],1))
 		charge_field.fill(Color(0,0,0,1) if sample.lit else Color(0.35,0.20,0,1))
 		field_texture.update(field)
 		charge_texture.update(charge_field)
