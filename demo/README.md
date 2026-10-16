@@ -260,3 +260,10 @@ The amber camp light now sits behind the wearer. A fixed-camera comparison
 identified the former front light as the source of the large right-side glare.
 The blue rim light is also lower. Camera sweep, exposure and LED brightness
 stay fixed.
+
+
+Both enclosure previews load `patterns.gd` for the same spatial rainbow and
+eight-second colour cycle. Captures upload LED colours before saving each frame.
+The media check compares central LED colours at equal camera poses and different
+phases. It also samples identical phases to distinguish colour motion from
+codec and render noise.
