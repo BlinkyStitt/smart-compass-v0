@@ -159,7 +159,8 @@ func _lighting(night: bool):
 	environment.background_mode=Environment.BG_SKY
 	environment.ambient_light_energy=0.015 if night else 0.35
 	environment.background_energy_multiplier=0.06 if night else 0.7
-	sun.light_energy=0.03 if night else 0.8
+	# Night keeps sky ambient and the mannequin camp lights, without a sun.
+	sun.light_energy=0.0 if night else 0.8
 	sun.rotation_degrees=Vector3(-35,35,0)
 	sky_material.sky_top_color=Color(0.003,0.005,0.015) if night else Color(0.11,0.14,0.20)
 	sky_material.sky_horizon_color=Color(0.012,0.015,0.02) if night else Color(0.30,0.28,0.25)
@@ -524,6 +525,7 @@ func _gpu_check(reference_path):
 	await get_tree().process_frame
 	set_process(false)
 	panel.visible=false
+	await _check_night_reflection()
 	_set_presentation(1)
 	yaw=0.0
 	pitch_angle=-12.0
@@ -549,3 +551,36 @@ func _gpu_check(reference_path):
 	print("STACKED GPU MOTION PASS: fixed-camera cell RGB change %.5f; eight-second loop error %.5f" % [changed,loop_error])
 	print("STACKED GPU OPTICS PASS: %d cavity and %d side-row cases" % [samples.cavity.size(),samples.side.size()])
 	get_tree().quit()
+
+# Use the real mirror and camera at the reported fourteen-second glare view.
+# The old light is a positive control: the mirror must still reflect light.
+func _check_night_reflection():
+	_set_presentation(1)
+	_night_pose(336)
+	enabled.fill(false)
+	var saved_charge=charges.get_image()
+	var no_charge=saved_charge.duplicate()
+	no_charge.fill(Color.BLACK)
+	charges.update(no_charge)
+	var dark=await _render_frame()
+	sun.light_energy=0.03
+	var glare=await _render_frame()
+	var night_peak=0.0
+	var glare_peak=0.0
+	for height in [0.025,0.040,0.055,0.070]:
+		var pixel=camera.unproject_position(Vector3(0,height,float(metadata.optics.front_z)))
+		var night_colour=dark.get_pixelv(Vector2i(pixel))
+		var glare_colour=glare.get_pixelv(Vector2i(pixel))
+		night_peak=maxf(night_peak,night_colour.v)
+		glare_peak=maxf(glare_peak,glare_colour.v)
+	assert(night_peak<0.02,"Night mirror contains a false daylight reflection")
+	assert(glare_peak>night_peak+0.1,"Reflection check must detect the former sun glare")
+	_lighting(false)
+	assert(sun.light_energy>0.0,"Day lighting must retain the sun")
+	_lighting(true)
+	assert(environment.ambient_light_energy>0.0)
+	for label in ["AmberCampLight","BlueCampRim"]:
+		assert(mannequin.get_node(label).light_energy>0.0,"Night camp lighting must remain on")
+	charges.update(saved_charge)
+	enabled.fill(true)
+	print("STACKED GPU NIGHT PASS: mirror peak %.4f; old sun control %.4f; ambient and camp lights retained" % [night_peak,glare_peak])
