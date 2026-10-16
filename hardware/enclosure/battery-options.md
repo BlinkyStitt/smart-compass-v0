@@ -2,6 +2,51 @@
 
 Research date: 2026-10-11. Target **four hours of bright animated patterns** with all four displays, GPS and radio active. Prefer Adafruit parts. Use protected raw LiPo or Li-ion cells with a separate regulator. USB power banks are excluded from the baseline because Bryan has experienced flicker and protection trips with changing LED loads.
 
+## Field replacement requirement
+
+The current CAD battery is a **provisional fit candidate**, not a purchase.
+Its screw-fastened rear and two pack straps do not provide the quick cell changes
+required for the field design. Bryan selected **one removable 26650 plus charged spares** for the next revision.
+Battery replacement must use a dedicated, captive,
+tool-free cover or removable cartridge, without opening the optical stack or
+exposing the other electronics. Keep the current CAD weights and runtime tied
+to its actual 190 g / 37 Wh pack until a replacement layout is built and checked.
+
+Bryan already uses **Efest Purple IMR26650 5200 mAh flat-top, 15 A / 40 A** cells.
+The [original tester's report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
+lists nominal 3.7 V and about 26.2 mm diameter; the
+[supplier identifies this variant as unprotected](https://www.batteryjunction.com/products/efest-imr26650-4335).
+The report is for a 2016 sample, not a measurement of Bryan's cells. Do not use
+the pulse rating to rate the holder or power path. His approximately 3 Ah 18650s
+are another possible source; their exact model is not yet known.
+
+At the existing assumed 6.25 W total load and 85% conversion efficiency:
+
+| Arrangement to evaluate | Nominal energy | Calculated hours before reserve and extra losses | Access and circuit tradeoff |
+| --- | ---: | ---: | --- |
+| One 5200 mAh / 3.7 V 26650 | 19.24 Wh | 2.62 h | Simplest removable-cell bay; carry charged spares. Needs a rated holder and hardware cell protection. Does not meet four hours without a swap. |
+| Two independently protected 26650 bays | 38.48 Wh total | 5.23 h total | Source selector draws from one bay at a time and blocks reverse current. Adds a second holder and selection/protection electronics. Can be designed for individual cell replacement. |
+| Existing factory protected LiPo pack | 37 Wh | 5.03 h | Current geometry and mass basis. A dedicated pack cartridge/cover and keyed disconnect could allow a whole-pack swap. The present rear does not. |
+
+Do not wire removable cells directly in parallel. A charged spare can drive
+current into a depleted cell. [Adafruit's pack guidance](https://learn.adafruit.com/li-ion-and-lipoly-batteries/multi-battery-packs)
+explains the difference between loose cells and a matched factory pack.
+A factory pack is one solution, not the only possible architecture. A correctly
+designed source selector can keep two cell bays electrically separate.
+[TI's TPS2121](https://www.ti.com/lit/ds/symlink/tps2121.pdf) supports reverse-current
+blocking and input selection at single-cell voltages. It is an IC design candidate,
+not a selected or tested battery module. It does not replace each cell's
+undervoltage/short-circuit protection, fuse or reverse-insertion protection.
+Charge removable cells separately in the appropriate external charger; the
+proposed selector does not charge or balance them.
+
+A 26650 needs about 26 mm of depth before holder walls and clearance, compared
+with the current 20 mm pack. Do not claim that either current case will accept
+it unchanged. The single-cell arrangement is selected. Check the holder, protection
+boards, door, removal path and wiring in both native layouts. A two-cell series
+pack would also need a different regulator: the current boost accepts 1S only.
+No alternative here has a completed layout or a verified runtime.
+
 ## Selected fit candidate
 
 The CAD uses one [BatterySpace CU-MM109 / item 4816](https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx): a factory **1S 10 Ah LiPo pack**, nominal **3.7 V / 37 Wh**, **80 × 65 × 20 mm**, **190 g**. The supplier lists an 8 A protection board, 7.3 A polyswitch, 7 A maximum discharge, and 18 AWG open leads. It supplies the matched cells and protection as one assembly. Do not build a pack by joining separate pouches. This is a provisional fit candidate, not a purchase or a measured runtime result. Confirm the supplied pack drawing, protection thresholds and lead arrangement before manufacture.

@@ -25,7 +25,10 @@ playback, and Restart together resets both to frame zero. Individual video
 controls and direct MP4 links remain available. Visitors who request reduced
 motion start with paused videos.
 
-Weight cards include the battery. The wide mass comes from the generated installed
+The main weight number includes the pendant, battery and necklace. Each card also
+shows pendant mass with its included battery mass. The page identifies the current
+LiPo fit candidate and its screw-fastened access; field-swappable cells still need
+a compartment revision. The wide mass comes from the generated installed
 inventory. `estimates.py` applies that inventory's density and uncertainty model to
 the narrow CAD materials and strip lengths, and transfers the electronics, harness
 and fitting allowances provisionally. The narrow design has no final fitting BOM.
