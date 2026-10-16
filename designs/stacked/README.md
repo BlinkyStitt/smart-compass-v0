@@ -86,9 +86,11 @@ fastening, wiring, vents, suspension and actual supplied revisions still need
 physical checks. No thermal, electrical, brightness, strength or assembly claim
 follows from these renders.
 
-Initial front and rear coatings each assume 0.65 reflection and 0.25
-transmission. The cell image crosses both coatings, so the preview includes both
-losses and does not raise source brightness to compensate. Thin-sheet transport
+Front and rear acrylic mirrors each use 0.70 reflection and 0.30 transmission,
+following [Two Way Mirrors' published nominal specifications](https://www.twowaymirrors.com/acrylic/).
+These are supplier values; the actual sheets remain unmeasured. The cell image
+crosses both mirrors, giving 9% transmission for its first image before other
+losses. The preview includes both losses and keeps the source brightness fixed. Thin-sheet transport
 omits refraction and internal substrate ghosting. Diffusion, glow colour and
 stored glow use the first preview's unmeasured material model. Printed and
 optical samples must establish transmission, colour loss, cell separation,

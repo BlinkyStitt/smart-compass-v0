@@ -501,7 +501,7 @@ def build(out):
             "still_distance_m": 0.6,
             "night_distance_m": 0.46,
             "full_pose_distance_m": 3.5,
-            "source_status": "Unmeasured film, diffuser and glow response. Same source brightness and exposure as the first design.",
+            "source_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission. Actual mirror, diffuser and glow response remain unmeasured. Same source brightness and exposure as the first design.",
         },
         "validation": {
             "collisions": collisions,

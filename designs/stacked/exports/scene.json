@@ -6750,15 +6750,15 @@
     "exposure": 1.0,
     "diffusion": 0.65,
     "ring_transmission": 0.4,
-    "front_reflectance": 0.65,
-    "front_transmission": 0.25,
-    "rear_reflectance": 0.65,
-    "rear_transmission": 0.25,
+    "front_reflectance": 0.7,
+    "front_transmission": 0.3,
+    "rear_reflectance": 0.7,
+    "rear_transmission": 0.3,
     "source_time_s": 2,
     "still_distance_m": 0.6,
     "night_distance_m": 0.46,
     "full_pose_distance_m": 3.5,
-    "source_status": "Unmeasured film, diffuser and glow response. Same source brightness and exposure as the first design."
+    "source_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission. Actual mirror, diffuser and glow response remain unmeasured. Same source brightness and exposure as the first design."
   },
   "validation": {
     "collisions": [],

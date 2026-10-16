@@ -81,8 +81,10 @@ class OpticalTests(unittest.TestCase):
         expected = sum(0.25 * 0.25**n for n in range(5))
         self.assertAlmostEqual(actual[0], expected)
         self.assertEqual(actual[1], 0)
-        self.assertGreater(measured[0], 0.25 * 0.25)
-        self.assertLess(measured[0], 0.25 * 0.25 / (1 - 0.65 * 0.65))
+        # Supplier-nominal acrylic: 9% first image, 49% per round trip.
+        # Eight rear encounters remain above the unchanged .001 path cutoff.
+        self.assertAlmostEqual(measured[0], sum(0.09 * 0.49**n for n in range(8)))
+        self.assertEqual(measured[2], 16)
 
     def test_no_reflection_gives_one_source_image(self):
         self.assertEqual(
@@ -101,7 +103,7 @@ class OpticalTests(unittest.TestCase):
         slope = self.o["wall_radius"] / (gap / 2)
         result = reference(self.point, [slope, 0, -1], self.o)
         self.assertAlmostEqual(result[0], 0)
-        self.assertAlmostEqual(result[1], 0.25)
+        self.assertAlmostEqual(result[1], 0.30)
         self.assertEqual(result[2], 0)
 
     def test_side_sleeve_blends_the_gaps_without_more_source_power(self):

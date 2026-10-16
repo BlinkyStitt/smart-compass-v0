@@ -314,7 +314,7 @@ def capture(assets, stage):
         "backdrop_sha256": digest(ROOT / "demo/assets/playa-night.png"),
         "pose_source_sha256": digest(ROOT / "demo/mannequin.gd"),
         "pose_changes": "Only the final webbing segments meet the compact rear anchors; body pose unchanged",
-        "optics_status": "Unmeasured film and material response; no brightness compensation between designs",
+        "optics_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission; actual mirror and material response unmeasured; no brightness compensation between designs",
     }
     (assets / "comparison.json").write_text(json.dumps(comparison, indent=2) + "\n")
 

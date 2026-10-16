@@ -26,10 +26,10 @@ var caption: Label
 var pattern = 0
 var pattern_time = 0.0
 var brightness = 2.0
-var front_r = 0.65
-var front_t = 0.25
-var rear_r = 0.65
-var rear_t = 0.25
+var front_r = 0.70
+var front_t = 0.30
+var rear_r = 0.70
+var rear_t = 0.30
 var enabled: Array[bool] = []
 var toggles: Array[CheckButton] = []
 var paused = false

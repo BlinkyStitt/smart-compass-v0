@@ -27,5 +27,5 @@
   "backdrop_sha256": "d97e75745cdf66657fadea1218deb33def14f0927fbe9a8616a88b4b64e6611f",
   "pose_source_sha256": "0c2991f19f25233f017bd59bd6948a41aa87805b07b46ddd597775f1746ef8b9",
   "pose_changes": "Only the final webbing segments meet the compact rear anchors; body pose unchanged",
-  "optics_status": "Unmeasured film and material response; no brightness compensation between designs"
+  "optics_status": "Supplier-nominal acrylic: 70% reflection, 30% transmission; actual mirror and material response unmeasured; no brightness compensation between designs"
 }
