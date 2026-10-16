@@ -3,6 +3,7 @@ import json
 import math
 from pathlib import Path
 import unittest
+from geometry import load_parameters, resolve_parameters
 
 from geometry import cavity_diffusers, contains, led_centres, pixel_regions, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, top_light_shields
 
@@ -12,10 +13,21 @@ HERE = Path(__file__).resolve().parent
 class GeometryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.p = json.loads((HERE / 'parameters.json').read_text())
+        cls.p = load_parameters()
         cls.layout = json.loads((HERE / 'fibonacci256-layout.json').read_text())
         cls.centres = led_centres(cls.layout, cls.p)
         cls.cells = pixel_regions(cls.centres,cls.p['circle_diameter']/2)
+
+    def test_mirror_gap_moves_the_stack_and_fasteners_together(self):
+        for gap in (11.2, 14.0, 20.0):
+            p = resolve_parameters(dict(self.p, mirror_gap=gap))
+            self.assertAlmostEqual(p['front_plane_z']-p['rear_mirror_front_z'],gap)
+            self.assertAlmostEqual(p['case_depth'],38.0048+gap-11.2)
+            self.assertAlmostEqual(p['circle_back_z'],27+gap-11.2)
+            self.assertAlmostEqual(p['strip_bottom_z']+p['strip_width']/2,
+                                   (p['front_plane_z']+p['rear_mirror_front_z'])/2)
+            self.assertAlmostEqual(p['front_plane_z']-p['baffle_to_sheet_gap']-p['baffle_thickness']
+                                   -p['circle_back_z']-p['circle_pcb_thickness']-p['led_height'],.6)
 
     def test_every_pixel_has_one_opening_and_no_other_pixel(self):
         self.assertEqual(len(self.centres), 256)
@@ -121,7 +133,7 @@ class GeometryTests(unittest.TestCase):
                 band=cavity_diffusers(self.p)[name]
                 self.assertAlmostEqual(dim['bottom'],band['bottom']+band['height'])
             else:
-                self.assertAlmostEqual(dim['bottom'],self.p['edge_bottom_z']+33)
+                self.assertAlmostEqual(dim['bottom'],self.p['front_plane_z']-self.p['ring_front_clearance'])
 
     def test_ring_movement_uses_locator_geometry_and_package_corners(self):
         self.assertEqual(len(ring_locating_angles(self.p)),8)

@@ -78,7 +78,7 @@ def validate(p):
         raise ValueError("Body must fit the 166 mm board and remain below 250 mm")
     if d["wall_radius"] - p["circle_diameter"] / 2 < 0.5:
         raise ValueError("Inner ring blocks the full Fibonacci source")
-    if p["mirror_gap"] - p["strip_width"] < 2:
+    if not math.isfinite(p["mirror_gap"]) or p["mirror_gap"] - p["strip_width"] < 2:
         raise ValueError("Strip needs clearance between both mirror planes")
     if d["pitch_radius"] + p["strip_thickness"] / 2 + 1.8 >= p["case_diameter"] / 2:
         raise ValueError("Insufficient inner-ring carrier wall")

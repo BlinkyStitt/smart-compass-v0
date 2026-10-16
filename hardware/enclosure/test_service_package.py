@@ -9,6 +9,7 @@ import tempfile
 import unittest
 import zipfile
 
+from geometry import load_parameters
 import cad
 import service_package
 import slicing
@@ -32,7 +33,7 @@ class ServicePackageTests(unittest.TestCase):
         for name in ('LICENSE.txt','SOURCE.md'):
             (source/name).write_bytes((HERE/'vendor/evilgeniuslabs-fibonacci256'/name).read_bytes())
         self.parts = {
-            'parameters_for_inventory': json.loads((HERE/'parameters.json').read_text()),
+            'parameters_for_inventory': load_parameters(),
             'stl_files': ['HaloRing.stl', 'NecklaceLink0.stl', 'OpticalDeck.stl'],
             'fit_samples': [{'file': 'FitRingHalo.stl', 'source_part': 'HaloRing'},
                             {'file': 'FitSuspensionBracketLeft.stl', 'source_part': 'NecklaceLink0'}],

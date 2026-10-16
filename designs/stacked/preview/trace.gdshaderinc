@@ -21,6 +21,7 @@ uniform sampler2D charges : filter_nearest, repeat_disable;
 uniform sampler2D positions : filter_nearest, repeat_disable;
 uniform sampler2D cell_map : filter_nearest, repeat_disable;
 #include "res://ring_diffusion.gdshaderinc"
+#include "res://centre_diffusion.gdshaderinc"
 
 vec3 source_light(vec3 p) {
     vec2 uv=vec2(p.x/0.166+0.5,0.5-p.y/0.166);
@@ -29,8 +30,7 @@ vec3 source_light(vec3 p) {
     if (cell.g<0.5) { return vec3(0.0); }
     int index=int(round(cell.r*255.0));
     vec2 delta=p.xy-texelFetch(positions,ivec2(index,0),0).rg;
-    float spread=mix(0.0007,0.004,diffusion);
-    float profile=exp(-dot(delta,delta)/(spread*spread));
+    float profile=centre_profile(delta,diffusion);
     return texelFetch(colours,ivec2(index,0),0).rgb*brightness*profile;
 }
 

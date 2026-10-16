@@ -103,10 +103,13 @@ def side_cases(o):
     for rows in (1, o["side_rows"]):
         colours = [[1.0, 1.0, 1.0]] * rows
         palettes = [colours, [[0.0, 0.0, 0.0]] * rows]
-        if rows == 3:
+        if rows > 1:
             palettes += [
-                [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
+                [
+                    [int(channel == row % 3) for channel in range(3)]
+                    for row in range(rows)
+                ],
+                [[int(row == 1)] * 3 for row in range(rows)],
             ]
         for z in (
             first - step / 2,

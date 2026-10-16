@@ -1,8 +1,8 @@
 """Build a native FreeCAD pendant with no persistent Python feature proxies.
 
 Run through Build.FCMacro in FreeCAD, or with FreeCADCmd and SC_CAD_DIR set.
-The saved FCStd spreadsheet owns subsequent builds. parameters.json seeds the
-first build only. Exported meshes and laser contours are derived outputs.
+parameters.json owns every build. The saved FCStd spreadsheet records inputs
+and the derived stack. Exported meshes and laser contours are derived outputs.
 """
 import colorsys
 import json
@@ -21,7 +21,7 @@ import baffle
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
-from geometry import battery_centres, cavity_diffusers, led_centres, pixel_regions, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, rear_mounting_points, top_light_shields, baffle_bottom
+from geometry import load_parameters, battery_centres, cavity_diffusers, led_centres, pixel_regions, mounting_points, necklace_anchors, optical_dimensions, ring_pixel, ring_radius, ring_locating_angles, ring_movement_limit, ring_led_clearances, outside_front_overlap, strip_bottom, rear_mounting_points, top_light_shields, baffle_bottom
 
 DIFFUSER_TRANSPARENCY = 35  # CAD display only; not measured optical transmission.
 DIFFUSER_TINT = (184 / 255, 209 / 255, 138 / 255)  # Use the native file's 8-bit RGB precision.
@@ -33,7 +33,7 @@ class Builder:
         self.doc = App.newDocument('SmartCompass')
         self.parts, self.hardware, self.references = [], [], []
         self.sheet = self.doc.addObject('Spreadsheet::Sheet', 'Parameters')
-        self.sheet.Label = 'Dimensions - edit values, then run Build.FCMacro'
+        self.sheet.Label = 'Dimensions - generated from parameters.json'
         self.sheet.set('A1', 'Parameter')
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
@@ -233,31 +233,11 @@ class Builder:
         return obj
 
 
-def read_parameters(master):
-    p = json.loads((HERE / 'parameters.json').read_text())
-    if master.exists():
-        old = App.openDocument(str(master))
-        if set(old.InputStatus.ParameterKeys) != {k for k in p if not k.startswith('_')}:
-            App.closeDocument(old.Name)
-            return p
-        for key in p:
-            if key.startswith('_') or key not in old.InputStatus.ParameterKeys:
-                continue
-            value = old.Parameters.getPropertyByName(key)
-            quantity = value.Value if hasattr(value, 'Value') else float(value)
-            p[key] = bool(quantity) if isinstance(p[key], bool) else quantity
-        App.closeDocument(old.Name)
-    p['mirror_back_z'] = p['rear_mirror_front_z'] - p['rear_acrylic_thickness']
-    p['front_washer_compressed_height'] = p['front_washer_free_thickness'] * p['front_washer_compression_ratio']
-    p['case_depth'] = p['front_plane_z'] + p['front_acrylic_thickness'] + p['front_washer_compressed_height']
-    return p
-
-
 def build(p=None):
     acrylic = json.loads((HERE/'acrylic-optics.json').read_text())['materials']
     master = HERE / 'smart-compass.FCStd'
     if p is None:
-        p = read_parameters(master)
+        p = load_parameters()
     validate_parameters(p)
     b = Builder(p)
     doc = b.doc

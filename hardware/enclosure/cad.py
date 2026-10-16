@@ -36,28 +36,92 @@ INPUTS = (
     )),
 )
 FIXED_EXPORTS = frozenset('''
-smart-compass-glow-print-service.zip smart-compass-silver-print-service.zip amulet-demo.mp4 assembly-section.svg assembly.png circle-alignment-overlay.svg
-diffusers.png edge.png electronics.png
-exploded.png exploded.gif exploded.mp4 exploded-poster.png front-sheet.svg front-coating.svg
+EdgeDiffuser-silver.3mf
+FitBarrel.stl
+FitController.stl
+FitDeck.stl
+FitFibonacciBaffle.stl
+FitOptics.stl
+FitRear.stl
+FitRingHalo-silver.3mf
+FitRingHalo.stl
+FitRingInner-silver.3mf
+FitRingInner.stl
+FitRingOutside-silver.3mf
+FitRingOutside.stl
+FitService.stl
+FitSuspensionBracket.stl
+FitSuspensionBracketLeft.stl
+FitSuspensionFrame.stl
+FitSuspensionRear.stl
+HaloRing-silver.3mf
+InnerRing-silver.3mf
+amulet-silver.glb
+amulet.glb
+assembly-section.svg
+assembly.png
+circle-alignment-overlay.svg
+diffusers.png
+edge.png
+electronics.png
+exploded.png
+fit-sheet.svg
+front-coating.svg
+front-sheet.svg
 front.png
-parts.json rear-mirror.svg rear.png smart-compass.step turntable-poster.png
-turntable.gif
-amulet.glb amulet-silver.glb scene.json lighting-demo.mp4
-infinity-rainbow.mp4 infinity-rainbow-silver.mp4 infinity-rainbow-silver.gif night-mannequin.png
-HaloRing-silver.3mf InnerRing-silver.3mf EdgeDiffuser-silver.3mf
-FitRingHalo-silver.3mf FitRingInner-silver.3mf FitRingOutside-silver.3mf
-infinity-rainbow.gif infinity-ocean.gif infinity-sunset.gif
-glow-afterglow.gif glow-afterglow.mp4 glow-afterglow-poster.png
-FitFibonacciBaffle.stl FitDeck.stl FitBarrel.stl FitRear.stl FitOptics.stl FitService.stl fit-sheet.svg
-FitSuspensionBracket.stl FitSuspensionBracketLeft.stl FitSuspensionFrame.stl FitSuspensionRear.stl soft-front-washer.svg
-FitController.stl FitRingHalo.stl FitRingInner.stl FitRingOutside.stl
-halo-light-shield.svg inner-light-shield.svg outer-light-shield.svg
-'''.split()) | frozenset(f'demo-{view}-{light}.png'
-                        for view in ('front', 'steep', 'edge', 'rear')
-                        for light in ('night', 'indoor', 'overcast', 'sun'))
+halo-light-shield.svg
+infinity-rainbow-silver.gif
+infinity-rainbow-silver.mp4
+infinity-rainbow.gif
+infinity-rainbow.mp4
+inner-light-shield.svg
+night-mannequin.png
+outer-light-shield.svg
+parts.json
+rear-mirror.svg
+rear.png
+scene.json
+smart-compass-glow-print-service.zip
+smart-compass-silver-print-service.zip
+smart-compass.step
+soft-front-washer.svg
+'''.split())
 GENERATED_SUFFIXES = {'.stl', '.step', '.svg', '.png', '.gif', '.mp4', '.json', '.glb', '.3mf', '.zip'}
-RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in ('wood-fibonacci-mask.svg', 'edge-diffuser.svg', 'halo-ring-diffuser.svg', 'inner-ring-diffuser.svg', 'smart-compass-print-service.zip'))
-
+RETIRED_EXPORTS = frozenset(EXPORTS + '/' + name for name in '''
+amulet-demo.mp4
+demo-edge-indoor.png
+demo-edge-night.png
+demo-edge-overcast.png
+demo-edge-sun.png
+demo-front-indoor.png
+demo-front-night.png
+demo-front-overcast.png
+demo-front-sun.png
+demo-rear-indoor.png
+demo-rear-night.png
+demo-rear-overcast.png
+demo-rear-sun.png
+demo-steep-indoor.png
+demo-steep-night.png
+demo-steep-overcast.png
+demo-steep-sun.png
+edge-diffuser.svg
+exploded-poster.png
+exploded.gif
+exploded.mp4
+glow-afterglow-poster.png
+glow-afterglow.gif
+glow-afterglow.mp4
+halo-ring-diffuser.svg
+infinity-ocean.gif
+infinity-sunset.gif
+inner-ring-diffuser.svg
+lighting-demo.mp4
+smart-compass-print-service.zip
+turntable-poster.png
+turntable.gif
+wood-fibonacci-mask.svg
+'''.split())
 
 class CadError(Exception):
     pass

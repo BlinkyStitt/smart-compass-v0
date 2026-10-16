@@ -9,29 +9,50 @@ from optics import reference, side_weight
 
 
 class FitTests(unittest.TestCase):
-    def test_full_board_inner_ring_and_three_side_strips_fit(self):
+    def test_lower_board_inner_ring_and_two_side_strips_fit(self):
         p = parameters()
         d = validate(p)
         self.assertAlmostEqual(p["case_diameter"], 190)
         self.assertGreater(d["wall_radius"] - 83, 0.5)
-        self.assertAlmostEqual(d["front_z"] - d["rear_z"], 20)
-        self.assertEqual(p["side_rows"], 3)
-        self.assertAlmostEqual(d["side_height"], 30)
-        self.assertEqual(d["side_row_z"], [19, 29, 39])
+        self.assertAlmostEqual(d["front_z"] - d["rear_z"], p["mirror_gap"])
+        self.assertEqual(p["side_rows"], 2)
+        self.assertAlmostEqual(d["side_height"], 20)
+        self.assertEqual(d["side_row_z"], [19, 29])
         self.assertLess(p["side_bottom_z"] + d["side_height"], d["rear_bottom"] - 0.8)
-        self.assertAlmostEqual(d["depth"], 73.6)
+        self.assertAlmostEqual(d["depth"], p["circle_back_z"] + p["mirror_gap"] + 15.6)
 
     def test_side_strip_limits_preserve_slots_and_mirror_seat(self):
         p = parameters()
         self.assertEqual(validate(dict(p, side_rows=2))["side_height"], 20)
         for change in (
-            {"side_rows": 4},
+            {"side_rows": 3},
             {"side_rows": 0},
             {"side_bottom_z": 13},
             {"side_axial_scatter_mm": 0},
         ):
             with self.assertRaises(ValueError):
                 validate(dict(p, **change))
+
+    def test_mirror_gap_controls_depth_without_moving_the_board(self):
+        p = parameters()
+        for gap in (12, 14, 16, 20):
+            d = validate(dict(p, mirror_gap=gap))
+            self.assertAlmostEqual(d["depth"], 43.6 + gap)
+            self.assertAlmostEqual(d["front_z"] - d["rear_z"], gap)
+            self.assertGreaterEqual(
+                p["circle_back_z"]
+                - max(e["z"] + e["size"][2] for e in p["electronics"]),
+                5,
+            )
+        # Lower shelves must remain independent of every neighbouring envelope.
+        for i, a in enumerate(p["electronics"]):
+            for b in p["electronics"][i + 1 :]:
+                overlap = all(
+                    abs(a["centre"][k] - b["centre"][k])
+                    < (a["size"][k] + b["size"][k]) / 2
+                    for k in (0, 1)
+                )
+                self.assertFalse(overlap, a["name"] + " / " + b["name"])
 
     def test_electronics_keep_original_dimensions(self):
         old = json.loads((ROOT / "hardware/enclosure/parameters.json").read_text())
