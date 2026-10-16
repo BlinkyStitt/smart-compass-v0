@@ -15,6 +15,9 @@ from pathlib import Path
 from layout import HERE, ROOT
 from optics import cases, side_cases
 
+sys.path.insert(0, str(ROOT / "demo"))
+from media import verify_rainbow_motion
+
 EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
 SHARED = (
@@ -30,6 +33,8 @@ SHARED = (
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
     "demo/mannequin.gd",
     "demo/main.gd",
+    "demo/patterns.gd",
+    "demo/media.py",
     "demo/assets/playa-night.png",
     "demo/ring_diffusion.gdshaderinc",
     "demo/centre_diffusion.gdshaderinc",
@@ -154,6 +159,7 @@ def prepare_preview():
     shutil.copytree(HERE / "preview", destination, dirs_exist_ok=True)
     for name in (
         "mannequin.gd",
+        "patterns.gd",
         "ring_diffusion.gdshaderinc",
         "centre_diffusion.gdshaderinc",
         "package.gdshader",
@@ -301,6 +307,7 @@ def capture(assets, stage):
                 "-",
             ]
         )
+        verify_rainbow_motion(assets / f"infinity-{style}.mp4")
     comparison = {
         "reference_commit": subprocess.check_output(
             ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure", "demo"],
