@@ -98,6 +98,83 @@ Use **Design inspection** to examine the rear hardware or exploded assembly.
 Changing the finish preserves camera position, time, light, brightness and
 exposure. For a stationary comparison, pause first.
 
+## Rainbows with moving dark regions
+
+Both viewers append **Rainbow • dark sectors**, **Rainbow • dark spirals**,
+and **Rainbow • dark diagonals** to their menus. Existing menu IDs, the default
+spiral rainbow, and movie selections stay the same. Each new style multiplies
+the existing rainbow by a continuous mask. No random, frame-count, or stored
+pattern state enters the calculation.
+
+`demo/patterns.gd` takes mapped XY positions in metres and elapsed seconds `t`.
+Let `a = atan2(x,y)/(2*pi)` (clockwise from the top). Let `q = (x,y)/0.0795`
+for Fibonacci pixels, or `q = normalize(x,y)` for each ring or side row.
+Let `r = length(q)`. Thus all mounted rings use unit radius; strip seams and
+directions remain in geometry metadata. Wire order and LED counts do not enter
+these formulas. Zero coordinates give finite colours, with angle and `q` zero.
+
+| Menu style | Mask phase `p` | Motion of the dark regions |
+| --- | --- | --- |
+| Dark sectors | `2*a - t/8` | Two sectors rotate clockwise, one turn in 16 s. |
+| Dark spirals | `3*a - 2*r + t/8` | Three winding bands rotate counterclockwise, one turn in 24 s; at a fixed angle they move outward by one normalized radius in 16 s. |
+| Dark diagonals | `0.75*(q.x + q.y) - t/8` | Bands travel towards upper right at `(1/12,1/12)` normalized units/s. |
+
+All phases repeat modulo 1. Each mask and its RGB output repeat after 8 s.
+For all three styles, set `d = abs(fract(p+0.5)-0.5)` and
+`u = clamp((d-0.18)/0.08,0,1)`. The mask is `u*u*(3-2*u)`.
+Each period has a **0.36-phase exact-black plateau**, two **0.08-phase smooth
+edges**, and a **0.48-phase fully lit plateau**. Each edge passes a fixed LED
+in **0.64 s** at the default speed, above the 250 ms minimum. The mask and its
+first derivative join continuously at black, full light, and repeat boundaries.
+Integer angular coefficients prevent a seam at the top of a ring.
+
+The RGB field is `rainbow(fract(a+2*r-t/8))*mask`, with alpha 1. The rainbow
+interpolates between the six linear RGB vertices, without gamma conversion.
+Brightness, material response, and stored glow remain downstream. These scalar
+operations can use Rust `no_std` and `libm`: `sqrt`, `atan2`, floor-based positive
+fraction, clamp, cubic interpolation, and six-sector RGB interpolation. Retain
+the constants and the fixed geometry/time RGB values in `pattern_checks.gd`
+when porting; do not move mounting transforms into a pattern.
+
+The shared checks sample every mapped LED at **1/64 s** intervals over `[0,8)`.
+They compare each real viewer adapter with the shared function. They check RGB
+bounds, exact black, full light, motion through every LED, partly lit output in
+every row, temporal continuity, cycle joins, the angular seam, origin, ring
+normalization, frame-step independence, and fixed Rust parity values. Each row
+prints its cycle-average summed-RGB reduction against the original full rainbow
+at equal brightness. This is an **LED-output proxy**, not measured electrical
+power. The viewer does not simulate firmware current limits. Black LEDs still
+consume idle current. Numerical smoothness does not prove physical flicker
+performance or battery life.
+
+Reference reductions with the tracked layouts, identical times and brightness
+(percent of summed linear RGB, not current):
+
+| Layout / output (LED count) | Sectors | Spirals | Diagonals |
+| --- | ---: | ---: | ---: |
+| 250 mm / Circle (256) | 44.032% | 43.989% | 43.968% |
+| 250 mm / Halo (64) | 43.987% | 43.987% | 44.160% |
+| 250 mm / Inner (84) | 43.990% | 43.990% | 44.159% |
+| 250 mm / Outer (90) | 43.991% | 43.991% | 44.159% |
+| 200 mm / Fibonacci (256) | 44.032% | 43.989% | 43.968% |
+| 200 mm / Inner (70) | 43.988% | 43.988% | 44.159% |
+| 200 mm / Side row 0 (70) | 43.988% | 43.988% | 44.159% |
+| 200 mm / Side row 1 (70) | 43.988% | 43.988% | 44.159% |
+
+For a renderer-independent adapter check, use an absolute metadata path:
+
+```sh
+godot --headless --path demo --script res://check_patterns.gd -- "$PWD/hardware/enclosure/exports/scene.json"
+```
+
+For visual inspection, select each new style in both viewers. Watch the circle
+and every ring or side row for at least one eight-second cycle. Check the top
+seam, pause/resume, and each output switch. In the main viewer, compare Glow
+PETG and Silver PETG with equal brightness and exposure. Stored glow can remain
+visible where LED intent is black; pause freezes the pattern while glow charging
+and decay continue. The stacked viewer retains its fixed illustrative charge.
+Keep this visual evidence separate from numerical and physical-device checks.
+
 ## What the image means
 
 `hardware/enclosure/exports/amulet.glb` and `amulet-silver.glb` contain the

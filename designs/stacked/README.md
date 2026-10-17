@@ -1,5 +1,31 @@
 # Compact stacked Fibonacci concept
 
+The pattern menu also offers **Rainbow • dark sectors**, **Rainbow • dark
+spirals**, and **Rainbow • dark diagonals**. Both viewers use the same
+position/time functions. The [shared pattern guide](../../demo/README.md#rainbows-with-moving-dark-regions)
+defines the equations, directions, eight-second repeat, 0.36-phase black width,
+0.08-phase edge width, 640 ms edge duration, and Rust parity checks. Every ring,
+including each outside row, uses its mounted XY angle and unit radius. The side
+switch still controls both outside rows. Pause freezes pattern time. This viewer
+keeps its existing fixed illustrative glow charge.
+
+`preview-check` runs shared numerical checks through this viewer's real adapter,
+including per-row cycle-average RGB comparisons at 1/64 s intervals. To run only
+these calculations without CAD import or a GPU, prepare the shared scripts and
+use an absolute metadata path:
+
+```sh
+python3 -c 'import sys; sys.path.insert(0,"designs/stacked"); import run; run.prepare_preview()'
+godot --headless --path designs/stacked/.build/preview --script res://check_patterns.gd -- "$PWD/designs/stacked/exports/scene.json"
+```
+
+Inspect all three styles in the interactive preview, including each side row,
+the top seam, pause/resume, and the output switches. Compare Glow and Silver in
+the main viewer as described in the shared guide. Report numerical results as
+LED-output proxies. Preview images and smooth equations cannot prove electrical
+savings, battery runtime, or physical flicker performance. Black LEDs consume
+idle current; stored glow can obscure dark LED intent.
+
 This is the second enclosure design. The original 250 mm design and its exports
 stay in `hardware/enclosure`. This concept is 200 mm wide and 57.6 mm deep. It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,

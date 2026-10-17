@@ -1,12 +1,13 @@
 extends Node3D
 
-const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"]
+const Patterns = preload("res://patterns.gd")
+const PatternChecks = preload("res://pattern_checks.gd")
+const PATTERNS = ["Spiral rainbow", "Rotating spokes", "Radial waves", "Solid red", "Solid green", "Solid blue", "White", "Single-pixel chase", "Ocean gradient", "Sunset gradient"] + Patterns.DARK_NAMES
 const FINISHES = ["Selected • black LED centre", "Comparison • full mirror"]
 const RING_MATERIALS = ["glow", "silver"]
 const LIGHTING = ["Night", "Indoor", "Overcast", "Bright sun"]
 const Glow = preload("res://glow.gd")
 const Mannequin = preload("res://mannequin.gd")
-const Patterns = preload("res://patterns.gd")
 const CaptureView = preload("res://capture_view.gd")
 const Playa = preload("res://playa.gd")
 const PRESENTATIONS = ["Night • worn mannequin", "Night • pendant close-up", "Design inspection"]
@@ -512,6 +513,9 @@ func _pattern_colour(led,time: float):
 	var radius = sqrt(p[0]*p[0]+p[1]*p[1])/0.0795 if int(led.group)==0 else 1.0
 	match pattern:
 		0: return Patterns.rainbow(Vector2(p[0],p[1]),int(led.group)==0,time)
+		10: return Patterns.dark_sectors(Vector2(p[0],p[1]),int(led.group)==0,time)
+		11: return Patterns.dark_spirals(Vector2(p[0],p[1]),int(led.group)==0,time)
+		12: return Patterns.dark_diagonals(Vector2(p[0],p[1]),int(led.group)==0,time)
 		1: return Color.from_hsv(fposmod(angle-time/8,1.0),1,1)*pow(maxf(0,cos(TAU*(3*angle-3*time/8))),8)
 		2: return Color.from_hsv(fposmod(radius-time/8,1.0),1,1)*(0.1+0.9*(1-absf(2*fposmod(2*radius-time/4,1.0)-1)))
 		8: return Color.from_hsv(0.55+0.12*sin(TAU*(angle+2*radius-time/8)),1,1)
@@ -707,6 +711,31 @@ func _run_checks():
 			if not colour.is_equal_approx(first): spatial_change=true
 			if not colour.is_equal_approx(_pattern_colour(led,2)): moving_count+=1
 		assert(spatial_change and moving_count>480, "Gradient must move across all LED groups")
+	for style in range(3):
+		pattern=10+style
+		assert(PatternChecks.check(metadata.leds,style,_pattern_colour))
+		var dark_time=pattern_time
+		paused=true
+		automated=false
+		_reset_glow(1.0,1.0)
+		var charge_before=glow.image.get_pixel(0,1)
+		_process(0.25)
+		assert(glow.image.get_pixel(0,1).r<charge_before.r,"Stored glow must still decay while the pattern is paused")
+		assert(pattern_time==dark_time,"Pause must freeze pattern time")
+		for led in metadata.leds:
+			assert(PatternChecks.difference(image_data.get_pixel(int(led.index),int(led.group)),_pattern_colour(led,dark_time))<0.000001)
+		for group in range(groups.size()):
+			groups[group]=false
+			_update_colours()
+			for led in metadata.leds:
+				var expected=Color.BLACK if int(led.group)==group else _pattern_colour(led,dark_time)
+				assert(PatternChecks.difference(image_data.get_pixel(int(led.index),int(led.group)),expected)<0.000001)
+			groups[group]=true
+		paused=false
+		_process(0.25)
+		assert(pattern_time==dark_time+0.25,"Resume must advance pattern time")
+		pattern_time=dark_time
+		automated=true
 	pattern=7
 	var white_count=0
 	for led in metadata.leds:
