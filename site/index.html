@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#151917">
-  <meta name="description" content="A wearable smart compass built around the Fibonacci256 LED board. Compare two infinity-mirror enclosure designs in motion and at the same scale.">
-  <title>Smart compass · Two designs, one spiral</title>
+  <meta name="description" content="Smart compass: a wearable LED medallion with a Fibonacci spiral and infinity mirrors. Explore the planned navigation and light patterns, and compare two enclosure designs.">
+  <title>Smart compass · A wearable infinity medallion</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
@@ -19,14 +19,19 @@
   <main>
     <section class="intro wrap" aria-labelledby="title">
       <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Hardware in development</p>
-      <h1 id="title">Two designs.<br>One infinite spiral.</h1>
-      <p class="lede">A wearable compass built around 256 Fibonacci LEDs, a ring of light, and an infinity mirror. Same board. Different ways to make room for the reflections.</p>
+      <h1 id="title">Smart compass.<br>Light you can wear.</h1>
+      <p class="lede">A wearable LED medallion with a Fibonacci spiral and an infinity-mirror effect. Two enclosure designs explore different ways to make room for the reflections.</p>
+      <p class="lede">A 256-LED Fibonacci board, three additional LED strips, and a pair of mirrors. Two controller boards divide the work: Sparkle Motion drives the lights; an STM32 BlackPill handles the sensors and radio.</p>
+      <div class="intro-uses">
+        <p><strong>Navigation.</strong> Planned compass and map modes point north and show live peers. The aim is to find friends without a phone or an internet connection.</p>
+        <p><strong>Light patterns.</strong> Planned geometric and microphone-reactive patterns turn the display into wearable light.</p>
+      </div>
     </section>
-    <section class="films wrap" id="films" aria-label="Compare the rainbow animations">
+    <section class="films wrap" id="films" aria-label="Compare Wide and Narrow rainbow simulations">
       <div class="film-grid">
         <article class="film">
           <div class="film-heading"><h2><span>01</span> Wide</h2><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-          <video id="wide-video" controls muted loop playsinline preload="metadata" poster="{{wide_poster}}" aria-label="Wide design rotating rainbow, with a figure-eight camera path">
+          <video id="wide-video" controls muted loop playsinline preload="metadata" poster="{{wide_poster}}" aria-label="Wide design rainbow simulation, with a figure-eight camera path">
             <source src="{{wide_movie}}" type="video/mp4">
             <a href="{{wide_movie}}">Open the wide rainbow MP4</a>
           </video>
@@ -37,7 +42,7 @@
         </article>
         <article class="film">
           <div class="film-heading"><h2><span>02</span> Narrow</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
-          <video id="narrow-video" controls muted loop playsinline preload="metadata" poster="{{narrow_poster}}" aria-label="Narrow design rotating rainbow, with the same figure-eight camera path">
+          <video id="narrow-video" controls muted loop playsinline preload="metadata" poster="{{narrow_poster}}" aria-label="Narrow design rainbow simulation, with the same figure-eight camera path">
             <source src="{{narrow_movie}}" type="video/mp4">
             <a href="{{narrow_movie}}">Open the narrow rainbow MP4</a>
           </video>
@@ -57,7 +62,7 @@
     <section class="story wrap" id="build" aria-labelledby="build-title">
       <div class="section-label"><span class="eyebrow">The build</span><h2 id="build-title">Light you can wear.<br>Direction you can share.</h2></div>
       <div class="story-copy">
-        <p class="large">We are building a portable light display that can point north, show the direction of friends, and run geometric or microphone-reactive patterns.</p>
+        <p class="large">The smart compass is a hardware project in development. Navigation and light patterns are planned; the videos compare simulated rainbow patterns in the Wide and Narrow enclosures.</p>
         <p>The centre is an Evil Genius Labs Fibonacci256: 256 LEDs arranged in a spiral on a 166 mm board. The shape gives simple colour gradients a flowing, spiral appearance. The rainbow stays lit across every LED and rotates once every eight seconds.</p>
         <p>The planned electronics use Adafruit Sparkle Motion to drive the lights. An STM32 BlackPill will read GPS, motion and magnetic sensors, handle the LoRa radio, and send updates over a wired link. The aim is to exchange live locations with nearby peers without a phone or an internet connection.</p>
         <p>Inside the narrow design, a black acrylic mirror in front of the board provides the reflective rear surface. A clear two-way mirror closes the front. The inner LED ring sits between those mirrors.</p>
@@ -79,7 +84,7 @@
         <figure><a href="{{wide_worn}}"><img src="{{wide_worn}}" width="1280" height="720" loading="lazy" alt="Full stationary mannequin wearing the wide pendant in the raised-hand and pointing-hand pose."></a><figcaption><strong>Wearing scale</strong>The {{wide_width}} mm wide version on the posed mannequin. The straps illustrate wearing context.</figcaption></figure>
         <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="The same mannequin and pose wearing the smaller, 200 mm narrow pendant."></a><figcaption><strong>Same wearer, smaller face</strong>The {{narrow_width}} mm narrow version uses the same pose and full-body framing.</figcaption></figure>
       </div>
-      <details class="alternative"><summary>Wide design with silver PETG rings</summary><p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p><video controls muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide design with silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"></video><p><a class="file-link" href="{{silver_movie}}">Open silver-ring MP4 ↗</a></p></details>
+      <details class="alternative"><summary>Wide design with silver PETG rings</summary><p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p><video controls muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide design rainbow simulation with silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"></video><p><a class="file-link" href="{{silver_movie}}">Open silver-ring MP4 ↗</a></p></details>
     </section>
   </main>
   <footer class="wrap"><p>Smart compass <span>·</span> A hardware work in progress.</p><a href="https://github.com/BlinkyStitt/smart-compass-v0">Explore the source ↗</a></footer>
