@@ -33,8 +33,8 @@ MEDIA = {
     "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "silver_movie": Movie(WIDE / "infinity-rainbow-silver.mp4", 16, rainbow_scene=WIDE / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
-    "wide_worn": WIDE / "night-mannequin.png",
-    "narrow_worn": NARROW / "night-mannequin.png",
+    "wide_worn": SITE / "assets/wide-worn.png",
+    "narrow_worn": SITE / "assets/narrow-worn.png",
     "narrow_side": NARROW / "night-side.png",
     "size_comparison": SITE / "assets/size-comparison.png",
 }

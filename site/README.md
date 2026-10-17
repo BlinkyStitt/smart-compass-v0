@@ -37,6 +37,17 @@ python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-co
 
 The renderer checks CAD freshness through the demo's normal startup gate.
 
+Both wearing-scale stills add the same soft front light to the mannequin so its
+pose stays visible. The fill light affects only the mannequin. The pendant and
+night scene keep their original lighting. Regenerate these images with:
+
+```sh
+python3 site/render_worn.py
+```
+
+This command checks both designs' CAD freshness and uses their native Godot
+scenes with the same camera, pose and pendant dimensions.
+
 The main weight number includes the pendant, battery and necklace. Each card also
 shows pendant mass with its included battery mass. The page identifies the current
 LiPo fit candidate and its screw-fastened access; field-swappable cells still need
