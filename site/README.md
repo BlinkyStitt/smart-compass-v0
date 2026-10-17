@@ -29,8 +29,9 @@ motion start with paused videos.
 The silver PETG comparison stays collapsed by default. It uses the same paired
 player as the primary comparison, with separate Play/Pause/Restart controls.
 Opening it starts both silver clips unless reduced motion is enabled. Closing
-it pauses both clips. Both comparisons stack at 620 CSS pixels and below.
-Wider layouts show two columns.
+it pauses both clips. Both comparisons keep the videos side by side.
+At 620 CSS pixels and below, the Wide and Narrow description blocks stack at
+full width below the video pair. Wider layouts show descriptions in two columns.
 
 The Narrow silver loop uses its native geometry and camera path with the Wide
 model's silver material coefficients for its rings and reflected ring light.

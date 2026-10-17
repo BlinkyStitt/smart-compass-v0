@@ -35,10 +35,6 @@
             <source src="{{wide_movie}}" type="video/mp4">
             <a href="{{wide_movie}}">Open the wide rainbow MP4</a>
           </video>
-          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>~{{wide_worn_weight}} <small>kg</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
-          <p class="stats-note">Pendant + battery + necklace · pendant ~{{wide_weight}} kg, including the {{battery_weight}} g battery</p>
-          <p class="film-note">The mirror tunnel surrounds the <a href="https://www.evilgeniuslabs.org/fibonacci256">Fibonacci board</a>. A wider face keeps the body shallower.</p>
-          <a class="file-link" href="{{wide_movie}}">Open wide MP4 ↗</a>
         </article>
         <article class="film">
           <div class="film-heading"><h2><span>02</span> Narrow</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
@@ -46,11 +42,23 @@
             <source src="{{narrow_movie}}" type="video/mp4">
             <a href="{{narrow_movie}}">Open the narrow rainbow MP4</a>
           </video>
+        </article>
+      </div>
+      <div class="film-descriptions">
+        <section class="film-description" aria-labelledby="wide-description-title">
+          <h3 id="wide-description-title">Wide</h3>
+          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>~{{wide_worn_weight}} <small>kg</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
+          <p class="stats-note">Pendant + battery + necklace · pendant ~{{wide_weight}} kg, including the {{battery_weight}} g battery</p>
+          <p class="film-note">The mirror tunnel surrounds the <a href="https://www.evilgeniuslabs.org/fibonacci256">Fibonacci board</a>. A wider face keeps the body shallower.</p>
+          <a class="file-link" href="{{wide_movie}}">Open wide MP4 ↗</a>
+        </section>
+        <section class="film-description" aria-labelledby="narrow-description-title">
+          <h3 id="narrow-description-title">Narrow</h3>
           <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>~{{narrow_worn_weight}} <small>kg</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
           <p class="stats-note">Pendant + battery + necklace · pendant ~{{narrow_weight}} kg, including the {{battery_weight}} g battery</p>
           <p class="film-note">The mirror cavity sits above the board. An inner ring adds depth, with two light bands around the outside.</p>
           <a class="file-link" href="{{narrow_movie}}">Open narrow MP4 ↗</a>
-        </article>
+        </section>
       </div>
       <div class="transport">
         <div class="buttons"><button id="play-both" data-play-both type="button">Play both</button><button id="replay-both" data-replay-both class="secondary" type="button">Restart together ↺</button></div>
@@ -91,13 +99,15 @@
           <article class="film">
             <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
             <video id="silver-wide-video" controls muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide design rainbow simulation with silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"><a href="{{silver_movie}}">Open wide silver PETG MP4</a></video>
-            <p><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
           </article>
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
             <video id="silver-narrow-video" controls muted loop playsinline preload="none" poster="{{silver_narrow_poster}}" aria-label="Narrow design rainbow simulation with silver PETG rings"><source src="{{silver_narrow_movie}}" type="video/mp4"><a href="{{silver_narrow_movie}}">Open narrow silver PETG MP4</a></video>
-            <p><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
           </article>
+        </div>
+        <div class="film-descriptions">
+          <p class="film-description"><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
+          <p class="film-description"><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
         </div>
         <div class="transport">
           <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
