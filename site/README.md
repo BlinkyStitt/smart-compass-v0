@@ -11,7 +11,7 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory /path/to/compass-pages
 
 Rebuild changed enclosure outputs with their owning commands before building
 the site. `build.py` checks each MP4's dimensions, duration and decoding. It also
-checks spatial rainbow rotation on the board and outside ring in the three
+checks spatial rainbow rotation on the board and outside ring in the four
 rainbow clips. It rejects missing LFS media. Asset
 filenames include their content hash so revised clips cannot reuse stale URLs.
 The front comparison uses the 250 mm wide and 200 mm narrow native CAD renders
@@ -25,6 +25,19 @@ Both primary videos loop. Play both aligns their times, Pause both stops paired
 playback, and Restart together resets both to frame zero. Individual video
 controls and direct MP4 links remain available. Visitors who request reduced
 motion start with paused videos.
+
+The silver PETG comparison stays collapsed by default. It uses the same paired
+player as the primary comparison, with separate Play/Pause/Restart controls.
+Opening it starts both silver clips unless reduced motion is enabled. Closing
+it pauses both clips. Both comparisons keep two columns on phones.
+
+The Narrow silver loop uses its native geometry and camera path with the Wide
+model's silver material coefficients for its rings and reflected ring light.
+Regenerate it after rebuilding changed Narrow sources with their owning command:
+
+```sh
+python3 site/render_silver.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/silver-frames
+```
 
 The exploded assembly uses the demo's full explosion and reassembly motion with
 the current Wide CAD model and a grey background. It loops in 24 seconds. The

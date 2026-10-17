@@ -32,6 +32,7 @@ MEDIA = {
     "wide_movie": Movie(WIDE / "infinity-rainbow.mp4", 16, rainbow_scene=WIDE / "scene.json"),
     "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "silver_movie": Movie(WIDE / "infinity-rainbow-silver.mp4", 16, rainbow_scene=WIDE / "scene.json"),
+    "silver_narrow_movie": Movie(SITE / "assets/narrow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
     "wide_worn": SITE / "assets/wide-worn.png",
     "narrow_worn": SITE / "assets/narrow-worn.png",
@@ -129,7 +130,7 @@ def build(output):
     (output / ".nojekyll").touch()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     (output / "build-info.json").write_text(json.dumps({"commit": commit, "media": records, "dimensions_m": dimensions}, indent=2) + "\n")
-    print(f"SITE BUILD PASS: {output}; four verified MP4 loops and four comparison images")
+    print(f"SITE BUILD PASS: {output}; five verified MP4 loops and four comparison images")
 
 
 if __name__ == "__main__":

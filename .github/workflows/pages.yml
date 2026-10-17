@@ -25,7 +25,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends ffmpeg git-lfs
       - name: Fetch site media from Git LFS
         run: >-
-          git lfs pull --include='hardware/enclosure/exports/infinity-rainbow*.mp4,designs/stacked/exports/infinity-rainbow.mp4,designs/stacked/exports/night-side.png,site/assets/size-comparison.png,site/assets/exploded-assembly.mp4,site/assets/wide-worn.png,site/assets/narrow-worn.png'
+          git lfs pull --include='hardware/enclosure/exports/infinity-rainbow*.mp4,designs/stacked/exports/infinity-rainbow.mp4,designs/stacked/exports/night-side.png,site/assets/size-comparison.png,site/assets/exploded-assembly.mp4,site/assets/wide-worn.png,site/assets/narrow-worn.png,site/assets/narrow-silver.mp4'
       - name: Build and verify site media
         run: |
           python3 -m unittest discover -s site -p 'test_*.py' -v

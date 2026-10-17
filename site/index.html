@@ -27,7 +27,7 @@
         <p><strong>Light patterns.</strong> Geometric and microphone-reactive patterns turn the display into wearable light.</p>
       </div>
     </section>
-    <section class="films wrap" id="films" aria-label="Compare Wide and Narrow rainbow simulations">
+    <section class="films wrap" id="films" data-comparison data-autoplay aria-label="Compare Wide and Narrow rainbow simulations">
       <div class="film-grid">
         <article class="film">
           <div class="film-heading"><h2><span>01</span> Wide</h2><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
@@ -53,8 +53,8 @@
         </article>
       </div>
       <div class="transport">
-        <div class="buttons"><button id="play-both" type="button">Play both</button><button id="replay-both" class="secondary" type="button">Restart together ↺</button></div>
-        <p id="play-status" role="status"></p>
+        <div class="buttons"><button id="play-both" data-play-both type="button">Play both</button><button id="replay-both" data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+        <p id="play-status" class="play-status" role="status"></p>
       </div>
       <div class="estimate-note"><p>Runtime assumes <strong>1.25 A total at 5 V</strong>, a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">provisional 37 Wh / 10 Ah LiPo pack</a> and 85% conversion efficiency. The design target is <strong>4 hours</strong>. Reserve, temperature, aging and cutoff losses reduce the calculated runtime. Brightness at this power cap remains unverified.</p><p><strong>Battery access needs a revision.</strong> The current CAD uses a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">BatterySpace CU-MM109 pouch pack</a> behind a screw-fastened rear cover. It is a fit candidate, not a purchase. The selected next revision uses one removable 26650 with spares and tool-free access, like the hats. The present compartment does not meet that requirement.</p><details><summary>Weight estimate basis</summary><p>Wide pendant allowance: {{wide_weight_range}} kg. Narrow: {{narrow_weight_range}} kg. The wide estimate comes from its installed-component inventory. The narrow estimate uses its own CAD material volumes and strip lengths, plus the same electronics, harness and fitting allowances. Both include the supplier's 190 g battery. The deeper narrow shell adds printed material. These ranges sum independent allowances; no finished assembly has been weighed.</p></details></div>
       <noscript><p>Use each video's controls to play it. Both clips loop.</p></noscript>
@@ -84,7 +84,26 @@
         <figure><a href="{{wide_worn}}"><img src="{{wide_worn}}" width="1280" height="720" loading="lazy" alt="Full stationary mannequin wearing the wide pendant in the raised-hand and pointing-hand pose."></a><figcaption><strong>Wearing scale</strong>The {{wide_width}} mm wide version on the posed mannequin. The straps illustrate wearing context.</figcaption></figure>
         <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="The same mannequin and pose wearing the smaller, 200 mm narrow pendant."></a><figcaption><strong>Same wearer, smaller face</strong>The {{narrow_width}} mm narrow version uses the same pose and full-body framing.</figcaption></figure>
       </div>
-      <details class="alternative"><summary>Wide design with silver PETG rings</summary><p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p><video controls muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide design rainbow simulation with silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"></video><p><a class="file-link" href="{{silver_movie}}">Open silver-ring MP4 ↗</a></p></details>
+      <details class="alternative" data-comparison>
+        <summary>Silver PETG rings</summary>
+        <p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p>
+        <div class="film-grid">
+          <article class="film">
+            <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
+            <video id="silver-wide-video" controls muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide design rainbow simulation with silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"><a href="{{silver_movie}}">Open wide silver PETG MP4</a></video>
+            <p><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
+          </article>
+          <article class="film">
+            <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
+            <video id="silver-narrow-video" controls muted loop playsinline preload="none" poster="{{silver_narrow_poster}}" aria-label="Narrow design rainbow simulation with silver PETG rings"><source src="{{silver_narrow_movie}}" type="video/mp4"><a href="{{silver_narrow_movie}}">Open narrow silver PETG MP4</a></video>
+            <p><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
+          </article>
+        </div>
+        <div class="transport">
+          <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+          <p class="play-status" role="status"></p>
+        </div>
+      </details>
     </section>
   </main>
   <footer class="wrap"><p>Smart compass <span>·</span> A hardware work in progress.</p><a href="https://github.com/BlinkyStitt/smart-compass-v0">Explore the source ↗</a></footer>
