@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#151917">
-  <meta name="description" content="Smart compass: a wearable LED medallion with a Fibonacci spiral and infinity mirrors. Explore the planned navigation and light patterns, and compare two enclosure designs.">
+  <meta name="description" content="Smart compass: a wearable LED medallion with a Fibonacci spiral and infinity mirrors. Explore navigation and light patterns, and compare two enclosure designs.">
   <title>Smart compass · A wearable infinity medallion</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -23,8 +23,8 @@
       <p class="lede">A wearable LED medallion with a Fibonacci spiral and an infinity-mirror effect. Two enclosure designs explore different ways to make room for the reflections.</p>
       <p class="lede">A <a href="https://www.evilgeniuslabs.org/fibonacci256">256-LED Fibonacci board</a>, three additional LED strips, and a pair of mirrors. Two controller boards divide the work: <a href="https://www.adafruit.com/product/6100">Sparkle Motion</a> drives the lights; an <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> handles the sensors and radio.</p>
       <div class="intro-uses">
-        <p><strong>Navigation.</strong> Planned compass and map modes point north and show live peers. The aim is to find friends without a phone or an internet connection.</p>
-        <p><strong>Light patterns.</strong> Planned geometric and microphone-reactive patterns turn the display into wearable light.</p>
+        <p><strong>Navigation.</strong> Compass and map modes point north and show live peers. Find friends without a phone or an internet connection.</p>
+        <p><strong>Light patterns.</strong> Geometric and microphone-reactive patterns turn the display into wearable light.</p>
       </div>
     </section>
     <section class="films wrap" id="films" aria-label="Compare Wide and Narrow rainbow simulations">
@@ -64,7 +64,7 @@
       <div class="story-copy">
         <p class="large">Blinking lights and a friend finder.</p>
         <p>The centre is an <a href="https://www.evilgeniuslabs.org/fibonacci256">Evil Genius Labs Fibonacci256</a>: 256 LEDs arranged in a spiral on a 166 mm board. The shape gives simple colour gradients a flowing, spiral appearance.</p>
-        <p>The planned electronics use <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> to drive the lights. An <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> will read GPS, motion and magnetic sensors, handle the LoRa radio, and send updates over a wired link. The aim is to exchange live locations with nearby peers without a phone or an internet connection.</p>
+        <p>The electronics use <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> to drive the lights. An <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> reads GPS, motion and magnetic sensors, handles the LoRa radio, and sends updates over a wired link. It exchanges live locations with nearby peers without a phone or an internet connection.</p>
         <p>Inside the narrow design, a black acrylic mirror in front of the board provides the reflective rear surface. A <a href="https://www.twowaymirrors.com/acrylic/">clear two-way mirror</a> closes the front. The inner LED ring sits between those mirrors.</p>
         <p>The <a href="https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668">black acrylic</a> also absorbs light. These renders include that loss: the estimated coated black sheet transmits 9%, while the finished clear front mirror transmits 30%. Light from the narrow board passes through both sheets; the inner ring bypasses the black sheet. The wide design keeps its black front and its extra loss. A mirror coating does not act as a diffuser, so the model treats diffusion separately.</p>
         <p class="boundary">These are CAD and optical simulations. The clear mirror split comes from supplier data; the coated black mirror and printed diffuser response remain estimates. Firmware, finished brightness, fit, heat and radio performance still need physical validation.</p>
