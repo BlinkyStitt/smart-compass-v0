@@ -59,4 +59,7 @@ function sync() {
 requestAnimationFrame(sync);
 
 // Motion is opt-in when the visitor asks for reduced motion.
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches) playBoth(true);
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  playBoth(true);
+  document.querySelector('#assembly-video').autoplay = true;
+}

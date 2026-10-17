@@ -10,8 +10,9 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory /path/to/compass-pages
 ```
 
 Rebuild changed enclosure outputs with their owning commands before building
-the site. `build.py` checks each MP4's dimensions, duration and spatial rainbow
-rotation on the board and outside ring. It rejects missing LFS media. Asset
+the site. `build.py` checks each MP4's dimensions, duration and decoding. It also
+checks spatial rainbow rotation on the board and outside ring in the three
+rainbow clips. It rejects missing LFS media. Asset
 filenames include their content hash so revised clips cannot reuse stale URLs.
 The front comparison uses the 250 mm wide and 200 mm narrow native CAD renders
 at the same scale, with dimension lines.
@@ -24,6 +25,17 @@ Both primary videos loop. Play both aligns their times, Pause both stops paired
 playback, and Restart together resets both to frame zero. Individual video
 controls and direct MP4 links remain available. Visitors who request reduced
 motion start with paused videos.
+
+The exploded assembly uses the demo's full explosion and reassembly motion with
+the current Wide CAD model and a grey background. It loops in 24 seconds. The
+poster shows the fully separated assembly. Regenerate the tracked clip with
+Godot and FFmpeg, using a new external-drive directory for the PNG frames:
+
+```sh
+python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/assembly-frames
+```
+
+The renderer checks CAD freshness through the demo's normal startup gate.
 
 The main weight number includes the pendant, battery and necklace. Each card also
 shows pendant mass with its included battery mass. The page identifies the current
