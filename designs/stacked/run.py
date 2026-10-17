@@ -34,6 +34,8 @@ SHARED = (
     "demo/mannequin.gd",
     "demo/main.gd",
     "demo/patterns.gd",
+    "demo/pattern_checks.gd",
+    "demo/check_patterns.gd",
     "demo/capture_view.gd",
     "demo/playa.gd",
     "demo/media.py",
@@ -162,6 +164,8 @@ def prepare_preview():
     for name in (
         "mannequin.gd",
         "patterns.gd",
+        "pattern_checks.gd",
+        "check_patterns.gd",
         "capture_view.gd",
         "playa.gd",
         "ring_diffusion.gdshaderinc",
