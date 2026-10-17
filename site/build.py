@@ -1,6 +1,7 @@
 """Build the Pages site from canonical media, with content-addressed asset URLs."""
 
 import argparse
+from dataclasses import dataclass
 import hashlib
 import html
 import json
@@ -18,16 +19,41 @@ sys.path.insert(0, str(ROOT / "demo"))
 from media import verify_rainbow_motion
 from estimates import estimate_masses, runtime_hours
 
+
+@dataclass(frozen=True)
+class Movie:
+    source: Path
+    seconds: int
+    poster_time: int = 0
+    rainbow_scene: Path = None
+
+
 MEDIA = {
-    "wide_movie": WIDE / "infinity-rainbow.mp4",
-    "narrow_movie": NARROW / "infinity-rainbow.mp4",
-    "silver_movie": WIDE / "infinity-rainbow-silver.mp4",
-    "wide_worn": WIDE / "night-mannequin.png",
-    "narrow_worn": NARROW / "night-mannequin.png",
-    "narrow_exploded": NARROW / "exploded.png",
+    "wide_movie": Movie(WIDE / "infinity-rainbow.mp4", 16, rainbow_scene=WIDE / "scene.json"),
+    "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
+    "silver_movie": Movie(WIDE / "infinity-rainbow-silver.mp4", 16, rainbow_scene=WIDE / "scene.json"),
+    "silver_narrow_movie": Movie(SITE / "assets/narrow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
+    "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
+    "wide_worn": SITE / "assets/wide-worn.png",
+    "narrow_worn": SITE / "assets/narrow-worn.png",
     "narrow_side": NARROW / "night-side.png",
     "size_comparison": SITE / "assets/size-comparison.png",
 }
+
+
+def verify_movie(movie):
+    stream = json.loads(subprocess.check_output([
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_streams", "-of", "json", str(movie.source)
+    ], text=True))["streams"][0]
+    if (stream["width"], stream["height"], int(stream["nb_frames"])) != (1280, 720, movie.seconds * 24):
+        raise RuntimeError(f"Unexpected clip dimensions or frame count: {movie.source}")
+    if abs(float(stream["duration"]) - movie.seconds) > 0.01:
+        raise RuntimeError(f"Unexpected clip duration: {movie.source}")
+    subprocess.run(["ffmpeg", "-v", "error", "-xerror", "-i", str(movie.source),
+                    "-f", "null", "-"], check=True)
+    if movie.rainbow_scene:
+        verify_rainbow_motion(movie.source, movie.rainbow_scene)
 
 
 def checked_bytes(source):
@@ -44,7 +70,8 @@ def build(output):
     assets = output / "assets"
     assets.mkdir(exist_ok=True)
     values, records = {}, {}
-    for key, source in MEDIA.items():
+    for key, media in MEDIA.items():
+        source = media.source if isinstance(media, Movie) else media
         data = checked_bytes(source)
         digest = hashlib.sha256(data).hexdigest()
         filename = key.replace("_", "-") + "-" + digest[:12] + source.suffix
@@ -52,18 +79,11 @@ def build(output):
         destination.write_bytes(data)
         values[key] = "assets/" + filename
         records[key] = {"source": source.relative_to(ROOT).as_posix(), "sha256": digest, "url": values[key]}
-        if source.suffix == ".mp4":
-            stream = json.loads(subprocess.check_output([
-                "ffprobe", "-v", "error", "-show_streams", "-of", "json", str(source)
-            ], text=True))["streams"][0]
-            if (stream["width"], stream["height"], int(stream["nb_frames"])) != (1280, 720, 384):
-                raise RuntimeError(f"Unexpected clip dimensions or frame count: {source}")
-            if abs(float(stream["duration"]) - 16) > 0.01:
-                raise RuntimeError(f"Unexpected clip duration: {source}")
-            verify_rainbow_motion(source, source.parent / "scene.json")
+        if isinstance(media, Movie):
+            verify_movie(media)
             poster = destination.with_suffix(".jpg")
             subprocess.run([
-                "ffmpeg", "-y", "-v", "error", "-i", str(source),
+                "ffmpeg", "-y", "-v", "error", "-ss", str(media.poster_time), "-i", str(source),
                 "-frames:v", "1", "-q:v", "3", str(poster)
             ], check=True)
             values[key.replace("movie", "poster")] = "assets/" + poster.name
@@ -110,7 +130,7 @@ def build(output):
     (output / ".nojekyll").touch()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     (output / "build-info.json").write_text(json.dumps({"commit": commit, "media": records, "dimensions_m": dimensions}, indent=2) + "\n")
-    print(f"SITE BUILD PASS: {output}; three verified MP4 loops and five comparison images")
+    print(f"SITE BUILD PASS: {output}; five verified MP4 loops and four comparison images")
 
 
 if __name__ == "__main__":
