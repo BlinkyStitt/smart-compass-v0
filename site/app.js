@@ -2,7 +2,6 @@ const videos = [...document.querySelectorAll('.film video')];
 const playButton = document.querySelector('#play-both');
 const status = document.querySelector('#play-status');
 const replayButton = document.querySelector('#replay-both');
-const note = '16-second loops · same camera and colour timing · sound off';
 let linked = false;
 let starting = false;
 
@@ -24,7 +23,7 @@ async function playBoth(restart = false) {
   linked = results.every(result => result.status === 'fulfilled');
   if (!linked) videos.forEach(video => video.pause());
   playButton.textContent = linked ? 'Pause both' : 'Play both';
-  status.textContent = linked ? note : 'Playback did not start. Use Play both or open the MP4 links.';
+  status.textContent = linked ? '' : 'Playback did not start. Use Play both or open the MP4 links.';
 }
 
 playButton.addEventListener('click', () => {
