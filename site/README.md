@@ -21,14 +21,21 @@ The `GitHub Pages` workflow builds on pull requests, and deploys on pushes to
 `master` or a manual run from `master`. Repository Pages must use GitHub Actions
 as its source. The build fetches only the LFS media needed by the site.
 
-After master builds and deployments finish, the workflow sends an authenticated
-ntfy result using repository variables `NTFY_URL` and `NTFY_TOPIC` and the Actions
-secret `NTFY_TOKEN`. Use a dedicated token that can only publish to the selected
-topic, as in `musical-lights-rs`. Success alerts link to the deployed site;
-failure alerts link to the workflow. Pull requests, cancelled runs, and superseded
-runs that did not deploy do not publish. Delivery has a 15-second timeout and
-cannot change deployment results. Check the notification job summary for delivery
-acceptance or failure.
+After a successful deployment, the workflow sends one ntfy notification linking
+to the deployed site, commit and workflow attempt. Configure these repository
+Actions variables and secret:
+
+- Variable `NTFY_URL`: `https://ntfy.stytt.com`
+- Variable `NTFY_TOPIC`: `deploy`
+- Secret `NTFY_TOKEN`: the existing ntfy bearer token with publish access
+
+Pull requests and failed, skipped or cancelled deployments send no success
+notification. The POST has a 15-second timeout and is not retried or redirected.
+Missing configuration, HTTP errors and transport failures produce a sanitized
+Actions warning and job summary without failing the deployment. Credentials and
+request/response bodies are not logged. An accepted POST does not prove delivery
+to subscribers; verify the deployed page and ntfy receipt separately after an
+authorized deployment.
 
 Both primary videos loop. Play both aligns their times, Pause both stops paired
 playback, and Restart together resets both to frame zero. Inline videos hide

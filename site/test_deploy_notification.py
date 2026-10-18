@@ -1,95 +1,148 @@
-import contextlib
+"""Exercise the workflow's notification code without contacting ntfy."""
+from contextlib import nullcontext, redirect_stdout
 import io
 import json
 import os
 from pathlib import Path
 import tempfile
+import textwrap
 import unittest
 from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError, URLError
 
-import deploy_notification
+
+WORKFLOW = Path(__file__).resolve().parents[1] / ".github/workflows/pages.yml"
+SCRIPT = compile(
+    textwrap.dedent(WORKFLOW.read_text().split("python3 - <<'PY'\n", 1)[1])
+    .rsplit("\nPY", 1)[0],
+    str(WORKFLOW),
+    "exec",
+)
 
 
-class NotificationTests(unittest.TestCase):
-    def jobs(self, build="success", deploy="success", url="https://compass.example/"):
-        return {
-            "build": {"result": build},
-            "deploy": {"result": deploy, "outputs": {"page_url": url}},
+class DeploymentNotificationTests(unittest.TestCase):
+    def setUp(self):
+        self.environment = {
+            "NTFY_URL": "https://ntfy.example.test",
+            "NTFY_TOPIC": "deploy",
+            "NTFY_TOKEN": "private-test-token",
+            "DEPLOYMENT_URL": "https://example.test/smart-compass/",
+            "GITHUB_SERVER_URL": "https://github.example.test",
+            "GITHUB_REPOSITORY": "owner/smart-compass-v0",
+            "GITHUB_SHA": "a" * 40,
+            "GITHUB_RUN_ID": "1234",
+            "GITHUB_RUN_ATTEMPT": "2",
         }
 
-    def message(self, jobs, latest="current"):
-        return deploy_notification.notification(
-            jobs, "current", latest, "owner/compass", "https://github.com/run/1"
+    def run_notification(self, *, error=None, status=200, missing=None, summary_error=None):
+        environment = dict(self.environment)
+        if missing:
+            environment[missing] = "  "
+        opener = MagicMock()
+        opener.open.side_effect = error
+        opener.open.return_value.__enter__.return_value.status = status
+        output = io.StringIO()
+        with tempfile.TemporaryDirectory() as directory:
+            summary = Path(directory) / "summary.md"
+            environment["GITHUB_STEP_SUMMARY"] = str(summary)
+            with (
+                patch.dict(os.environ, environment, clear=True),
+                patch("urllib.request.build_opener", return_value=opener) as factory,
+                redirect_stdout(output),
+                patch.object(Path, "open", side_effect=summary_error)
+                if summary_error else nullcontext(),
+            ):
+                # No SystemExit or exception: failures must preserve deployment success.
+                exec(SCRIPT, {})
+            summary_text = summary.read_text() if summary.exists() else ""
+        return opener, factory, output.getvalue(), summary_text
+
+    def assert_sanitized_failure(self, output, summary):
+        self.assertIn("::warning::ntfy:", output)
+        self.assertIn("## Deployment notification", summary)
+        self.assertNotIn("Sent:", summary)
+        for value in self.environment.values():
+            self.assertNotIn(value, output + summary)
+        self.assertNotIn("sensitive response body", output + summary)
+
+    def test_success_posts_one_authenticated_json_request_with_all_links(self):
+        opener, _, output, summary = self.run_notification()
+        opener.open.assert_called_once()
+        request = opener.open.call_args.args[0]
+        self.assertEqual(opener.open.call_args.kwargs, {"timeout": 15})
+        self.assertEqual(request.full_url, self.environment["NTFY_URL"])
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(request.get_header("Content-type"), "application/json")
+        self.assertEqual(request.get_header("Authorization"), "Bearer private-test-token")
+        base = "https://github.example.test/owner/smart-compass-v0"
+        self.assertEqual(json.loads(request.data), {
+            "topic": "deploy",
+            "title": "Smart Compass deployed",
+            "priority": 3,
+            "tags": ["white_check_mark"],
+            "click": self.environment["DEPLOYMENT_URL"],
+            "message": (
+                "owner/smart-compass-v0 deployed successfully.\n"
+                f"Commit: {base}/commit/{'a' * 40}\n"
+                "Website: https://example.test/smart-compass/\n"
+                f"Workflow: {base}/actions/runs/1234/attempts/2"
+            ),
+        })
+        self.assertEqual(output, "")
+        self.assertIn("Sent: deployment notification accepted by ntfy.", summary)
+        self.assertNotIn(self.environment["NTFY_TOKEN"], summary)
+
+    def test_missing_configuration_warns_without_making_a_request(self):
+        for key in ("NTFY_URL", "NTFY_TOPIC", "NTFY_TOKEN", "DEPLOYMENT_URL"):
+            with self.subTest(key=key):
+                opener, _, output, summary = self.run_notification(missing=key)
+                opener.open.assert_not_called()
+                self.assert_sanitized_failure(output, summary)
+                self.assertIn("configuration is missing", summary)
+
+    def test_http_errors_warn_without_retrying_or_exposing_response_details(self):
+        for status in (302, 401, 429, 500):
+            with self.subTest(status=status):
+                error = HTTPError(
+                    self.environment["NTFY_URL"], status,
+                    "private-test-token: sensitive response body", {}, None,
+                )
+                opener, _, output, summary = self.run_notification(error=error)
+                opener.open.assert_called_once()
+                self.assert_sanitized_failure(output, summary)
+                self.assertIn("HTTP error", summary)
+
+    def test_transport_timeout_and_invalid_configuration_are_nonfatal(self):
+        for error in (
+            URLError("private-test-token: sensitive response body"),
+            TimeoutError("private-test-token"),
+            ValueError("private-test-token"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                opener, _, output, summary = self.run_notification(error=error)
+                opener.open.assert_called_once()
+                self.assert_sanitized_failure(output, summary)
+                self.assertIn("configuration or transport error", summary)
+
+    def test_non_success_status_is_not_reported_as_sent(self):
+        opener, _, output, summary = self.run_notification(status=503)
+        opener.open.assert_called_once()
+        self.assert_sanitized_failure(output, summary)
+
+    def test_summary_write_failure_is_nonfatal_and_does_not_retry_delivery(self):
+        opener, _, output, summary = self.run_notification(
+            summary_error=PermissionError("private-test-token: sensitive response body"),
+        )
+        opener.open.assert_called_once()
+        self.assertEqual(summary, "")
+        self.assertEqual(
+            output,
+            "::warning::ntfy: Could not write the notification job summary.\n",
         )
 
-    def test_success_links_to_deployed_site(self):
-        message = self.message(self.jobs())
-        self.assertEqual(message["title"], "Smart compass deployed")
-        self.assertEqual(message["click"], "https://compass.example/")
-        self.assertIn("Website: https://compass.example/", message["message"])
-        self.assertIn("https://github.com/owner/compass/commit/current", message["message"])
-
-    def test_build_and_deploy_failures_link_to_workflow(self):
-        for jobs, failed in (
-            (self.jobs(build="failure", deploy="skipped", url=""), "build"),
-            (self.jobs(deploy="failure", url=""), "deploy"),
-        ):
-            with self.subTest(failed=failed):
-                message = self.message(jobs)
-                self.assertEqual(message["priority"], 4)
-                self.assertEqual(message["click"], "https://github.com/run/1")
-                self.assertIn("Site: not deployed", message["message"])
-                self.assertIn("Failed jobs: " + failed, message["message"])
-
-    def test_skips_cancelled_skipped_and_superseded_failures(self):
-        for jobs in (
-            self.jobs(deploy="cancelled"),
-            self.jobs(build="cancelled", deploy="skipped"),
-            self.jobs(deploy="skipped", url=""),
-            self.jobs(url=""),
-        ):
-            with self.subTest(jobs=jobs):
-                self.assertIsNone(self.message(jobs))
-        self.assertIsNone(self.message(self.jobs(deploy="failure"), latest="newer"))
-        self.assertIsNotNone(self.message(self.jobs(), latest="newer"))
-
-    def test_authenticated_delivery_and_visible_failure(self):
-        for outcome in ("accepted", "network failure", "missing configuration"):
-            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as folder:
-                summary = Path(folder) / "summary"
-                env = {
-                    "JOB_RESULTS": json.dumps(self.jobs()),
-                    "GITHUB_SHA": "current",
-                    "LATEST_SHA": "current",
-                    "GITHUB_REPOSITORY": "owner/compass",
-                    "GITHUB_SERVER_URL": "https://github.com",
-                    "GITHUB_RUN_ID": "1",
-                    "GITHUB_RUN_ATTEMPT": "2",
-                    "GITHUB_STEP_SUMMARY": str(summary),
-                    "NTFY_URL": "https://fixture.example",
-                    "NTFY_TOPIC": "deploy",
-                    "NTFY_TOKEN": "synthetic",
-                }
-                if outcome == "missing configuration":
-                    env["NTFY_TOKEN"] = ""
-                send = MagicMock(return_value=MagicMock())
-                if outcome == "network failure":
-                    send.side_effect = OSError("private detail")
-                output = io.StringIO()
-                with patch.dict(os.environ, env), patch.object(
-                    deploy_notification.urllib.request, "urlopen", send
-                ), contextlib.redirect_stdout(output):
-                    deploy_notification.main()
-                if outcome == "missing configuration":
-                    send.assert_not_called()
-                else:
-                    request = send.call_args.args[0]
-                    self.assertEqual(send.call_args.kwargs["timeout"], 15)
-                    self.assertEqual(request.get_header("Authorization"), "Bearer synthetic")
-                    self.assertEqual(json.loads(request.data)["topic"], "deploy")
-                if outcome == "accepted":
-                    self.assertEqual(summary.read_text(), "Deployment notification accepted by ntfy.\n")
-                else:
-                    self.assertIn("Deployment notification failed", summary.read_text())
-                self.assertNotIn("synthetic", output.getvalue())
-                self.assertNotIn("private detail", output.getvalue())
+    def test_redirects_are_disabled_to_keep_one_request_and_protect_credentials(self):
+        _, factory, _, _ = self.run_notification()
+        handler = factory.call_args.args[0]
+        self.assertIsNone(handler.redirect_request(
+            None, None, 302, "Found", {}, "https://another.example.test",
+        ))
