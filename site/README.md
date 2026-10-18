@@ -38,14 +38,23 @@ to subscribers; verify the deployed page and ntfy receipt separately after an
 authorized deployment.
 
 Both primary videos loop. Play both aligns their times, Pause both stops paired
-playback, and Restart together resets both to frame zero. Inline videos hide
+playback, and Restart together resets both to frame zero. Default startup aligns
+both at zero. Each start explicitly loads the clips and keeps both paused until
+they have playable buffered data at the shared position (`readyState >=
+HAVE_FUTURE_DATA`) and any alignment seek has finished; full downloads are not
+required. Both play requests are then issued together. The loading message stays
+until both starts succeed. A loading error or rejected start pauses both and
+restores the controls for retry; direct MP4 links provide a fallback. During
+playback, drift greater than 100 ms is corrected. Inline videos hide
 the browser player controls. Direct MP4 links remain available. Visitors who
 request reduced motion start with paused videos.
 
 The silver PETG comparison stays collapsed by default. It uses the same paired
 player as the primary comparison, with separate Play/Pause/Restart controls.
-Opening it starts both silver clips unless reduced motion is enabled. Closing
-it pauses both clips. The primary Wide and Narrow videos stay side by side,
+Opening it starts both silver clips through the same readiness gate unless
+reduced motion is enabled. Closing it cancels pending startup and pauses both
+clips; reopening starts a fresh attempt. Its playback is independent of the
+primary pair. The primary Wide and Narrow videos stay side by side,
 including at 320 CSS pixels. At 620 CSS pixels and below, the silver comparison
 stacks its full-width videos, and both comparisons stack their labeled
 descriptions below the videos. Wider layouts use two columns for the videos
