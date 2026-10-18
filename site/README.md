@@ -21,6 +21,15 @@ The `GitHub Pages` workflow builds on pull requests, and deploys on pushes to
 `master` or a manual run from `master`. Repository Pages must use GitHub Actions
 as its source. The build fetches only the LFS media needed by the site.
 
+After master builds and deployments finish, the workflow sends an authenticated
+ntfy result using repository variables `NTFY_URL` and `NTFY_TOPIC` and the Actions
+secret `NTFY_TOKEN`. Use a dedicated token that can only publish to the selected
+topic, as in `musical-lights-rs`. Success alerts link to the deployed site;
+failure alerts link to the workflow. Pull requests, cancelled runs, and superseded
+runs that did not deploy do not publish. Delivery has a 15-second timeout and
+cannot change deployment results. Check the notification job summary for delivery
+acceptance or failure.
+
 Both primary videos loop. Play both aligns their times, Pause both stops paired
 playback, and Restart together resets both to frame zero. Individual video
 controls and direct MP4 links remain available. Visitors who request reduced
