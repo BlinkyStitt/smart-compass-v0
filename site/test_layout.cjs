@@ -39,8 +39,8 @@ async function check() {
       assert.deepEqual(await page.locator('#films .film-heading h2').allTextContents(),
         ['01 Wide', '02 Narrow']);
       assert.ok(await page.locator('#films video').evaluateAll(videos =>
-        videos.length === 2 && videos.every(video => video.paused && video.controls && video.loop)),
-      'reduced-motion startup must be paused with individual controls and looping');
+        videos.length === 2 && videos.every(video => video.paused && !video.controls && video.loop)),
+      'reduced-motion startup must be paused and looping without browser controls');
 
       await page.locator('#play-both').click();
       await page.waitForFunction(() => [...document.querySelectorAll('#films video')]
@@ -53,14 +53,9 @@ async function check() {
         .every(video => !video.paused && video.currentTime < 2));
       await page.locator('#play-both').click();
 
-      // Exercise Chromium's native play/pause button, independently of the paired controls.
-      await page.locator('#wide-video').scrollIntoViewIfNeeded();
-      const box = await page.locator('#wide-video').boundingBox();
-      await page.mouse.click(box.x + 25, box.y + box.height - 50);
-      await page.waitForFunction(() => !document.querySelector('#wide-video').paused);
-      assert.ok(await page.locator('#narrow-video').evaluate(video => video.paused));
-      await page.mouse.click(box.x + 25, box.y + box.height - 50);
-      await page.waitForFunction(() => document.querySelector('#wide-video').paused);
+      assert.ok(await page.locator('video').evaluateAll(videos =>
+        videos.length === 5 && videos.every(video => !video.controls)),
+      'all inline videos must hide browser player controls');
       const links = await page.locator('#films .file-link').evaluateAll(elements => elements.map(element => element.href));
       assert.equal(links.length, 2);
       for (const link of links) {
@@ -68,7 +63,7 @@ async function check() {
         assert.ok(response.ok());
         assert.match(response.headers()['content-type'], /video\/mp4/);
       }
-      console.log(`PASS ${width}px: layout, reduced motion, paired and native playback, MP4 links`);
+      console.log(`PASS ${width}px: layout, reduced motion, paired playback, hidden browser controls, MP4 links`);
       await page.close();
     }
     const page = await browser.newPage({ reducedMotion: 'no-preference' });

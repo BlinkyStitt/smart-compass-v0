@@ -31,9 +31,9 @@ cannot change deployment results. Check the notification job summary for deliver
 acceptance or failure.
 
 Both primary videos loop. Play both aligns their times, Pause both stops paired
-playback, and Restart together resets both to frame zero. Individual video
-controls and direct MP4 links remain available. Visitors who request reduced
-motion start with paused videos.
+playback, and Restart together resets both to frame zero. Inline videos hide
+the browser player controls. Direct MP4 links remain available. Visitors who
+request reduced motion start with paused videos.
 
 The silver PETG comparison stays collapsed by default. It uses the same paired
 player as the primary comparison, with separate Play/Pause/Restart controls.
