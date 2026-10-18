@@ -6,3 +6,9 @@
 
 .film-stats{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0 4px}.film-stats dt{font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--dim)}.film-stats dd{font-size:27px;letter-spacing:-.7px;margin:3px 0 0;line-height:1.2}.film-stats small{font-size:14px;color:var(--dim);letter-spacing:0}.stats-note{font-size:12px;color:var(--dim);margin:7px 0 16px}.estimate-note{font-size:12px;color:var(--dim);padding-block:18px 28px;border-bottom:1px solid var(--line)}.estimate-note>p{max-width:1050px;margin:0 0 8px}.estimate-note strong{color:var(--ink);font-weight:500}.estimate-note summary{cursor:pointer;min-height:32px;padding-block:5px}.estimate-note details p{max-width:1050px;margin:8px 0 0}button:disabled{cursor:wait;opacity:.7}
 @media(max-width:620px){.masthead{align-items:start;padding-block:20px;gap:18px;flex-direction:column}nav{gap:25px;font-size:12px}.intro{padding-block:40px 30px}h1{letter-spacing:-1.8px}.lede{font-size:16px}.film-grid{grid-template-columns:1fr;gap:26px}.film-descriptions{grid-template-columns:1fr;gap:26px}.film-heading{display:block}.film-heading h2,.film-heading h3{margin:0 0 6px}.film-heading p{font-size:11px}.transport{flex-direction:column;padding-bottom:30px}.play-status{text-align:left}.story{grid-template-columns:1fr;padding-block:42px;gap:25px}.story-copy p{font-size:15px}.comparison,.details{padding-block:42px}.detail-grid{grid-template-columns:1fr;gap:26px}.section-top{margin-bottom:22px}h2{letter-spacing:-.8px}.eyebrow{margin-bottom:14px}footer{flex-direction:column;gap:8px}.spec-table th,.spec-table td{padding-right:18px}.film-stats{grid-template-columns:1fr;gap:12px}}
+
+@media(max-width:620px){
+  #films .film-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #films .film-heading h2{font-size:20px}
+  #films .film-heading h2 span{margin-right:6px}
+}
