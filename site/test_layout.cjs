@@ -2,17 +2,295 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
+async function playbackPage(browser, reducedMotion = 'no-preference') {
+  const page = await browser.newPage({ reducedMotion });
+  // Observe real play requests, with optional deferred completions for race tests.
+  await page.addInitScript(() => {
+    const play = HTMLMediaElement.prototype.play;
+    window.playCalls = [];
+    window.pendingStarts = [];
+    window.holdStarts = false;
+    HTMLMediaElement.prototype.play = function () {
+      if (!this.closest('[data-comparison]')) return play.call(this);
+      window.playCalls.push({
+        id: this.id,
+        pair: [...this.closest('[data-comparison]').querySelectorAll('video')]
+          .map(video => ({ ready: video.readyState, seeking: video.seeking, time: video.currentTime })),
+      });
+      if (window.throwStart === this.id) throw new Error('Controlled synchronous rejection');
+      const result = play.call(this);
+      if (!window.holdStarts) return result;
+      return result.then(() => new Promise((resolve, reject) => {
+        window.pendingStarts.push({ id: this.id, resolve, reject });
+      }));
+    };
+  });
+  return page;
+}
+
+async function waitPlaying(page, selector = '#films') {
+  await page.waitForFunction(selector => {
+    const pair = document.querySelector(selector);
+    const videos = [...pair.querySelectorAll('video')];
+    return pair.querySelector('[data-play-both]').textContent === 'Pause both'
+      && pair.querySelector('.play-status').textContent === ''
+      && videos.every(video => !video.paused && video.currentTime > 0.1)
+      && Math.abs(videos[0].currentTime - videos[1].currentTime) <= 0.10;
+  }, selector);
+}
+
+async function assertStopped(page, selector = '#films', message = '') {
+  await page.waitForFunction(({ selector, message }) => {
+    const pair = document.querySelector(selector);
+    return [...pair.querySelectorAll('video')].every(video => video.paused)
+      && pair.querySelector('[data-play-both]').textContent === 'Play both'
+      && pair.querySelector('.play-status').textContent === message;
+  }, { selector, message });
+  const state = await page.locator(selector).evaluate(pair => ({
+    paused: [...pair.querySelectorAll('video')].every(video => video.paused),
+    disabled: [...pair.querySelectorAll('button')].some(button => button.disabled),
+    button: pair.querySelector('[data-play-both]').textContent,
+    status: pair.querySelector('.play-status').textContent,
+  }));
+  assert.deepEqual(state, { paused: true, disabled: false, button: 'Play both', status: message });
+}
+
+async function holdMedia(page, source) {
+  let release;
+  let requested;
+  const gate = new Promise(resolve => { release = resolve; });
+  const seen = new Promise(resolve => { requested = resolve; });
+  await page.route(source, async route => {
+    requested();
+    await gate;
+    await route.continue();
+  });
+  return { release, seen };
+}
+
+async function checkPlayback(browser, url, sources) {
+  const silverPair = 'details[data-comparison]:has(#silver-wide-video)';
+  for (const slow of ['wide-video', 'narrow-video']) {
+    const page = await playbackPage(browser);
+    const held = await holdMedia(page, sources[slow]);
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await held.seen;
+    const fast = slow === 'wide-video' ? 'narrow-video' : 'wide-video';
+    await page.waitForFunction(id => document.getElementById(id).readyState >= 3, fast);
+    await page.waitForTimeout(200);
+    assert.ok(await page.locator('#films video').evaluateAll(videos =>
+      videos.every(video => video.paused && video.currentTime === 0)), 'neither clip starts early');
+    assert.equal(await page.evaluate(() => window.playCalls.length), 0);
+    assert.equal(await page.locator('#play-status').textContent(), 'Loading both clips…');
+    held.release();
+    await waitPlaying(page);
+    const calls = await page.evaluate(() => window.playCalls);
+    assert.deepEqual(calls.map(call => call.id).sort(), ['narrow-video', 'wide-video']);
+    assert.ok(calls.every(call => call.pair.every(video =>
+      video.ready >= 3 && !video.seeking && video.time < 0.1)), 'both requests see ready, aligned media');
+    await page.locator('#films video').evaluateAll(videos => videos.forEach(video => {
+      for (const event of ['loadedmetadata', 'canplay', 'seeked']) video.dispatchEvent(new Event(event));
+    }));
+    assert.equal(await page.evaluate(() => window.playCalls.length), 2, 'readiness events cannot duplicate starts');
+    console.log(`PASS delayed ${slow}: readiness gate, concurrent starts and 100 ms sync`);
+    await page.close();
+  }
+
+  const cached = await playbackPage(browser, 'reduce');
+  await cached.goto(url);
+  // Python's simple server has no Range support. Cache the real clips as blobs
+  // so nonzero seeking in this fixture does not depend on server capabilities.
+  await cached.locator('#films video').evaluateAll(videos => Promise.all(videos.map(async video => {
+    const response = await fetch(video.querySelector('source').src);
+    video.src = URL.createObjectURL(await response.blob());
+    video.preload = 'auto';
+    video.load();
+  })));
+  await cached.waitForFunction(() => [...document.querySelectorAll('#films video')]
+    .every(video => video.readyState >= 3 && video.seekable.length && video.seekable.end(0) > 8));
+  await cached.locator('#films video').evaluateAll(videos => {
+    videos[0].currentTime = 4;
+    videos[1].currentTime = 8;
+  });
+  await cached.waitForFunction(() => [...document.querySelectorAll('#films video')]
+    .every(video => video.readyState >= 3 && !video.seeking));
+  await cached.evaluate(() => {
+    const video = document.querySelector('#narrow-video');
+    const time = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime');
+    // Hold readiness AFTER alignment, even though both clips were initially cached.
+    Object.defineProperty(video, 'currentTime', {
+      configurable: true,
+      get() { return time.get.call(this); },
+      set(value) {
+        time.set.call(this, value);
+        Object.defineProperty(this, 'readyState', { configurable: true, value: 2 });
+        Object.defineProperty(this, 'seeking', { configurable: true, value: true });
+      },
+    });
+    window.reloads = 0;
+    document.querySelectorAll('#films video').forEach(video =>
+      video.addEventListener('loadstart', () => window.reloads++));
+  });
+  await cached.locator('#play-both').click();
+  assert.equal(await cached.evaluate(() => window.playCalls.length), 0, 'wait for data at the aligned position');
+  await cached.evaluate(() => {
+    const video = document.querySelector('#narrow-video');
+    Object.defineProperty(video, 'readyState', { configurable: true, value: 4 });
+    video.dispatchEvent(new Event('canplay'));
+  });
+  assert.equal(await cached.evaluate(() => window.playCalls.length), 0, 'wait for alignment seek to finish');
+  await cached.evaluate(() => {
+    const video = document.querySelector('#narrow-video');
+    delete video.currentTime;
+    delete video.readyState;
+    delete video.seeking;
+    video.dispatchEvent(new Event('seeked'));
+  });
+  await waitPlaying(cached);
+  assert.ok((await cached.evaluate(() => window.playCalls))
+    .every(call => call.pair.every(video => video.time >= 4 && video.time < 4.1)), 'resume at the first clip’s time');
+  assert.equal(await cached.evaluate(() => window.reloads), 0, 'cached readiness must not require new load events');
+  await cached.locator('#play-both').click();
+  await assertStopped(cached);
+  await cached.locator('#replay-both').click();
+  await waitPlaying(cached);
+  assert.ok((await cached.evaluate(() => window.playCalls.slice(-2)))
+    .every(call => call.pair.every(video => video.time < 0.1)), 'restart aligns at zero');
+  // Force drift on seekable media, then watch a real loop wrap.
+  assert.ok(await cached.locator('#films video').evaluateAll(videos => {
+    videos[0].currentTime = videos[0].duration - 0.3;
+    videos[1].currentTime = 3;
+    return videos[0].currentTime > 15 && videos[1].currentTime >= 3;
+  }), 'fixture must seek to opposite sides of the loop');
+  await cached.waitForFunction(() => document.querySelector('#wide-video').currentTime < 1);
+  await waitPlaying(cached);
+  await cached.locator('#films video').evaluateAll(videos => {
+    Object.defineProperty(videos[1], 'readyState', { configurable: true, value: 2 });
+    videos[0].currentTime = 5;
+    videos[1].currentTime = 2;
+  });
+  await cached.waitForTimeout(200);
+  assert.ok(await cached.locator('#narrow-video').evaluate(video => video.currentTime < 3),
+    'drift correction waits for buffered data');
+  await cached.locator('#narrow-video').evaluate(video => { delete video.readyState; });
+  await waitPlaying(cached);
+  await cached.locator(`${silverPair} summary`).click();
+  await assertStopped(cached, silverPair);
+  await cached.locator(`${silverPair} [data-play-both]`).click();
+  await waitPlaying(cached, silverPair);
+  await cached.locator(`${silverPair} summary`).click();
+  await assertStopped(cached, silverPair);
+  await waitPlaying(cached);
+  console.log('PASS cached readiness, post-alignment seek, resume/restart, loop/buffering sync, reduced-motion silver and pair independence');
+  await cached.close();
+
+  const silver = await playbackPage(browser);
+  const held = await holdMedia(silver, sources['silver-narrow-video']);
+  await silver.goto(url);
+  await waitPlaying(silver);
+  await silver.locator(`${silverPair} summary`).click();
+  await held.seen;
+  assert.equal(await silver.locator(`${silverPair} .play-status`).textContent(), 'Loading both clips…');
+  await silver.locator(`${silverPair} summary`).click();
+  await assertStopped(silver, silverPair);
+  held.release();
+  await silver.waitForFunction(() => document.querySelector('#silver-narrow-video').readyState >= 3);
+  await assertStopped(silver, silverPair);
+  await silver.evaluate(() => { window.holdStarts = true; });
+  await silver.locator(`${silverPair} summary`).click();
+  await silver.waitForFunction(() => window.pendingStarts.length === 2);
+  await silver.locator(`${silverPair} summary`).click();
+  await assertStopped(silver, silverPair);
+  await silver.locator(`${silverPair} summary`).click();
+  await silver.waitForFunction(() => window.pendingStarts.length === 4);
+  await silver.evaluate(() => {
+    window.pendingStarts[0].resolve();
+    window.pendingStarts[1].reject(new Error('Stale attempt'));
+  });
+  assert.equal(await silver.locator(`${silverPair} .play-status`).textContent(), 'Loading both clips…');
+  await silver.evaluate(() => window.pendingStarts[2].resolve());
+  assert.equal(await silver.locator(`${silverPair} .play-status`).textContent(), 'Loading both clips…',
+    'one successful request must not clear loading');
+  await silver.evaluate(() => window.pendingStarts[3].resolve());
+  await waitPlaying(silver, silverPair);
+  await waitPlaying(silver);
+  await silver.locator(`${silverPair} summary`).click();
+  await silver.evaluate(() => document.querySelector('#silver-wide-video').dispatchEvent(new Event('canplay')));
+  await assertStopped(silver, silverPair);
+  console.log('PASS silver close during loading, late readiness, reopen and stale play completions');
+  await silver.close();
+
+  // A rejected start or media error must fail before its companion settles.
+  for (const failure of ['rejection', 'media-error', 'source-error', 'synchronous-rejection']) {
+    const page = await playbackPage(browser, 'reduce');
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(url);
+    await page.waitForFunction(() => [...document.querySelectorAll('#films video')]
+      .every(video => video.readyState >= 3));
+    await page.evaluate(failure => {
+      window.holdStarts = true;
+      if (failure === 'synchronous-rejection') window.throwStart = 'narrow-video';
+    }, failure);
+    await page.locator('#play-both').click();
+    if (failure !== 'synchronous-rejection') {
+      await page.waitForFunction(() => window.pendingStarts.length === 2);
+      assert.equal(await page.locator('#play-status').textContent(), 'Loading both clips…');
+      // Repeated interactions and events must not issue another start.
+      await page.evaluate(() => {
+        document.querySelector('#replay-both').dispatchEvent(new Event('click'));
+        document.querySelector('#wide-video').dispatchEvent(new Event('canplay'));
+      });
+      assert.equal(await page.evaluate(() => window.playCalls.length), 2);
+      await page.evaluate(failure => {
+        if (failure === 'rejection') window.pendingStarts[1].reject(new Error('Controlled rejection'));
+        else document.querySelector(failure === 'source-error' ? '#wide-video source' : '#wide-video')
+          .dispatchEvent(new Event('error'));
+      }, failure);
+    }
+    const message = failure.endsWith('error')
+      ? 'A clip could not load. Use Play both or open its MP4 link to try it directly.'
+      : 'Playback did not start. Use Play both or open the MP4 links.';
+    await page.waitForFunction(message => document.querySelector('#play-status').textContent === message, message);
+    await assertStopped(page, '#films', message);
+    await page.evaluate(() => { window.holdStarts = false; window.throwStart = null; });
+    await page.locator('#play-both').click();
+    await waitPlaying(page);
+    await page.evaluate(() => window.pendingStarts.forEach(start => start.resolve()));
+    await waitPlaying(page);
+    assert.deepEqual(errors, [], 'stale failures must be handled without unhandled rejections');
+    console.log(`PASS ${failure}: prompt paired stop, restored controls, retry and stale completion`);
+    await page.close();
+  }
+
+  const failedLoad = await playbackPage(browser);
+  const blocked = await holdMedia(failedLoad, sources['narrow-video']);
+  await failedLoad.route(sources['wide-video'], route => route.abort('failed'));
+  await failedLoad.goto(url, { waitUntil: 'domcontentloaded' });
+  await blocked.seen;
+  await failedLoad.waitForFunction(() => document.querySelector('#play-status').textContent.includes('could not load'));
+  await assertStopped(failedLoad, '#films', 'A clip could not load. Use Play both or open its MP4 link to try it directly.');
+  blocked.release();
+  await failedLoad.waitForFunction(() => document.querySelector('#narrow-video').readyState >= 3);
+  assert.equal(await failedLoad.evaluate(() => window.playCalls.length), 0);
+  console.log('PASS network failure while companion loads: no late startup');
+  await failedLoad.close();
+}
+
 async function check() {
   const browser = await chromium.launch({ headless: true });
   const url = process.argv[2] || 'http://127.0.0.1:8080';
   const names = ['Rainbow • dark sectors', 'Rainbow • dark spirals',
     'Rainbow • dark diagonals', 'Silver PETG rings'];
   try {
+    let sources;
     for (const width of [320, 375, 620, 621, 1440, 1600, 1920]) {
       const page = await browser.newPage({
         viewport: { width, height: 900 }, reducedMotion: 'reduce',
       });
       await page.goto(url);
+      sources = await page.locator('[data-comparison] video').evaluateAll(videos =>
+        Object.fromEntries(videos.map(video => [video.id, video.querySelector('source').src])));
       await page.waitForFunction(() => [...document.querySelectorAll('#films video')]
         .every(video => video.readyState >= 2));
       const introduction = await page.evaluate(() => {
@@ -183,6 +461,8 @@ async function check() {
     });
     console.log('PASS disclosures: default autoplay, pause on close, close during startup');
     console.log('PASS default motion: both primary videos autoplay');
+    await page.close();
+    await checkPlayback(browser, url, sources);
   } finally {
     await browser.close();
   }
