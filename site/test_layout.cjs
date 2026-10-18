@@ -6,13 +6,32 @@ async function check() {
   const browser = await chromium.launch({ headless: true });
   const url = process.argv[2] || 'http://127.0.0.1:8080';
   try {
-    for (const width of [320, 375, 620, 621, 1440]) {
+    for (const width of [320, 375, 620, 621, 1440, 1600, 1920]) {
       const page = await browser.newPage({
         viewport: { width, height: 900 }, reducedMotion: 'reduce',
       });
       await page.goto(url);
       await page.waitForFunction(() => [...document.querySelectorAll('#films video')]
         .every(video => video.readyState >= 2));
+      const introduction = await page.evaluate(() => {
+        const rect = element => element.getBoundingClientRect().toJSON();
+        return {
+          blocks: [...document.querySelector('.intro').children].map(rect),
+          subtitle: rect(document.querySelector('.intro .lede')),
+          films: rect(document.querySelector('#films')),
+          story: rect(document.querySelector('.story-copy')),
+          largeCopy: document.querySelector('.story-copy .large') !== null,
+        };
+      });
+      assert.equal(introduction.blocks.length, 3, 'only status, headline and subtitle precede the videos');
+      for (let index = 1; index < introduction.blocks.length; index++) {
+        assert.ok(introduction.blocks[index].y >= introduction.blocks[index - 1].bottom,
+          'introduction must stay vertically stacked at every width');
+      }
+      assert.ok(introduction.subtitle.bottom <= introduction.films.y,
+        'short introduction must precede the comparison');
+      assert.ok(introduction.largeCopy && introduction.story.y >= introduction.films.bottom,
+        'large explanation must follow the comparison');
       await page.locator('#films').evaluate(element => element.scrollIntoView());
       const layout = await page.evaluate(() => {
         const rect = element => element.getBoundingClientRect().toJSON();
@@ -63,7 +82,7 @@ async function check() {
         assert.ok(response.ok());
         assert.match(response.headers()['content-type'], /video\/mp4/);
       }
-      console.log(`PASS ${width}px: layout, reduced motion, paired playback, hidden browser controls, MP4 links`);
+      console.log(`PASS ${width}px: stacked introduction, layout, reduced motion, paired playback, hidden browser controls, MP4 links`);
       await page.close();
     }
     const page = await browser.newPage({ reducedMotion: 'no-preference' });
