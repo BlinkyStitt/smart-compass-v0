@@ -91,7 +91,9 @@ func _ready():
 	reflectance=float(metadata.comparison.front_reflectance)
 	transmission=float(metadata.comparison.front_transmission)
 	if automated:
-		get_tree().create_timer(600).timeout.connect(func(): push_error("Automation timed out"); get_tree().quit(1))
+		# Preserve the original 300-second budget per loop: five captures, formerly two.
+		var automation_seconds=1500 if not capture_dir.is_empty() else 600
+		get_tree().create_timer(automation_seconds).timeout.connect(func(): push_error("Automation timed out"); get_tree().quit(1))
 	if not capture_dir.is_empty() or args.has("--gpu-check"):
 		# Explicit capture draws also work when macOS hides the window.
 		RenderingServer.render_loop_enabled=false
@@ -785,11 +787,11 @@ func _capture():
 	groups=[true,true,true,true]
 	for material_index in range(RING_MATERIALS.size()):
 		_set_ring_material(material_index)
-		for style in ["rainbow"]:
+		for style in (["rainbow", "rainbow-dark-sectors", "rainbow-dark-spirals", "rainbow-dark-diagonals"] if material_index==0 else ["rainbow"]):
 			var capture_style=style+("-silver" if material_index==1 else "")
 			# A uniform precharged state makes the repeating colour loop continuous.
 			_reset_glow(0.35,0.20)
-			pattern={"rainbow":0,"ocean":8,"sunset":9}[style]
+			pattern={"rainbow":0,"rainbow-dark-sectors":10,"rainbow-dark-spirals":11,"rainbow-dark-diagonals":12}[style]
 			caption.text="%s | %s | worn night preview | unmeasured optics" % [metadata.ring_materials[RING_MATERIALS[material_index]].label,style.capitalize()]
 			for frame in range(CaptureView.FRAMES):
 				_night_pose(frame)
@@ -798,7 +800,7 @@ func _capture():
 				_update_colours()
 				await _settle()
 				assert(get_viewport().get_texture().get_image().save_png(capture_dir.path_join("gradient-%s-%04d.png" % [capture_style,frame]))==OK)
-	print("DEMO CAPTURE PASS: two matched rainbow material loops, 384 frames each")
+	print("DEMO CAPTURE PASS: five matched rainbow loops, 384 frames each")
 	get_tree().quit()
 
 func _benchmark():

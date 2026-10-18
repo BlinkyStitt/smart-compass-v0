@@ -55,7 +55,9 @@ func _ready():
 	rear_t=float(metadata.comparison.rear_transmission)
 	automated = args.has("--check") or args.has("--gpu-check") or args.has("--capture")
 	if args.has("--capture"): capture_dir = args[args.find("--capture")+1]
-	get_tree().create_timer(1800).timeout.connect(func(): push_error("Compact preview timed out"); get_tree().quit(1))
+	# Four captured loops retain the original 1800-second per-loop budget.
+	var automation_seconds=7200 if not capture_dir.is_empty() else 1800
+	get_tree().create_timer(automation_seconds).timeout.connect(func(): push_error("Compact preview timed out"); get_tree().quit(1))
 	colour_image = Image.create(256,metadata.counts.size(),false,Image.FORMAT_RGBAF)
 	enabled.resize(metadata.counts.size())
 	enabled.fill(true)
@@ -350,13 +352,14 @@ func _capture():
 	enabled.fill(false)
 	await _save("night-leds-off.png")
 	enabled.fill(true)
-	pattern=0
-	caption.text="Glow PETG | Rainbow | worn night preview | unmeasured optics"
-	for frame in range(CaptureView.FRAMES):
-		_night_pose(frame)
-		pattern_time=frame/CaptureView.FPS
-		await _save("gradient-rainbow-%04d.png" % frame)
-		if frame%96==0: print("STACKED CAPTURE: rainbow "+str(frame)+"/384",true)
+	for style in ["rainbow", "rainbow-dark-sectors", "rainbow-dark-spirals", "rainbow-dark-diagonals"]:
+		pattern={"rainbow":0,"rainbow-dark-sectors":5,"rainbow-dark-spirals":6,"rainbow-dark-diagonals":7}[style]
+		caption.text="Glow PETG | %s | worn night preview | unmeasured optics" % style.capitalize()
+		for frame in range(CaptureView.FRAMES):
+			_night_pose(frame)
+			pattern_time=frame/CaptureView.FPS
+			await _save("gradient-%s-%04d.png" % [style,frame])
+			if frame%96==0: print("STACKED CAPTURE: "+style+" "+str(frame)+"/384",true)
 	_set_presentation(2)
 	pattern=0
 	pattern_time=2

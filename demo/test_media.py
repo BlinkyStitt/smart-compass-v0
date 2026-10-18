@@ -1,7 +1,7 @@
 """Reject the animation failures that a small central RGB difference misses."""
 import colorsys
 import unittest
-from media import SAMPLE_FRAMES, _colour_bounds, _read_phase, _rotation_report
+from media import SAMPLE_FRAMES, _masked_report, _colour_bounds, _read_phase, _rotation_report
 
 
 class RotationTests(unittest.TestCase):
@@ -68,3 +68,33 @@ class MaterialPhaseTests(unittest.TestCase):
         self.assertTrue(all(r["coherence"] < 0.65 for r in readings))
         with self.assertRaisesRegex(RuntimeError, "no coherent spatial rainbow"):
             _rotation_report(readings, "outer")
+
+
+class MaskTests(unittest.TestCase):
+    def fields(self, wrong=False, canonical=False):
+        fields = []
+        for frame in range(48):
+            colours = []
+            for led in range(64):
+                mask = float((led + frame) % 8 >= 4)
+                actual = (1 - mask) if wrong else mask
+                if canonical:
+                    actual = 1
+                rgb = colorsys.hsv_to_rgb((led / 64 - frame / 24) % 1, 1, 1)
+                colours.append(([.15 + .6 * c * actual for c in rgb], mask))
+            fields.append(colours)
+        return fields
+
+    def test_stored_glow_offset_allows_correct_mask(self):
+        self.assertGreater(_masked_report(self.fields(), "board"), .9)
+
+    def test_wrong_shape_and_unmasked_rainbow_fail(self):
+        for fields in (self.fields(wrong=True), self.fields(canonical=True)):
+            with self.assertRaisesRegex(RuntimeError, "dark mask mismatch"):
+                _masked_report(fields, "outer")
+
+    def test_frozen_field_fails(self):
+        fields = self.fields()
+        frozen = [[(fields[0][i][0], mask) for i, (_, mask) in enumerate(field)] for field in fields]
+        with self.assertRaisesRegex(RuntimeError, "dark mask mismatch"):
+            _masked_report(frozen, "board")

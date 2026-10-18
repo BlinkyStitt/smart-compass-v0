@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'hardware/enclosure'))
 import cad
 from reference import cases
-from media import verify_rainbow_motion
+from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 
 
 
@@ -53,27 +53,32 @@ def capture():
         frames = Path(tmp)
         godot('--', '--capture', str(frames), '--build-validation', marker='DEMO CAPTURE PASS')
         shutil.copyfile(frames/'night-mannequin.png',output/'night-mannequin.png')
-        for suffix in ('','-silver'):
+        for suffix in ('','-silver', *('-dark-' + style for style in DARK_STYLES)):
             movie=output/('infinity-rainbow'+suffix+'.mp4')
             gif=movie.with_suffix('.gif')
             subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate','24','-i',str(frames/('gradient-rainbow'+suffix+'-%04d.png')),
                             '-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(movie)],check=True)
+            if suffix.startswith('-dark-'):
+                continue
             subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(movie),
                             '-filter_complex','fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse',
                             '-loop','0',str(gif)],check=True)
-    for name in ('night-mannequin.png','infinity-rainbow.mp4','infinity-rainbow-silver.mp4','infinity-rainbow.gif','infinity-rainbow-silver.gif'):
+    for name in ('night-mannequin.png','infinity-rainbow.mp4','infinity-rainbow-silver.mp4','infinity-rainbow.gif','infinity-rainbow-silver.gif', *('infinity-rainbow-dark-' + style + '.mp4' for style in DARK_STYLES)):
         file = output/name
         probe = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(file)],text=True))['streams'][0]
         size=(800,450) if name.endswith('.gif') else (1280,720)
         assert (probe['width'],probe['height'])==size
         if name.endswith('.mp4'):
-            assert int(probe['nb_frames'])==384 and abs(float(probe['duration'])-16)<.01
+            assert int(probe['nb_frames'])==384 and abs(float(probe['duration'])-16)<.01 and probe['r_frame_rate']=='24/1'
         if name.endswith('.gif'):
             assert int(probe['nb_frames'])==192 and abs(float(probe['duration'])-16)<.1
             assert b'NETSCAPE2.0\x03\x01\x00\x00' in file.read_bytes(), 'GIF must repeat forever'
         subprocess.run(['ffmpeg','-v','error','-xerror','-i',str(file),'-f','null','-'],check=True)
         if name.endswith('.mp4'):
-            verify_rainbow_motion(file, output/"scene.json")
+            if '-dark-' in name:
+                verify_masked_motion(file, output/"scene.json", name.split('-dark-')[1].split('.')[0])
+            else:
+                verify_rainbow_motion(file, output/"scene.json")
     print('DEMO MEDIA PASS: matched rainbow loops decoded',flush=True)
 
 

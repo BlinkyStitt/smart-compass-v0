@@ -74,6 +74,9 @@ infinity-rainbow-silver.gif
 infinity-rainbow-silver.mp4
 infinity-rainbow.gif
 infinity-rainbow.mp4
+infinity-rainbow-dark-sectors.mp4
+infinity-rainbow-dark-spirals.mp4
+infinity-rainbow-dark-diagonals.mp4
 inner-light-shield.svg
 night-mannequin.png
 outer-light-shield.svg
