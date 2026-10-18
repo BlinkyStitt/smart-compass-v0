@@ -1,7 +1,7 @@
 # Smart compass on GitHub Pages
 
-The site compares the canonical wide and narrow rainbow MP4s, explains the
-hardware, and shows native CAD size and assembly images. It uses plain HTML,
+The site compares the canonical Wide and Narrow rainbows and three paired
+rainbows with moving dark regions, explains the hardware, and shows native CAD size and assembly images. It uses plain HTML,
 CSS and JavaScript. The build needs Python 3.9+, Git LFS, FFmpeg and FFprobe.
 
 ```sh
@@ -12,7 +12,7 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory /path/to/compass-pages
 Rebuild changed enclosure outputs with their owning commands before building
 the site. `build.py` checks each MP4's dimensions, duration and decoding. It also
 checks spatial rainbow rotation on the board and outside ring in the four
-rainbow clips. It rejects missing LFS media. Asset
+canonical rainbow clips. It rejects missing LFS media. Asset
 filenames include their content hash so revised clips cannot reuse stale URLs.
 The front comparison uses the 250 mm wide and 200 mm narrow native CAD renders
 at the same scale, with dimension lines.
@@ -98,3 +98,21 @@ and fitting allowances provisionally. The narrow design has no final fitting BOM
 Runtime uses the documented 37 Wh pack, 85% efficiency and 1.25 A total at 5 V. It
 is an energy calculation before reserve, aging, temperature and cutoff losses;
 useful brightness at that cap remains unverified. The design target is four hours.
+
+
+Three paired comparisons immediately before Silver PETG show Rainbow • dark
+sectors, dark spirals and dark diagonals on the same posed mannequin. Each
+starts collapsed and paused, with generated posters, Wide/Narrow labels,
+independent synchronized controls and direct MP4 links. Opening starts both
+clips unless reduced motion is enabled; closing pauses both. The layout stacks
+at 620 CSS pixels, like Silver PETG.
+
+Regenerate native exports with `just cad` followed by
+`python3 designs/stacked/run.py build` before building this site. The six
+`infinity-rainbow-dark-*.mp4` assets live in their designs' exports and use LFS;
+the Pages workflow fetches them. The build verifies 1280 × 720, 384 frames,
+16 seconds, 24 fps, full decoding, moving mask identity and loop joins. The four
+canonical rainbow clips retain their separate strict rotation checks. All eleven
+movies get content-hashed URLs and generated posters. Stored glow may remain
+visible during black LED intent; these renders establish no electrical savings
+or battery runtime.

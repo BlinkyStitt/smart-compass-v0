@@ -16,7 +16,7 @@ SITE = ROOT / "site"
 WIDE = ROOT / "hardware/enclosure/exports"
 NARROW = ROOT / "designs/stacked/exports"
 sys.path.insert(0, str(ROOT / "demo"))
-from media import verify_rainbow_motion
+from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 from estimates import estimate_masses, runtime_hours
 
 
@@ -26,6 +26,7 @@ class Movie:
     seconds: int
     poster_time: int = 0
     rainbow_scene: Path = None
+    masked_style: str = None
 
 
 MEDIA = {
@@ -38,6 +39,14 @@ MEDIA = {
     "narrow_worn": SITE / "assets/narrow-worn.png",
     "narrow_side": NARROW / "night-side.png",
     "size_comparison": SITE / "assets/size-comparison.png",
+    **{
+        f"{design}_dark_{style}_movie": Movie(
+            folder / f"infinity-rainbow-dark-{style}.mp4", 16,
+            rainbow_scene=folder / "scene.json", masked_style=style,
+        )
+        for style in DARK_STYLES
+        for design, folder in (("wide", WIDE), ("narrow", NARROW))
+    },
 }
 
 
@@ -48,11 +57,15 @@ def verify_movie(movie):
     ], text=True))["streams"][0]
     if (stream["width"], stream["height"], int(stream["nb_frames"])) != (1280, 720, movie.seconds * 24):
         raise RuntimeError(f"Unexpected clip dimensions or frame count: {movie.source}")
+    if stream["r_frame_rate"] != "24/1" or stream["avg_frame_rate"] != "24/1":
+        raise RuntimeError(f"Unexpected clip frame rate: {movie.source}")
     if abs(float(stream["duration"]) - movie.seconds) > 0.01:
         raise RuntimeError(f"Unexpected clip duration: {movie.source}")
     subprocess.run(["ffmpeg", "-v", "error", "-xerror", "-i", str(movie.source),
                     "-f", "null", "-"], check=True)
-    if movie.rainbow_scene:
+    if movie.masked_style:
+        verify_masked_motion(movie.source, movie.rainbow_scene, movie.masked_style)
+    elif movie.rainbow_scene:
         verify_rainbow_motion(movie.source, movie.rainbow_scene)
 
 
@@ -130,7 +143,7 @@ def build(output):
     (output / ".nojekyll").touch()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     (output / "build-info.json").write_text(json.dumps({"commit": commit, "media": records, "dimensions_m": dimensions}, indent=2) + "\n")
-    print(f"SITE BUILD PASS: {output}; five verified MP4 loops and four comparison images")
+    print(f"SITE BUILD PASS: {output}; {sum(isinstance(media, Movie) for media in MEDIA.values())} verified MP4 loops and four comparison images")
 
 
 if __name__ == "__main__":

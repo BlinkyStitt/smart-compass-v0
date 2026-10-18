@@ -176,3 +176,14 @@ only the camera moves. The movie check registers the actual CAD source locations
 through those views and requires two spatial rainbow turns on both the Fibonacci
 board and outside ring. A frozen ring, slow hue drift, wrong direction or uniform
 colour cycling fails.
+
+
+The native build also captures glow-material dark sectors, spirals and diagonals
+using shared `demo/patterns.gd` (Narrow IDs 5/6/7; Wide IDs 10/11/12).
+Regenerate Wide first with `just cad`, then run
+`python3 designs/stacked/run.py build`. The three additional
+`exports/infinity-rainbow-dark-{sectors,spirals,diagonals}.mp4` files use the same
+16-second, 1280 × 720, 24 fps worn night figure eight, scenery, camera,
+brightness, exposure and actual pendant size. Masked clips check registered
+brightness masks and the cycle join separately from canonical hue rotation.
+The build updates the source/export freshness manifest with all generated media.

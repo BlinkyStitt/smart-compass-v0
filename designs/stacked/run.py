@@ -16,7 +16,7 @@ from layout import HERE, ROOT
 from optics import cases, side_cases
 
 sys.path.insert(0, str(ROOT / "demo"))
-from media import verify_rainbow_motion
+from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 
 EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
@@ -67,6 +67,8 @@ EXPECTED = EXPECTED | frozenset(
     for style in ("rainbow",)
     for suffix in (".mp4", ".gif")
 )
+
+EXPECTED |= frozenset(f"infinity-rainbow-dark-{style}.mp4" for style in DARK_STYLES)
 
 
 def digest(path):
@@ -139,7 +141,7 @@ def build_lock():
         yield
 
 
-def execute(command, *, env=None, log=None):
+def execute(command, *, env=None, log=None, timeout=1800):
     result = subprocess.run(
         command,
         cwd=ROOT,
@@ -147,7 +149,7 @@ def execute(command, *, env=None, log=None):
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        timeout=1800,
+        timeout=timeout,
         check=False,
     )
     if log:
@@ -193,7 +195,9 @@ def godot(project, assets, *arguments, headless=False):
     elif "--gpu-check" in arguments:
         command += ["--quit-after", "7200"]
     command += ["--", "--assets", str(assets), *map(str, arguments)]
-    output = execute(command, log=HERE / ".build/godot-last.log")
+    # Four loops retain the original 1800-second per-loop capture budget.
+    output = execute(command, log=HERE / ".build/godot-last.log",
+                     timeout=7200 if "--capture" in arguments else 1800)
     if "SCRIPT ERROR:" in output or "ERROR:" in output:
         raise RuntimeError(output[-14000:])
     print(output.strip(), flush=True)
@@ -243,7 +247,7 @@ def capture(assets, stage):
     for name in EXPECTED:
         if name.endswith(".png") and name != "cell-map.png":
             shutil.copyfile(frames / name, assets / name)
-    for style in ("rainbow",):
+    for style in ("rainbow", *("rainbow-dark-" + name for name in DARK_STYLES)):
         source = str(frames / f"gradient-{style}-%04d.png")
         execute(
             [
@@ -266,21 +270,22 @@ def capture(assets, stage):
                 str(assets / f"infinity-{style}.mp4"),
             ]
         )
-        execute(
-            [
-                "ffmpeg",
-                "-y",
-                "-loglevel",
-                "error",
-                "-i",
-                str(assets / f"infinity-{style}.mp4"),
-                "-filter_complex",
-                "fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse",
-                "-loop",
-                "0",
-                str(assets / f"infinity-{style}.gif"),
-            ]
-        )
+        if style == "rainbow":
+            execute(
+                [
+                    "ffmpeg",
+                    "-y",
+                    "-loglevel",
+                    "error",
+                    "-i",
+                    str(assets / f"infinity-{style}.mp4"),
+                    "-filter_complex",
+                    "fps=12,scale=800:450,split[a][b];[a]palettegen[p];[b][p]paletteuse",
+                    "-loop",
+                    "0",
+                    str(assets / f"infinity-{style}.gif"),
+                ]
+            )
         probe = json.loads(
             subprocess.check_output(
                 [
@@ -300,7 +305,7 @@ def capture(assets, stage):
             stream["height"],
             stream["nb_frames"],
             stream["r_frame_rate"],
-        ) != (1280, 720, "384", "24/1"):
+        ) != (1280, 720, "384", "24/1") or abs(float(stream["duration"]) - 16) > .01:
             raise RuntimeError("Invalid matched movie dimensions or timing")
         execute(
             [
@@ -315,7 +320,10 @@ def capture(assets, stage):
                 "-",
             ]
         )
-        verify_rainbow_motion(assets / f"infinity-{style}.mp4", assets / "scene.json")
+        if style == "rainbow":
+            verify_rainbow_motion(assets / f"infinity-{style}.mp4", assets / "scene.json")
+        else:
+            verify_masked_motion(assets / f"infinity-{style}.mp4", assets / "scene.json", style.removeprefix("rainbow-dark-"))
     comparison = {
         "reference_commit": subprocess.check_output(
             ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure", "demo"],

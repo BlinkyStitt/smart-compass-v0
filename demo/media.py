@@ -8,6 +8,7 @@ import statistics
 import subprocess
 
 WIDTH, HEIGHT = 640, 360
+DARK_STYLES = ("sectors", "spirals", "diagonals")
 SAMPLE_FRAMES = tuple(range(0, 384, 8)) + (383,)
 
 
@@ -58,7 +59,7 @@ def _rotation_report(readings, region):
     }
 
 
-def _points(metadata, frame):
+def _points(metadata, frame, masked_style=None):
     # Register actual CAD locations through the shared figure-eight camera. The widest
     # luminous sleeve is the outside ring in either enclosure.
     sleeves = [p for p in metadata["parts"] if p["role"] in ("side", "sleeve")]
@@ -109,6 +110,17 @@ def _points(metadata, frame):
         px = round(WIDTH / 2 + sum(a * b for a, b in zip(delta, right)) * scale)
         py = round(HEIGHT / 2 - sum(a * b for a, b in zip(delta, up)) * scale)
         if 1 <= px < WIDTH - 1 and 1 <= py < HEIGHT - 1:
+            if masked_style:
+                # Independent reference to the documented position/time masks;
+                # compare brightness intent, allowing fixed stored-glow offsets.
+                angle = math.atan2(x, y) / math.tau
+                qx, qy = (x / .0795, y / .0795) if region == "board" else (x / r, y / r)
+                t = frame / 192
+                phase = {"sectors": 2 * angle - t,
+                         "spirals": 3 * angle - 2 * math.hypot(qx, qy) + t,
+                         "diagonals": .75 * (qx + qy) - t}[masked_style]
+                edge = max(0, min(1, (abs((phase + .5) % 1 - .5) - .18) / .08))
+                base = edge * edge * (3 - 2 * edge)
             result[region].append((px, py, base))
     return result
 
@@ -205,4 +217,55 @@ def verify_rainbow_motion(movie, scene):
             f"phase error {report[region]['phase_error_turns']:.3f}",
             flush=True,
         )
+    return report
+
+
+def _masked_report(samples, region):
+    """Require the moving dark shape in registered CAD locations, not black pixels."""
+    low, high = _colour_bounds(samples)
+    expected, observed = [], []
+    for colours in samples:
+        for rgb, mask in colours:
+            expected.append(mask)
+            observed.append(max((rgb[k] - low[k]) / (high[k] - low[k]) for k in range(3)))
+    mx, my = statistics.mean(expected), statistics.mean(observed)
+    variance = sum((x - mx) ** 2 for x in expected) * sum((y - my) ** 2 for y in observed)
+    correlation = (sum((x - mx) * (y - my) for x, y in zip(expected, observed)) /
+                   math.sqrt(variance)) if variance else 0
+    if correlation < .45:
+        raise RuntimeError(f"{region} moving dark mask mismatch: correlation={correlation:.3f}")
+    return correlation
+
+
+def verify_masked_motion(movie, scene, style):
+    """Check mask identity/motion on board and outside ring, plus the cycle join.
+
+    Source-level Godot checks cover exact-black intent and every mapped row.
+    Rendered samples include diffusion and stored glow; they need not be black.
+    Canonical rainbow rotation remains a separate, unchanged validation path.
+    """
+    if style not in DARK_STYLES:
+        raise RuntimeError("Unknown dark rainbow style: " + style)
+    metadata = json.loads(Path(scene).read_text())
+    raw = subprocess.check_output([
+        "ffmpeg", "-v", "error", "-i", str(movie),
+        "-vf", "select='not(mod(n,8))+eq(n,383)',scale=640:360", "-frames:v", "49",
+        "-fps_mode", "vfr", "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+    ])
+    size = WIDTH * HEIGHT * 3
+    if len(raw) != size * len(SAMPLE_FRAMES):
+        raise RuntimeError("Incomplete masked motion samples: " + str(movie))
+    frames = [memoryview(raw)[i * size:(i + 1) * size] for i in range(len(SAMPLE_FRAMES))]
+    report = {}
+    for region in ("board", "outer"):
+        samples = [_sample_rgb(frame, _points(metadata, n, style)[region])
+                   for n, frame in zip(SAMPLE_FRAMES, frames)]
+        report[region] = _masked_report(samples, region)
+    # A one-frame join should be smaller than a normal eight-frame motion step.
+    difference = lambda a, b: statistics.mean(abs(x - y) for x, y in zip(a, b))
+    join = difference(frames[0], frames[-1])
+    step = statistics.mean(difference(a, b) for a, b in zip(frames[:-2], frames[1:-1]))
+    if join > max(2, step):
+        raise RuntimeError(f"Discontinuous masked loop boundary: {movie}; {join:.3f} > {step:.3f}")
+    print(f"MOVIE MASK PASS: {Path(movie).name}; {report}; join={join:.3f}", flush=True)
     return report

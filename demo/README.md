@@ -18,7 +18,8 @@ The saved FreeCAD model now uses the selected black LED centre finish on one
 250 mm sheet of 3 mm nominal black LED acrylic. The demo compares that coating with a full-mirror coating on
 the same mechanical assembly. Both have a black masked outer rim.
 
-The capture command generates the matching rainbow loops only. Use the app to
+The capture command generates the canonical rainbow loops and three glow-material
+rainbows with moving dark regions. Use the app to
 inspect other patterns, lighting, coating finishes, and exploded assembly.
 
 ## Ring material versions
@@ -101,8 +102,8 @@ exposure. For a stationary comparison, pause first.
 ## Rainbows with moving dark regions
 
 Both viewers append **Rainbow • dark sectors**, **Rainbow • dark spirals**,
-and **Rainbow • dark diagonals** to their menus. Existing menu IDs, the default
-spiral rainbow, and movie selections stay the same. Each new style multiplies
+and **Rainbow • dark diagonals** to their menus. Existing menu IDs and the default
+spiral rainbow stay the same. Each new style multiplies
 the existing rainbow by a continuous mask. No random, frame-count, or stored
 pattern state enters the calculation.
 
@@ -352,3 +353,19 @@ eight-second colour cycle. Captures upload LED colours before saving each frame.
 The media check compares central LED colours at equal camera poses and different
 phases. It also samples identical phases to distinguish colour motion from
 codec and render noise.
+
+
+Regenerate all Wide loops with `just cad`, then all Narrow loops with
+`python3 designs/stacked/run.py build`, then publish with
+`python3 site/build.py --output /path/to/compass-pages`. Each design owns its
+`infinity-rainbow-dark-{sectors,spirals,diagonals}.mp4` exports. These use the
+same 384-frame, 24 fps, 1280 × 720 figure eight and worn night scene as the
+canonical rainbow, covering two eight-second cycles. Only glow PETG is captured
+for the dark variants. No extra silver variants or GIFs are generated.
+
+The masked movie check registers CAD board and outside-ring positions through
+the moving camera and compares observed brightness to each documented mask,
+allowing fixed stored glow, then checks the loop join. Canonical rotation
+validation remains strict and separate. Source checks still establish exact
+black intent and coverage of every ring/side row. Inspect saved loops for mask
+shape, wearer context and transitions; this is optical evidence only.
