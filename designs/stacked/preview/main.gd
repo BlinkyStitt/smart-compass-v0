@@ -1,10 +1,11 @@
 extends Node3D
 
-const Mannequin = preload("res://mannequin.gd")
 const Patterns = preload("res://patterns.gd")
+const PatternChecks = preload("res://pattern_checks.gd")
+const Mannequin = preload("res://mannequin.gd")
 const CaptureView = preload("res://capture_view.gd")
 const Playa = preload("res://playa.gd")
-const PATTERNS = ["Spiral rainbow", "Ocean gradient", "Sunset gradient", "White", "Single pixel"]
+const PATTERNS = ["Spiral rainbow", "Ocean gradient", "Sunset gradient", "White", "Single pixel"] + Patterns.DARK_NAMES
 # Match design one's camera world coordinates; keep actual pendant dimensions.
 const COMPARISON_FRONT_Z = 0.0367
 var metadata: Dictionary
@@ -195,6 +196,9 @@ func _pattern_colour(led,time: float):
 	var radius=sqrt(p[0]*p[0]+p[1]*p[1])/0.0795 if int(led.group)==0 else 1.0
 	match pattern:
 		0: return Patterns.rainbow(Vector2(p[0],p[1]),int(led.group)==0,time)
+		5: return Patterns.dark_sectors(Vector2(p[0],p[1]),int(led.group)==0,time)
+		6: return Patterns.dark_spirals(Vector2(p[0],p[1]),int(led.group)==0,time)
+		7: return Patterns.dark_diagonals(Vector2(p[0],p[1]),int(led.group)==0,time)
 		1: return Color.from_hsv(0.55+0.12*sin(TAU*(angle+2*radius-time/8)),1,1)
 		2: return Color.from_hsv(fposmod(0.98+0.14*(0.5+0.5*sin(TAU*(angle+2*radius-time/8))),1),1,1)
 		3: return Color.WHITE
@@ -422,6 +426,28 @@ func _check():
 				if not _pattern_colour(led,0).is_equal_approx(_pattern_colour(led,t)): changes=true
 			if changes: moving+=1
 		assert(moving==metadata.leds.size())
+	for style in range(3):
+		pattern=5+style
+		assert(PatternChecks.check(metadata.leds,style,_pattern_colour))
+		var dark_time=pattern_time
+		paused=true
+		automated=false
+		_process(0.25)
+		assert(pattern_time==dark_time,"Pause must freeze pattern time")
+		for led in metadata.leds:
+			assert(PatternChecks.difference(colour_image.get_pixel(int(led.index),int(led.group)),_pattern_colour(led,dark_time))<0.000001)
+		for group in range(enabled.size()):
+			enabled[group]=false
+			_update_colours()
+			for led in metadata.leds:
+				var expected=Color.BLACK if int(led.group)==group else _pattern_colour(led,dark_time)
+				assert(PatternChecks.difference(colour_image.get_pixel(int(led.index),int(led.group)),expected)<0.000001)
+			enabled[group]=true
+		paused=false
+		_process(0.25)
+		assert(pattern_time==dark_time+0.25,"Resume must advance pattern time")
+		pattern_time=dark_time
+		automated=true
 	pattern=4
 	pattern_time=0
 	_update_colours()

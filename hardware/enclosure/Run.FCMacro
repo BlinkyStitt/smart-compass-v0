@@ -29,4 +29,8 @@ try:
 except Exception:
     traceback.print_exc()
 finally:
+    # These are disposable build documents; their outputs are already saved.
+    # View-state changes can mark them dirty and open a modal save prompt.
+    for name in list(App.listDocuments()):
+        App.closeDocument(name)
     QtCore.QTimer.singleShot(0, QtCore.QCoreApplication.quit)
