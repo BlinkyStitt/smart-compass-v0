@@ -277,6 +277,39 @@ async function checkPlayback(browser, url, sources) {
   await failedLoad.close();
 }
 
+async function checkExperimentLink(page, width) {
+  const destination = 'https://blink.stitthappens.com/';
+  const link = page.locator('#build .story-copy a').filter({
+    hasText: 'I’m experimenting with light patterns over here',
+  });
+  assert.equal(await link.count(), 1);
+  assert.equal(await link.textContent(), 'I’m experimenting with light patterns over here');
+  assert.equal(await link.getAttribute('href'), destination);
+  assert.match(await link.evaluate(a => a.parentElement.previousElementSibling.textContent),
+    /^Light patterns\./, 'experiment note follows the pattern discussion');
+  await page.locator('#build a').first().focus();
+  for (let tabs = 0; tabs < 10 && !await link.evaluate(a => a === document.activeElement); tabs++) {
+    await page.keyboard.press('Tab');
+  }
+  assert.ok(await link.evaluate(a => a === document.activeElement), 'Tab reaches the experiment link');
+  const appearance = await link.evaluate(a => ({
+    focusVisible: a.matches(':focus-visible'),
+    outline: getComputedStyle(a).outlineStyle,
+    outlineWidth: parseFloat(getComputedStyle(a).outlineWidth),
+    fontSize: parseFloat(getComputedStyle(a).fontSize),
+    rects: [...a.getClientRects()].map(rect => rect.toJSON()),
+  }));
+  assert.ok(await link.isVisible());
+  assert.ok(appearance.focusVisible && appearance.outline !== 'none' && appearance.outlineWidth >= 3,
+    'keyboard focus has a visible outline');
+  assert.ok(appearance.fontSize >= 15 && appearance.rects.every(rect =>
+    rect.left >= 0 && rect.right <= width && rect.height > 0), 'link text fits the viewport');
+  // Observe browser navigation without depending on the external site's availability.
+  await page.route(destination, route => route.fulfill({ body: 'Experiment destination' }));
+  await Promise.all([page.waitForURL(destination), page.keyboard.press('Enter')]);
+  console.log(`PASS ${width}px: experiment note, URL, Tab focus and Enter navigation`);
+}
+
 async function check() {
   const browser = await chromium.launch({ headless: true });
   const url = process.argv[2] || 'http://127.0.0.1:8080';
@@ -423,6 +456,7 @@ async function check() {
         }, index);
       }
       console.log(`PASS ${width}px: stacked introduction, layout, reduced motion, paired playback, hidden browser controls, MP4 links`);
+      await checkExperimentLink(page, width);
       await page.close();
     }
     const page = await browser.newPage({ reducedMotion: 'no-preference' });
