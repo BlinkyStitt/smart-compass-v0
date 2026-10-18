@@ -29,10 +29,18 @@ motion start with paused videos.
 The silver PETG comparison stays collapsed by default. It uses the same paired
 player as the primary comparison, with separate Play/Pause/Restart controls.
 Opening it starts both silver clips unless reduced motion is enabled. Closing
-it pauses both clips. At 620 CSS pixels and below, both comparisons show the
-full-width Wide video, then the full-width Narrow video. The Wide description
-and Narrow description stack below both videos. Wider layouts use two columns
-for the videos and descriptions.
+it pauses both clips. The primary Wide and Narrow videos stay side by side,
+including at 320 CSS pixels. At 620 CSS pixels and below, the silver comparison
+stacks its full-width videos, and both comparisons stack their labeled
+descriptions below the videos. Wider layouts use two columns for the videos
+and descriptions.
+
+With Playwright and its Chromium browser installed, check the built, locally
+served page's responsive layout and playback with:
+
+```sh
+node site/test_layout.cjs http://127.0.0.1:8080
+```
 
 The Narrow silver loop uses its native geometry and camera path with the Wide
 model's silver material coefficients for its rings and reflected ring light.
