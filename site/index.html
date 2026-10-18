@@ -44,6 +44,10 @@
           </video>
         </article>
       </div>
+      <div class="transport">
+        <div class="buttons"><button id="play-both" data-play-both type="button">Play both</button><button id="replay-both" data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+        <p id="play-status" class="play-status" role="status"></p>
+      </div>
       <div class="film-descriptions">
         <section class="film-description" aria-labelledby="wide-description-title">
           <h3 id="wide-description-title">Wide</h3>
@@ -59,10 +63,6 @@
           <p class="film-note">The mirror cavity sits above the board. An inner ring adds depth, with two light bands around the outside.</p>
           <a class="file-link" href="{{narrow_movie}}">Open narrow MP4 ↗</a>
         </section>
-      </div>
-      <div class="transport">
-        <div class="buttons"><button id="play-both" data-play-both type="button">Play both</button><button id="replay-both" data-replay-both class="secondary" type="button">Restart together ↺</button></div>
-        <p id="play-status" class="play-status" role="status"></p>
       </div>
       <div class="estimate-note"><p>Runtime assumes <strong>1.25 A total at 5 V</strong>, a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">provisional 37 Wh / 10 Ah LiPo pack</a> and 85% conversion efficiency. The design target is <strong>4 hours</strong>. Reserve, temperature, aging and cutoff losses reduce the calculated runtime. Brightness at this power cap remains unverified.</p><p><strong>Battery access needs a revision.</strong> The current CAD uses a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">BatterySpace CU-MM109 pouch pack</a> behind a screw-fastened rear cover. It is a fit candidate, not a purchase. The selected next revision uses one removable 26650 with spares and tool-free access, like the hats. The present compartment does not meet that requirement.</p><details><summary>Weight estimate basis</summary><p>Wide pendant allowance: {{wide_weight_range}} kg. Narrow: {{narrow_weight_range}} kg. The wide estimate comes from its installed-component inventory. The narrow estimate uses its own CAD material volumes and strip lengths, plus the same electronics, harness and fitting allowances. Both include the supplier's 190 g battery. The deeper narrow shell adds printed material. These ranges sum independent allowances; no finished assembly has been weighed.</p></details></div>
       <noscript><p>Use each video's controls to play it. Both clips loop.</p></noscript>
@@ -105,13 +105,13 @@
             <video id="silver-narrow-video" controls muted loop playsinline preload="none" poster="{{silver_narrow_poster}}" aria-label="Narrow design rainbow simulation with silver PETG rings"><source src="{{silver_narrow_movie}}" type="video/mp4"><a href="{{silver_narrow_movie}}">Open narrow silver PETG MP4</a></video>
           </article>
         </div>
-        <div class="film-descriptions">
-          <p class="film-description"><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
-          <p class="film-description"><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
-        </div>
         <div class="transport">
           <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
           <p class="play-status" role="status"></p>
+        </div>
+        <div class="film-descriptions">
+          <p class="film-description"><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
+          <p class="film-description"><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
         </div>
       </details>
     </section>
