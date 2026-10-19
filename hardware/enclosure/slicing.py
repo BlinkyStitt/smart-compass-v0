@@ -35,7 +35,8 @@ def project_filename(name, material):
 def settings(spec, name, material='glow'):
     bracket = name.startswith(('NecklaceLink', 'FitSuspensionBracket'))
     ring = is_ring(name)
-    profile = spec['baffle'] if name.startswith(('FibonacciBaffle','FitFibonacciBaffle')) else spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
+    rear = name in {'RearPlate.stl', 'FitRear.stl', 'FitService.stl', 'FitController.stl', 'FitSuspensionRear.stl'}
+    profile = spec['rear_plate'] if rear else spec['baffle'] if name.startswith(('FibonacciBaffle','FitFibonacciBaffle')) else spec['ring_outside'] if name.startswith(('EdgeDiffuser','FitRingOutside')) else spec['ring_cavity'] if ring else spec['optical_deck'] if name.startswith(('OpticalDeck','FitDeck','FitOptics')) else {}
     material_profile={'filament_density':str(spec['ring_materials'][material]['density_g_cm3']),
                       'filament_colour':spec['ring_materials'][material]['filament_colour']} if ring else {}
     return spec['reference_machine'] | spec['common'] | (spec['bracket'] if bracket else {}) | profile | material_profile

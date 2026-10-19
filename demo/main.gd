@@ -145,7 +145,7 @@ func _prepare_explosion():
 		0.085: ["RearMirror"],
 		0.04: ["OpticalDeck", "EdgeDiffuser", "OuterLightShield", "OuterStripSeam", "OuterLEDs"],
 		0.0: ["BarrelFrame"],
-		-0.10: ["RearPlate", "BatteryEnvelope0", "SparklePCBWithHoles", "blackpillPCB", "gpsPCB", "imuPCB", "radioPCB", "sensePCB", "powerPCB", "ExternalPowerBlank", "RearButton0", "RearButton1", "RearButton2", "ControlMembrane0", "ControlMembrane1", "ControlMembrane2"],
+		-0.10: ["RearPlate", "BatteryEnvelope0", "SparklePCBWithHoles", "blackpillPCB", "gpsPCB", "imuPCB", "radioPCB", "RadioAntenna", "sensePCB", "powerPCB", "ExternalPowerBlank", "RearButton0", "RearButton1", "RearButton2", "ControlMembrane0", "ControlMembrane1", "ControlMembrane2"],
 		-0.13: ["NecklaceLink0", "NecklaceLink1", "HatchGasket", "VentMembrane0", "VentMembrane1", "VentMembrane2", "VentMembrane3"],
 		-0.16: ["ServiceCover", "VentGuard0", "VentGuard1", "VentGuard2", "VentGuard3"],
 	}
@@ -649,8 +649,12 @@ func _run_checks():
 	assert(camera.position.is_equal_approx(loop_start), "Sweep must close its loop")
 	_exploded_pose(0)
 	var exploded_start=camera.transform
+	var antenna_from_radio=meshes.RadioAntenna.position-meshes.radioPCB.position
+	var antenna_from_rear=meshes.RadioAntenna.position-meshes.RearPlate.position
 	for phase in [0.125,0.25,0.5,0.75,0.875]:
 		_exploded_pose(phase)
+		assert((meshes.RadioAntenna.position-meshes.radioPCB.position).is_equal_approx(antenna_from_radio), "Antenna must stay attached to ANT during explosion")
+		assert((meshes.RadioAntenna.position-meshes.RearPlate.position).is_equal_approx(antenna_from_rear), "Antenna must stay in its rear-plate restraints during explosion")
 		for mesh in meshes.values():
 			var bounds=mesh.get_aabb()
 			for corner in range(8):

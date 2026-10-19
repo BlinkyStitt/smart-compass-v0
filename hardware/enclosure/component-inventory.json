@@ -696,7 +696,7 @@
       ],
       "mass_kind": "published",
       "mass_basis": "Supplier board weight",
-      "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+      "status": "Adafruit Eagle JP2 ANT datum mapped to centred 25.4 x 32 mm envelope; original rotated 180 degrees, compact 0; local feed relief and supplied revision remain fit assumptions",
       "group": "pendant",
       "cad_part": "radioPCB"
     },
@@ -707,7 +707,7 @@
       "unit": "antenna",
       "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
       "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
-      "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+      "dimensions": "78 mm total including 2 mm stripped ANT end; insulated OD <=1 mm; see both parameter-owned installation diagrams",
       "material": "Insulated copper wire",
       "mass_g_per_unit": 0.25,
       "mass_range_g_per_unit": [
@@ -716,7 +716,7 @@
       ],
       "mass_kind": "estimated",
       "mass_basis": "Engineering allowance; weigh installed item",
-      "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+      "status": "Fixed internal routes, integral tied saddles and clearance/removal checks specified for both enclosures; supplied fit, installed tuning and RF range unmeasured; compact remains a concept",
       "group": "pendant"
     },
     {
@@ -1313,12 +1313,12 @@
     },
     {
       "id": "board_ties",
-      "label": "Board restraint ties",
-      "installed_quantity": 12,
+      "label": "Board and antenna restraint ties",
+      "installed_quantity": 14,
       "unit": "tie",
-      "purchase_quantity": "1 retail pack, count 12 fitted",
+      "purchase_quantity": "1 retail pack, count 14 fitted",
       "source": "hardware/enclosure/README.md",
-      "dimensions": "Two per six rail-mounted boards; low profile",
+      "dimensions": "12 board ties plus 2 antenna saddle ties; antenna ties <=2.5 mm wide, <=1 mm thick",
       "material": "Nylon",
       "mass_g_per_unit": 0.12,
       "mass_range_g_per_unit": [

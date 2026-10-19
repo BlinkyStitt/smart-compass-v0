@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650"><title>250 mm original antenna placement</title>
+<rect width="900" height="650" fill="white"/>
+<g font-family="sans-serif" fill="#111" font-size="16">
+<text x="24" y="28">250 mm original — 915 MHz internal wire; mechanical allowances only</text>
+<text x="24" y="54">Open rear: +X left, +Y up / necklace; +Z toward front, away from body</text>
+<circle cx="180" cy="300" r="143.75" fill="none" stroke="#999"/>
+<rect x="134.0" y="300.575" width="92.0" height="74.75" fill="none" stroke="#999"/>
+<text x="136.0" y="310.575" font-size="9">battery</text>
+<rect x="96.74" y="257.940475" width="58.42" height="38.11904999999999" fill="none" stroke="#999"/>
+<text x="98.74" y="267.940475" font-size="9">sparkle</text>
+<rect x="196.79" y="233.99" width="23.919999999999995" height="60.71999999999999" fill="none" stroke="#999"/>
+<text x="198.79" y="243.99" font-size="9">blackpill</text>
+<rect x="145.04000000000002" y="198.3055" width="58.419999999999995" height="26.289000000000012" fill="none" stroke="#999"/>
+<text x="147.04000000000002" y="208.3055" font-size="9">gps</text>
+<rect x="231.175" y="209.72500000000002" width="28.749999999999996" height="28.749999999999996" fill="none" stroke="#999"/>
+<text x="233.175" y="219.72500000000002" font-size="9">imu</text>
+<rect x="163.9" y="267.8" width="20.7" height="18.4" fill="none" stroke="#999"/>
+<text x="165.9" y="277.8" font-size="9">sense</text>
+<rect x="88.46000000000001" y="308.855" width="17.479999999999986" height="46.68999999999999" fill="none" stroke="#999"/>
+<text x="90.46000000000001" y="318.855" font-size="9">power</text>
+<rect x="253.945" y="251.7" width="29.210000000000004" height="36.8" fill="none" stroke="#999"/>
+<text x="255.945" y="261.7" font-size="9">radio</text>
+<rect x="166.2" y="231.0" width="27.599999999999998" height="74.75" fill="none" stroke="#999"/>
+<text x="168.2" y="241.0" font-size="9">LED/power harness</text>
+<polyline points="278.4814,281.4919 278.4814,281.4919 278.4814,281.50502829158347 278.4814,281.5443132521079 278.4814,281.6094558993027 278.4814,281.6999604582886 278.4814,281.81513813472355 278.4814,281.9541123569437 278.4814,282.11582544720295 278.4814,282.2990466712395 278.4814,282.5023816049064 278.4814,282.7242827465814 278.4814,282.9630612945889 278.4814,283.2169 278.4814,283.4838669969946 278.4814,283.76193050552644 278.4814,284.0489742943963 278.4814,284.34281378704907 278.4814,284.6412126875206 278.4814,284.9419 278.4814,360.0226526725576" fill="none" stroke="#0072b2" stroke-width="4"/>
+<path d="M 60,140 V 90 l -6,10 m 6,-10 l 6,10" stroke="#111" fill="none"/>
+<text x="28" y="80">UP +Y</text>
+<circle cx="278.4814" cy="281.4919" r="5" fill="#111"/><text x="290.4814" y="281.4919">ANT</text>
+<rect x="270.4814" y="290.4419" width="16" height="12" fill="white" stroke="#111"/><text x="292.4814" y="301.4419">Tie 1</text>
+<rect x="270.4814" y="336.4419" width="16" height="12" fill="white" stroke="#111"/><text x="292.4814" y="347.4419">Tie 2</text>
+<text x="24" y="510" font-size="13">Side: +Z toward front (up); body behind feed</text>
+<polyline points="65.0,595.0 65.0,571.0 65.02283181144952,570.2155983152711 65.09115348192675,569.4371664009976 65.20444504226559,568.6706285940774 65.36184427528455,567.921818710069 65.5621532777801,567.1964356443337 65.80384757729337,566.5 66.08508773426605,565.8378120728406 66.40373334128613,565.2149115128211 66.75735931288071,564.636038969321 67.14327434188075,564.1056000119293 67.55854138189372,563.6276316013991 68.0,563.2057713659401 68.4642904295558,562.8432299166701 68.94787914004598,562.5427664129269 69.44708572938487,562.3066675633984 69.95811093399843,562.1367302228902 70.47706554351404,562.0342477171743 71.0,562.0 201.57522203923062,562.0" fill="none" stroke="#0072b2" stroke-width="3"/>
+<text x="24" y="620" font-size="13">Form riser and bend before soldering into ANT.</text>
+<text x="370" y="95" font-size="14">Cut 78 mm TOTAL; includes 2 mm stripped end.</text>
+<text x="370" y="121" font-size="14">ANT XYZ: (-85.636, 16.094, 6) mm.</text>
+<text x="370" y="147" font-size="14">Feed rises 11 mm; bend radius 3 mm.</text>
+<text x="370" y="173" font-size="14">Straight after bend: 65.288 mm at Z17.</text>
+<text x="370" y="199" font-size="14">Tip XYZ: (-85.636, -52.194, 17).</text>
+<text x="370" y="225" font-size="14">Wire OD 1; placement tolerance ±0.2 mm.</text>
+<text x="370" y="251" font-size="14">Tie saddles locate the run; release ties before radio removal.</text>
+<text x="370" y="277" font-size="14">Gap values below include insulation + placement tolerance:</text>
+<text x="370" y="303" font-size="14">RearPlate: 2.16 mm</text>
+<text x="370" y="329" font-size="14">radioComponents: 2.30 mm</text>
+<text x="370" y="355" font-size="14">radioPCB: 2.50 mm</text>
+<text x="370" y="381" font-size="14">OpticalDeck: 2.95 mm</text>
+<text x="370" y="407" font-size="14">RearMirror: 4.30 mm</text>
+<text x="370" y="433" font-size="14">HaloRing: 5.90 mm</text>
+<text x="370" y="459" font-size="14">HaloStripSeam: 6.40 mm</text>
+<text x="370" y="485" font-size="14">VentGuard1: 6.80 mm</text>
+<text x="370" y="511" font-size="14">Feed pad / saddle contacts are bounded exceptions.</text>
+<text x="370" y="537" font-size="14">CAD checks do not establish RF range or installed tuning.</text>
+</g></svg>

@@ -42,7 +42,7 @@
       }
     }
   },
-  "master_sha256": "4ae5ef7ca70ad8c50222071c294c7556e8c347902a22dfdc28254cd436459efc",
+  "master_sha256": "95e6d7fc1ef5cdd0bd5e0adaff0d105eeced1995a3ff966b2bda0c126a077442",
   "parts": [
     {
       "name": "NecklaceLink0",
@@ -286,10 +286,10 @@
         [
           0.1245,
           0.12444095210431405,
-          0.012
+          0.016800000000000002
         ]
       ],
-      "volume_cm3": 74.60023289210197
+      "volume_cm3": 75.664611692898
     },
     {
       "name": "ControlMembrane0",
@@ -692,22 +692,22 @@
     },
     {
       "name": "radioPCB",
-      "label": "RF95 carrier placeholder - PCB footprint",
+      "label": "Adafruit RFM95W 3072 nominal carrier - PCB footprint",
       "variant": "common",
       "role": "solid",
       "bounds_m": [
         [
-          -0.0895,
+          -0.0897,
           0.01,
           0.006
         ],
         [
-          -0.0645,
+          -0.06430000000000001,
           0.042,
           0.0076
         ]
       ],
-      "volume_cm3": 1.28
+      "volume_cm3": 1.2992233629385639
     },
     {
       "name": "sensePCB",
@@ -2761,6 +2761,25 @@
       ],
       "volume_cm3": 0.045908843985365363,
       "explosion_offset_m": -0.2
+    },
+    {
+      "name": "RadioAntenna",
+      "label": "78 mm internal wire including ANT feed; unmeasured RF",
+      "variant": "common",
+      "role": "solid",
+      "bounds_m": [
+        [
+          -0.08613537846060947,
+          -0.05219361101961531,
+          0.006
+        ],
+        [
+          -0.08513599999999999,
+          0.01659384459100041,
+          0.01749984459100041
+        ]
+      ],
+      "volume_cm3": 0.06126105674500103
     },
     {
       "name": "RearButton0",
@@ -14842,10 +14861,10 @@
     "printed_part_count": 17,
     "mass_estimate": {
       "complete_pendant": {
-        "nominal_g": 1049.1,
+        "nominal_g": 1050.7,
         "range_g": [
-          813.7,
-          1283.3
+          814.8,
+          1285.3
         ]
       },
       "necklace": {
@@ -14856,17 +14875,17 @@
         ]
       },
       "total_worn": {
-        "nominal_g": 1081.3,
+        "nominal_g": 1082.9,
         "range_g": [
-          833.5,
-          1345.3
+          834.6,
+          1347.3
         ]
       },
       "external_battery_pendant": {
-        "nominal_g": 861.1,
+        "nominal_g": 862.7,
         "range_g": [
-          634.7,
-          1075.3
+          635.8,
+          1077.3
         ]
       },
       "external_belt_and_lead": {
@@ -14877,10 +14896,10 @@
         ]
       },
       "external_total_worn": {
-        "nominal_g": 1183.3,
+        "nominal_g": 1184.9,
         "range_g": [
-          894.5,
-          1527.3
+          895.6,
+          1529.3
         ]
       },
       "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",

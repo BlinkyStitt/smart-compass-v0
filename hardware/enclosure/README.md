@@ -563,3 +563,27 @@ remains below the mirror. A flat pack entirely outside the 166 mm PCB needs
 more than 320 mm diameter once its cradle is included. Placing it outside the
 optical annulus needs still more width. Keep the current pack under the board;
 a thinner factory protected pack is a separate component choice.
+
+## Internal radio antenna
+
+![Original antenna route and checked clearances](exports/antenna-placement.svg)
+
+The 78 mm insulated wire solders directly to ANT on Adafruit 3072. Rotate the
+board 180° in its centred 25.4 x 32 mm envelope. ANT is at
+(-85.636,16.094,6) mm; the riser reaches Z17 and the long run points toward -Y.
+Two integral saddles on RearPlate take nonmetal ties and locate the wire after
+service. Keep the adjacent plastic uncoated. The diagram is generated from the
+same route and clearance checks as the native CAD.
+
+Follow the [datum, mechanical allowances, service and retrofit instructions](antenna-placement.md).
+Release ties before lifting the radio; withdraw rear/radio/wire together after
+disconnecting bridging harnesses. Before closure check seating, gaps, an
+unloaded joint, clear screws and seals. If closure catches, reopen and reseat;
+never force it. Compare placement with the diagram before altering the wire.
+RF range, installed tuning and supplied fit remain unmeasured; no 6 km claim.
+
+The delivered RearPlate and its rear/service/controller/suspension-rear fit
+samples use Classic perimeters. Preserve that selection when applying the
+printer and filament profile; the generated plate triggers a winding error in
+PrusaSlicer's Arachne mode. The normal warning/error and toolpath checks still
+apply to every delivered project.

@@ -141,12 +141,12 @@
     },
     {
       "name": "RearPlate",
-      "volume_cm3": 74.6002,
+      "volume_cm3": 75.6646,
       "printed": true,
       "bounds_mm": [
-        248.835,
-        248.917,
-        12.0
+        249.0,
+        249.0,
+        16.8
       ]
     },
     {
@@ -320,7 +320,7 @@
       ]
     }
   ],
-  "printed_volume_cm3": 263.8083,
+  "printed_volume_cm3": 264.8727,
   "optics_mm": {
     "inner_radius": 111.88592499360243,
     "outer_radius": 119.84367214819719,
@@ -379,7 +379,7 @@
     "imu_height": 8.0,
     "radio_x": -77.0,
     "radio_y": 26.0,
-    "radio_width": 25.0,
+    "radio_width": 25.4,
     "radio_length": 32.0,
     "radio_height": 8.0,
     "sense_x": 5.0,
@@ -413,7 +413,7 @@
       "blackpill": "Published V3.1 nominal envelope; check supplied board revision",
       "gps": "Published FeatherWing footprint; module and tilted mount provisional",
       "imu": "Placeholder pending exact breakout revision",
-      "radio": "Placeholder pending exact RF95 carrier board",
+      "radio": "Adafruit 3072 RFM95W: 25.4 x 29.21 mm published outline in 25.4 x 32 mm padded envelope; ANT JP2 datum sourced; supplied revision and local feed relief provisional",
       "circle": "Published 166 mm diameter and 1.6 mm PCB; 3 mm LED-height envelope remains provisional; measure actual supplied packages and adjust PCB Z to keep the required baffle gap; no guessed board holes",
       "led_map": "Published 8-bit XY map; 79.5 mm centre radius and orientation require a physical alignment check",
       "rings": "Whole Prusament PETG Ultraglow Green rings; physical path, seat and LED clearance checks required",
@@ -472,6 +472,20 @@
     "baffle_to_sheet_gap": 0.5,
     "mirror_gap": 11.2,
     "led_baffle_gap": 0.6,
+    "antenna_length": 78.0,
+    "antenna_wire_diameter": 1.0,
+    "antenna_position_tolerance": 0.2,
+    "antenna_feed_x": 8.636,
+    "antenna_feed_y": 9.906,
+    "antenna_rotation_deg": 180,
+    "antenna_rise": 11,
+    "antenna_bend_radius": 3.0,
+    "antenna_stripped_length": 2.0,
+    "antenna_conductor_clearance": 2.0,
+    "antenna_plastic_clearance": 0.5,
+    "antenna_feed_relief_radius": 3.2,
+    "antenna_first_restraint": 10.0,
+    "antenna_second_restraint": 50.0,
     "front_plane_z": 34.7,
     "circle_back_z": 27.0,
     "mirror_back_z": 22.0,
@@ -624,7 +638,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/RearPlate.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.84 x 248.92 x 12.00 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 249.00 x 249.00 x 16.80 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -632,15 +646,15 @@
           "group": "pendant",
           "cad_part": "RearPlate",
           "mass_formula": "petg_volume",
-          "mass_g_per_unit": 94.742254,
+          "mass_g_per_unit": 96.09404199999999,
           "mass_range_g_per_unit": [
-            66.3195778,
-            102.32163432000002
+            67.26582939999999,
+            103.78156535999999
           ],
-          "installed_mass_g": 94.7423,
+          "installed_mass_g": 96.094,
           "installed_mass_range_g": [
-            66.3196,
-            102.3216
+            67.2658,
+            103.7816
           ]
         },
         {
@@ -1507,7 +1521,7 @@
           ],
           "mass_kind": "published",
           "mass_basis": "Supplier board weight",
-          "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+          "status": "Adafruit Eagle JP2 ANT datum mapped to centred 25.4 x 32 mm envelope; original rotated 180 degrees, compact 0; local feed relief and supplied revision remain fit assumptions",
           "group": "pendant",
           "cad_part": "radioPCB",
           "installed_mass_g": 3.1,
@@ -1523,7 +1537,7 @@
           "unit": "antenna",
           "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
           "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
-          "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+          "dimensions": "78 mm total including 2 mm stripped ANT end; insulated OD <=1 mm; see both parameter-owned installation diagrams",
           "material": "Insulated copper wire",
           "mass_g_per_unit": 0.25,
           "mass_range_g_per_unit": [
@@ -1532,7 +1546,7 @@
           ],
           "mass_kind": "estimated",
           "mass_basis": "Engineering allowance; weigh installed item",
-          "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+          "status": "Fixed internal routes, integral tied saddles and clearance/removal checks specified for both enclosures; supplied fit, installed tuning and RF range unmeasured; compact remains a concept",
           "group": "pendant",
           "installed_mass_g": 0.25,
           "installed_mass_range_g": [
@@ -2294,12 +2308,12 @@
         },
         {
           "id": "board_ties",
-          "label": "Board restraint ties",
-          "installed_quantity": 12,
+          "label": "Board and antenna restraint ties",
+          "installed_quantity": 14,
           "unit": "tie",
-          "purchase_quantity": "1 retail pack, count 12 fitted",
+          "purchase_quantity": "1 retail pack, count 14 fitted",
           "source": "hardware/enclosure/README.md",
-          "dimensions": "Two per six rail-mounted boards; low profile",
+          "dimensions": "12 board ties plus 2 antenna saddle ties; antenna ties <=2.5 mm wide, <=1 mm thick",
           "material": "Nylon",
           "mass_g_per_unit": 0.12,
           "mass_range_g_per_unit": [
@@ -2310,10 +2324,10 @@
           "mass_basis": "Engineering allowance; weigh installed item",
           "status": "Fit and mass require measurement",
           "group": "pendant",
-          "installed_mass_g": 1.44,
+          "installed_mass_g": 1.68,
           "installed_mass_range_g": [
-            0.84,
-            3.0
+            0.98,
+            3.5
           ]
         },
         {
@@ -2578,10 +2592,10 @@
       ],
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 1049.1,
+          "nominal_g": 1050.7,
           "range_g": [
-            813.7,
-            1283.3
+            814.8,
+            1285.3
           ]
         },
         "necklace": {
@@ -2592,17 +2606,17 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 1081.3,
+          "nominal_g": 1082.9,
           "range_g": [
-            833.5,
-            1345.3
+            834.6,
+            1347.3
           ]
         },
         "external_battery_pendant": {
-          "nominal_g": 861.1,
+          "nominal_g": 862.7,
           "range_g": [
-            634.7,
-            1075.3
+            635.8,
+            1077.3
           ]
         },
         "external_belt_and_lead": {
@@ -2613,10 +2627,10 @@
           ]
         },
         "external_total_worn": {
-          "nominal_g": 1183.3,
+          "nominal_g": 1184.9,
           "range_g": [
-            894.5,
-            1527.3
+            895.6,
+            1529.3
           ]
         },
         "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -2763,7 +2777,7 @@
           "unit": "part",
           "purchase_quantity": "1 printed part",
           "source": "hardware/enclosure/exports/RearPlate.3mf",
-          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.84 x 248.92 x 12.00 mm",
+          "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 249.00 x 249.00 x 16.80 mm",
           "material": "Opaque black PETG",
           "mass_kind": "calculated",
           "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -2771,15 +2785,15 @@
           "group": "pendant",
           "cad_part": "RearPlate",
           "mass_formula": "petg_volume",
-          "mass_g_per_unit": 94.742254,
+          "mass_g_per_unit": 96.09404199999999,
           "mass_range_g_per_unit": [
-            66.3195778,
-            102.32163432000002
+            67.26582939999999,
+            103.78156535999999
           ],
-          "installed_mass_g": 94.7423,
+          "installed_mass_g": 96.094,
           "installed_mass_range_g": [
-            66.3196,
-            102.3216
+            67.2658,
+            103.7816
           ]
         },
         {
@@ -3646,7 +3660,7 @@
           ],
           "mass_kind": "published",
           "mass_basis": "Supplier board weight",
-          "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+          "status": "Adafruit Eagle JP2 ANT datum mapped to centred 25.4 x 32 mm envelope; original rotated 180 degrees, compact 0; local feed relief and supplied revision remain fit assumptions",
           "group": "pendant",
           "cad_part": "radioPCB",
           "installed_mass_g": 3.1,
@@ -3662,7 +3676,7 @@
           "unit": "antenna",
           "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
           "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
-          "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+          "dimensions": "78 mm total including 2 mm stripped ANT end; insulated OD <=1 mm; see both parameter-owned installation diagrams",
           "material": "Insulated copper wire",
           "mass_g_per_unit": 0.25,
           "mass_range_g_per_unit": [
@@ -3671,7 +3685,7 @@
           ],
           "mass_kind": "estimated",
           "mass_basis": "Engineering allowance; weigh installed item",
-          "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+          "status": "Fixed internal routes, integral tied saddles and clearance/removal checks specified for both enclosures; supplied fit, installed tuning and RF range unmeasured; compact remains a concept",
           "group": "pendant",
           "installed_mass_g": 0.25,
           "installed_mass_range_g": [
@@ -4433,12 +4447,12 @@
         },
         {
           "id": "board_ties",
-          "label": "Board restraint ties",
-          "installed_quantity": 12,
+          "label": "Board and antenna restraint ties",
+          "installed_quantity": 14,
           "unit": "tie",
-          "purchase_quantity": "1 retail pack, count 12 fitted",
+          "purchase_quantity": "1 retail pack, count 14 fitted",
           "source": "hardware/enclosure/README.md",
-          "dimensions": "Two per six rail-mounted boards; low profile",
+          "dimensions": "12 board ties plus 2 antenna saddle ties; antenna ties <=2.5 mm wide, <=1 mm thick",
           "material": "Nylon",
           "mass_g_per_unit": 0.12,
           "mass_range_g_per_unit": [
@@ -4449,10 +4463,10 @@
           "mass_basis": "Engineering allowance; weigh installed item",
           "status": "Fit and mass require measurement",
           "group": "pendant",
-          "installed_mass_g": 1.44,
+          "installed_mass_g": 1.68,
           "installed_mass_range_g": [
-            0.84,
-            3.0
+            0.98,
+            3.5
           ]
         },
         {
@@ -4717,10 +4731,10 @@
       ],
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 1036.2,
+          "nominal_g": 1037.8,
           "range_g": [
-            804.7,
-            1269.4
+            805.7,
+            1271.4
           ]
         },
         "necklace": {
@@ -4731,17 +4745,17 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 1068.4,
+          "nominal_g": 1070.0,
           "range_g": [
-            824.5,
-            1331.4
+            825.5,
+            1333.4
           ]
         },
         "external_battery_pendant": {
-          "nominal_g": 848.2,
+          "nominal_g": 849.8,
           "range_g": [
-            625.7,
-            1061.4
+            626.7,
+            1063.4
           ]
         },
         "external_belt_and_lead": {
@@ -4752,10 +4766,10 @@
           ]
         },
         "external_total_worn": {
-          "nominal_g": 1170.4,
+          "nominal_g": 1172.0,
           "range_g": [
-            885.5,
-            1513.4
+            886.5,
+            1515.4
           ]
         },
         "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -4901,7 +4915,7 @@
       "unit": "part",
       "purchase_quantity": "1 printed part",
       "source": "hardware/enclosure/exports/RearPlate.3mf",
-      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 248.84 x 248.92 x 12.00 mm",
+      "dimensions": "Exact delivered geometry; preserve bed orientation; CAD bounds 249.00 x 249.00 x 16.80 mm",
       "material": "Opaque black PETG",
       "mass_kind": "calculated",
       "mass_basis": "CAD net solid volume x 1.27 g/cm3; conservative solid-fill basis, no brim; range allows infill and print variation",
@@ -4909,15 +4923,15 @@
       "group": "pendant",
       "cad_part": "RearPlate",
       "mass_formula": "petg_volume",
-      "mass_g_per_unit": 94.742254,
+      "mass_g_per_unit": 96.09404199999999,
       "mass_range_g_per_unit": [
-        66.3195778,
-        102.32163432000002
+        67.26582939999999,
+        103.78156535999999
       ],
-      "installed_mass_g": 94.7423,
+      "installed_mass_g": 96.094,
       "installed_mass_range_g": [
-        66.3196,
-        102.3216
+        67.2658,
+        103.7816
       ]
     },
     {
@@ -5784,7 +5798,7 @@
       ],
       "mass_kind": "published",
       "mass_basis": "Supplier board weight",
-      "status": "Nominal envelope fits rotated, header/antenna lead fit unmeasured",
+      "status": "Adafruit Eagle JP2 ANT datum mapped to centred 25.4 x 32 mm envelope; original rotated 180 degrees, compact 0; local feed relief and supplied revision remain fit assumptions",
       "group": "pendant",
       "cad_part": "radioPCB",
       "installed_mass_g": 3.1,
@@ -5800,7 +5814,7 @@
       "unit": "antenna",
       "purchase_quantity": "Cut from wire stock below, antenna allocation replaces that wire length",
       "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-radio-breakouts/assembly",
-      "dimensions": "About 78 mm wire; route clear of battery/metal; tune installed",
+      "dimensions": "78 mm total including 2 mm stripped ANT end; insulated OD <=1 mm; see both parameter-owned installation diagrams",
       "material": "Insulated copper wire",
       "mass_g_per_unit": 0.25,
       "mass_range_g_per_unit": [
@@ -5809,7 +5823,7 @@
       ],
       "mass_kind": "estimated",
       "mass_basis": "Engineering allowance; weigh installed item",
-      "status": "Wire antenna selected; route/strain relief and RF performance unverified",
+      "status": "Fixed internal routes, integral tied saddles and clearance/removal checks specified for both enclosures; supplied fit, installed tuning and RF range unmeasured; compact remains a concept",
       "group": "pendant",
       "installed_mass_g": 0.25,
       "installed_mass_range_g": [
@@ -6571,12 +6585,12 @@
     },
     {
       "id": "board_ties",
-      "label": "Board restraint ties",
-      "installed_quantity": 12,
+      "label": "Board and antenna restraint ties",
+      "installed_quantity": 14,
       "unit": "tie",
-      "purchase_quantity": "1 retail pack, count 12 fitted",
+      "purchase_quantity": "1 retail pack, count 14 fitted",
       "source": "hardware/enclosure/README.md",
-      "dimensions": "Two per six rail-mounted boards; low profile",
+      "dimensions": "12 board ties plus 2 antenna saddle ties; antenna ties <=2.5 mm wide, <=1 mm thick",
       "material": "Nylon",
       "mass_g_per_unit": 0.12,
       "mass_range_g_per_unit": [
@@ -6587,10 +6601,10 @@
       "mass_basis": "Engineering allowance; weigh installed item",
       "status": "Fit and mass require measurement",
       "group": "pendant",
-      "installed_mass_g": 1.44,
+      "installed_mass_g": 1.68,
       "installed_mass_range_g": [
-        0.84,
-        3.0
+        0.98,
+        3.5
       ]
     },
     {
@@ -6855,10 +6869,10 @@
   ],
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 1049.1,
+      "nominal_g": 1050.7,
       "range_g": [
-        813.7,
-        1283.3
+        814.8,
+        1285.3
       ]
     },
     "necklace": {
@@ -6869,17 +6883,17 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 1081.3,
+      "nominal_g": 1082.9,
       "range_g": [
-        833.5,
-        1345.3
+        834.6,
+        1347.3
       ]
     },
     "external_battery_pendant": {
-      "nominal_g": 861.1,
+      "nominal_g": 862.7,
       "range_g": [
-        634.7,
-        1075.3
+        635.8,
+        1077.3
       ]
     },
     "external_belt_and_lead": {
@@ -6890,10 +6904,10 @@
       ]
     },
     "external_total_worn": {
-      "nominal_g": 1183.3,
+      "nominal_g": 1184.9,
       "range_g": [
-        894.5,
-        1527.3
+        895.6,
+        1529.3
       ]
     },
     "basis": "Complete installed-component estimate; independent low/high allowances summed, not a confidence interval. Printed PETG uses CAD solid-volume ceiling; fit samples, brims, retail stock, spares and charger excluded.",
@@ -6985,7 +6999,7 @@
     "VentGuard2": 1.52,
     "VentGuard3": 1.52,
     "ServiceCover": 3.45,
-    "RearPlate": 95.59,
+    "RearPlate": 97.07,
     "EdgeDiffuser": 72.24,
     "HaloRing": 9.43,
     "InnerRing": 11.46,
@@ -7005,7 +7019,7 @@
       "VentGuard2": 1.52,
       "VentGuard3": 1.52,
       "ServiceCover": 3.45,
-      "RearPlate": 95.59,
+      "RearPlate": 97.07,
       "EdgeDiffuser": 72.24,
       "HaloRing": 9.43,
       "InnerRing": 11.46,
@@ -7024,7 +7038,7 @@
       "VentGuard2": 1.52,
       "VentGuard3": 1.52,
       "ServiceCover": 3.45,
-      "RearPlate": 95.59,
+      "RearPlate": 97.07,
       "EdgeDiffuser": 62.13,
       "HaloRing": 8.11,
       "InnerRing": 9.86,

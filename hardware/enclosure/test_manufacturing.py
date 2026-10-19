@@ -34,6 +34,17 @@ class ManufacturingTests(unittest.TestCase):
         with self.assertRaisesRegex(cad.CadError,'filament_type'):
             slicing.verify_settings(dict(main,filament_type='PLA'),main,'wrong material')
 
+    def test_rear_and_its_samples_require_the_same_classic_toolpaths(self):
+        spec = json.loads((HERE/'print-spec.json').read_text())
+        production = slicing.settings(spec,'RearPlate.stl')
+        self.assertEqual(production['perimeter_generator'],'classic')
+        self.assertEqual(production['perimeters'],'5')
+        self.assertEqual(production['support_material'],'0')
+        for sample in ('FitRear.stl','FitService.stl','FitController.stl','FitSuspensionRear.stl'):
+            self.assertEqual(slicing.settings(spec,sample),production)
+        with self.assertRaisesRegex(cad.CadError,'perimeter_generator'):
+            slicing.verify_settings(dict(production,perimeter_generator='arachne'),production,'RearPlate.3mf')
+
     def test_optical_fit_samples_use_production_deck_settings(self):
         spec=json.loads((HERE/'print-spec.json').read_text())
         production=slicing.settings(spec,'OpticalDeck.stl')

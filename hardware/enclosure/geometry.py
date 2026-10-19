@@ -1,6 +1,7 @@
 """Millimetre geometry shared by the FreeCAD builder and its checks."""
 import math
 import json
+import antenna
 from pathlib import Path
 
 
@@ -17,6 +18,7 @@ def resolve_parameters(p):
     p["strip_bottom_z"] = p["rear_mirror_front_z"] + (p["mirror_gap"] - p["strip_width"]) / 2
     p["front_washer_compressed_height"] = p["front_washer_free_thickness"] * p["front_washer_compression_ratio"]
     p["case_depth"] = p["front_plane_z"] + p["front_acrylic_thickness"] + p["front_washer_compressed_height"]
+    antenna.validate(p)
     return p
 
 
