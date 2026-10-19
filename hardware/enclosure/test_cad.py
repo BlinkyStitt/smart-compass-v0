@@ -53,7 +53,10 @@ class CadWorkflowTests(unittest.TestCase):
                  cad.EXPORTS + '/amulet.glb', cad.EXPORTS + '/scene.json',
                  cad.EXPORTS + '/night-mannequin.png',
                  cad.EXPORTS + '/infinity-rainbow.gif', cad.EXPORTS + '/infinity-rainbow-silver.mp4',
-                 cad.EXPORTS + '/smart-compass-glow-print-service.zip', cad.CAD + '/service-guide.html')
+                 cad.EXPORTS + '/smart-compass-glow-print-service.zip', cad.CAD + '/service-guide.html',
+                 'demo/patterns.gd', 'demo/pattern_checks.gd',
+                 *(cad.EXPORTS + '/infinity-rainbow-dark-' + style + '.mp4'
+                   for style in ('sectors', 'spirals', 'diagonals')))
         for path in paths:
             with self.subTest(path=path):
                 original = self.snapshot.read(path)
