@@ -2,10 +2,13 @@
 
 import json
 import math
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+sys.path.insert(0, str(ROOT / "hardware/enclosure"))
+import antenna
 
 
 def parameters():
@@ -78,6 +81,7 @@ def dimensions(p):
 def validate(p):
     if not isinstance(p["side_rows"], int) or p["side_rows"] < 1:
         raise ValueError("Side band needs a positive whole number of strips")
+    antenna.validate(p, compact=True)
     d = dimensions(p)
     if not math.isfinite(p["side_axial_scatter_mm"]) or p["side_axial_scatter_mm"] <= 0:
         raise ValueError("Side diffuser needs a finite positive axial scatter scale")

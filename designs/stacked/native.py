@@ -4,6 +4,9 @@ import json
 import math
 
 import baffle
+import antenna
+import antenna_native
+import antenna_view
 import FreeCAD as App
 import FreeCADGui as Gui
 import Part
@@ -395,9 +398,16 @@ def build(out):
         w, l, h = e["size"]
         z = e["z"]
         colour = (0.18, 0.18, 0.20) if e["name"] == "Battery" else (0.04, 0.22, 0.13)
+        shape = box(w, l, h, x, y, z)
+        if e['name'] == 'Radio':
+            route = antenna.installation(p, compact=True)
+            # Local component-free ANT neighbourhood; the PCB keeps its 1 mm drill.
+            upper = box(w, l, h-1.6, x, y, z+1.6).cut(antenna_native.feed_relief(route, h))
+            lower = box(w, l, 1.6, x, y, z).cut(cylinder(.5, 2, z-.2, *route.feed[:2]))
+            shape = lower.fuse(upper)
         add(
             e["name"],
-            box(w, l, h, x, y, z),
+            shape,
             "Electronics",
             colour,
             material="Unscaled component envelope",
@@ -411,7 +421,20 @@ def build(out):
                 shelf = shelf.fuse(
                     box(3, 3, z - 3, x + sx * (w / 2 - 2), y + sy * (l / 2 - 2), 2)
                 )
+            if e['name'] == 'Radio':
+                shelf = shelf.fuse(antenna_native.radio_shelf_extension(route, y))
+                # Clearance for the underside of ANT and its soldered wire;
+                # the full tolerance envelope must not rest on the shelf skin.
+                shelf = shelf.cut(cylinder(route.envelope + route.plastic_gap + .3,
+                                            1.2, z-1.1, *route.feed[:2]))
             add(e["name"] + "Shelf", shelf, "Manufactured", (0.025, 0.025, 0.03))
+    route = antenna.installation(p, compact=True)
+    add('RadioAntenna', antenna_native.wire(route), 'Electronics', (0.0,.45,.7), material='Insulated copper; 78 mm total including feed')
+    gaps = antenna_native.check(p, objects, compact=True)
+    antenna_native.regression_checks(p, compact=True)
+    fixed = [(o.Name, o.Shape) for o in objects if o.Name not in {'RearCover', 'Radio', 'RadioShelf', 'RadioAntenna'}]
+    antenna_native.removal(p, fixed, compact=True)
+    antenna_view.export(route, antenna.component_boxes(p, compact=True, include_radio=True), gaps, out/'antenna-placement.svg')
     # Cable space remains a reservation, not an invented electrical connector.
     status = doc.addObject("App::FeaturePython", "Acceptance")
     status.addProperty(
@@ -419,7 +442,7 @@ def build(out):
     ).Status = "CAD concept: optical coefficients, hardware revisions, shelf fastening, wiring, membrane vents and suspension require physical qualification. Not a print order."
     doc.recompute()
     # Check real solids, including components against shelves and shell.
-    checked = objects
+    checked = [o for o in objects if o.Name != 'RadioAntenna']  # Dedicated distance and bounded-contact checks above.
     collisions = []
     for i, a in enumerate(checked):
         for b in checked[i + 1 :]:

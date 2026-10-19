@@ -24,6 +24,9 @@ SHARED = (
     "hardware/enclosure/acrylic-optics.json",
     "hardware/enclosure/baffle.py",
     "hardware/enclosure/geometry.py",
+    "hardware/enclosure/antenna.py",
+    "hardware/enclosure/antenna_native.py",
+    "hardware/enclosure/antenna-placement.md",
     "hardware/enclosure/demo_export.py",
     "hardware/enclosure/hardware_spec.py",
     "hardware/enclosure/component-inventory.json",
@@ -48,6 +51,7 @@ SHARED = (
 EXPECTED = frozenset(
     {
         "amulet.glb",
+        "antenna-placement.svg",
         "cell-map.png",
         "scene.json",
         "stacked-fibonacci.FCStd",

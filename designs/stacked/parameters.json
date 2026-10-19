@@ -40,8 +40,22 @@
     {"name":"BlackPill", "size":[20.8,52.8,12.0], "centre":[-30.0,31.0], "z":8.0},
     {"name":"GPS", "size":[22.86,50.8,8.0], "centre":[0.0,56.0], "rotation_deg":90.0, "z":9.0},
     {"name":"IMU", "size":[25.0,25.0,8.0], "centre":[-61.0,7.0], "z":9.0},
-    {"name":"Radio", "size":[25.0,32.0,8.0], "centre":[60.0,-17.0], "z":8.0},
+    {"name":"Radio", "size":[25.4,32.0,8.0], "centre":[60.0,-17.0], "z":8.0},
     {"name":"BatterySense", "size":[18.0,16.0,7.0], "centre":[0.0,10.0], "z":8.0},
     {"name":"Boost5V", "size":[15.2,40.6,4.6], "centre":[-57.0,-30.0], "z":9.0}
-  ]
+  ],
+  "antenna_length": 78.0,
+  "antenna_wire_diameter": 1.0,
+  "antenna_position_tolerance": 0.2,
+  "antenna_feed_x": 8.636,
+  "antenna_feed_y": 9.906,
+  "antenna_rotation_deg": 0,
+  "antenna_rise": 16,
+  "antenna_bend_radius": 3.0,
+  "antenna_stripped_length": 2.0,
+  "antenna_conductor_clearance": 2.0,
+  "antenna_plastic_clearance": 0.5,
+  "antenna_feed_relief_radius": 3.2,
+  "antenna_first_restraint": 10.0,
+  "antenna_second_restraint": 50.0
 }
