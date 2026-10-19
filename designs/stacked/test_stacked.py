@@ -3,12 +3,59 @@
 import json
 import math
 import unittest
+import copy
+import tempfile
+from pathlib import Path
+import xml.etree.ElementTree as ET
 
 from layout import ROOT, dimensions, parameters, validate
 from optics import reference, side_weight
 
 
 class FitTests(unittest.TestCase):
+    def test_compact_antenna_labels_clear_the_radio_and_restraints(self):
+        import antenna
+        import antenna_view
+        p = parameters()
+        route = antenna.validate(p, compact=True)
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)/'antenna.svg'
+            antenna_view.export(route, antenna.component_boxes(p, True, include_radio=True), {}, out)
+            root = ET.parse(out).getroot()
+            ns = '{http://www.w3.org/2000/svg}'
+            feed = root.find(".//"+ns+"circle[@fill='#111']")
+            labels = {e.text:e for e in root.findall('.//'+ns+'text')}
+            for name in ('ANT','Tie 1','Tie 2'):
+                self.assertEqual(labels[name].get('text-anchor'),'end')
+                self.assertLess(float(labels[name].get('x')),float(feed.get('cx')))
+            self.assertGreater(float(labels['Radio'].get('y')),float(feed.get('cy'))+12)
+
+
+    def test_antenna_feed_and_counted_length(self):
+        import antenna
+        r = antenna.validate(parameters(), compact=True)
+        for actual, expected in zip(r.feed, (68.636, -7.094, 8.0)):
+            self.assertAlmostEqual(actual, expected)
+        self.assertEqual(r.direction, 1)
+        self.assertAlmostEqual(r.rise-r.bend+math.pi*r.bend/2+r.straight,78)
+        self.assertEqual(r.top,24)
+
+    def test_antenna_obstructed_assembled_and_during_removal(self):
+        import antenna
+        p = parameters()
+        r = antenna.validate(p, compact=True)
+        x,y,z = r.point(30)
+        obstacle = ('screw', (x-.01,y-.01,z-7.21), (x+.01,y+.01,z-7.2), .5)
+        antenna.check_boxes(r,[obstacle])
+        with self.assertRaisesRegex(ValueError,'200 mm compact antenna removal: screw'):
+            antenna.check_boxes(r,[obstacle],removal=40)
+        bad = copy.deepcopy(p)
+        battery = next(e for e in bad['electronics'] if e['name']=='Battery')
+        battery['centre'] = [x,y]
+        battery['z'] = 8
+        with self.assertRaisesRegex(ValueError,'200 mm compact antenna: Battery'):
+            validate(bad)
+
     def test_lower_board_inner_ring_and_two_side_strips_fit(self):
         p = parameters()
         d = validate(p)

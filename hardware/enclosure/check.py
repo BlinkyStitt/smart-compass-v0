@@ -30,6 +30,7 @@ def check():
     centres = led_centres(layout, p)
     cells = pixel_regions(centres,p['circle_diameter']/2)
     build.check_model(b, centres, cells)
+    build.antenna_native.regression_checks(p)
     baffle_z = baffle_bottom(p)
     assert math.isclose(doc.FibonacciBaffle.Shape.BoundBox.ZMin, baffle_z, abs_tol=1e-7), 'Master retained an exploded baffle placement'
     assert doc.getObject('CellBaffle') is None, 'A second full cell grid remains in the model'

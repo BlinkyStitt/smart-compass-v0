@@ -18,6 +18,8 @@ import Sketcher
 
 from hardware_spec import nut_dimensions, hexagon, body_bolt_length
 import baffle
+import antenna
+import antenna_native
 
 HERE = Path(os.environ.get('SC_CAD_DIR', Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE))
@@ -38,7 +40,7 @@ class Builder:
         self.sheet.set('B1', 'Value (mm unless stated)')
         self.sheet.set('C1', 'Input status')
         self.keys = [k for k in p if not k.startswith('_')]
-        scalar = {'battery_count', 'battery_mass_g', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio', 'ring_station_count'}
+        scalar = {'battery_count', 'battery_mass_g', 'halo_count', 'inner_count', 'outer_count', 'strip_density', 'map_rotation_deg', 'map_mirror_x', 'map_mirror_y', 'sparkle_rotation', 'fastener_phase_deg', 'runtime_hours', 'example_total_current_a', 'example_output_voltage', 'assumed_efficiency', 'front_washer_compression_ratio', 'ring_station_count', 'antenna_rotation_deg'}
         for row, key in enumerate(self.keys, 2):
             self.sheet.set(f'A{row}', key)
             value = int(p[key]) if isinstance(p[key], bool) else p[key]
@@ -525,7 +527,7 @@ def build(p=None):
     cradle = b.compound('BatteryPockets',cradles)
     rear_items += cradles
 
-    for key, label, color in [('sparkle', 'Sparkle Motion Rev D', (.12, .35, .20)), ('blackpill', 'BlackPill V3.1', (.08, .10, .13)), ('gps', 'GPS FeatherWing placeholder', (.16, .35, .20)), ('imu', 'LSM9DS1 breakout placeholder', (.15, .36, .20)), ('radio', 'RF95 carrier placeholder', (.20, .32, .22)), ('sense', 'BlackPill PA4 raw-pack divider board placeholder', (.32, .26, .16)), ('power', 'Pololu U3V70F5 fixed 5 V boost envelope', (.12,.35,.20))]:
+    for key, label, color in [('sparkle', 'Sparkle Motion Rev D', (.12, .35, .20)), ('blackpill', 'BlackPill V3.1', (.08, .10, .13)), ('gps', 'GPS FeatherWing placeholder', (.16, .35, .20)), ('imu', 'LSM9DS1 breakout placeholder', (.15, .36, .20)), ('radio', 'Adafruit RFM95W 3072 nominal carrier', (.20, .32, .22)), ('sense', 'BlackPill PA4 raw-pack divider board placeholder', (.32, .26, .16)), ('power', 'Pololu U3V70F5 fixed 5 V boost envelope', (.12,.35,.20))]:
         x, y, w, l = [p[key + '_' + suffix] for suffix in ('x', 'y', 'width', 'length')]
         if key == 'sparkle':
             for i, (dx, dy) in enumerate(sparkle_holes):
@@ -535,8 +537,11 @@ def build(p=None):
                 carrier_items.append(b.fuse(f'SparkleMount{i}',[standoff,root]))
         else:
             # Open-ended rails avoid guessed mounting holes; straps retain each board.
+            # Preserve the original radio supports: the sourced 25.4 mm outline
+            # still has 1.3 mm side clearance at the existing integral rails.
+            rail_width = w - .4 if key == 'radio' else w
             for side in (-1, 1):
-                start = x + w / 2 - 1 if side == 1 else x - w / 2 - 2.5
+                start = x + rail_width / 2 - 1 if side == 1 else x - rail_width / 2 - 2.5
                 foot = b.box(f'{key}Foot{side:+}', 3.5, l + 4, rear+4, start, y - l / 2 - 2, 0)
                 side_name='Right' if side==1 else 'Left'
                 # Open windows under the bearing lip, above the continuous skin.
@@ -546,19 +551,35 @@ def build(p=None):
                                 inner_x, yy, p['rear_skin_thickness'])
                            for j,yy in enumerate((y-l/2+1,y+3))]
                 foot = b.cut(f'{key}OpenFoot{side_name}',foot,reliefs)
-                wall = b.box(f'{key}Wall{side:+}', 2, l + 4, 7, x + side * (w / 2 + 1.5) - 1, y - l / 2 - 2, rear)
+                wall = b.box(f'{key}Wall{side:+}', 2, l + 4, 7, x + side * (rail_width / 2 + 1.5) - 1, y - l / 2 - 2, rear)
                 rail = b.fuse(f'{key}Rail{side:+}', [foot, wall])
                 slot = b.box(f'{key}TieSlot{side:+}', 6, 6, 1.5, start - 1, y - 3, rear + 1)
                 blend = b.root_blend(f'{key}RailRoot{side_name}',l+4,start+3.5,y-l/2-2,p['rear_skin_thickness'])
                 carrier_items.append(b.cut(f'{key}TieRail{side:+}', b.fuse(f'{key}BlendedRail{side_name}',[rail,blend]), slot))
-        pcb = b.box(key + 'PCB', w, l, 1.6, x - w / 2, y - l / 2, rear + 4)
+        pcb = b.box(key + ('PCBBlank' if key == 'radio' else 'PCB'), w, l, 1.6, x - w / 2, y - l / 2, rear + 4)
         if key == 'sparkle':
             pcb = b.cut('SparklePCBWithHoles', pcb, [b.cylinder(f'SparklePCBHole{i}', 1.2, 1.6, rear + 4, x + dx, y + dy) for i, (dx, dy) in enumerate(sparkle_holes)])
+        if key == 'radio':
+            route = antenna.installation(p)
+            hole = b.cylinder('ANTDrill', .5, 2, route.feed[2]-.2, *route.feed[:2])
+            pcb = b.cut('radioPCB', pcb, hole)
         b.add(pcb, 'Electronics', label + ' - PCB footprint', color)
-        env = b.box(key + 'Components', w - 4, l - 4, p[key + '_height'] - 1.6, x - w / 2 + 2, y - l / 2 + 2, rear + 5.6)
+        env = b.box(key + ('ComponentsBlank' if key == 'radio' else 'Components'), w - 4, l - 4, p[key + '_height'] - 1.6, x - w / 2 + 2, y - l / 2 + 2, rear + 5.6)
         if key == 'sparkle':
             env = b.cut('sparkleComponentsWithMountKeepouts',env,[b.cylinder(f'SparkleDriverKeepout{i}',2.2,p[key+'_height'],rear+5.6,x+dx,y+dy) for i,(dx,dy) in enumerate(sparkle_holes)])
+        if key == 'radio':
+            relief = doc.addObject('Part::Feature', 'ANTComponentRelief')
+            relief.Shape = antenna_native.feed_relief(route, p['radio_height'])
+            env = b.cut('radioComponents', env, relief)
         b.add(env, 'Optics', label + ' - component clearance envelope', (.85, .55, .18), 70)
+    route = antenna.validate(p)
+    for i, shape in enumerate(antenna_native.restraints(route, p['rear_skin_thickness']-.2)):
+        locator = doc.addObject('Part::Feature', f'AntennaSaddle{i+1}')
+        locator.Shape = shape
+        rear_items.append(locator)
+    wire = doc.addObject('Part::Feature', 'RadioAntenna')
+    wire.Shape = antenna_native.wire(route)
+    b.add(wire, 'Optics', '78 mm internal wire including ANT feed; unmeasured RF', (.0,.45,.7))
     mounts = b.compound('BoardMounts',carrier_items)
     rear_items += carrier_items
     reinforced = b.fuse('RearReinforcedBlank',rear_items)
@@ -809,6 +830,8 @@ def check_partition(parent, children):
 
 
 def check_model(b, centres, cells):
+    antenna_native.check(b.p, b.parts + b.hardware + b.references)
+    antenna_native.removal(b.p, antenna_native.original_fixed(b.doc))
     bad = [(o.Name, list(o.State)) for o in b.doc.Objects if 'Invalid' in o.State or 'Error' in o.State]
     if bad:
         raise ValueError('Invalid document objects: ' + repr(bad))
@@ -922,7 +945,9 @@ def ring_fit_sample(shape):
 def controller_fit_sample(shape, p):
     """Rear skin, one board support, and its side-loading nut path."""
     x, y = p['sparkle_x']-22.86, p['sparkle_y']-13.97
-    return shape.common(Part.makeBox(14,20,10,App.Vector(x-7,y-5,0)))
+    # Exclude the unrelated battery-cradle lip at the lower crop edge.
+    # Retain the complete bearing stem and the +Y nut-loading mouth.
+    return shape.common(Part.makeBox(14,20,10,App.Vector(x-7,y-4,0)))
 
 
 def export_files(b, centres, cells):
@@ -930,7 +955,7 @@ def export_files(b, centres, cells):
     out.mkdir(exist_ok=True)
     manifest_path = out / 'parts.json'
     previous_meshes = set(json.loads(manifest_path.read_text())['stl_files']) if manifest_path.exists() else set()
-    Part.export(b.parts + b.hardware + [b.doc.CircleLEDs, b.doc.HaloLEDs, b.doc.InnerLEDs, b.doc.OuterLEDs], str(out / 'smart-compass.step'))
+    Part.export(b.parts + b.hardware + [b.doc.CircleLEDs, b.doc.HaloLEDs, b.doc.InnerLEDs, b.doc.OuterLEDs, b.doc.RadioAntenna], str(out / 'smart-compass.step'))
     import MeshPart
     def print_mesh(shape):
         # Use the same fine circular tessellation for products and fit samples.
@@ -980,6 +1005,8 @@ def export_files(b, centres, cells):
         'parameters_for_inventory':b.p,'fit_samples':fit_samples,
         'print_basis':{'bed_mm':[b.p['print_bed_x'],b.p['print_bed_y']],'margin_mm':b.p['print_margin'],
                        'nozzle_mm':.4,'layer_mm':.2,'orientation':'Delivered projects preserve the intended bed face'}},indent=2)+'\n')
+    gaps = antenna_native.check(b.p, b.parts + b.hardware + b.references)
+    antenna.diagram(antenna.installation(b.p), antenna.component_boxes(b.p, include_radio=True), gaps, out/'antenna-placement.svg')
     svg_files(b, cells, out)
     section_drawing(b, out)
     if App.GuiUp:
@@ -1096,7 +1123,7 @@ def export_previews(b, out):
         obj.Visibility = was_visible
     # Remove the face/frame in this preview to show the rear's integral ribs,
     # individual battery pockets and electronics. Normal rear view stays opaque.
-    hidden = [obj for obj in b.parts+b.hardware+b.references if not (obj.Name.startswith(('RearPlate','NecklaceLink','BatteryEnvelope')) or obj in b.hardware and obj.Name != 'CirclePCB' and 'Strip' not in obj.Name)]
+    hidden = [obj for obj in b.parts+b.hardware+b.references if not (obj.Name.startswith(('RearPlate','NecklaceLink','BatteryEnvelope','RadioAntenna')) or obj in b.hardware and obj.Name != 'CirclePCB' and 'Strip' not in obj.Name)]
     visibility = [(obj,obj.Visibility) for obj in hidden]
     for obj in hidden:
         obj.Visibility = False

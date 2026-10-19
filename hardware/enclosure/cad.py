@@ -21,6 +21,7 @@ INPUTS = (
     'justfile', 'design-v2.md',
     *(CAD + '/' + name for name in (
         'cad.py', 'build.py', 'check.py', 'geometry.py', 'baffle.py',
+        'antenna.py', 'antenna_native.py', 'test_antenna.py', 'antenna-placement.md', 'README.md',
         'vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl',
         'vendor/evilgeniuslabs-fibonacci256/LICENSE.txt',
         'vendor/evilgeniuslabs-fibonacci256/README.txt',
@@ -59,6 +60,7 @@ InnerRing-silver.3mf
 amulet-silver.glb
 amulet.glb
 assembly-section.svg
+antenna-placement.svg
 assembly.png
 circle-alignment-overlay.svg
 diffusers.png

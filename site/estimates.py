@@ -27,7 +27,9 @@ def estimate_masses(wide, narrow, parameters, material):
     bodies.update("BoardEdgeClip" + str(i) for i in range(3))
     bodies.update(e["name"] + "Shelf" for e in parameters["electronics"]
                   if e["name"] != "Battery")
-    electronics = {e["name"] for e in parameters["electronics"]} | {"FibonacciPCB"}
+    # RadioAntenna uses the rf_antenna allowance retained in common; its CAD
+    # envelope must not add a second mass or be treated as printed plastic.
+    electronics = {e["name"] for e in parameters["electronics"]} | {"FibonacciPCB", "RadioAntenna"}
     volumes, rows = [], common
     found_bodies = set()
     for part in narrow["parts"]:

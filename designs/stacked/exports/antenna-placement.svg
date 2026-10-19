@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650"><ns0:title>200 mm compact antenna placement</ns0:title>
+<ns0:rect width="900" height="650" fill="white" />
+<ns0:g font-family="sans-serif" fill="#111" font-size="16">
+<ns0:text x="24" y="28">200 mm compact — 915 MHz internal wire; mechanical allowances only</ns0:text>
+<ns0:text x="24" y="54">Open rear: +X left, +Y up / necklace; +Z toward front, away from body</ns0:text>
+<ns0:circle cx="180" cy="300" r="114.99999999999999" fill="none" stroke="#999" />
+<ns0:rect x="134.0" y="302.875" width="92.0" height="74.75" fill="none" stroke="#999" />
+<ns0:text x="136.0" y="312.875" font-size="9">Battery</ns0:text>
+<ns0:rect x="107.09" y="246.440475" width="58.419999999999995" height="38.11904999999999" fill="none" stroke="#999" />
+<ns0:text x="109.09" y="256.440475" font-size="9">SparkleMotion</ns0:text>
+<ns0:rect x="202.54" y="233.99" width="23.919999999999995" height="60.71999999999999" fill="none" stroke="#999" />
+<ns0:text x="204.54" y="243.99" font-size="9">BlackPill</ns0:text>
+<ns0:rect x="166.8555" y="206.39" width="26.288999999999998" height="58.42" fill="none" stroke="#999" />
+<ns0:text x="168.8555" y="216.39" font-size="9">GPS</ns0:text>
+<ns0:rect x="235.775" y="277.575" width="28.749999999999996" height="28.749999999999996" fill="none" stroke="#999" />
+<ns0:text x="237.775" y="287.575" font-size="9">IMU</ns0:text>
+<ns0:rect x="96.39500000000001" y="301.15" width="29.210000000000004" height="36.8" fill="none" stroke="#999" />
+<ns0:text x="98.39500000000001" y="333.95" font-size="9">Radio</ns0:text>
+<ns0:rect x="169.65" y="279.3" width="20.7" height="18.4" fill="none" stroke="#999" />
+<ns0:text x="171.65" y="289.3" font-size="9">BatterySense</ns0:text>
+<ns0:rect x="236.81" y="311.155" width="17.479999999999993" height="46.68999999999999" fill="none" stroke="#999" />
+<ns0:text x="238.81" y="321.155" font-size="9">Boost5V</ns0:text>
+<ns0:rect x="166.2" y="231.0" width="27.599999999999998" height="74.75" fill="none" stroke="#999" />
+<ns0:text x="168.2" y="241.0" font-size="9">LED/power harness</ns0:text>
+<ns0:polyline points="101.06860000000002,308.1581 101.06860000000002,308.1581 101.06860000000002,308.1449717084165 101.06860000000002,308.1056867478921 101.06860000000002,308.0405441006973 101.06860000000002,307.95003954171136 101.06860000000002,307.8348618652764 101.06860000000002,307.6958876430563 101.06860000000002,307.534174552797 101.06860000000002,307.35095332876045 101.06860000000002,307.14761839509356 101.06860000000002,306.92571725341855 101.06860000000002,306.6869387054111 101.06860000000002,306.4331 101.06860000000002,306.1661330030054 101.06860000000002,305.88806949447354 101.06860000000002,305.6010257056037 101.06860000000002,305.3071862129509 101.06860000000002,305.0087873124794 101.06860000000002,304.7081 101.06860000000002,235.3773473274424" fill="none" stroke="#0072b2" stroke-width="4" />
+<ns0:path d="M 60,140 V 90 l -6,10 m 6,-10 l 6,10" stroke="#111" fill="none" />
+<ns0:text x="28" y="80">UP +Y</ns0:text>
+<ns0:circle cx="101.06860000000002" cy="308.1581" r="5" fill="#111" /><ns0:text x="87.06860000000002" y="318.1581" text-anchor="end">ANT</ns0:text>
+<ns0:rect x="93.06860000000002" y="287.2081" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="87.06860000000002" y="298.2081" text-anchor="end">Tie 1</ns0:text>
+<ns0:rect x="93.06860000000002" y="241.2081" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="87.06860000000002" y="252.2081" text-anchor="end">Tie 2</ns0:text>
+<ns0:text x="24" y="510" font-size="13">Side: +Z toward front (up); body behind feed</ns0:text>
+<ns0:polyline points="65.0,595.0 65.0,556.0 65.02283181144952,555.2155983152711 65.09115348192675,554.4371664009976 65.20444504226559,553.6706285940774 65.36184427528455,552.9218187100689 65.5621532777801,552.1964356443337 65.80384757729337,551.5 66.08508773426605,550.8378120728406 66.40373334128613,550.2149115128211 66.75735931288071,549.6360389693211 67.14327434188077,549.1056000119293 67.55854138189372,548.6276316013991 68.0,548.2057713659401 68.4642904295558,547.8432299166701 68.94787914004598,547.5427664129269 69.44708572938487,547.3066675633984 69.95811093399841,547.1367302228902 70.47706554351404,547.0342477171743 71.0,547.0 191.57522203923062,547.0" fill="none" stroke="#0072b2" stroke-width="3" />
+<ns0:text x="24" y="620" font-size="13">Form riser and bend before soldering into ANT.</ns0:text>
+<ns0:text x="370" y="95" font-size="14">Cut 78 mm TOTAL; includes 2 mm stripped end.</ns0:text>
+<ns0:text x="370" y="121" font-size="14">ANT XYZ: (68.636, -7.094, 8) mm.</ns0:text>
+<ns0:text x="370" y="147" font-size="14">Feed rises 16 mm; bend radius 3 mm.</ns0:text>
+<ns0:text x="370" y="173" font-size="14">Straight after bend: 60.288 mm at Z24.</ns0:text>
+<ns0:text x="370" y="199" font-size="14">Tip XYZ: (68.636, 56.194, 24).</ns0:text>
+<ns0:text x="370" y="225" font-size="14">Wire OD 1; placement tolerance ±0.2 mm.</ns0:text>
+<ns0:text x="370" y="251" font-size="14">Tie saddles locate the run; release ties before radio removal.</ns0:text>
+<ns0:text x="370" y="277" font-size="14">Gap values below include insulation + placement tolerance:</ns0:text>
+<ns0:text x="370" y="303" font-size="14">RadioShelf: 0.80 mm</ns0:text>
+<ns0:text x="370" y="329" font-size="14">ElectronicsShell: 1.30 mm</ns0:text>
+<ns0:text x="370" y="355" font-size="14">Radio: 2.50 mm</ns0:text>
+<ns0:text x="370" y="381" font-size="14">FibonacciPCB: 3.30 mm</ns0:text>
+<ns0:text x="370" y="407" font-size="14">Side0Strip: 3.76 mm</ns0:text>
+<ns0:text x="370" y="433" font-size="14">Side1Strip: 3.76 mm</ns0:text>
+<ns0:text x="370" y="459" font-size="14">SparkleMotion: 4.63 mm</ns0:text>
+<ns0:text x="370" y="485" font-size="14">Side0LEDs: 4.70 mm</ns0:text>
+<ns0:text x="370" y="511" font-size="14">Feed pad / saddle contacts are bounded exceptions.</ns0:text>
+<ns0:text x="370" y="537" font-size="14">CAD checks do not establish RF range or installed tuning.</ns0:text>
+</ns0:g></ns0:svg>

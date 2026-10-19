@@ -187,3 +187,22 @@ Regenerate Wide first with `just cad`, then run
 brightness, exposure and actual pendant size. Masked clips check registered
 brightness masks and the cycle join separately from canonical hue rotation.
 The build updates the source/export freshness manifest with all generated media.
+
+## Internal radio antenna (concept)
+
+![Compact antenna route and checked clearances](exports/antenna-placement.svg)
+
+The 78 mm insulated wire solders directly to ANT on Adafruit 3072, at
+(68.636,-7.094,8) mm with the board at 0° in its centred 25.4 x 32 mm envelope.
+A riser reaches Z24; a 3 mm radius bend leads to the uncoiled +Y run.
+Two integral tied saddles connect to RadioShelf through a low spine. A 3 mm
+nominal shelf aperture clears the underside of the ANT solder joint. Shelf
+fastening remains provisional; this does not establish physical assembly
+acceptance. The diagram uses the native route and checked obstacle distances.
+
+Follow the shared [datum, allowances, service and retrofit instructions](../../hardware/enclosure/antenna-placement.md).
+Remove rear and seal, disconnect radio wiring and release shelf fastening,
+then withdraw shelf/radio/wire together toward -Z. Release ties before board
+replacement. Before closure check seating, gaps, an unloaded joint, clear screws
+and seals. If closure catches, reopen and reseat; never force it. Compare with
+the diagram before altering the antenna. RF range and tuning remain unmeasured.
