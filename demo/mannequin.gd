@@ -58,6 +58,38 @@ func _spot(label: String, colour: Color, position_m: Vector3, energy: float):
 	add_child(light)
 	light.look_at(Vector3(0,0.1,-0.1),Vector3.UP)
 
+# Closed elliptical gold sections in head-local coordinates, including inner walls.
+func _crown_section(label: String, bottom: float, top: float, pointed: bool, material: Material, head: MeshInstance3D):
+	var tool = SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segments = 16 if pointed else 64
+	for i in range(segments):
+		var edges = []
+		for j in range(2):
+			var index = i+j
+			var angle = TAU*index/segments
+			var height = top if not pointed or index%2==0 else bottom
+			var outer = Vector3(0.086*sin(angle),0,0.096*cos(angle))
+			var inner = Vector3(0.078*sin(angle),0,0.088*cos(angle))
+			edges.append([outer+Vector3.UP*bottom,outer+Vector3.UP*height,
+				inner+Vector3.UP*height,inner+Vector3.UP*bottom])
+		for side in range(4):
+			var next = (side+1)%4
+			for vertex in [edges[0][side],edges[1][side],edges[1][next],
+				edges[0][side],edges[1][next],edges[0][next]]:
+				tool.add_vertex(vertex)
+	tool.generate_normals()
+	var section = _mesh(label,tool.commit(),material,head.position)
+	section.rotation = head.rotation
+
+func check_crown():
+	for label in ["CrownBand","CrownPoints"]:
+		var section = get_node_or_null(label) as MeshInstance3D
+		assert(section != null and section.visible and section.mesh != null,"Missing crown: "+label)
+		assert(surfaces.has(section),"Crown must participate in full-body framing")
+		assert(section.transform.is_equal_approx(Transform3D(Basis.from_euler($Head.rotation),$Head.position)),"Crown must follow the head tilt")
+	assert(not has_node("Cap") and not has_node("CapBrim"),"Crown replaces the backward cap")
+
 func build():
 	var body = _material(Color(0.39,0.41,0.44),0.76)
 	var joint = _material(Color(0.22,0.24,0.27),0.65)
@@ -71,10 +103,12 @@ func build():
 	_limb("Neck",Vector3(0,0.36,-0.235),Vector3(-0.015,0.47,-0.25),0.05,body)
 	var head = _oval("Head",Vector3(-0.03,0.60,-0.265),Vector3(0.18,0.25,0.20),body)
 	head.rotation_degrees = Vector3(-12,12,12)
-	# Plain backward cap; the head remains an anonymous, featureless mannequin.
-	var cap = _oval("Cap",Vector3(-0.035,0.705,-0.27),Vector3(0.196,0.075,0.215),black)
-	cap.rotation_degrees.z = 12
-	_oval("CapBrim",Vector3(-0.035,0.70,-0.39),Vector3(0.18,0.013,0.13),black)
+	# Broad gold band and eight tall points, following the head without its oval scale.
+	var gold = _material(Color(0.95,0.64,0.16),0.28)
+	gold.metallic = 0.65
+	gold.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_crown_section("CrownBand",0.060,0.105,false,gold,head)
+	_crown_section("CrownPoints",0.105,0.185,true,gold,head)
 	# Raised arm and open hand: a celebratory pose with the clock on display.
 	var shoulder = Vector3(-0.215,0.32,-0.215)
 	var elbow = Vector3(-0.44,0.53,-0.14)

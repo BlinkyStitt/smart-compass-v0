@@ -63,8 +63,9 @@ Each surface must complete two turns; uniform colour cycling or a frozen ring fa
 assumed ring diffusion at 0.65.
 
 The featureless mannequin is approximately 1.85 m tall. Its backward lean,
-raised hand, pointing hand and plain backward cap give the oversized pendant a
-Flavor Flav inspired wearing pose. The 250 mm pendant retains its CAD size.
+raised hand, pointing hand and eight-point gold crown give the oversized pendant a
+Flavor Flav inspired wearing pose. The broad crown band replaces the backward
+cap and follows the head’s tilt in both previews. The 250 mm pendant retains its CAD size.
 The black 10 mm webbing and neck loop illustrate wearing context. The mannequin
 and straps are display geometry; they are not extra print jobs or proof of fit.
 

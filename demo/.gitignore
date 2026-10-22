@@ -1,3 +1,4 @@
 .godot/
 *.uid
+*.import
 __pycache__/

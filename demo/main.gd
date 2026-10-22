@@ -595,6 +595,7 @@ func _run_checks():
 	assert(meshes.size()==metadata.parts.size())
 	_set_presentation(0)
 	assert(mannequin.visible and infinity_backdrop.visible and lighting==0,"Worn presentation must use the night scene")
+	mannequin.check_crown()
 	for surface in mannequin.surfaces:
 		for corner in range(8):
 			var point=surface.global_transform*surface.get_aabb().get_endpoint(corner)
