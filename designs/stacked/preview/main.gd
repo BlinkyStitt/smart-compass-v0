@@ -393,7 +393,15 @@ func _check():
 		assert(pixel.g>0.5 and int(round(pixel.r*255))==i,"Cell map loses manufacturer index "+str(i))
 	assert(is_equal_approx(float(metadata.dimensions_m.diameter),float(metadata.validation.maximum_width_mm)/1000))
 	assert(is_equal_approx(float(metadata.optics.front_z)-float(metadata.optics.rear_z),float(metadata.validation.mirror_gap_mm)/1000))
+	get_window().size = Vector2i(1280,720)
+	_set_presentation(0)
 	assert(mannequin.visible and backdrop.visible)
+	mannequin.check_crown()
+	for surface in mannequin.surfaces:
+		for corner in range(8):
+			var point=surface.global_transform*surface.get_aabb().get_endpoint(corner)
+			assert(not camera.is_position_behind(point),"Mannequin behind the camera")
+			assert(get_viewport().get_visible_rect().grow(-12).has_point(camera.unproject_position(point)),"Full pose clipped: "+str(surface.name))
 	_set_presentation(1)
 	assert(is_equal_approx(distance,0.46))
 	assert(is_equal_approx(camera.fov,38.0))
