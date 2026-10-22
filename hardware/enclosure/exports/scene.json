@@ -42,7 +42,7 @@
       }
     }
   },
-  "master_sha256": "98c831ef246cc4d218810818045cec2e1dfcdaf19b38e360c6f7b96643a5757c",
+  "master_sha256": "1bcd5955cbc48d3d29e99d4b71ff795d6d17e604f03462bd1c3459e2ee49086b",
   "parts": [
     {
       "name": "NecklaceLink0",

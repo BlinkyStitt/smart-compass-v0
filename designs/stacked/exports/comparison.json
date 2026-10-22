@@ -1,5 +1,5 @@
 {
-  "reference_commit": "899981e57423434e9068cde5a4b589c98337a548",
+  "reference_commit": "ad105c3de1f5ad525f298b1e0ee1aa4c95fa056f",
   "reference_design": "hardware/enclosure/exports",
   "separate_files": true,
   "width_px": 1280,
@@ -26,7 +26,7 @@
     "frames": 384
   },
   "backdrop_sha256": "d97e75745cdf66657fadea1218deb33def14f0927fbe9a8616a88b4b64e6611f",
-  "pose_source_sha256": "0c2991f19f25233f017bd59bd6948a41aa87805b07b46ddd597775f1746ef8b9",
+  "pose_source_sha256": "fc3b07a17d27c27f5b7e98e2a7a4d5ee89b48a40307bfa6e7c5e408426f7734c",
   "pose_changes": "Only the final webbing segments meet the compact rear anchors; body pose unchanged",
   "optics_status": "Clear outer mirror: supplier-nominal R70/T30. Coated black inner mirror: complete-sheet estimate cavity R70/T9/absorption21, reverse R10/T9. Same black-mirror estimate in the wide front. No separate black filter or brightness compensation. Custom coatings, RGB and scattering remain unmeasured."
 }
