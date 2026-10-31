@@ -17,6 +17,9 @@ power path or erase the original counterexamples.
 The [retained-rail boost interlock](electrical-boost-interlock.json) additionally
 separates PG from ENABLE through a B-powered supervisor. Its conditional DC
 margin and remaining shutdown gaps are documented at the end of this review.
+The [discharge revision](electrical-reset-revision.json) composes both control
+repairs with direct rail drains. Its coupled-rail envelope is conditional;
+unknown assembly bounds still produce no qualified dwell.
 
 ## Candidate connections
 
@@ -177,6 +180,11 @@ are still unbounded, so neither 6.46 s nor a rounded-up dwell is qualified.
 The selected trial bleeder is CRCW06031K00FKEA; its 0.10 W standard-mode P70
 rating and resistance allowances come from [Vishay document 20035](https://www.vishay.com/docs/20035/dcrcwe3.pdf).
 
+The 6.460103 s figure above is retained as the earlier trial's calculation,
+not a valid OFF timer: it incorrectly added power-on lockout to discharge time.
+The discharge revision below separates those intervals. The old 0.1 V criterion
+also does not by itself specify the controller's reset threshold or pulse width.
+
 A permanent C bleeder also worsens depletion drain while S1 remains ON:
 at a nominal C=3.7 V it adds **3.7 mA / 0.32856 Wh per day**, in addition to
 other branch demand. The original approximately 0.2 mA estimate therefore
@@ -330,3 +338,89 @@ overloaded PG, excess leakage, insufficient clamp margin, retained EN,
 unsupported supplies and unknown source current. Pages hashes this additional
 input and rejects its removal or modification during publication. No enclosure,
 mass ledger or service dwell is frozen by this partial repair.
+
+## Recovery: coupled rail discharge
+
+The reset defect remains `9e825925-8386-4670-a036-0b0fca2c85d8`. The new
+[revision](electrical-reset-revision.json) composes the Schmitt and supervisor
+netlists before adding drains. It removes the superseded divider, preserves
+USB/sense/load connections, and checks unique pin ownership. It retains S1 and
+LM66100 CE=GND; it makes no new isolation claim for the latter.
+
+| Component | Revised candidate | Connection |
+| --- | --- | --- |
+| R_OFF | CRCW06031K00FKEA, 1 kΩ | S1.OFF to GND; existing resistor |
+| R_B_BLEED | CRCW06031K00FKEA, 1 kΩ | B to GND; added |
+| R_C_BLEED | CRCW06034K70FKEA, 4.7 kΩ | C to GND; added |
+| R_OUT | CRCW0805470RFKEA, 470 Ω | FIVE_V to GND; replaces 1 kΩ |
+| C_OUT | Panasonic EEUFR1A102, 1000 µF / 10 V | Existing reservoir function, exact candidate part |
+| C_U6 | 100 nF nominal; exact part unresolved | B to GND beside supervisor |
+
+The bleeder calculation includes initial tolerance, TCR, and separate endurance,
+solder and humidity allowances, with absolute-ohm terms. It gives A/B
+950.8–1049.2 Ω, C 4469.5–4930.5 Ω and output 446.77–493.23 Ω. Peak output
+bleeder dissipation in the 5.2 V reference case is 60.53 mW, below its 125 mW
+standard-mode P70 rating. The sum of test allowances is a sensitivity envelope;
+actual series resistance, simultaneous stresses, lifetime and assembled thermal
+derating remain open. [Vishay 20035, pp. 2, 8–10](https://www.vishay.com/docs/20035/dcrcwe3.pdf).
+
+The selected reservoir has ±20% initial capacitance tolerance, giving 1200 µF
+at that condition. Its nominal body is Ø10 × 16 mm with 5 mm lead pitch;
+this excludes loaded leads and insulation. This does not bound capacitor
+aging/temperature, internal module capacitance or every load board. The model
+lists each external capacitor, including KILL/dVdt and U5/U6 bypasses, without
+silently treating their missing bounds as zero.
+[Panasonic EEUFR1A102 specification](https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102).
+
+For the controller, rising supply UVLO is 1.0–1.3 V with 30–200 mV hysteresis:
+the conservative falling threshold minimum is **0.8 V**. Crossing it is only
+one reset condition; pulse duration, pin backpower and intervening supply ramps
+remain unqualified. Power-on lockout is 0.6–1.4 s **after reapplication**. It
+cannot be counted as time spent OFF. The 0.1 V common drain criterion retained
+by the reference case is more conservative than that voltage threshold, but
+is not evidence that every downstream processor has reset.
+[LTC2955, pp. 3–4 and 12–13](https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf).
+
+### Automated discharge bound
+
+`electrical_reset.py` uses a comparison bound rather than summing isolated RC
+times. For each rail let R be the total drain resistance upper bound, C the
+total differential capacitance upper bound and I the external incoming-current
+upper bound. Define `floor = max(R × I)`, `tau = max(R × C)` and
+`initial = max(all initial voltages, floor)`. Every rail is bounded by
+`floor + (initial − floor) × exp(−t/tau)` under the stated premises.
+
+At any rail touching this envelope, passive conduction from other rails cannot
+add charge because their voltages are no higher. Its drain is therefore at
+least as fast as the envelope. This covers arbitrary changing passive
+conductance, including charge sharing and a conducting LM66100. It excludes
+active boost conversion, inductive/internal stored energy not represented in
+the capacitances, dielectric rebound and external voltage sources. Those
+exclusions must be bounded before applying it to the assembly. A target at or
+below the leakage floor is unreachable; unknown premises return no time.
+
+The explicitly synthetic reference has 10 µA ingress per rail, 0.1 Ω added
+series resistance, 1200 µF output storage and illustrative A/B/C capacitances.
+It gives a 49.306 mV floor, 0.591996 s time constant and **2.735660 s** to the
+0.1 V boundary. At five seconds the upper envelope is **50.412 mV**. This is
+a component-sizing result, **not a qualified five-second service dwell**.
+All actual assembly capacitance/ingress/series/initial-voltage fields and the
+converter/isolation premises remain explicit unknowns, so the assembly result
+is `unbounded` with no dwell. USB connection or a still-switching boost cannot
+inherit the reference result.
+
+The C bleeder adds approximately **0.787 mA / 0.06991 Wh per day** at C=3.7 V
+while the switch remains ON, including after depletion. That is additional to
+the other controller-branch demand; the original 0.2 mA total no longer applies
+to this revision. The B and output drains also add operating load and must be
+included when the complete electrical/energy model is implemented.
+
+Tests cover exact RC solutions, passive charge sharing into an empty controller
+rail, independent extrema, unreachable leakage floors, extra output storage,
+and finite/unknown input handling. Injected switch/USB events verify that only
+the latest uninterrupted source-free OFF interval counts; ON, unknown state or
+an external source restarts that interval. These are fixtures, not measurements
+of the switch's bounce or a delivered hardware debounce function. Pages hashes
+both the new definition and solver. `electrical.py check` retains all seven
+failed qualification boundaries; no enclosure or service instructions are
+released from this conditional study.

@@ -12,6 +12,8 @@ import math
 from pathlib import Path
 import re
 
+from electrical_reset import off_envelope
+
 HERE = Path(__file__).resolve().parent
 
 
@@ -464,6 +466,153 @@ def boost_interlock_study(spec, control, revision):
     }
 
 
+def reset_netlist(spec, control, interlock, revision):
+    """Compose the two earlier circuit repairs before adding discharge parts.
+
+    Retain the historical input, remove superseded divider parts, and reject
+    duplicate ownership before any pin moves can conceal it. R_OUT is replaced,
+    not paralleled by a second inventory instance. S1 and LM66100 CE stay as-is.
+    """
+    expected = {
+        'OFF_DRAIN': {'R_OFF.1'}, 'B': {'R_B_BLEED.1', 'C_U6.1'},
+        'C': {'R_C_BLEED.1'}, 'FIVE_V': {'R_OUT.1'},
+        'GND': {'R_OFF.2', 'R_B_BLEED.2', 'R_C_BLEED.2', 'R_OUT.2', 'C_U6.2'},
+    }
+    if revision.get('schema_version') != 1 or set(revision['nets']) != set(expected):
+        raise ValueError('Unsupported discharge topology')
+    for net, pins in revision['nets'].items():
+        if len(pins) != len(set(pins)) or set(pins) != expected[net]:
+            raise ValueError('Discharge netlist disagrees at ' + net)
+    schmitt_control_study(spec, control)  # Validate the selected control topology.
+    candidate = interlock_netlist(spec, interlock)  # Includes duplicate-pin guard.
+    nets = candidate['nets']
+    for net, required in {
+        'OFF_DRAIN': {'R_OFF.1', 'S1.OFF'}, 'A': {'S1.COMMON'},
+        'FUSED': {'S1.ON'}, 'FIVE_V': {'R_OUT.1', 'C_OUT.1'},
+        'C': {'U2.VOUT', 'C_C.1'}, 'GND': {'U2.CE', 'R_OFF.2', 'R_OUT.2'},
+    }.items():
+        if not required <= set(nets.get(net, [])):
+            raise ValueError('Discharge power connection disagrees at ' + net)
+    moved = {pin for pins in control['nets'].values() for pin in pins}
+    obsolete = {'R_EN_TOP.1', 'R_EN_TOP.2', 'R_EN_BOTTOM.1', 'R_EN_BOTTOM.2'}
+    for name in nets:
+        nets[name] = [pin for pin in nets[name] if pin not in moved | obsolete]
+    for name, pins in control['nets'].items():
+        nets.setdefault(name, []).extend(pins)
+    candidate['open_pins'].extend(control['open_pins'])
+    for name in ('R_EN_TOP', 'R_EN_BOTTOM'):
+        del candidate['resistors_ohm'][name]
+    candidate['resistors_ohm'].update({name: p['ohm'] for name, p in control['resistors'].items()})
+    candidate['U5'] = control['buffer']
+    for name, pins in revision['nets'].items():
+        for pin in pins:
+            if pin in nets.get(name, []) and pin.split('.')[0] in ('R_OFF', 'R_OUT'):
+                continue  # Existing physical resistor, with revised BOM below.
+            nets.setdefault(name, []).append(pin)
+    candidate['resistors_ohm'].update({name: p['ohm'] for name, p in revision['resistors'].items()})
+    candidate['capacitors_nominal_f'].update({
+        'C_U5': control['capacitors']['C_U5']['nominal_f'], 'C_U6': 1e-7,
+    })
+    pins = [pin for group in nets.values() for pin in group] + candidate['open_pins']
+    if len(pins) != len(set(pins)):
+        raise ValueError('Discharge revision has duplicate pin ownership')
+    candidate['nets'] = {name: pins for name, pins in nets.items() if pins}
+    return candidate
+
+
+def reset_study(spec, control, interlock, revision):
+    """Size the drain network and expose exactly which assembly bounds are absent."""
+    candidate = reset_netlist(spec, control, interlock, revision)
+    rails = {'A', 'B', 'C', 'FIVE_V'}
+    assignments = {'R_OFF': 'A', 'R_B_BLEED': 'B', 'R_C_BLEED': 'C', 'R_OUT': 'FIVE_V'}
+    if set(revision['resistors']) != set(assignments):
+        raise ValueError('Missing or extra discharge resistor')
+    resistors, power = {}, {}
+    for name, part in revision['resistors'].items():
+        code = re.fullmatch(r'CRCW(0603|0805)(\d{1,3})([RK])(\d{0,2})FKEA', part['part'])
+        if code is None or len(code[2] + code[4]) != 3:
+            raise ValueError('Unsupported discharge resistor part code')
+        nominal = float(code[2] + '.' + code[4]) * (1000 if code[3] == 'K' else 1)
+        rating = {'0603': .1, '0805': .125}[code[1]]
+        if (nominal != part['ohm'] or part['p70_standard_w'] != rating
+                or part['rail'] != assignments[name]):
+            raise ValueError('Discharge resistor BOM/model mismatch: ' + name)
+        bounds = resistor_bounds(nominal, revision['resistor_model'])
+        resistors[part['rail']] = bounds
+        # All rails may receive charge from the 5 V domain in the passive
+        # sensitivity case. This is not the as-yet-unbounded USB/transient peak.
+        initial = max(row['initial_max_v'] for row in revision['reference_case']['rails'].values())
+        finite(initial, 'reference initial voltage', positive=True)
+        peak = initial**2 / bounds[0]
+        power[name] = {'reference_peak_w': peak, 'p70_standard_w': rating,
+                       'within_p70': peak <= rating}
+    cap = revision['output_capacitor']
+    if (cap['part'] != 'Panasonic EEUFR1A102' or cap['nominal_f'] != .001
+            or cap['initial_tolerance'] != .2 or cap['rated_v'] != 10):
+        raise ValueError('Output capacitor disagrees with selected part')
+    if candidate['capacitors_nominal_f']['C_OUT'] != cap['nominal_f']:
+        raise ValueError('Output reservoir nominal capacitance disagrees with netlist')
+    if (revision['reference_case']['rails']['FIVE_V']['capacitance_max_f']
+            < cap['nominal_f'] * (1 + cap['initial_tolerance'])):
+        raise ValueError('Reference case omits part of the output reservoir')
+    external_caps = {}
+    for net, pins in candidate['nets'].items():
+        for pin in pins:
+            if pin.startswith('C_') and pin.endswith('.1'):
+                name = pin[:-2]
+                if name + '.2' not in candidate['nets']['GND']:
+                    raise ValueError('Discharge capacitor return is not accounted for: ' + name)
+                external_caps[name] = {'node': net,
+                                      'nominal_f': candidate['capacitors_nominal_f'].get(name)}
+    controller = revision['controller']
+    rising = interval(controller['uvlo_rising_v'], 'controller UVLO')
+    hysteresis = interval(controller['uvlo_hysteresis_v'], 'controller UVLO hysteresis')
+    if min(rising) <= 0 or min(hysteresis) < 0 or max(hysteresis) >= min(rising):
+        raise ValueError('Invalid controller UVLO corners')
+    falling_min = rising[0] - hysteresis[1]
+    lockout = interval(controller['startup_lockout_s'], 'startup lockout')
+    if lockout[0] <= 0:
+        raise ValueError('Startup lockout must be positive')
+    target = finite(revision['reference_case']['drain_target_v'], 'drain target', positive=True)
+    if target >= falling_min:
+        raise ValueError('Drain target must be below the controller falling UVLO minimum')
+    elapsed = finite(spec['candidate']['proposed_off_dwell_s'], 'proposed OFF dwell', positive=True)
+
+    def calculate(case):
+        if set(case['rails']) != rails:
+            raise ValueError('Discharge bounds must include all four rails')
+        rows = copy.deepcopy(case['rails'])
+        for rail, row in rows.items():
+            extra = row.pop('series_max_ohm')
+            if extra is not None and finite(extra, 'discharge series resistance') < 0:
+                raise ValueError('Discharge series resistance must be nonnegative')
+            row['resistance_max_ohm'] = None if extra is None else resistors[rail][1] + extra
+        return off_envelope(rows, target, elapsed,
+                            sources_disconnected=case['sources_disconnected'],
+                            passive_transfer_only=case['passive_transfer_only'])
+
+    reference = calculate(revision['reference_case'])
+    assembly = calculate(revision['assembly_bounds'])
+    # Permanent C drain remains connected after depletion until S1 is OFF.
+    c_resistance = revision['resistors']['R_C_BLEED']['ohm']
+    nominal_c = spec['limits']['cell_nominal_v']
+    return {
+        'revision': revision['revision'], 'defect_id': revision['defect_id'],
+        'status': revision['status'], 'qualified': False,
+        'candidate_nets': candidate['nets'], 'candidate_open_pins': candidate['open_pins'],
+        'external_capacitors': external_caps,
+        'discharge_resistance_bounds_ohm': resistors, 'reference_bleeder_power': power,
+        'output_reservoir_initial_max_f': cap['nominal_f'] * (1 + cap['initial_tolerance']),
+        'controller_uvlo_falling_min_v': falling_min,
+        'startup_lockout_after_reapplication_s': list(lockout),
+        'proposed_off_s': elapsed, 'drain_target_v': target,
+        'reference_case': reference, 'assembly': assembly,
+        'added_c_bleeder_a_at_nominal_c': nominal_c / c_resistance,
+        'added_c_bleeder_wh_per_day_at_nominal_c': nominal_c**2 / c_resistance * 24,
+        'remaining_evidence': revision['remaining_evidence'],
+    }
+
+
 def review(spec):
     if spec.get('schema_version') != 1:
         raise ValueError('Unsupported electrical-review schema')
@@ -544,9 +693,10 @@ def review(spec):
         {'id': 'loaded-path-and-branches', 'detail': 'Exact PCB/copper, terminals, wire gauges, '
          'branch fuses, loaded envelopes and USB/sense/return/backfeed circuits remain undesigned. '
          'Reference average load is not a continuous/PWM/radio/inrush peak rating.'},
-        {'id': 'reset-and-recovery', 'detail': 'No worst-case discharge/leakage/lockout model '
-         'for A/B/C/5V, bounce or rapid swaps. Five-second OFF dwell is a proposal. '
-         'CE=GND on LM66100 provides RPP, not the CE=VOUT reverse-current-blocking configuration.'},
+        {'id': 'reset-and-recovery', 'detail': 'The coupled passive-rail revision sizes direct drains, '
+         'but total capacitance, incoming current, converter shutdown and reset timing remain '
+         'unbounded. Five-second OFF dwell is unqualified. CE=GND on LM66100 does not '
+         'establish isolation; startup lockout begins after power is reapplied.'},
         {'id': 'state-and-thermal-qualification', 'detail': 'Absent/depleted/reversed/bouncing '
          'cells, rebound, charged capacitors, overload/short, cleared faults and USB '
          'states lack a complete circuit model. Enclosed temperature bounds remain open.'},
@@ -565,8 +715,10 @@ def main():
             spec, json.loads((HERE/'electrical-control-study.json').read_text()))
         control = json.loads((HERE/'electrical-control-revision.json').read_text())
         result['schmitt_control_revision'] = schmitt_control_study(spec, control)
-        result['boost_interlock_revision'] = boost_interlock_study(
-            spec, control, json.loads((HERE/'electrical-boost-interlock.json').read_text()))
+        interlock = json.loads((HERE/'electrical-boost-interlock.json').read_text())
+        result['boost_interlock_revision'] = boost_interlock_study(spec, control, interlock)
+        result['reset_revision'] = reset_study(
+            spec, control, interlock, json.loads((HERE/'electrical-reset-revision.json').read_text()))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1
