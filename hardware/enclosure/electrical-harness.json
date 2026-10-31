@@ -1,9 +1,10 @@
 {
-  "schema_version": 1,
-  "revision": "ski-1230-two-conductor-harness-1",
+  "schema_version": 2,
+  "revision": "ski-1230-two-conductor-harness-2",
   "defect_id": "3e6e0e4d-dfc8-4f23-bd64-b43f8b723ecd",
-  "scope": "Proposed cut lengths and fixed soldered wires for each design. Not a routed PCB, fitted harness, selected branch fuse, or qualified load/temperature model.",
+  "scope": "Proposed fixed soldered harness, manufacturer-bound Sparkle barrel/header pads, and cascaded supply-current accounting. PCB, load/temperature bounds and fitted routing remain unqualified.",
   "sources": {
+    "sparkle_schematic": {"url": "https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB/tree/7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a", "reviewed": "2026-10-31", "record": "sources/sparkle-motion/connectivity.json", "conditions": "Revisions A and D share X7 barrel -> D2 -> PTC1 -> board rail. JP1 positive pins are on the USB-fed board rail and are not the selected battery input. Fixed feed solders to X7 PWR/GND pads; no removable raw-cell connector. JP3 peripheral pads require installed solder terminations (header DNP upstream)."},
     "wire": {"url": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf", "revision": "Thermax M22759 catalogue, printed page 41, PDF page 6; page imprint 2012-09-07", "reviewed": "2026-10-31", "retrieved_pdf_sha256": "72ee89ff2113eb09389dd37345bb8fb22bef44edfc639ed1f869e7c209b6f996", "conditions": "M22759/16 tinned copper; maximum DCR at 20 C. Use imperial values before unit conversion. Weight column is nominal; insulation temperature rating is not ampacity or an enclosed-temperature bound."},
     "peripheral_rail": {"url": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts", "reviewed": "2026-10-31", "sections": "Power pins; 3.3 V output, 500 mA peak. Existing required connection in design-v2.md and battery-options.md. This is not a continuous thermal rating."},
     "gps": {"url": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts", "reviewed": "2026-10-31", "sections": "Power Pins: GPS powered directly from 3V and GND, 3.3 V supply and logic; no 5 V connection."}
@@ -142,14 +143,129 @@
     "narrow": {"fuse_switch": 80, "switch_a": 80, "boost_supply": 80, "boost_return": 80, "cell_return": 80, "sense_supply": 90, "sense_return": 90, "distribution_supply": 80, "distribution_return": 80, "circle_supply": 120, "circle_return": 120, "led_group1_supply": 150, "led_group1_return": 150, "led_group2_supply": 160, "led_group2_return": 160, "led_group3_supply": 160, "led_group3_return": 160, "sparkle_supply": 100, "sparkle_return": 100, "blackpill_supply": 120, "blackpill_return": 120, "gps_supply": 120, "gps_return": 120, "imu_supply": 120, "imu_return": 120, "radio_supply": 120, "radio_return": 120, "peripheral_supply": 60, "peripheral_return": 60}
   },
   "scenarios": {
-    "continuous": {"boost_input": null, "controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null},
-    "pwm_radio_peak": {"boost_input": null, "controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null},
-    "inrush": {"boost_input": null, "controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null}
+    "continuous": {"controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null},
+    "pwm_radio_peak": {"controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null},
+    "inrush": {"controller": null, "battery_sense": null, "circle": null, "led_group1": null, "led_group2": null, "led_group3": null, "sparkle": null, "blackpill": null, "gps": null, "imu": null, "radio": null}
   },
-  "remaining_evidence": ["PCB stack/copper, routed traces/vias and exact terminations, including every solder joint; wire-only sums exclude these losses", "Cell-terminal interfaces, fuse maximum resistance and clearing energy, switch working resistance, and complete protection/converter losses", "Continuous, coincident LED PWM/radio, and inrush current bounds for every load port; the 6.25 W reference is not a peak limit", "Branch fuse selection and coordination; unbounded branch-protection segments are not installed components or BOM selections", "USB VBUS/data/ground, controller-to-controller and LED/sensor signal ingress, battery sense input injection, return bypasses and all reverse states", "Conductor temperature, bundle ampacity, and frequency-dependent impedance; catalogue DCR is limited to 20 C", "Per-design fitted routing, bends, strain relief, loaded solder envelopes and retention; proposed cut lengths are not CAD fit evidence", "Sparkle 3.3 V regulation, quiescent and conversion current back to its 5 V input, shared board ground/copper, and actual peripheral demands; 500 mA is a peak rating only"],
+  "remaining_evidence": ["PCB stack/copper, routed traces/vias and exact terminations, including every solder joint; wire-only sums exclude these losses", "Cell-terminal interfaces, fuse maximum resistance and clearing energy, switch working resistance, and complete protection/converter losses", "Continuous, coincident LED PWM/radio, and inrush current bounds for every load port; the 6.25 W reference is not a peak limit", "Branch fuse selection and coordination; unbounded branch-protection segments are not installed components or BOM selections", "USB VBUS/data/ground, controller-to-controller and LED/sensor signal ingress, battery sense input injection, return bypasses and all reverse states", "Conductor temperature, bundle ampacity, and frequency-dependent impedance; catalogue DCR is limited to 20 C", "Per-design fitted routing, bends, strain relief, loaded solder envelopes and retention; proposed cut lengths are not CAD fit evidence", "Sparkle D2/PTC1/copper/return drops, TPS54202 input >=4.5 V and local 5 V regulator dropout under the regulated-5 V feed; conversion loss, local board demand, external 3.3 V loads and dynamic current bounds remain unknown. 500 mA is an external peak rating only.", "The barrel feed removes the forward USB-to-output-terminal route from the selected topology, but does not bound diode reverse leakage, USB data/signal injection, shared-ground currents or converter output backfeed. No electrical isolation is claimed."],
   "design_load_labels": {
     "wide": {"led_group1": "Halo", "led_group2": "Inner", "led_group3": "Outer"},
     "narrow": {"led_group1": "Inner", "led_group2": "Side0", "led_group3": "Side1"}
   },
-  "peripheral_peak_limit_a": 0.5
+  "peripheral_peak_limit_a": 0.5,
+  "sparkle_board_ports": {
+    "supply": [
+      "X7",
+      "G$1.PWR"
+    ],
+    "return": [
+      "X7",
+      "G$1.GND"
+    ],
+    "peripheral_supply": [
+      "JP3",
+      "G$1.2"
+    ],
+    "peripheral_return": [
+      "JP3",
+      "G$1.1"
+    ]
+  },
+  "scenario_current_ownership": "sparkle is local board input current excluding external 3.3 V loads; all other entries are load-port current maxima. boost_input and total sparkle current are derived through conversion_bounds. Output voltages are at converter terminals and include downstream conductor loss. conditions_covered must cover the entire demand class, temperature and operating state; typical DC efficiency cannot bound PWM or inrush.",
+  "conversion_bounds": {
+    "wide": {
+      "continuous": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      },
+      "pwm_radio_peak": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      },
+      "inrush": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      }
+    },
+    "narrow": {
+      "continuous": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      },
+      "pwm_radio_peak": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      },
+      "inrush": {
+        "sparkle": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "conditions_covered": null
+        },
+        "boost": {
+          "input_min_v": null,
+          "output_max_v": null,
+          "efficiency_min": null,
+          "local_max_a": null,
+          "conditions_covered": null
+        }
+      }
+    }
+  }
 }

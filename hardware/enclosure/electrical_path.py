@@ -26,6 +26,69 @@ def wire_resistance(part, length_mm):
     return dcr * length / 304800
 
 
+def converted_current(output_currents, bounds):
+    """Bound source current by output power, efficiency and local input demand.
+
+    Output voltage is measured at the converter, so its power already includes
+    downstream conductor dissipation. Local current covers all other board
+    demand including quiescent current; it must exclude the named output loads.
+    A DC efficiency does not establish an instantaneous PWM/inrush bound: the
+    separate applicability premise must cover the particular demand class.
+    """
+    fields = {'input_min_v', 'output_max_v', 'efficiency_min', 'local_max_a',
+              'conditions_covered'}
+    if set(bounds) != fields or not output_currents:
+        raise ValueError('Conversion needs complete voltage, efficiency, local demand and conditions')
+    if bounds['conditions_covered'] is not None and type(bounds['conditions_covered']) is not bool:
+        raise ValueError('Conversion applicability must be boolean or unknown')
+    for name in fields - {'conditions_covered'}:
+        if bounds[name] is not None:
+            number(bounds[name], name, positive=name != 'local_max_a')
+    if bounds['efficiency_min'] is not None and bounds['efficiency_min'] > 1:
+        raise ValueError('Conversion efficiency must not exceed one')
+    for name, current in output_currents.items():
+        if current is not None:
+            number(current, name + '.output_current')
+    missing = sorted([name for name in fields - {'conditions_covered'} if bounds[name] is None]
+                     + [name + '.output_current' for name, value in output_currents.items() if value is None])
+    if bounds['conditions_covered'] is not True:
+        missing.append('conditions_covered')
+    current = power = None
+    if not missing:
+        power = number(math.fsum(output_currents.values()) * bounds['output_max_v'], 'output power')
+        current = number(power / bounds['efficiency_min'] / bounds['input_min_v']
+                         + bounds['local_max_a'], 'converted current')
+    return {'input_max_a': current, 'output_max_w': power, 'missing': missing}
+
+
+def supply_currents(currents, conversion):
+    """Propagate external 3.3 V loads through Sparkle and every 5 V load to U4.
+
+    `sparkle` is LOCAL board input demand; the returned Sparkle current also
+    supplies peripherals. U4 input is derived, never an independent scenario
+    number that can remain zero while downstream loads are running.
+    """
+    peripherals = {'blackpill', 'gps', 'imu', 'radio'}
+    five_volt = {'circle', 'led_group1', 'led_group2', 'led_group3', 'sparkle'}
+    if (set(currents) != peripherals | five_volt | {'controller', 'battery_sense'}
+            or set(conversion) != {'sparkle', 'boost'}):
+        raise ValueError('Supply dependencies must include every load and derive boost input')
+    for name, current in currents.items():
+        if current is not None:
+            number(current, name + '.current')
+    # The local board current has one owner: do not add it both here and in a
+    # converter quiescent-current field supplied by the caller.
+    sparkle = dict(conversion['sparkle'])
+    if 'local_max_a' in sparkle:
+        raise ValueError('Sparkle local current belongs only to the scenario')
+    sparkle['local_max_a'] = currents['sparkle']
+    peripheral = converted_current({name: currents[name] for name in sorted(peripherals)}, sparkle)
+    resolved = dict(currents, sparkle=peripheral['input_max_a'])
+    boost = converted_current({name: resolved[name] for name in sorted(five_volt)}, conversion['boost'])
+    resolved['boost_input'] = boost['input_max_a']
+    return resolved, {'sparkle': peripheral, 'boost': boost}
+
+
 def analyze(segments, paths, currents):
     """Audit a passive radial network at prescribed load-current maxima.
 
@@ -125,7 +188,7 @@ def analyze(segments, paths, currents):
 
 def harness_study(definition, candidate, limits):
     """Bind planned wires to the composed protection netlist and audit both designs."""
-    if definition['schema_version'] != 1:
+    if definition['schema_version'] != 2:
         raise ValueError('Unsupported harness schema')
     pins = {pin: net for net, members in candidate['nets'].items() for pin in members}
     if len(pins) != sum(len(members) for members in candidate['nets'].values()):
@@ -160,6 +223,8 @@ def harness_study(definition, candidate, limits):
         raise ValueError('Both harness designs are required')
     if set(definition['scenarios']) != {'continuous', 'pwm_radio_peak', 'inrush'}:
         raise ValueError('Continuous, PWM/radio peak and inrush bounds are required')
+    if set(definition['conversion_bounds']) != set(designs):
+        raise ValueError('Separate converter bounds are required for each design')
     results = {}
     for design, lengths in designs.items():
         wire_ids = {key for key, row in definition['segments'].items() if row['kind'] == 'wire'}
@@ -185,13 +250,18 @@ def harness_study(definition, candidate, limits):
                 raise ValueError('Unsupported harness segment kind')
             segments[name] = {'ends': ends, 'resistance_max_ohm': resistance}
         cases = {}
-        for name, currents in definition['scenarios'].items():
+        if set(definition['conversion_bounds'][design]) != set(definition['scenarios']):
+            raise ValueError('Each converter needs continuous, peak and inrush applicability')
+        for name, local_currents in definition['scenarios'].items():
+            currents, conversion = supply_currents(local_currents, definition['conversion_bounds'][design][name])
             result = analyze(segments, definition['paths'], currents)
             peripheral_peak = (None if any(currents[key] is None for key in peripherals)
                                else math.fsum(currents[key] for key in sorted(peripherals)))
             cases[name] = {
                 'loss_max_w': result['loss_max_w'],
                 'paths': result['paths'],
+                'resolved_current_max_a': currents,
+                'conversion': conversion,
                 'external_3v3_current_a': peripheral_peak,
                 'within_published_peak_limit': (None if peripheral_peak is None
                                                else peripheral_peak <= peak_limit),

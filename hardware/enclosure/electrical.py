@@ -17,6 +17,7 @@ from electrical_path import harness_study
 from electrical_fault import fault_study
 from electrical_thermal import thermal_study
 from electrical_headroom import headroom_netlist, headroom_study
+from electrical_board import board_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -899,16 +900,17 @@ def main():
         result['local_headroom_revision'] = headroom_study(spec, candidate, headroom)
         candidate = headroom_netlist(candidate, headroom)
         result['reset_storage_audit'] = reset_storage_study(candidate, spec, control, reset)
-        result['harness_revision'] = harness_study(
-            json.loads((HERE/'electrical-harness.json').read_text()),
-            candidate, spec['limits'])
+        harness = json.loads((HERE/'electrical-harness.json').read_text())
+        result['sparkle_board_revision'] = board_study(
+            json.loads((HERE/'sources/sparkle-motion/connectivity.json').read_text()), harness)
+        result['harness_revision'] = harness_study(harness, candidate, spec['limits'])
         result['fault_coordination'] = fault_study(
-            spec, json.loads((HERE/'electrical-harness.json').read_text()),
+            spec, harness,
             json.loads((HERE/'electrical-fault-coordination.json').read_text()))
         result['thermal_state_envelope'] = thermal_study(
             json.loads((HERE/'electrical-thermal.json').read_text()), spec,
             candidate,
-            json.loads((HERE/'electrical-harness.json').read_text()))
+            harness)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1

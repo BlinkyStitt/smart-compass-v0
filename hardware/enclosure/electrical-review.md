@@ -836,3 +836,89 @@ circuit. These are analytical fixtures, not measurements of a switch or device.
 `electrical.py check` continues to reject the assembly and stops dependent
 CAD/Pages publication. Existing Pages provenance hashes the changed definition,
 model and review; no additional untracked release input is introduced.
+
+## Recovery: manufacturer board ports and cascaded supply demand
+
+This change targets `3e6e0e4d-dfc8-4f23-bd64-b43f8b723ecd`. The harness now
+names the Sparkle input and peripheral pads and derives upstream demand from
+all downstream loads. It does not qualify the still-incomplete assembly.
+
+The [Adafruit source at commit 7a45f900](https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB/tree/7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a)
+contains revisions A and D. Both have the following power routes:
+
+```text
+USB X5.VBUS -> Q1 (when conducting) -> D1 -> PTC1 -> board input rail
+barrel X7.PWR ---------------------> D2 --^
+board input rail -> JP1 positive LED terminals (3, 6, 9)
+board input rail -> TPS54202 buck -> 3.3 V -> JP3 pin 2 / peripherals
+```
+
+The `+24V` schematic net name denotes the shared input rail, not a requirement
+to feed this prototype 24 V. D1/D2 are labeled PMEG3050 in SOD128; they must
+not be treated as ideal zero-drop, zero-leakage isolators. USB ground, board
+power ground and peripheral ground are common. USB D+/D− connect directly to
+the CH343 serial bridge. The independent 5 V LDO powers the level shifters;
+its output is distinct from the JP1 LED power rail.
+
+The proposed fixed harness feeds **X7 PWR/GND pads**, and uses **JP3 pads 2/1**
+for peripheral 3.3 V/GND. JP3 is DNP in the source and needs soldered
+terminations. Battery-fed external LEDs retain their separate distribution
+branches; no battery feed goes to JP1 positive terminals. With USB selected,
+D2 is opposed to the forward route into the barrel feed. This is a topology
+choice only: leakage, common-ground voltage, signal injection into unpowered
+LEDs/peripherals and converter backfeed remain unbounded. It is not electrical
+isolation. Cell-removed USB service at 5 V remains the candidate restriction.
+
+This choice also exposes a concrete voltage constraint. The board's TPS54202
+requires at least **4.5 V at its own VIN**; its inputs include the harness,
+D2, PTC1 and copper losses from the regulated 5 V feed. Those losses and the
+5 V LDO's dropout need bounds before this feed is qualified. A forward path
+existing in a schematic does not prove reliable startup or regulation.
+[TI TPS54202 Rev C, §5.3](https://www.ti.com/lit/ds/symlink/tps54202.pdf).
+
+[electrical_board.py](electrical_board.py) extracts every packaged part,
+connected gate/pin and physical pad into
+[sources/sparkle-motion/connectivity.json](sources/sparkle-motion/connectivity.json).
+It checks the complete upstream file SHA-256 before extraction. Attribution,
+the unmodified upstream README and CC BY-SA 3.0 license accompany the derived
+connectivity. Regenerate/recheck from the repository root:
+
+```sh
+python3 hardware/enclosure/electrical_board.py check --source-directory .build/sparkle-research --fetch
+```
+
+Expected: both pinned source hashes and the complete saved extracts match,
+exit 0. `extract` with the same arguments regenerates the record. Routine
+`just validate` reads the tracked extracts offline, exercises their topology
+and pad bindings, and retains the failing overall electrical gate. Pages
+hashes the extractor, extracts and attribution alongside the existing model.
+
+The version-2 harness schema removes independent `boost_input` scenario
+numbers. `sparkle` denotes local board input demand, excluding external
+peripherals. Each design/demand class separately supplies converter voltage,
+efficiency and applicability bounds. For a converter, the upper input current
+is `V_out_max × sum(I_out_max) / (eta_min × V_in_min) + I_local_max`.
+Output voltage is taken at the converter terminals, so this power already
+includes downstream wire losses; adding those losses again would double-count.
+External 3.3 V demand first passes through Sparkle, and its resulting total
+joins all four 5 V LED groups at U4. Missing loads or conversion bounds propagate
+upstream. There is no independent input-current field that can report zero
+while downstream loads draw power. Local current is counted once.
+
+Synthetic tests independently balance 1.65 W of peripherals at 80% efficiency,
+0.5 W of local board demand and a 5 W circle: U4 must deliver 7.5625 W before
+its own loss. They also vary efficiencies between designs, inject missing
+radio demand, reject duplicate local-current ownership, and ensure a DC
+coefficient cannot silently certify a PWM/inrush case. These numbers are test
+fixtures, not measurements or selected load bounds. Actual per-design conversion
+bounds remain unknown, so every applicable assembly case still fails.
+
+Source review of the other open causes did not establish additional bounds:
+SN74LVC1G17 switching limits use specified supply bands/load capacitances,
+while its input leakage is tabulated at endpoint voltages; neither closes the
+controller's complete ramp response. The F1 source still labels cold resistance
+and melting I²t nominal, rather than giving a total clearing/withstand envelope.
+Package thermal metrics still depend on a test board and boundary conditions,
+not either enclosure. These causes retain their existing diagnoses and repair
+charges. No changes to the exhausted OFF, reset or boost-headroom repairs are
+made here. CAD freeze, mass/fit claims and downstream publication remain gated.
