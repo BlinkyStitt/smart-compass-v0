@@ -6,8 +6,9 @@ import subprocess
 import sys
 import unittest
 
-from electrical import (control_study, discharge_time, divider_thresholds, driven_divider_edges,
-                        loaded_voltage, resistor_bounds, review, schmitt_control_study)
+from electrical import (boost_interlock_study, control_study, discharge_time, divider_thresholds,
+                        driven_divider_edges, interlock_netlist, loaded_voltage, resistor_bounds,
+                        review, schmitt_control_study, supervisor_dc_state, unpowered_interlock_state)
 
 
 class ElectricalReviewTests(unittest.TestCase):
@@ -234,6 +235,125 @@ class SchmittControlRevisionTests(unittest.TestCase):
         self.revision['resistor_model']['initial_tolerance'] = 1
         with self.assertRaises(ValueError):
             self.calculate()
+
+
+class BoostInterlockTests(unittest.TestCase):
+    def setUp(self):
+        root = Path(__file__).parent
+        self.spec = json.loads((root/'electrical-review.json').read_text())
+        self.control = json.loads((root/'electrical-control-revision.json').read_text())
+        self.revision = json.loads((root/'electrical-boost-interlock.json').read_text())
+
+    def calculate(self):
+        return boost_interlock_study(self.spec, self.control, self.revision)
+
+    def test_interlock_separates_pg_and_enable_without_changing_original(self):
+        original = copy.deepcopy(self.spec)
+        candidate = interlock_netlist(self.spec, self.revision)
+        self.assertEqual(self.spec, original)
+        self.assertEqual(candidate['nets']['BOOST_ENABLE'], ['U6.6', 'U4.ENABLE'])
+        self.assertIn('U1.PG', candidate['nets']['PG_SENSE'])
+        self.assertIn('U6.4', candidate['nets']['B'])
+        # All existing power components and capacitor/wire connections survive.
+        for name, pins in original['candidate']['nets'].items():
+            if name != 'BOOST_ENABLE':
+                self.assertTrue(set(pins) <= set(candidate['nets'][name]))
+
+    def test_wrong_supply_or_retained_direct_connection_is_rejected(self):
+        for pin, old, new in [('U6.4', 'B', 'GND'), ('U1.PG', 'PG_SENSE', 'BOOST_ENABLE')]:
+            revision = copy.deepcopy(self.revision)
+            revision['nets'][old].remove(pin)
+            revision['nets'][new].append(pin)
+            with self.subTest(pin=pin), self.assertRaisesRegex(ValueError, 'netlist disagrees'):
+                interlock_netlist(self.spec, revision)
+        self.spec['candidate']['nets']['B'].append('U1.PG')
+        with self.assertRaisesRegex(ValueError, 'duplicate pin'):
+            self.calculate()
+
+    def test_real_part_threshold_translates_one_volt_pg_into_shutdown_low(self):
+        result = self.calculate()
+        self.assertGreaterEqual(self.spec['limits']['efuse_unpowered_pg_highest_specified_low_v'], .4)
+        self.assertTrue(result['conditional_dc_pass'])
+        self.assertAlmostEqual(result['conditional_pg_low_margin_v'], .1385)
+        self.assertAlmostEqual(result['boost_shutdown_voltage_margin_v'], .15)
+        self.assertEqual(result['conditional_settled_shutdown'], {'state': 'clamped', 'reset_max_v': .25})
+        self.assertFalse(result['qualified'])
+
+    def test_module_supply_and_common_return_cannot_move_independently(self):
+        for pin, old, new in [('U4.VIN', 'B', 'A'), ('U4.GND', 'GND', 'B'),
+                              ('U1.IN', 'A', 'B')]:
+            changed = copy.deepcopy(self.spec)
+            changed['candidate']['nets'][old].remove(pin)
+            changed['candidate']['nets'][new].append(pin)
+            with self.subTest(pin=pin), self.assertRaisesRegex(ValueError, 'power/return'):
+                interlock_netlist(changed, self.revision)
+
+    def test_pg_kcl_accounts_for_pullup_and_both_input_leakages(self):
+        result = self.calculate()
+        r_min, r_max = result['pullup_bounds_ohm']
+        lo, hi = result['conditional_unpowered_pg_sink_a']
+        # Independent KCL: the two sinks sum to the resistor current.
+        self.assertAlmostEqual((lo + .1e-6)*r_max + 1, 2.9)
+        self.assertAlmostEqual(hi*r_min, 5)
+        self.assertAlmostEqual(result['conditional_asserted_pg_min_v'] + 3.1e-6*r_max, 2.9)
+        self.assertGreater(lo, 26e-6)
+        self.assertLess(hi, 242e-6)
+
+    def test_pullup_cannot_overload_pg_or_hide_excessive_voltage_drop(self):
+        self.revision['pullup'] = {'part': 'TNPW06032K49BEEA', 'ohm': 2490}
+        self.assertFalse(self.calculate()['conditional_dc_pass'])
+        self.revision['pullup'] = {'part': 'TNPW0603249KBEEA', 'ohm': 249000}
+        self.assertFalse(self.calculate()['pg_load_between_characterized_points'])
+        self.revision['limits']['pg_asserted_leakage_a'] = .00001
+        self.assertLess(self.calculate()['conditional_pg_high_margin_v'], 0)
+        self.assertFalse(self.calculate()['conditional_dc_pass'])
+
+    def test_no_invented_module_pullup_tolerance_or_unknown_source_pass(self):
+        result = self.calculate()
+        self.assertAlmostEqual(result['nominal_module_pullup_source_a'], .00005)
+        self.assertEqual(result['required_module_pullup_min_ohm_without_other_sources'], 12500)
+        self.assertEqual(result['unbounded_enable_source']['state'], 'unqualified')
+        limits = self.revision['limits']
+        for source in (None, .00040001):
+            self.assertEqual(supervisor_dc_state(3.7, [0, 1], source, limits)['state'], 'unqualified')
+        self.assertEqual(supervisor_dc_state(3.7, [0, 1], .0004, limits)['state'], 'clamped')
+
+    def test_retained_en_reversal_and_usb_overvoltage_do_not_inherit_pg_bound(self):
+        limits = self.revision['limits']
+        for a, en, b in [(0, .45, 3.7), (0, 1.4, 3.7), (2.35, 0, 3.7),
+                         (-4.3, 0, 3.7), (0, 0, 5.25), (0, 0, 1.4)]:
+            with self.subTest(a=a, en=en, b=b):
+                result = unpowered_interlock_state(a, en, b, .00005, limits, pg_load_ok=True)
+                self.assertEqual(result['state'], 'unqualified')
+        for b in (2.9, 3.7, 4.3, 5):
+            self.assertEqual(unpowered_interlock_state(0, .44, b, .00005, limits,
+                                                       pg_load_ok=True)['state'], 'clamped')
+
+    def test_unknown_history_and_unpowered_supervisor_are_not_ideal_logic(self):
+        limits = self.revision['limits']
+        for supply in (0, .8, 1.49, 5.51):
+            self.assertEqual(supervisor_dc_state(supply, [0, 1], .00005, limits)['state'], 'unqualified')
+        self.assertEqual(supervisor_dc_state(3.7, [1.14, 1.16], .00005, limits)['state'], 'history-dependent')
+        self.assertEqual(supervisor_dc_state(3.7, [2.8, 3.7], .00005, limits)['state'], 'released')
+
+    def test_low_voltage_rating_failure_cannot_pass_dc_model(self):
+        self.revision['limits']['reset_low_max_v'] = .4
+        self.assertFalse(self.calculate()['conditional_dc_pass'])
+
+    def test_missing_bounds_cannot_be_removed_to_certify_complete_circuit(self):
+        self.revision['missing_bounds'] = {}
+        self.assertFalse(self.calculate()['qualified'])
+        self.assertIn('unpowered-pg-disable', {row['id'] for row in review(self.spec)['failures']})
+
+    def test_mismatched_bom_and_invalid_limits_fail(self):
+        self.revision['pullup']['ohm'] = 1000
+        with self.assertRaisesRegex(ValueError, 'BOM'):
+            self.calculate()
+        self.setUp()
+        for value in (float('nan'), float('inf'), True, -1, 0):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.revision['limits']['reset_sink_test_a'] = value
+                self.calculate()
 
 
 if __name__ == '__main__':

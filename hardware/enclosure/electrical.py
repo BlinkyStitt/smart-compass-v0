@@ -5,6 +5,7 @@ calculation/rejection behavior, never the safety of the proposed assembly.
 """
 
 import argparse
+import copy
 import itertools
 import json
 import math
@@ -307,6 +308,162 @@ def control_study(spec, study):
                       'The static repair and added bleeders cannot qualify the power path.'}
 
 
+def interlock_netlist(spec, revision):
+    """Actually disconnect PG from ENABLE before inserting the B-powered U6.
+
+    Return a new candidate, preserving the historical input. A second connection
+    of either pin invalidates the circuit, even if the named net looks correct.
+    """
+    expected = {
+        'B': {'U6.4', 'U6.3', 'R_PG_PULLUP.1'},
+        'PG_SENSE': {'U1.PG', 'U6.1', 'R_PG_PULLUP.2'},
+        'BOOST_ENABLE': {'U6.6', 'U4.ENABLE'},
+        'GND': {'U6.2'},
+    }
+    if (revision.get('schema_version') != 1 or revision['supervisor'] != 'TPS389001DSER'
+            or revision['replacement_net'] != 'BOOST_ENABLE'
+            or revision['open_pins'] != ['U6.5'] or set(revision['nets']) != set(expected)):
+        raise ValueError('Unsupported boost interlock topology')
+    for name, pins in revision['nets'].items():
+        if len(pins) != len(set(pins)) or set(pins) != expected[name]:
+            raise ValueError('Boost interlock netlist disagrees at ' + name)
+    candidate = copy.deepcopy(spec['candidate'])
+    nets = candidate['nets']
+    for name, required in {'A': {'U1.IN'}, 'B': {'U1.OUT', 'U4.VIN'},
+                           'GND': {'U1.GND', 'U4.GND', 'negative_contact'}}.items():
+        if not required <= set(nets.get(name, [])):
+            raise ValueError('Boost interlock power/return connection disagrees at ' + name)
+    old = nets.pop('BOOST_ENABLE')
+    if len(old) != 2 or set(old) != {'U1.PG', 'U4.ENABLE'}:
+        raise ValueError('Boost interlock requires the original PG/ENABLE connection')
+    for name, pins in revision['nets'].items():
+        nets.setdefault(name, []).extend(pins)
+    candidate['open_pins'].extend(revision['open_pins'])
+    pins = [pin for group in nets.values() for pin in group] + candidate['open_pins']
+    if len(pins) != len(set(pins)):
+        raise ValueError('Boost interlock has duplicate pin ownership')
+    candidate['U6'] = revision['supervisor']
+    candidate['resistors_ohm']['R_PG_PULLUP'] = revision['pullup']['ohm']
+    return candidate
+
+
+def supervisor_dc_state(supply_v, sense_v, source_a, limits):
+    """Settled U6 DC state at a declared RESET load, not a timed simulation.
+
+    Unknown inputs, hysteresis history and unsupported supplies stay unknown.
+    'released' describes the open drain, not the boost's unspecified high level.
+    """
+    finite(supply_v, 'supervisor supply')
+    low, high = interval(limits['supervisor_supply_v'], 'supervisor supply limits')
+    if not low <= supply_v <= high or sense_v is None or source_a is None:
+        return {'state': 'unqualified', 'reset_max_v': None}
+    sense = interval(sense_v, 'sense voltage')
+    finite(source_a, 'RESET source current')
+    if source_a < 0:
+        raise ValueError('RESET source current must be nonnegative')
+    if sense[0] < 0 or sense[1] > high or source_a > limits['reset_sink_test_a']:
+        return {'state': 'unqualified', 'reset_max_v': None}
+    error = limits['sense_threshold_relative_error']
+    falling_min = limits['sense_falling_nominal_v'] * (1 - error)
+    rising_max = limits['sense_rising_nominal_v'] * (1 + error)
+    if sense[1] < falling_min:
+        return {'state': 'clamped', 'reset_max_v': limits['reset_low_max_v']}
+    if sense[0] > rising_max:
+        return {'state': 'released', 'reset_max_v': None}
+    return {'state': 'history-dependent', 'reset_max_v': None}
+
+
+def unpowered_interlock_state(a_v, en_v, b_v, source_a, limits, *, pg_load_ok):
+    """Do not extend the unpowered PG specification to a retained high EN.
+
+    Reversal and the region below the boost's operating range require separate
+    analysis. A discharged supply is not proof that residual outputs are safe.
+    """
+    for name, value in [('A', a_v), ('eFuse EN', en_v), ('B', b_v)]:
+        finite(value, name)
+    b_low, b_high = limits['boost_operating_input_v']
+    covered = (0 <= a_v < limits['pg_low_requires_a_below_v']
+               and 0 <= en_v < limits['pg_low_requires_en_below_v']
+               and b_low <= b_v <= b_high and pg_load_ok)
+    sense = [0, limits['pg_unpowered_low_max_v']] if covered else None
+    return supervisor_dc_state(b_v, sense, source_a, limits)
+
+
+def boost_interlock_study(spec, control, revision):
+    """Check the new wiring and DC margins without promoting missing bounds.
+
+    R_PG and U6 separate two different loads: U1 sinks only its own pull-up;
+    U6 sinks the existing module pull-up plus any other ENABLE coupling.
+    """
+    candidate = interlock_netlist(spec, revision)
+    part = revision['pullup']
+    code = re.fullmatch(r'TNPW0603([0-9]{1,3})K([0-9]{0,2})BEEA', part['part'])
+    if (code is None or len(code[1] + code[2]) != 3
+            or float(code[1] + '.' + code[2]) * 1000 != part['ohm']):
+        raise ValueError('Boost pull-up value disagrees with reviewed BOM family')
+    if revision['resistor_model_source'] != 'electrical-control-revision.json':
+        raise ValueError('Unsupported boost pull-up resistance model')
+    r_low, r_high = resistor_bounds(part['ohm'], control['resistor_model'])
+    limits = revision['limits']
+    for name, value in limits.items():
+        if isinstance(value, list):
+            if interval(value, name)[0] <= 0:
+                raise ValueError(name + ' must be positive')
+        else:
+            finite(value, name, positive=True)
+    error = limits['sense_threshold_relative_error']
+    if error >= 1:
+        raise ValueError('Supervisor threshold error must be below 1')
+    b_min, b_max = limits['boost_operating_input_v']
+    supply_min, supply_max = limits['supervisor_supply_v']
+    if not supply_min <= b_min < b_max <= supply_max:
+        raise ValueError('Boost study outside supervisor supply range')
+    sense_current = limits['sense_sink_a_at_5v']
+    # KCL at PG: pull-up current splits into U1 and U6. Ignoring the
+    # SENSE sink at the maximum corner bounds the U1 current conservatively.
+    pg_current = [(b_min - limits['pg_unpowered_low_max_v']) / r_high - sense_current,
+                  b_max / r_low]
+    tested_low, tested_high = limits['pg_characterized_sink_a']
+    pg_load_ok = tested_low <= pg_current[0] <= pg_current[1] <= tested_high
+    falling = [limits['sense_falling_nominal_v'] * (1 - error),
+               limits['sense_falling_nominal_v'] * (1 + error)]
+    rising = [limits['sense_rising_nominal_v'] * (1 - error),
+              limits['sense_rising_nominal_v'] * (1 + error)]
+    pg_high_min = b_min - r_high * (limits['pg_asserted_leakage_a'] + sense_current)
+    low_margin = falling[0] - limits['pg_unpowered_low_max_v']
+    high_margin = pg_high_min - rising[1]
+    clamp_margin = spec['limits']['boost_disable_below_v'] - limits['reset_low_max_v']
+    # Nominal example only. Keep the actual source-current requirement visible
+    # rather than inventing a tolerance for the module's 100 kohm resistor.
+    nominal_source = b_max / spec['limits']['boost_enable_pullup_ohm_nominal']
+    dc = unpowered_interlock_state(0, 0, b_min, nominal_source, limits, pg_load_ok=pg_load_ok)
+    return {
+        'revision': revision['revision'], 'defect_id': revision['defect_id'],
+        'status': revision['status'], 'qualified': False,
+        'candidate_nets': candidate['nets'], 'candidate_open_pins': candidate['open_pins'],
+        'pullup_bounds_ohm': [r_low, r_high],
+        'conditional_unpowered_pg_sink_a': pg_current,
+        'pg_load_between_characterized_points': pg_load_ok,
+        'sense_falling_v': falling, 'sense_rising_v': rising,
+        'conditional_asserted_pg_min_v': pg_high_min,
+        'conditional_pg_low_margin_v': low_margin,
+        'conditional_pg_high_margin_v': high_margin,
+        'boost_shutdown_voltage_margin_v': clamp_margin,
+        'nominal_module_pullup_source_a': nominal_source,
+        'required_complete_enable_source_max_a': limits['reset_sink_test_a'],
+        'required_module_pullup_min_ohm_without_other_sources': b_max / limits['reset_sink_test_a'],
+        'conditional_settled_shutdown': dc,
+        'unsupported_retained_en': unpowered_interlock_state(
+            0, 1.4, b_max, nominal_source, limits, pg_load_ok=pg_load_ok),
+        'unbounded_enable_source': unpowered_interlock_state(
+            0, 0, b_max, None, limits, pg_load_ok=pg_load_ok),
+        'conditional_dc_pass': (pg_load_ok and low_margin > 0 and high_margin > 0
+                                and clamp_margin > 0 and dc['state'] == 'clamped'),
+        'conditional_assumptions': revision['conditional_assumptions'],
+        'missing_bounds': revision['missing_bounds'],
+    }
+
+
 def review(spec):
     if spec.get('schema_version') != 1:
         raise ValueError('Unsupported electrical-review schema')
@@ -406,8 +563,10 @@ def main():
         result = review(spec)
         result['control_revision_study'] = control_study(
             spec, json.loads((HERE/'electrical-control-study.json').read_text()))
-        result['schmitt_control_revision'] = schmitt_control_study(
-            spec, json.loads((HERE/'electrical-control-revision.json').read_text()))
+        control = json.loads((HERE/'electrical-control-revision.json').read_text())
+        result['schmitt_control_revision'] = schmitt_control_study(spec, control)
+        result['boost_interlock_revision'] = boost_interlock_study(
+            spec, control, json.loads((HERE/'electrical-boost-interlock.json').read_text()))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1

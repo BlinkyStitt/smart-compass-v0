@@ -14,6 +14,9 @@ The subsequent [Schmitt control revision](electrical-control-revision.json)
 replaces the failed buffer trial for further engineering. Its conditional DC
 results appear separately in the command output; they do not qualify the main
 power path or erase the original counterexamples.
+The [retained-rail boost interlock](electrical-boost-interlock.json) additionally
+separates PG from ENABLE through a B-powered supervisor. Its conditional DC
+margin and remaining shutdown gaps are documented at the end of this review.
 
 ## Candidate connections
 
@@ -263,3 +266,67 @@ No qualified OFF dwell or completed startup/recovery model results from this
 repair. **`electrical.py check` still fails; do not freeze either compartment.**
 The Pages provenance snapshot includes the new revision so a later release
 cannot silently omit or mix this input.
+
+## Recovery: retained-rail boost interlock
+
+The next repair targets defect `6ac22d51-a0d5-4f68-98c9-7e5842b54a21`.
+[electrical-boost-interlock.json](electrical-boost-interlock.json) replaces the
+direct PG-to-ENABLE connection with **TPS389001DSER** (U6). U6 takes power
+from B at the regulator input, so retained B also powers the shutdown clamp.
+This is a conditional DC subcircuit repair, not a qualified power assembly.
+
+```text
+B ----- 24.9 kohm ----- PG_SENSE ----- U1.PG
+|                          |
+|                         U6.SENSE (1)
++----- U6.VDD (4), U6.MR (3)
+GND -- U6.GND (2)
+       U6.CT (5) open
+       U6.RESET (6) ------------------ U4.ENABLE
+```
+
+U1.PG is disconnected from U4.ENABLE. The executable netlist transformation
+rejects duplicate pin ownership and wrong supply/pin connections, and retains
+all original power-path connections. It adds one supervisor and one
+`TNPW060324K9BEEA` pull-up. Use the B-rail local bypass; its placement/effective
+capacitance and the loaded PCB envelope remain unqualified. The existing
+Schmitt revision continues to own the controller/UVLO subcircuit.
+
+[TPS3890 Rev A, §§5–7.6 and 8.4](https://www.ti.com/lit/ds/symlink/tps3890.pdf)
+specifies a 1.15 V falling threshold with ±1% error and RESET ≤0.25 V at
+0.4 mA over its 1.5–5.5 V supply range. Thus PG's 1 V low has a **0.1385 V**
+conditional threshold margin, and RESET has **0.15 V** margin to the boost's
+strict under-0.4 V shutdown condition. The latter still requires a complete
+ENABLE source-current bound. The nominal module pull-up contributes 50 µA
+at 5 V; its tolerance and other coupling are unspecified. With no other source,
+the required minimum pull-up resistance is 12.5 kΩ. This is a requirement,
+not an invented module rating. [Pololu connections](https://www.pololu.com/product/2891).
+
+Using the control revision's resistor allowances, the new pull-up is
+24,779.8175–25,020.1825 Ω. Over B=2.9–5.0 V, the conditional PG sink range
+is approximately 75.84–201.78 µA. With 3 µA asserted PG leakage plus the
+100 nA SENSE study allowance, PG remains above 2.8224 V at B=2.9 V,
+well above U6's maximum rising threshold of 1.16857 V.
+
+These computations preserve the source conditions. The
+[eFuse Rev C, §6.5 VPGD](https://www.ti.com/lit/ds/symlink/tps25947.pdf)
+specifies the 1 V low at 26 and 242 µA **with both low IN and low EN**.
+The model uses conservative IN<2.35 V and EN<0.45 V conditions and explicitly
+leaves A=0/EN=1.4 V unknown. Extending the two current test points to the
+intermediate load remains conditional. SENSE current is specified at 5 V;
+its bound across the actual PG range remains open. Reversed A, B below 2.9 V,
+USB-driven B above 5 V, unknown ENABLE current, and the supervisor's
+unpowered/hysteresis states cannot inherit a passing result.
+
+TPS3890 §7.6 lists nominal detection/startup delays, without maxima. The model
+does not use its 18 µs nominal delay as a shutdown bound. Maximum end-to-end
+delay, supply ramps, pin capacitance, residual rails and complete USB paths
+still require engineering. This revision cannot establish a dwell or protect
+the boost's 2.9 V headroom during a transient. The original failure remains
+active and **`electrical.py check` still returns 1**.
+
+The electrical tests cover the actual rewiring, independent KCL checks,
+overloaded PG, excess leakage, insufficient clamp margin, retained EN,
+unsupported supplies and unknown source current. Pages hashes this additional
+input and rejects its removal or modification during publication. No enclosure,
+mass ledger or service dwell is frozen by this partial repair.
