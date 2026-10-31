@@ -191,6 +191,7 @@ def source_snapshot(*, include_samples=True):
         "hardware/enclosure/battery-options.md", "hardware/enclosure/electrical-review.json",
         "hardware/enclosure/electrical-control-study.json",
         "hardware/enclosure/electrical-control-revision.json",
+        "hardware/enclosure/electrical_control.py",
         "hardware/enclosure/electrical-boost-interlock.json",
         "hardware/enclosure/electrical-headroom.json", "hardware/enclosure/electrical_headroom.py",
         "hardware/enclosure/electrical-reset-revision.json", "hardware/enclosure/electrical_reset.py",

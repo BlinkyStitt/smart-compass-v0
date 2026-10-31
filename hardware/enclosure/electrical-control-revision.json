@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-schmitt-driven-divider-2",
+  "revision": "ski-1230-schmitt-driven-divider-3-ramp-audit",
   "status": "partial control repair; complete electrical qualification remains open",
   "topology": "push-pull-schmitt-before-divider",
   "controller": "LTC2955ITS8-1#TRMPBF",
@@ -67,6 +67,30 @@
     "post_sense_resistance_ohm": 0.1,
     "basis": "Sensitivity input from the previous control study, NOT a measured or sourced full-path resistance. C is assumed no greater than A while the controller branch is forward supplied. Excludes reverse/backfeed, droop and ramp states."
   },
+  "ramp_study": {
+    "scope": "Conditional KILL RC response to a linear falling C rail followed by an indefinite hold. Initially at equilibrium, constant leakage, nominal capacitance, zero subsequent buffer/eFuse delay. Not a complete circuit or a bound for contact bounce, reversal, arbitrary stored charge or the actual assembly.",
+    "controller_timing": {
+      "source": "controller",
+      "kill_propagation_max_s": 0.000060,
+      "kill_minimum_pulse_s": 0.000060,
+      "conditions": "2955fa p. 4: full operating-temperature table, VIN=7 V unless otherwise noted. The 60 us minimum pulse is retained separately from 60 us maximum propagation. Applicability to this varying 1S supply and actual EN load is not established. The prose's 30 us pulse is not used in place of the table."
+    },
+    "profiles": {
+      "slow_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 1.0, "blanking_remaining_s": 0},
+      "fast_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 0.001, "blanking_remaining_s": 0},
+      "startup_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 0.001, "blanking_remaining_s": 0.72}
+    },
+    "designs": {
+      "wide": {"kill_capacitance_max_f": null, "slew_max_v_per_s": null, "initial_excess_v": null, "response_max_s": null, "blanking_remaining_s": null},
+      "narrow": {"kill_capacitance_max_f": null, "slew_max_v_per_s": null, "initial_excess_v": null, "response_max_s": null, "blanking_remaining_s": null}
+    },
+    "remaining_evidence": [
+      "Effective C_KILL including tolerance/parasitics, constant leakage applicability and initial charge; a nominal 10 nF is not an upper bound.",
+      "Continuous falling-slew bound at C, or a complete response for steps, bounce and rebound; preserve KILL blanking and low-pulse persistence.",
+      "Controller timing applicability to the 1S ramp and EN load, buffer input/leakage across supplies, and end-to-end delay through eFuse EN including parasitics. No inferred interpolation between tabulated buffer supplies.",
+      "Complete circuit states, reverse/backfeed pin conditions and latch behavior remain required. A conditional ordering pass is not qualification."
+    ]
+  },
   "unqualified": [
     "Intermediate-voltage input leakage, logic thresholds between tabulated supplies, unpowered/ramping buffer and complete reverse/backfeed states",
     "Controller EN, filter and buffer propagation with actual parasitic capacitances; no maximum end-to-end shutdown time is established",
@@ -91,7 +115,7 @@
     "controller": {
       "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf",
       "revision": "2955fa",
-      "sections": "p. 3 EN low; pp. 13 and 17 external pull-up operation",
+      "sections": "p. 3 EN low; p. 4 KILL propagation/pulse/blanking and VIN=7 V test conditions; pp. 13 and 17 external pull-up operation",
       "reviewed": "2026-10-31"
     }
   }

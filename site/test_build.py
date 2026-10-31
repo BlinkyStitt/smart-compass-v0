@@ -170,6 +170,7 @@ class BuildInputTests(unittest.TestCase):
 
     def test_control_revision_is_a_required_hashed_release_input(self):
         self.check_hashed_input('hardware/enclosure/electrical-control-revision.json')
+        self.check_hashed_input('hardware/enclosure/electrical_control.py')
 
     def check_hashed_input(self, relative):
         with tempfile.TemporaryDirectory() as directory:

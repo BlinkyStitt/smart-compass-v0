@@ -18,6 +18,7 @@ from electrical_fault import fault_study
 from electrical_thermal import thermal_study
 from electrical_headroom import headroom_netlist, headroom_study
 from electrical_board import board_study
+from electrical_control import control_ramp_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -256,6 +257,8 @@ def schmitt_control_study(spec, revision):
         'conditional_boost_input_v': voltage,
         'conditional_headroom_pass': driver_ok and voltage is not None and voltage >= limits['boost_min_input_v'],
         'conditional_cutoff_order_pass': driver_ok and cutoff_gap > 0,
+        'ramp_response': control_ramp_study(revision, limits, r, kill, uvlo,
+                                             driver_within_limits=driver_ok),
         'post_sense_resistance_budget_ohm_at_reference':
             limits['boost_min_input_v'] * (uvlo[0] - limits['boost_min_input_v']) / power,
         'unqualified': revision['unqualified'],

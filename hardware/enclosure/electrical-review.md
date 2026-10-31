@@ -922,3 +922,64 @@ Package thermal metrics still depend on a test board and boundary conditions,
 not either enclosure. These causes retain their existing diagnoses and repair
 charges. No changes to the exhausted OFF, reset or boost-headroom repairs are
 made here. CAD freeze, mass/fit claims and downstream publication remain gated.
+
+## Recovery: dynamic KILL cutoff ordering
+
+For `c90b2097-4f86-42cf-b68c-c4921fb9dc7c`, the control calculation now
+includes the existing KILL capacitor's transient response. The circuit and its
+component choices are unchanged. The 26.327 mV static ordering margin alone
+cannot establish that the depletion latch acts before backup UVLO.
+
+For fixed resistor and leakage corners, let `a = Rbottom/(Rtop+Rbottom)`,
+`R = Rtop || Rbottom`, `tau = R*C_KILL`, and `s` be the positive falling
+supply slew. Starting at DC equilibrium, the pin voltage during a linear fall is
+`Vkill(t) = a*Cinitial - I_leak*R - a*s*(t - tau*(1-exp(-t/tau)))`.
+After the ramp, the pin approaches its new equilibrium exponentially.
+[electrical_control.py](electrical_control.py) solves the crossing continuously,
+retains correlated resistor values in every term, and includes the exponential
+tail. Equality with the final equilibrium is never a finite crossing. This
+model assumes the supply then stays low; it does not model contact bounce.
+
+[LTC2955 2955fa, p. 4](https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf)
+specifies 60 µs maximum KILL propagation and a separate 60 µs minimum low
+pulse. The table's default test supply is **7 V**. Its application prose's
+30 µs pulse does not replace the table. The examples conservatively allow
+both full intervals after any remaining blanking. Applying these timing values
+to a varying 1S rail and the actual EN load remains unqualified.
+
+Three reproducible examples use the actual divider/resistance allowances,
+nominal 10 nF, all threshold/leakage corners, and a 4.3→3.0 V fall followed by
+an indefinite hold. The one-second fall retains a positive conditional order
+margin. The one-millisecond fall loses that margin; starting during 720 ms
+blanking also fails. These are calculated sensitivity cases, not measurements
+or proof of the physical circuit's behavior. No buffer/eFuse response time is
+added to these examples; those delays would consume further margin.
+
+Separate wide/narrow assembly records require maximum effective capacitance,
+maximum falling slew, initial excess charge referred to the supply, complete
+response delay and remaining blanking. For a continuous nonincreasing rail,
+the sufficient order condition is
+`KILL_min - UVLO_max > initial_excess + slew*(tau_max + response_max + blanking)`.
+The filter error bound follows from its positive exponential kernel. The
+response allowance must include low-pulse persistence and the entire path
+through eFuse EN. Steps, changing leakage, unpowered logic and backfeed require
+additional analysis. All actual assembly inputs remain unknown: the examples
+cannot populate them, and neither design passes this bound.
+
+The [SN74LVC1G17 supply/load test bands](https://www.ti.com/lit/ds/symlink/sn74lvc1g17.pdf)
+still leave intermediate-supply logic and end-to-end dynamic behavior open.
+The alternative [TLV902x/903x comparator](https://www.ti.com/lit/ds/symlink/tlv9021.pdf)
+was rejected as a drop-in remedy: its input bias and propagation entries are
+typical, and it requires a different reference/pin circuit. No unsupported
+comparator bounds were introduced. Rechecking the
+[F1 source](https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05)
+and [thermal-metrics guidance](https://www.ti.com/lit/an/spra953d/spra953d.pdf)
+did not supply maximum total clearing/withstand coordination or either
+enclosure's thermal transfer. Those independent causes retain their diagnoses.
+
+Run `python3 -m unittest discover -s hardware/enclosure -p 'test_electrical_control.py' -v`.
+The tests compare the ramp solution to independent nodal integration and
+closed-form RC limits, and check missing bounds, initial charge, blanking,
+strict ordering and independent design data. Pages provenance includes the
+new solver. `just validate` retains every required gate; electrical qualification
+still fails, so dependent CAD/access, mass and publication work remains incomplete.
