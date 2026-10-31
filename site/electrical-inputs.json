@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "parameter-study-only; hardware model not qualified for publication",
+  "cell": {"name": "One Efest Purple IMR26650 5200 mAh flat-top", "nominal_v": 3.7, "capacity_ah": 5.2},
+  "reference": {"output_w": 6.25, "efficiency": 0.85},
+  "defaults": {"brightness": 0.05, "efficiency": 0.85, "reserve": 0.15, "capacity_ah": 5.2, "cell_v": 3.7, "non_led_w": 0.5, "quiescent_w": 0.002, "path_ohm": 0.085},
+  "mapping": "Clamp each shared Godot RGB channel times electrical brightness to [0,1], round to the nearest 8-bit PWM code; no optical gamma, shader brightness, reflections or glow. A modeling scenario, not a delivered firmware cap.",
+  "groups": {
+    "wide": [
+      {"id": 0, "name": "Fibonacci", "count": 256, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 1, "name": "Halo", "count": 64, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 2, "name": "Inner", "count": 84, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 3, "name": "Outer", "count": 90, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001}
+    ],
+    "narrow": [
+      {"id": 0, "name": "Fibonacci", "count": 256, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 1, "name": "Inner", "count": 70, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 2, "name": "Side0", "count": 70, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001},
+      {"id": 3, "name": "Side1", "count": 70, "channel_a": [0.02, 0.02, 0.02], "idle_a": 0.001}
+    ]
+  },
+  "evidence": [
+    {"url": "https://www.evilgeniuslabs.org/fibonacci256", "claim": "Manufacturer describes 256 WS2812 LEDs and theoretical 60 mA per LED at full white. Equal 20 mA channels are a model assumption, not measured individual channel coefficients."},
+    {"url": "https://www.pololu.com/product/2891", "claim": "Regulator minimum input is 2.9 V; typical no-load quiescent current below 1 mA is not a maximum efficiency or quiescent bound."},
+    {"path": "hardware/enclosure/component-inventory.json", "claim": "Ring stock remains unresolved. The same 20 mA channel / 1 mA idle study coefficients are not qualified strip ratings."}
+  ],
+  "uncertainty": "LED idle, strip channel coefficients, non-LED average/radio duty, conversion efficiency, contact resistance, cutoff reserve and quiescent input are explicit study assumptions. No runtime prediction or protection/thermal rating may be published from these inputs. Sampled peaks do not bound PWM, radio, inrush or faults. Physical runtime is unmeasured."
+}

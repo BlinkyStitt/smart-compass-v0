@@ -1,5 +1,7 @@
 # Keep generated work beside this checkout, including CAD, Godot and slicer scratch.
-export TMPDIR := justfile_directory() + "/.."
+export TMPDIR := justfile_directory() + "/.build"
+
+import 'validation.just'
 
 default:
     @just --list
@@ -36,10 +38,3 @@ demo-benchmark:
 install-hooks:
     git config --local core.hooksPath .githooks
     git lfs install --local
-
-# Verify both generated designs and their runtime presentation checks.
-validate:
-    just cad-check
-    just demo-check
-    python3 designs/stacked/run.py check
-    python3 designs/stacked/run.py preview-check

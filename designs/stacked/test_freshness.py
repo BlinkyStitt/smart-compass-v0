@@ -41,12 +41,14 @@ class FreshnessTests(unittest.TestCase):
         paths = (
             "hardware/enclosure/antenna.py",
             "hardware/enclosure/antenna_native.py",
+            "hardware/enclosure/native_publication.py",
             "hardware/enclosure/exports/scene.json",
             "designs/stacked/parameters.json",
             "designs/stacked/antenna_view.py",
             "designs/stacked/exports/antenna-placement.svg",
             "demo/patterns.gd",
             "demo/pattern_checks.gd",
+            "demo/mannequin.gd",
             *("designs/stacked/exports/infinity-rainbow-dark-" + style + ".mp4"
               for style in ("sectors", "spirals", "diagonals")),
         )

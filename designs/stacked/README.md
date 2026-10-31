@@ -19,12 +19,12 @@ python3 -c 'import sys; sys.path.insert(0,"designs/stacked"); import run; run.pr
 godot --headless --path designs/stacked/.build/preview --script res://check_patterns.gd -- "$PWD/designs/stacked/exports/scene.json"
 ```
 
-Inspect all three styles in the interactive preview, including each side row,
-the top seam, pause/resume, and the output switches. Compare Glow and Silver in
-the main viewer as described in the shared guide. Report numerical results as
-LED-output proxies. Preview images and smooth equations cannot prove electrical
-savings, battery runtime, or physical flicker performance. Black LEDs consume
-idle current; stored glow can obscure dark LED intent.
+The automated preview check exercises all three styles, both side rows, the top
+seam, pause/resume and output switches. The main viewer's GPU checks cover Glow
+and Silver. Numerical RGB results remain LED-output proxies. Preview images and
+smooth equations cannot prove electrical savings, runtime or physical flicker.
+Black LEDs consume idle current; stored glow can obscure dark LED intent. Human
+viewing is not a completion gate.
 
 This is the second enclosure design. The original 250 mm design and its exports
 stay in `hardware/enclosure`. This concept is 200 mm wide and 57.6 mm deep. It
@@ -78,6 +78,10 @@ inputs; the JSON owns regeneration. The build checks native solid collisions,
 original stencil volume, runtime GLB meshes, pixel identities, bounded mirror
 transport against an independent unfolded-ray calculation, and movie timing.
 It publishes all checked outputs together and records source/export hashes.
+Publication keeps a durable backup of every replaced export and manifest. A
+pending transaction rejects freshness; the next build restores the preceding
+generation before taking its source snapshot. The shared native publication
+tests inject export/manifest failures and process death.
 The commit-time staged check is `python3 designs/stacked/run.py check --staged`.
 The original `just` commands still operate on the first design.
 

@@ -39,7 +39,8 @@ def check(build=False):
     godot('--editor', '--import', '--quit', headless=True)
     extra = ['--build-validation'] if build else []
     godot('--', '--check', *extra, headless=True, marker='DEMO SCENE PASS')
-    with tempfile.TemporaryDirectory(prefix='amulet-optics-', dir=ROOT.parent) as tmp:
+    (ROOT / ".build").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='amulet-optics-', dir=ROOT / ".build") as tmp:
         reference = Path(tmp)/'reference.json'
         optics = json.loads((ROOT/cad.EXPORTS/'scene.json').read_text())['optics']
         reference.write_text(json.dumps(cases(optics)))
@@ -49,7 +50,8 @@ def check(build=False):
 def capture():
     check(build=True)
     output = ROOT/cad.EXPORTS
-    with tempfile.TemporaryDirectory(prefix='amulet-capture-', dir=ROOT.parent) as tmp:
+    (ROOT / ".build").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='amulet-capture-', dir=ROOT / ".build") as tmp:
         frames = Path(tmp)
         godot('--', '--capture', str(frames), '--build-validation', marker='DEMO CAPTURE PASS')
         shutil.copyfile(frames/'night-mannequin.png',output/'night-mannequin.png')

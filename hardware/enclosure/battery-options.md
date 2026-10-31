@@ -1,11 +1,14 @@
 # Single removable 26650: decision and qualification
 
-Engineering review: 2026-10-18, SKI-1230. **Use one removable Efest Purple
+Engineering review: 2026-10-31, SKI-1230. **Use one removable Efest Purple
 IMR26650 5200 mAh flat-top, with charged spares carried separately. Neither
 enclosure implements it yet.** Complete worn mass, including the installed cell
 and necklace, must be at most **2.5 lb = 1,133.980925 g**, with useful margin.
 The electrical and loaded-holder qualification below has not passed; dependent
-CAD, inventory and release work remains blocked.
+CAD, inventory and release work remains pending. The [executable electrical
+review](electrical-review.md) records startup-headroom and unpowered-PG
+failures in the proposed custom circuit. These are agent-owned engineering
+tasks; no human-supplied schematic is required.
 
 This decision supersedes the earlier four-hour-per-pack target, pouch-pack,
 belt-pack and two-bay proposals here and in `design-v2.md`. No cartridge, second
@@ -97,7 +100,7 @@ Each future design must illustrate this sequence with rear, optics and necklace
 fitted:
 
 ```text
-support pendant → switch OFF → open captive door → grip/remove cell
+support pendant → switch OFF → qualified discharge dwell → open captive door → grip/remove cell
   → insert charged cell to visible +/− marks → latch → switch ON/restart
 ```
 
@@ -187,14 +190,17 @@ circles. Coordinate shared preview work with SKI-1225: retain separate moving
 rainbow clips, the matched 384-frame/24-fps figure-eight loop, stationary
 mannequin and field, zero night sun, and sky/amber/blue lights.
 
-Run `just cad-tests`, `python3 designs/stacked/run.py test`, and
-`python3 -m unittest discover -s site`; then `just cad cad-check print-check
-demo-check`, narrow `run.py build`, `check`, `preview-check`, and finally the
-Pages build. Require complete LFS content and matching input/export hashes;
+Run `just validate` for the serial automated contract. It includes host tests,
+`electrical.py check`, actual Godot sampling and energy tests, both native
+pipelines and the Pages/browser checks. A failed electrical gate stops dependent
+publication. Require complete LFS content and matching input/export hashes;
 reject changed inputs. The orchestrator owns deployment verification and
 complete-release rollback.
 
-Digital validation does not close physical fit, repeated low-light swaps,
+Digital validation does not establish physical fit, repeated low-light swaps,
 latch/seal/retention, protection/recovery, rail transients, enclosed heat,
 optics/runtime, magnetic interference, hanging angle/twist, walking comfort or
-measured worn mass. Those acceptance tests remain open for both designs.
+measured worn mass. These outcomes remain unmeasured evidence limits for both
+designs, not manual acceptance gates, owner assignments or a human handoff.
+Automated geometry sweeps, injected electrical states, rendered assertions and
+raw mass arithmetic remain required and must fail when their bounds are missing.

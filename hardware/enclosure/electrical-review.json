@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-proposed-path-audit-1",
+  "status": "rejected-before-compartment-freeze",
+  "scope": "Audit of the approved research candidate, not a qualified schematic or a manufactured PCB",
+  "sources": {
+    "efuse": {
+      "url": "https://www.ti.com/lit/ds/symlink/tps25947.pdf",
+      "revision": "SLVSFC9C, May 2026",
+      "sections": "6.5, 7.3.9, 7.3.11, 8.2.2.5",
+      "reviewed": "2026-10-31",
+      "retrieved_pdf_sha256": "8f96de389903091650d4f462dcfad3210071c3ae7093623a7978f34baf8a65b4"
+    },
+    "controller": {
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf",
+      "revision": "2955fa",
+      "sections": "Electrical Characteristics pp. 3-4; Operation; Figure 8",
+      "reviewed": "2026-10-31"
+    },
+    "controller_diode": {
+      "url": "https://www.ti.com/lit/ds/symlink/lm66100.pdf",
+      "revision": "SLVSEZ8A, June 2019",
+      "sections": "6.1, 6.5, 8.3.1, 8.3.2",
+      "reviewed": "2026-10-31"
+    },
+    "boost": {
+      "url": "https://www.pololu.com/product/2891",
+      "revision": "Product page retrieved 2026-10-31",
+      "sections": "Features and specifications; U3V70F5 connections"
+    },
+    "contacts": {
+      "url": "https://static6.arrow.com/aropdfconversion/51cd24f6bbea76697111e1326022061c9a4b0141/085-00-152-08-314110.pdf",
+      "revision": "Mill-Max 085-00-152-08-314110, 2025-04-29",
+      "sections": "Standard tolerances p. 2; Spring p. 3"
+    },
+    "fuse": {
+      "url": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05",
+      "revision": "459 series, 2015-11-11",
+      "sections": "Electrical Characteristics; Electrical Specifications by Item"
+    },
+    "switch": {
+      "url": "https://www.ckswitches.com/media/1394/7000toggle.pdf",
+      "revision": "MI 10/02/26",
+      "sections": "Specifications; contact material Q"
+    },
+    "cell": {
+      "url": "https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275",
+      "revision": "HKJ, 2016-08-24, dated vendor specifications reproduced in independent test",
+      "sections": "Official specifications; not a measurement of the user's cells"
+    }
+  },
+  "candidate": {
+    "cell": "Efest Purple IMR26650 5200 mAh flat-top, one installed",
+    "positive_contact": "Mill-Max 0850-0-15-20-83-14-11-0",
+    "negative_contact": "Mill-Max 0850-0-15-20-83-14-11-0",
+    "F1": "Littelfuse 0459004.UR",
+    "S1": "C&K 7101SYZQE",
+    "U1": "TPS259474LRPWR",
+    "U2": "LM66100DCKR",
+    "U3": "LTC2955ITS8-1#TRMPBF",
+    "U4": "Pololu U3V70F5, item 2891",
+    "nets": {
+      "CELL_POS": [
+        "positive_contact",
+        "F1.1"
+      ],
+      "FUSED": [
+        "F1.2",
+        "S1.ON"
+      ],
+      "A": [
+        "S1.COMMON",
+        "U1.IN",
+        "U2.VIN",
+        "C_A.1"
+      ],
+      "B": [
+        "U1.OUT",
+        "U4.VIN",
+        "R_PGTH.1",
+        "C_B_CERAMIC.1",
+        "C_B_BULK.1",
+        "BatterySense.supply"
+      ],
+      "C": [
+        "U2.VOUT",
+        "U3.VIN",
+        "U3.ON",
+        "R_EN_TOP.1",
+        "R_KILL_TOP.1",
+        "C_C.1"
+      ],
+      "EFUSE_EN": [
+        "U3.EN",
+        "U1.EN_UVLO",
+        "R_EN_TOP.2",
+        "R_EN_BOTTOM.1"
+      ],
+      "BOOST_ENABLE": [
+        "U1.PG",
+        "U4.ENABLE"
+      ],
+      "PGTH": [
+        "R_PGTH.2",
+        "U1.PGTH"
+      ],
+      "KILL": [
+        "R_KILL_TOP.2",
+        "R_KILL_BOTTOM.1",
+        "C_KILL.1",
+        "U3.KILL"
+      ],
+      "ILM": [
+        "U1.ILM",
+        "R_ILM.1"
+      ],
+      "DVDT": [
+        "U1.dVdt",
+        "C_DVDT.1"
+      ],
+      "OFF_DRAIN": [
+        "S1.OFF",
+        "R_OFF.1"
+      ],
+      "FIVE_V": [
+        "U4.VOUT",
+        "C_OUT.1",
+        "R_OUT.1",
+        "loads.supply"
+      ],
+      "GND": [
+        "negative_contact",
+        "U1.GND",
+        "U1.OVLO",
+        "U2.GND",
+        "U2.CE",
+        "U2.ST",
+        "U3.GND",
+        "U4.GND",
+        "R_EN_BOTTOM.2",
+        "R_KILL_BOTTOM.2",
+        "R_ILM.2",
+        "R_OFF.2",
+        "R_OUT.2",
+        "C_A.2",
+        "C_C.2",
+        "C_B_CERAMIC.2",
+        "C_B_BULK.2",
+        "C_OUT.2",
+        "C_KILL.2",
+        "C_DVDT.2",
+        "loads.return",
+        "BatterySense.return"
+      ]
+    },
+    "open_pins": [
+      "U1.ITIMER",
+      "U2.NC",
+      "U3.PB",
+      "U3.INT",
+      "U3.TMR"
+    ],
+    "resistors_ohm": {
+      "R_ILM": 1000,
+      "R_EN_TOP": 17800,
+      "R_EN_BOTTOM": 10000,
+      "R_KILL_TOP": 324000,
+      "R_KILL_BOTTOM": 100000,
+      "R_PGTH": 100000,
+      "R_OFF": 1000,
+      "R_OUT": 1000
+    },
+    "threshold_resistor_tolerance": 0.001,
+    "capacitors_nominal_f": {
+      "C_A": 1e-06,
+      "C_C": 1e-07,
+      "C_B_BULK": 4.7e-05,
+      "C_OUT": 0.001,
+      "C_KILL": 1e-08,
+      "C_DVDT": 4.7e-09
+    },
+    "C_B_CERAMIC_requirement": "Greater than 1 uF effective at operating bias; exact part not selected",
+    "reference_output_w": 6.25,
+    "reference_efficiency": 0.85,
+    "proposed_off_dwell_s": 5
+  },
+  "limits": {
+    "efuse_uvlo_falling_v": [
+      1.076,
+      1.116
+    ],
+    "efuse_uvlo_rising_v": [
+      1.183,
+      1.223
+    ],
+    "efuse_en_leakage_a": [
+      -1e-07,
+      1e-07
+    ],
+    "efuse_ron_max_ohm_at_3a": 0.045,
+    "efuse_current_formula_a_ohm": 3333.3333333333335,
+    "efuse_current_relative_error": 0.1,
+    "efuse_unpowered_pg_highest_specified_low_v": 1.0,
+    "efuse_pg_characterized_pullup_a": [
+      2.6e-05,
+      0.000242
+    ],
+    "kill_falling_v": [
+      0.76,
+      0.84
+    ],
+    "kill_leakage_a": [
+      -5e-08,
+      5e-08
+    ],
+    "controller_en_pullup_a_at_zero_v": [
+      1.2e-06,
+      2.8e-06
+    ],
+    "kill_blanking_s": [
+      0.304,
+      0.72
+    ],
+    "controller_lockout_s": [
+      0.6,
+      1.4
+    ],
+    "boost_min_input_v": 2.9,
+    "boost_disable_below_v": 0.4,
+    "boost_enable_pullup_ohm_nominal": 100000,
+    "fuse_interrupt_a": 300,
+    "fuse_rating_a": 4,
+    "fuse_cold_resistance_ohm_nominal": 0.0197,
+    "fuse_melting_i2t_a2s_nominal": 2.35,
+    "contact_resistance_ohm_max_reference": 0.02,
+    "contact_derated_a_at_catalog_conditions": 8.8,
+    "cell_nominal_v": 3.7,
+    "cell_capacity_ah": 5.2,
+    "cell_charge_upper_v_dated_spec": 4.3
+  }
+}

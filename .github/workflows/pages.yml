@@ -22,14 +22,28 @@ jobs:
       - name: Install media tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ffmpeg git-lfs
-      - name: Fetch site media from Git LFS
-        run: >-
-          git lfs pull --include='hardware/enclosure/exports/infinity-rainbow*.mp4,designs/stacked/exports/infinity-rainbow*.mp4,designs/stacked/exports/night-side.png,site/assets/size-comparison.png,site/assets/exploded-assembly.mp4,site/assets/wide-worn.png,site/assets/narrow-worn.png,site/assets/narrow-silver.mp4'
+          sudo apt-get install -y --no-install-recommends ffmpeg git-lfs unzip
+      - name: Fetch all native and site inputs from Git LFS
+        run: git lfs pull
+      - name: Check 26650 electrical qualification
+        run: python3 hardware/enclosure/electrical.py check
+      - name: Install pinned pattern sampler and browser
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.build/browser-cache
+        run: |
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl --fail --location --output "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          echo "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4  $RUNNER_TEMP/godot.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          mv "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
+          echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+          npm ci --prefix site --ignore-scripts --no-fund
+          node site/node_modules/playwright/cli.js install --with-deps chromium
       - name: Build and verify site media
         run: |
           python3 -m unittest discover -s site -p 'test_*.py' -v
           python3 site/build.py --output "$RUNNER_TEMP/compass-pages"
+          python3 site/verify.py local --directory "$RUNNER_TEMP/compass-pages"
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ${{ runner.temp }}/compass-pages
@@ -42,14 +56,31 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     permissions:
+      contents: read
+      actions: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Retrieve the complete reviewed artifact and browser
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.build/browser-cache
+        run: |
+          gh run download "$GITHUB_RUN_ID" --name github-pages --dir "$RUNNER_TEMP/pages-artifact"
+          mkdir -p "$RUNNER_TEMP/expected-pages"
+          tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C "$RUNNER_TEMP/expected-pages"
+          npm ci --prefix site --ignore-scripts --no-fund
+          node site/node_modules/playwright/cli.js install --with-deps chromium
       - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
         id: deployment
+      - name: Verify the deployed revision, assets and browser behavior
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python3 site/verify.py live --url "$PAGE_URL" --expected "$RUNNER_TEMP/expected-pages"
       - name: Notify ntfy of successful deployment
         if: ${{ success() && steps.deployment.outcome == 'success' }}
         continue-on-error: true

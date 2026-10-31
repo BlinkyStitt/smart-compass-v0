@@ -1,8 +1,10 @@
 # Smart compass on GitHub Pages
 
 The site compares the canonical Wide and Narrow rainbows and three paired
-rainbows with moving dark regions, explains the hardware, and shows native CAD size and assembly images. It uses plain HTML,
-CSS and JavaScript. The build needs Python 3.9+, Git LFS, FFmpeg and FFprobe.
+rainbows with moving dark regions, explains the hardware, and shows native CAD
+size and assembly images. It uses plain HTML, CSS and JavaScript. The build needs
+Python 3.9+, Git LFS, FFmpeg, FFprobe, Godot 4 and Node 20+. Browser verification
+requires the locked Playwright driver and its Chromium installation.
 
 ```sh
 python3 site/build.py --output /path/to/compass-pages
@@ -19,7 +21,9 @@ at the same scale, with dimension lines.
 
 The `GitHub Pages` workflow builds on pull requests, and deploys on pushes to
 `master` or a manual run from `master`. Repository Pages must use GitHub Actions
-as its source. The build fetches only the LFS media needed by the site.
+as its source. The build fetches all LFS inputs so both native freshness inventories can be verified.
+The workflow also requires the electrical gate, which currently rejects the
+unqualified 26650 candidate; this checkpoint is not deployable.
 
 After a successful deployment, the workflow sends one ntfy notification linking
 to the deployed site, commit and workflow attempt. Configure these repository
@@ -125,3 +129,108 @@ canonical rainbow clips retain their separate strict rotation checks. All eleven
 movies get content-hashed URLs and generated posters. Stored glow may remain
 visible during black LED intent; these renders establish no electrical savings
 or battery runtime.
+## Publication integrity
+
+`build.py` first checks electrical qualification and both native manifests. It hashes their complete input and
+export sets, site sources, inventory and battery/electrical review definitions.
+Missing LFS content, stale geometry and changes during a build fail publication.
+Every consumed byte is checked against the captured input hash; clip checks and
+posters use the copied clip. `build-info.json` records input and output hashes.
+
+Output is built in a private sibling directory under a per-output process lock.
+Only a complete artifact replaces the prior directory. A persisted journal
+restores the previous complete artifact after interruption, including process
+death between the directory renames. Arbitrary existing directories and symlinks
+are refused. Choose a fresh output path for an older artifact without the new
+publication inventory; the builder preserves it rather than guessing ownership.
+
+`python3 -m unittest discover -s site` exercises real publication failures,
+source changes, concurrent processes, and process death before/after installing
+the new directory. These tests do not replace browser checks or establish physical results.
+
+SKI-1230 remains incomplete: the cell compartment, independent mass ledgers,
+qualified electrical model and complete Pages release remain undelivered.
+The calculator and browser verifier operate as a separate, explicitly
+unqualified parameter study. Existing rendered geometry and the 37 Wh site
+calculation remain explicitly legacy pouch evidence. The selected one-cell
+reference is 2.62 calculated hours before reserve/other losses; see the
+[electrical review](../hardware/enclosure/electrical-review.md).
+
+## Reproducible electrical study
+
+Run from the root:
+
+```sh
+python3 site/sample.py
+node site/energy.mjs --check
+node site/energy.mjs --reference
+```
+
+Godot and Node must be installed; missing tools fail. The sampler runs the real
+shared functions for both native LED layouts, repeats each run byte-for-byte,
+and retains all RGB/time channels as little-endian IEEE-754 float32 data under
+`.build/energy-samples`. The manifest records native scene, pattern, sampler and
+model hashes, `(group,index)` identities, sampling intervals, tool version and
+convergence results. A changed source or sample fails the check. Each cycle is
+[0,8), initially 512 then 1024 steps, with further interval halving until every
+design/pattern's average input-power change is at most max(0.1%, 1 mW).
+
+`energy.mjs` is the pure calculation shared by browser and CLI consumers.
+`--evaluate` accepts JSON on stdin with `samples`, `groups` and `settings`; the
+sampler's binary reader is in `sample_check.mjs`. `electrical-inputs.json` owns
+the one-cell reference and explicitly unqualified study coefficients. It maps
+raw channels to rounded 8-bit PWM after electrical brightness; optical shader
+controls never enter the calculation. Idle demand remains at black. Non-LED
+demand, converter quiescent input, constant efficiency, series loss and reserve
+are counted separately. Series loss is solved at each sampled time before
+averaging. Runtime is usable energy divided by average battery demand; zero
+energy gives zero, while positive energy at zero demand returns a named
+unbounded state with `hours: null`, never numeric infinity.
+
+The study distinguishes sampled peaks from hardware limits. Its equal-channel
+board approximation, unresolved strip stock, idle coefficients, radio/controller
+duty, contact/converter losses and cutoff reserve are not qualified bounds.
+These outputs must not become product predictions or lower protection ratings.
+The Pages build remains blocked by the electrical gate. Physical behavior stays
+unmeasured; no owner trial or human sign-off is a completion condition.
+
+## Automated browser checks
+
+```sh
+npm ci --prefix site --ignore-scripts --no-fund
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.build/browser-cache" node site/node_modules/playwright/cli.js install --with-deps chromium
+python3 site/sample.py
+python3 site/verify.py study
+```
+
+The driver is Playwright 1.64.1 (Apache-2.0, Node >=20), pinned with integrity
+hashes in `package-lock.json`. The [npm registry](https://registry.npmjs.org/playwright)
+records its 2026-10-14 publication, meeting the seven-day age rule on
+2026-10-31; installation reported zero advisories. Chromium is the matching
+driver-managed version. CI pins Godot 4.7.2 and the release asset SHA-256 from
+the [official release](https://github.com/godotengine/godot-builds/releases/tag/4.7.2-stable).
+
+The study creates a temporary localhost fixture from the actual calculator,
+pattern data and three canonical MP4s. It checks 320 px/desktop layout, accessible
+labels and keyboard operation, design/pattern/settings/reset, CLI agreement,
+invalid/zero cases, stale responses/data, paired playback and buffering/error
+recovery. A deliberately injected zero-demand model checks the unbounded state;
+it does not assert that real hardware has zero demand. The server, contexts and
+browser close on success or failure; a process lock prevents concurrent probes.
+Missing tools and browsers fail. Study success is not complete-site acceptance.
+
+After the electrical and native gates pass, `build.py` regenerates samples from
+both checked scenes and seals their hashes with the artifact. Use:
+
+```sh
+python3 site/build.py --output .build/compass-pages
+python3 site/verify.py local --directory .build/compass-pages
+python3 site/verify.py live --url https://blinkystitt.github.io/smart-compass-v0/ --expected .build/compass-pages
+```
+
+The live command follows an authorized deployment; it compares the complete
+reviewed provenance and every asset byte, then runs the same browser probes.
+The workflow runs local verification before uploading and live verification
+after deployment. At this checkpoint the electrical gate prevents reaching
+either release check. The legacy cards/mass model still require the fitted
+assembly migration before publication can be qualified.

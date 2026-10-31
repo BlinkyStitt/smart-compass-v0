@@ -47,6 +47,7 @@ class CadWorkflowTests(unittest.TestCase):
 
     def test_source_and_export_changes_fail(self):
         paths = (cad.CAD + '/antenna.py', cad.CAD + '/antenna_native.py', cad.CAD + '/README.md',
+                 cad.CAD + '/native_publication.py', 'validation.just', 'demo/mannequin.gd',
                  cad.EXPORTS + '/antenna-placement.svg', cad.MASTER, cad.CAD + '/build.py', cad.CAD + '/fibonacci256-layout.json',
                  cad.EXPORTS + '/front.png', cad.EXPORTS + '/infinity-rainbow.mp4',
                  cad.EXPORTS + '/Part.stl', 'demo/main.gd',

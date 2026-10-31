@@ -15,6 +15,9 @@ from pathlib import Path
 from layout import HERE, ROOT
 from optics import cases, side_cases
 
+sys.path.insert(0, str(ROOT / "hardware/enclosure"))
+import native_publication
+
 sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 
@@ -30,6 +33,7 @@ SHARED = (
     "hardware/enclosure/demo_export.py",
     "hardware/enclosure/hardware_spec.py",
     "hardware/enclosure/component-inventory.json",
+    "hardware/enclosure/native_publication.py",
     "hardware/enclosure/fibonacci256-layout.json",
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl",
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/LICENSE.txt",
@@ -107,7 +111,9 @@ def hashes(paths):
     return {p.relative_to(ROOT).as_posix(): digest(p) for p in paths}
 
 
-def check(staged=False):
+def check(staged=False, *, publishing=False):
+    if not publishing and native_publication.pending(HERE / '.build/publication'):
+        raise RuntimeError('Interrupted compact publication; rebuild to restore the prior complete release')
     record = json.loads(MANIFEST.read_text())
     if record.get("format_version") != 1:
         raise RuntimeError("Unsupported compact manifest")
@@ -369,6 +375,7 @@ def capture(assets, stage):
 
 def build():
     with build_lock():
+        native_publication.recover(ROOT, HERE / '.build/publication')
         test()
         initial = hashes(inputs())
         original = hashes(
@@ -427,15 +434,14 @@ def build():
                 str((EXPORTS / Path(k).name).relative_to(ROOT)): v
                 for k, v in record["exports"].items()
             }
-            backup = HERE / ".build/previous-exports"
-            if backup.exists():
-                shutil.rmtree(backup)
-            if EXPORTS.exists():
-                EXPORTS.rename(backup)
-            out.rename(EXPORTS)
-            temporary = HERE / ".build/manifest.json"
-            temporary.write_text(json.dumps(record, indent=2) + "\n")
-            os.replace(temporary, MANIFEST)
+            files = {str((EXPORTS / name).relative_to(ROOT)): (out / name).read_bytes()
+                     for name in EXPECTED}
+            manifest_name = str(MANIFEST.relative_to(ROOT))
+            files[manifest_name] = (json.dumps(record, indent=2) + '\n').encode()
+            retired = {str(path.relative_to(ROOT)) for path in EXPORTS.iterdir()
+                       if path.is_file() and path.name not in EXPECTED} if EXPORTS.exists() else set()
+            native_publication.publish(ROOT, HERE / '.build/publication', files, retired,
+                                       manifest_name, lambda: check(publishing=True))
         check()
         print(
             "STACKED BUILD COMPLETE: checked CAD and separate matched renders; first design unchanged",
