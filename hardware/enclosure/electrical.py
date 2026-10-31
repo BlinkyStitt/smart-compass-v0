@@ -16,6 +16,7 @@ from electrical_reset import off_envelope
 from electrical_path import harness_study
 from electrical_fault import fault_study
 from electrical_thermal import thermal_study
+from electrical_headroom import headroom_netlist, headroom_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -724,15 +725,19 @@ def main():
         result['boost_interlock_revision'] = boost_interlock_study(spec, control, interlock)
         reset = json.loads((HERE/'electrical-reset-revision.json').read_text())
         result['reset_revision'] = reset_study(spec, control, interlock, reset)
+        candidate = reset_netlist(spec, control, interlock, reset)
+        headroom = json.loads((HERE/'electrical-headroom.json').read_text())
+        result['local_headroom_revision'] = headroom_study(spec, candidate, headroom)
+        candidate = headroom_netlist(candidate, headroom)
         result['harness_revision'] = harness_study(
             json.loads((HERE/'electrical-harness.json').read_text()),
-            reset_netlist(spec, control, interlock, reset), spec['limits'])
+            candidate, spec['limits'])
         result['fault_coordination'] = fault_study(
             spec, json.loads((HERE/'electrical-harness.json').read_text()),
             json.loads((HERE/'electrical-fault-coordination.json').read_text()))
         result['thermal_state_envelope'] = thermal_study(
             json.loads((HERE/'electrical-thermal.json').read_text()), spec,
-            reset_netlist(spec, control, interlock, reset),
+            candidate,
             json.loads((HERE/'electrical-harness.json').read_text()))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))

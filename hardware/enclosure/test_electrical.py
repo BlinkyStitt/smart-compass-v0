@@ -80,6 +80,10 @@ class ElectricalReviewTests(unittest.TestCase):
         thermal = report['thermal_state_envelope']
         self.assertFalse(thermal['conditional_pass'])
         self.assertEqual(set(thermal['designs']), {'wide', 'narrow'})
+        self.assertIn('part:U7', thermal['heat_ownership'])
+        headroom = report['local_headroom_revision']
+        self.assertFalse(headroom['qualified'])
+        self.assertTrue(all(not row['pass'] for row in headroom['designs'].values()))
 
     def test_discharge_includes_leakage_and_unreachable_targets(self):
         import math

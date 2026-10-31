@@ -23,6 +23,9 @@ unknown assembly bounds still produce no qualified dwell.
 The [two-conductor harness](electrical-harness.json) now specifies proposed wires
 and per-design cut lists. Its DC network audit includes shared supply and return
 currents; unknown assembly resistance, loads and temperature still fail the gate.
+The [local input clamp](electrical-headroom.json) adds an independent B-rail UVLO
+and a charge-based hold-up calculation. Actual capacitor, load and shutdown-time
+bounds remain missing; neither enclosure is qualified by this additional clamp.
 
 ## Candidate connections
 
@@ -652,3 +655,62 @@ it still exits **1**, with no bounded assembly temperature or qualified dwell.
 Enclosure transfer, actual heat sources and complete circuit-state evidence
 remain agent-owned engineering work. No physical test or human acceptance gate
 is introduced; dependent CAD freeze and publication remain gated.
+
+## Recovery: local regulator-input headroom
+
+Defect `a6507265-7fb3-4da2-bae4-5116c461cd48` remains active. The previous
+0.1 Ω constant-power calculation establishes an equilibrium under a study
+assumption; it cannot bound B during KILL blanking, contact loss or load steps.
+[electrical-headroom.json](electrical-headroom.json) now adds **TPS3840DL35DBVR**
+(U7) to the composed candidate. Pin 2 senses B at U4 VIN, pin 3 uses U4 GND,
+and open-drain pin 1 joins BOOST_ENABLE alongside U6. Pins 4/5 remain open.
+Retain U6, the LTC2955 depletion latch and the existing local C_U6 bypass.
+This is a candidate circuit change, not a qualified construction instruction.
+
+[TI TPS3840 Rev E, §§5–6.6](https://www.ti.com/lit/ds/symlink/tps3840.pdf)
+gives the 3.5 V threshold ±1.5%, 175–225 mV hysteresis, and 0.2 V low at
+2 mA with 1.5 V < VDD < 5 V below threshold. The **30 µs maximum** falling
+delay uses a transition from the rising threshold to 10% below the falling
+threshold, slew below 100 mV/µs, 100 kΩ pull-up and 10 pF load. Those
+conditions have not been established for the assembly. The released
+[DL35 part](https://www.ti.com/product/TPS3840/part-details/TPS3840DL35DBVR)
+is used instead of assuming every possible threshold code is orderable.
+
+`electrical_headroom.py` composes this wiring without removing either previous
+clamp or changing the latch. Harness and thermal reporting consume the composed
+candidate, including U7 as a separate unresolved heat owner. Pages requires and
+hashes the new definition and solver. No extra reservoir capacitor is silently
+added to the BOM, reset calculation or geometry.
+
+The hold-up bound is `V >= Vstart - I*R - Vstep - I*t/C`. Here C is the
+minimum differential capacitance, I bounds **all capacitor discharge paths**,
+R includes ESR and both conductors, and Vstep bounds other instantaneous
+losses. Delay includes supervisor response and the boost's subsequent shutdown.
+An input eFuse limit cannot bound current supplied locally by the capacitor.
+An average RGB/load estimate cannot bound PWM/radio/inrush. A directly shorted
+B needs fault analysis; this equation supplies no short-circuit guarantee.
+
+The threshold extremes are 3.4475–3.5525 V falling and 3.6225–3.7775 V rising.
+The conservative sizing calculation starts at 3.10275 V (10% below the lower
+falling threshold), then allows the full 30 µs again. This does not extend the
+datasheet test to arbitrary waveforms. Using the nominal 47 µF B reservoir,
+illustrative 10 mΩ series path and 2.535497 A reference current gives a
+**1.458993 V lower bound**, failing the 2.9 V criterion. This assumes zero
+additional boost delay and inductive drop; it is a sensitivity calculation,
+not an observed voltage or proof of physical failure. Under only these inputs,
+the minimum capacitance budget is **428.788 µF**. No capacitor is selected from
+that number: peak demand, tolerance, ESR, aging and geometry remain unresolved.
+
+Both actual designs retain unknown capacitance, current, series/step losses,
+ENABLE source current and boost shutdown delay. Missing timing applicability,
+startup/rebound and complete-path evidence prevents either case from passing,
+even when a synthetic numerical hold-up example passes. U7 alone can re-enable
+on voltage recovery; it does not replace the depletion latch or prove absence
+of cycling. [Pololu's connections](https://www.pololu.com/product/2891) specify
+ENABLE below 0.4 V but supply no maximum shutdown delay.
+
+Tests exercise charge conservation, variable load pulses, exact capacitance
+boundaries, instantaneous collapse, unknown inputs, independent design data,
+clamp overload, and retained interlock/latch wiring. The existing seven
+qualification failures remain intact. `electrical.py check` must still return
+1; the CAD, mass, service and publication work remains gated by that result.
