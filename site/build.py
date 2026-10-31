@@ -190,6 +190,7 @@ def source_snapshot(*, include_samples=True):
     paths.update(ROOT / name for name in (
         "hardware/enclosure/battery-options.md", "hardware/enclosure/electrical-review.json",
         "hardware/enclosure/electrical-control-study.json",
+        "hardware/enclosure/electrical-control-revision.json",
         "hardware/enclosure/electrical-review.md", "hardware/enclosure/electrical.py",
         "hardware/enclosure/component-inventory.json", "hardware/enclosure/README.md",
         "designs/stacked/README.md", "demo/README.md", "design-v2.md",

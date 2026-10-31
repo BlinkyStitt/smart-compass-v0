@@ -140,6 +140,31 @@ class MovieTests(unittest.TestCase):
 
 
 class BuildInputTests(unittest.TestCase):
+    def test_control_revision_is_a_required_hashed_release_input(self):
+        relative = 'hardware/enclosure/electrical-control-revision.json'
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            revision = root / relative
+            revision.parent.mkdir(parents=True)
+            revision.write_bytes(b'first control revision')
+
+            def read(path):
+                if path == revision:
+                    return path.read_bytes()
+                if path.name == 'exports-manifest.json':
+                    return b'{"inputs": {}, "exports": {}}'
+                return b'other input'
+
+            with patch.object(build, 'ROOT', root), patch.object(build, 'SITE', root/'site'), \
+                    patch.object(build, 'checked_bytes', side_effect=read):
+                first = build.source_snapshot(include_samples=False)
+                self.assertEqual(first[relative], hashlib.sha256(revision.read_bytes()).hexdigest())
+                revision.write_bytes(b'changed control revision')
+                self.assertNotEqual(first[relative], build.source_snapshot(include_samples=False)[relative])
+                revision.unlink()
+                with self.assertRaises(FileNotFoundError):
+                    build.source_snapshot(include_samples=False)
+
     def test_changed_input_is_rejected_at_read_time(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(build, 'ROOT', Path(directory)):
             path = Path(directory)/'source.json'

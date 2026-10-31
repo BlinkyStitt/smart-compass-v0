@@ -10,6 +10,10 @@ candidate. `report` prints the same findings with exit 0 for inspection. The
 unit tests validate the arithmetic and rejection behavior, not a physical
 circuit or a completed transient model. Inputs, source revisions and the proposed
 netlist are in [electrical-review.json](electrical-review.json).
+The subsequent [Schmitt control revision](electrical-control-revision.json)
+replaces the failed buffer trial for further engineering. Its conditional DC
+results appear separately in the command output; they do not qualify the main
+power path or erase the original counterexamples.
 
 ## Candidate connections
 
@@ -182,3 +186,80 @@ checks the new equations, unreachable targets and both rejection cases.
 returns 1. The original PG/ENABLE, short-current/clearing-energy, complete BOM,
 transient, reversal/backfeed and thermal failures remain active. This is new
 engineering evidence, not a repeated request for a human schematic.
+
+## Recovery: Schmitt-driven divider revision
+
+The supplied CI failure at `2983a5fa7c2d246667756d8ed10ec1f2bc9d7644`
+exposes distinct unfinished boundaries: startup headroom, boost shutdown,
+controller/divider coupling, fault energy, loaded branches, reset and the
+remaining state/thermal model. This repair addresses the controller interface
+and its **static** headroom/order calculation. The other failures remain active.
+
+The new subcircuit retains LTC2955-1 and uses **SN74LVC1G17DBVR**, a non-inverting,
+push-pull Schmitt buffer. Its input accepts the controller's slow transition
+without the old 74LVC1G07 input-rate restriction. U3 EN no longer connects to
+the analogue divider. U5 drives the divider's **top**, not its midpoint:
+
+```text
+C ---- 10 kohm ---- CONTROLLER_EN ---- U5.A (pin 2)
+                         |
+                        U3.EN
+C ---- U5.VCC (pin 5)     U5.GND (pin 3) ---- GND
+U5.Y (pin 4) ---- 51.1 kohm ---- U1.EN/UVLO ---- 25.5 kohm ---- GND
+C ---- 36.5 kohm ---- U3.KILL ---- 10 kohm ---- GND
+```
+
+U5 pin 1 is unconnected. A local 100 nF bypass and the original 10 nF KILL
+filter are recorded; their exact parts/effective capacitances remain open.
+The complete subcircuit pin map, five resistor part numbers and source PDF
+hashes are in [electrical-control-revision.json](electrical-control-revision.json).
+The CLI checks this wiring against the equations and rejects the wrong
+controller polarity, misplaced buffer output or mismatched resistor BOM.
+
+[TI SCES351Y, sections 5.3–5.5](https://www.ti.com/lit/ds/symlink/sn74lvc1g17.pdf)
+provides the buffer's DC limits and Schmitt thresholds. At the stated 100 µA
+output test current, high output is within 0.1 V of supply and low output is
+at most 0.1 V. The revised divider loads it by at most 56.51 µA at C=4.3 V,
+including the eFuse EN leakage allowance. The external controller pull-up
+sources at most 0.4321 mA at EN=0, within the
+[LTC2955 external pull-up rule](https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf).
+The old EN pull-up estimate at zero volts is no longer used at the divider edge.
+
+The TNPW0603 B/E resistors use ±0.1% initial tolerance and ±25 ppm/K TCR.
+The calculation independently adds the source's 8000-hour general-mode
+endurance, one solder-heat and one biased humidity-test allowances, including
+their absolute-ohm terms. A declared −40…85°C film-temperature envelope gives
+±(0.4825% R + 0.04 Ω). These are sourced stress-test conditions, **not** a
+combined-stress lifetime or enclosure-temperature guarantee.
+[Vishay 28758, 10-Apr-2026, pp. 2–4 and 12–14](https://www.vishay.com/docs/28758/tnpw_e3.pdf).
+
+| Conditional DC boundary | Raw calculation, shown rounded |
+| --- | --- |
+| Backup falling UVLO at C, including driver drop | 3.206422–3.479202 V |
+| Backup rising UVLO at C, including driver drop | 3.525782–3.802701 V |
+| KILL falling threshold at C | 3.505529–3.937580 V |
+| KILL minimum minus backup maximum | 0.026327 V |
+| Disabled eFuse EN with powered U5 | <0.036 V |
+| B at minimum UVLO, 0.1 Ω post-sense study path, 6.25 W/85% | 2.957829 V |
+
+The resistance budget is also calculated from `R = 2.9 × (C_min − 2.9) / P`
+so a future conductor design can be checked against the reference load without
+mistaking the 0.1 Ω study value for a sourced harness bound. Buffer loading,
+controller pull-up current and both comparator edges are checked independently.
+Changing the divider ratio cannot hide an overloaded driver.
+
+The table of logic margins retains every datasheet supply point without
+interpolation. At 1.65 V, U3's 0.4 V low is above U5's 0.35 V minimum falling
+threshold; that case explicitly fails. Points at 2.3, 3, 4.5 and 5.5 V pass
+the stated DC calculation. Neither those points nor a true Schmitt input prove
+the intervening supply-ramp behavior. U5 input leakage is tabulated at 5.5 V
+and ground, so using it at intermediate input voltages remains conditional.
+
+The 26 mV cutoff-order margin establishes no shutdown-time or hold-up bound.
+The 720 ms KILL blanking interval, actual driver/filter delays, parasitic
+capacitance, rail reversal/USB coupling, PG-to-boost OFF behavior, fuse
+coordination, complete branch/PCB design and heat still need engineering.
+No qualified OFF dwell or completed startup/recovery model results from this
+repair. **`electrical.py check` still fails; do not freeze either compartment.**
+The Pages provenance snapshot includes the new revision so a later release
+cannot silently omit or mix this input.
