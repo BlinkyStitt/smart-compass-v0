@@ -350,7 +350,77 @@ def interlock_netlist(spec, revision):
         raise ValueError('Boost interlock has duplicate pin ownership')
     candidate['U6'] = revision['supervisor']
     candidate['resistors_ohm']['R_PG_PULLUP'] = revision['pullup']['ohm']
+    off = revision['physical_off']
+    expected_terminals = {'COMMON': 2, 'ON': 3, 'OFF': 1,
+                          'CLAMP_COMMON': 5, 'CLAMP_OFF': 4, 'CLAMP_OPEN': 6}
+    if (off['switch'] != 'C&K 7201SYZGE' or candidate['S1'] != off['replaces']
+            or off['replaces'] != 'C&K 7101SYZQE'
+            or off['terminal_numbers'] != expected_terminals
+            or off['positions'] != {'ON': [[2, 3], [5, 6]], 'OFF': [[2, 1], [5, 4]]}
+            or off['nets'] != {'BOOST_ENABLE': ['S1.CLAMP_COMMON'], 'GND': ['S1.CLAMP_OFF']}
+            or off['open_pins'] != ['S1.CLAMP_OPEN']):
+        raise ValueError('Physical OFF switch part, terminal map or contacts disagree')
+    for name, pin in {'A': 'S1.COMMON', 'FUSED': 'S1.ON', 'OFF_DRAIN': 'S1.OFF'}.items():
+        if pin not in nets.get(name, []):
+            raise ValueError('Physical OFF power connection must preserve the power pole at ' + name)
+    for name, pins in off['nets'].items():
+        nets[name].extend(pins)
+    candidate['open_pins'].extend(off['open_pins'])
+    pins = [pin for members in nets.values() for pin in members] + candidate['open_pins']
+    if len(pins) != len(set(pins)):
+        raise ValueError('Physical OFF has duplicate pin ownership')
+    candidate['S1'] = off['switch']
+    candidate['switch_terminal_numbers'] = copy.deepcopy(off['terminal_numbers'])
+    candidate['switch_positions'] = copy.deepcopy(off['positions'])
     return candidate
+
+
+def physical_off_state(contact_closed, bounds, limits, disable_below_v):
+    """Settled ENABLE voltage relative to U4 GND with the OFF pole closed.
+
+    All ENABLE sources enter the bounded current; both dedicated leads and
+    their terminations enter the series resistance. A retained high EN/unknown
+    PG cannot defeat a closed passive shunt under these conditions. This says
+    nothing about bounce, stored-charge pulses or time to converter shutdown.
+    """
+    fields = {'source_max_a', 'open_voltage_max_v', 'contact_max_ohm',
+              'enable_lead_max_ohm', 'return_lead_max_ohm', 'return_offset_max_v'}
+    if set(bounds) != fields | {'contact_conditions_covered'}:
+        raise ValueError('Physical OFF needs both conductors and complete source/contact bounds')
+    if contact_closed is not None and type(contact_closed) is not bool:
+        raise ValueError('OFF contact state must be boolean or unknown')
+    covered = bounds['contact_conditions_covered']
+    if covered is not None and type(covered) is not bool:
+        raise ValueError('OFF contact conditions must be boolean or unknown')
+    finite(disable_below_v, 'boost disable threshold', positive=True)
+    for name in ('low_level_max_v', 'low_level_max_va'):
+        finite(limits[name], name, positive=True)
+    for name in fields:
+        value = bounds[name]
+        if value is not None and finite(value, name) < 0:
+            raise ValueError(name + ' must be nonnegative')
+    missing = sorted(name for name in fields if bounds[name] is None)
+    if contact_closed is not True:
+        missing.append('closed_off_contact')
+    if covered is not True:
+        missing.append('contact_conditions_covered')
+    voltage = margin = rating = None
+    # Compute only after applicability is established, never turn a typical
+    # initial contact resistance into a qualified lifetime/wear bound.
+    if not missing:
+        resistance = math.fsum(bounds[key] for key in
+                               ('contact_max_ohm', 'enable_lead_max_ohm', 'return_lead_max_ohm'))
+        voltage = bounds['return_offset_max_v'] + bounds['source_max_a'] * resistance
+        margin = disable_below_v - voltage
+        apparent_power = bounds['source_max_a'] * bounds['open_voltage_max_v']
+        for name, value in [('clamp voltage', voltage), ('contact VA', apparent_power)]:
+            finite(value, name)
+        rating = (bounds['open_voltage_max_v'] <= limits['low_level_max_v']
+                  and apparent_power <= limits['low_level_max_va'])
+    return {'enable_upper_v': voltage, 'disable_margin_v': margin,
+            'within_contact_rating': rating,
+            'settled_off_clamp_pass': not missing and rating and margin > 0,
+            'missing': missing}
 
 
 def supervisor_dc_state(supply_v, sense_v, source_a, limits):
@@ -443,6 +513,13 @@ def boost_interlock_study(spec, control, revision):
     # rather than inventing a tolerance for the module's 100 kohm resistor.
     nominal_source = b_max / spec['limits']['boost_enable_pullup_ohm_nominal']
     dc = unpowered_interlock_state(0, 0, b_min, nominal_source, limits, pg_load_ok=pg_load_ok)
+    off = revision['physical_off']
+    if set(off['assembly_bounds']) != {'wide', 'narrow'}:
+        raise ValueError('Physical OFF needs separate wide/narrow assembly bounds')
+    physical = {
+        design: physical_off_state(True, bounds, off['limits'], spec['limits']['boost_disable_below_v'])
+        for design, bounds in off['assembly_bounds'].items()
+    }
     return {
         'revision': revision['revision'], 'defect_id': revision['defect_id'],
         'status': revision['status'], 'qualified': False,
@@ -467,6 +544,11 @@ def boost_interlock_study(spec, control, revision):
                                 and clamp_margin > 0 and dc['state'] == 'clamped'),
         'conditional_assumptions': revision['conditional_assumptions'],
         'missing_bounds': revision['missing_bounds'],
+        'physical_off': {'switch': candidate['S1'], 'terminal_numbers': candidate['switch_terminal_numbers'],
+                         'positions': candidate['switch_positions'], 'designs': physical,
+                         'remaining_evidence': off['remaining_evidence'],
+                         'scope': 'Closed physical OFF pole only; no PG guarantee with switch ON, '
+                                  'no bounce/startup/shutdown-time or stored-energy claim'},
     }
 
 

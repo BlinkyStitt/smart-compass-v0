@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-retained-rail-pg-interlock-1",
+  "revision": "ski-1230-retained-rail-physical-off-2",
   "defect_id": "6ac22d51-a0d5-4f68-98c9-7e5842b54a21",
-  "status": "conditional DC repair; shutdown timing and complete power path unqualified",
+  "status": "Dedicated physical OFF clamp added; assembly resistance, source current and shutdown timing unqualified",
   "supervisor": "TPS389001DSER",
   "replacement_net": "BOOST_ENABLE",
   "nets": {
@@ -43,7 +43,35 @@
     "end_to_end_boost_shutdown_max_s": null,
     "b_rail_ramp_and_usb_coupling": null
   },
+  "physical_off": {
+    "switch": "C&K 7201SYZGE",
+    "replaces": "C&K 7101SYZQE",
+    "terminal_numbers": {"COMMON": 2, "ON": 3, "OFF": 1, "CLAMP_COMMON": 5, "CLAMP_OFF": 4, "CLAMP_OPEN": 6},
+    "positions": {"ON": [[2, 3], [5, 6]], "OFF": [[2, 1], [5, 4]]},
+    "nets": {"BOOST_ENABLE": ["S1.CLAMP_COMMON"], "GND": ["S1.CLAMP_OFF"]},
+    "open_pins": ["S1.CLAMP_OPEN"],
+    "placement": "Pole 1 retains cell isolation and A discharge. Wire pole 2 terminal 5 directly to U4 ENABLE and terminal 4 back to U4 GND as a dedicated pair; insulate unused terminal 6. Do not terminate the clamp return at the cell or shared LED ground. Retain U6 and U7. This replaces S1, not an additional switch. The wider DPDT body, six lugs, guard and loaded leads must enter the eventual CAD/BOM before freeze.",
+    "contact_material": "G gold over silver: pole 1 reserved for power, pole 2 reserved for low-level operation; never repurpose a power-used pole as a dry contact.",
+    "limits": {"low_level_max_va": 0.4, "low_level_max_v": 20, "temperature_c": [-30, 85]},
+    "assembly_bounds": {
+      "wide": {"source_max_a": null, "open_voltage_max_v": null, "contact_max_ohm": null, "enable_lead_max_ohm": null, "return_lead_max_ohm": null, "return_offset_max_v": null, "contact_conditions_covered": null},
+      "narrow": {"source_max_a": null, "open_voltage_max_v": null, "contact_max_ohm": null, "enable_lead_max_ohm": null, "return_lead_max_ohm": null, "return_offset_max_v": null, "contact_conditions_covered": null}
+    },
+    "remaining_evidence": [
+      "Maximum working contact resistance over dry-circuit use, temperature and wear; the catalogue's below-10-milliohm value is typical initial at 100 mA, not a guarantee at ENABLE current",
+      "Both conductors and four solder terminations, local return displacement and full ENABLE source current including module pull-up, U6/U7 leakage and USB coupling",
+      "Pole sequencing and bounce, capacitor discharge through the clamp, maximum time to stable closure and module shutdown delay; the settled DC result supplies no timed OFF or reset guarantee",
+      "Cell removal while ON and retained/USB-powered rails still require U6/U7 and a complete circuit-state model; this pole only clamps when its OFF contact is closed",
+      "Independent fitted routing, wider switch envelope, insulation and per-design mass before compartment freeze"
+    ]
+  },
   "sources": {
+    "physical_off_switch": {
+      "url": "https://www.ckswitches.com/media/1394/7000toggle.pdf",
+      "revision": "MI 10/02/26",
+      "sections": "pp. 1-4 specifications, part coding, 7201 terminal pairs and DPDT dimensions; p. 17 G contact material",
+      "reviewed": "2026-10-31"
+    },
     "supervisor": {
       "url": "https://www.ti.com/lit/ds/symlink/tps3890.pdf",
       "revision": "SLVSD65A, May 2016",

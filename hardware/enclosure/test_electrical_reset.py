@@ -133,7 +133,7 @@ class ResetRevisionTests(unittest.TestCase):
         candidate = reset_netlist(self.spec, self.control, self.interlock, self.revision)
         self.assertEqual(self.spec, original)
         nets = candidate['nets']
-        self.assertEqual(set(nets['BOOST_ENABLE']), {'U6.6', 'U4.ENABLE'})
+        self.assertEqual(set(nets['BOOST_ENABLE']), {'U6.6', 'U4.ENABLE', 'S1.CLAMP_COMMON'})
         self.assertIn('U1.PG', nets['PG_SENSE'])
         self.assertEqual(set(nets['CONTROLLER_EN']), {'U3.EN', 'U5.2', 'R_EN_PULLUP.2'})
         self.assertEqual(set(nets['EFUSE_EN']), {'R_UV_TOP.2', 'R_UV_BOTTOM.1', 'U1.EN_UVLO'})

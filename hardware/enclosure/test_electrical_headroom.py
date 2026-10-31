@@ -90,7 +90,7 @@ class LocalHeadroomTests(unittest.TestCase):
         original = copy.deepcopy(self.candidate)
         result = headroom_netlist(self.candidate, self.definition)
         self.assertEqual(self.candidate, original)
-        self.assertEqual(set(result['nets']['BOOST_ENABLE']), {'U4.ENABLE', 'U6.6', 'U7.1'})
+        self.assertEqual(set(result['nets']['BOOST_ENABLE']), {'U4.ENABLE', 'U6.6', 'U7.1', 'S1.CLAMP_COMMON'})
         for name in ('PG_SENSE', 'KILL', 'CONTROLLER_EN', 'EFUSE_EN'):
             self.assertEqual(result['nets'][name], original['nets'][name])
         self.assertIn('U7.2', result['nets']['B'])

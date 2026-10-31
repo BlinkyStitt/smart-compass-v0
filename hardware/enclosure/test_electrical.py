@@ -264,7 +264,7 @@ class BoostInterlockTests(unittest.TestCase):
         original = copy.deepcopy(self.spec)
         candidate = interlock_netlist(self.spec, self.revision)
         self.assertEqual(self.spec, original)
-        self.assertEqual(candidate['nets']['BOOST_ENABLE'], ['U6.6', 'U4.ENABLE'])
+        self.assertEqual(candidate['nets']['BOOST_ENABLE'], ['U6.6', 'U4.ENABLE', 'S1.CLAMP_COMMON'])
         self.assertIn('U1.PG', candidate['nets']['PG_SENSE'])
         self.assertIn('U6.4', candidate['nets']['B'])
         # All existing power components and capacitor/wire connections survive.

@@ -15,8 +15,10 @@ replaces the failed buffer trial for further engineering. Its conditional DC
 results appear separately in the command output; they do not qualify the main
 power path or erase the original counterexamples.
 The [retained-rail boost interlock](electrical-boost-interlock.json) additionally
-separates PG from ENABLE through a B-powered supervisor. Its conditional DC
-margin and remaining shutdown gaps are documented at the end of this review.
+separates PG from ENABLE through a B-powered supervisor. Its latest revision
+also replaces S1 with a DPDT switch whose second pole grounds ENABLE in OFF.
+The historical supervisor-only circuit and the new conditional physical clamp
+are documented below; neither establishes assembly shutdown timing.
 The [discharge revision](electrical-reset-revision.json) composes both control
 repairs with direct rail drains. Its coupled-rail envelope is conditional;
 unknown assembly bounds still produce no qualified dwell.
@@ -776,3 +778,61 @@ and omission, unknown-storage, charge-transfer and leakage-floor regressions
 pass. `just validate` includes these tests and the electrical gate. The current
 assembly still has no finite qualified OFF dwell; electrical qualification
 must fail, preserving the CAD/publication dependency.
+
+## Recovery: independent physical OFF clamp
+
+Defect `6ac22d51-a0d5-4f68-98c9-7e5842b54a21` remains active. The previous
+interlock leaves PG unspecified when A is absent but eFuse EN retains charge.
+The revised circuit adds a switch-controlled ENABLE shunt for the prescribed
+physical-OFF service sequence. U6 and U7 remain for electronic shutdown.
+
+Replace S1 with **C&K 7201SYZGE**, retaining its power-pole connections:
+
+| Terminal | Connection | ON (position 1) | OFF (position 3) |
+| --- | --- | --- | --- |
+| 2 | A, power common | 2–3 | 2–1 |
+| 3 | F1 output | Connected to A | Disconnected |
+| 1 | Existing OFF drain resistor | Disconnected | Connected to A |
+| 5 | Dedicated lead from U4 ENABLE | 5–6 | 5–4 |
+| 4 | Dedicated return to U4 GND | Disconnected | Grounds ENABLE |
+| 6 | Insulated, unconnected lug | No circuit | No circuit |
+
+[C&K 7000, MI 10/02/26, pp. 1–4 and 17](https://www.ckswitches.com/media/1394/7000toggle.pdf)
+supplies the terminal map and G gold-over-silver option, rated for dry circuits
+or power. Reserve the first pole for power and the second for low-level use.
+The low-level rating is 0.4 VA at up to 20 V; operating temperature is
+−30 to 85°C. The listed initial contact resistance below 10 mΩ is **typical**
+at 100 mA, not a maximum for ENABLE current or aged contacts. It is not used
+as a bound. The wider body and six loaded lugs still need CAD and mass ownership.
+
+The netlist transformation replaces one S1, preserves both supervisors and the
+LTC latch, and rejects reversed terminal maps, wrong contact material, missing
+power-pole connections and a hidden connection on unused lug 6. Connect the
+clamp pair directly at U4; shared LED-return displacement cannot silently
+become a zero-volt reference.
+
+`physical_off_state` evaluates the settled bound
+`V_ENABLE <= V_return_offset + I_source * (R_enable_lead + R_contact + R_return_lead)`.
+Each lead includes its terminations. Strictly less than 0.4 V is required,
+matching [U3V70F5 ENABLE](https://www.pololu.com/product/2891). Under these
+premises, clamp voltage does not depend on PG or retained controller EN.
+Separate wide/narrow records retain unknown resistance and complete source
+current, including module, supervisors and USB coupling. The calculation
+therefore reports **no passing assembly clamp**. The dedicated leads' fitted
+lengths, thermal losses and fault energy also remain undesigned; this DC check
+does not qualify the existing incomplete harness or thermal models.
+
+This is not a timing repair: moving/open/bouncing contacts provide no shunt
+result. Pole sequencing, closure time, stored-capacitor pulses and converter
+shutdown delay remain unbounded. Removing a cell while ON still depends on
+the electronic interlocks. No reset dwell, headroom, fuse, thermal, fit or mass
+acceptance follows. The two exhausted reset/headroom repairs are unchanged
+apart from test expectations for the additional switch pin.
+
+The new tests check terminal connectivity, both lead drops, local return
+voltage, strict threshold equality, open/unknown contacts, rating violations,
+missing bounds, independent design records and preservation of the composed
+circuit. These are analytical fixtures, not measurements of a switch or device.
+`electrical.py check` continues to reject the assembly and stops dependent
+CAD/Pages publication. Existing Pages provenance hashes the changed definition,
+model and review; no additional untracked release input is introduced.
