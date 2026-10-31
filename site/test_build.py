@@ -140,6 +140,11 @@ class MovieTests(unittest.TestCase):
 
 
 class BuildInputTests(unittest.TestCase):
+    def test_harness_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-harness.json', 'electrical_path.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
     def test_reset_definition_and_model_are_required_hashed_release_inputs(self):
         for path in ('electrical-reset-revision.json', 'electrical_reset.py'):
             with self.subTest(path=path):

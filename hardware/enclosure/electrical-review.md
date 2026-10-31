@@ -20,6 +20,9 @@ margin and remaining shutdown gaps are documented at the end of this review.
 The [discharge revision](electrical-reset-revision.json) composes both control
 repairs with direct rail drains. Its coupled-rail envelope is conditional;
 unknown assembly bounds still produce no qualified dwell.
+The [two-conductor harness](electrical-harness.json) now specifies proposed wires
+and per-design cut lists. Its DC network audit includes shared supply and return
+currents; unknown assembly resistance, loads and temperature still fail the gate.
 
 ## Candidate connections
 
@@ -424,3 +427,76 @@ of the switch's bounce or a delivered hardware debounce function. Pages hashes
 both the new definition and solver. `electrical.py check` retains all seven
 failed qualification boundaries; no enclosure or service instructions are
 released from this conditional study.
+
+## Recovery: supply and return harness
+
+Defect `3e6e0e4d-dfc8-4f23-bd64-b43f8b723ecd` includes an absent loaded-path
+model. [electrical-harness.json](electrical-harness.json) selects fixed soldered
+M22759/16 conductors and separate proposed cut lists for the two enclosures.
+It expands the generic load port into Fibonacci, three design-specific LED
+chains, Sparkle Motion, BlackPill, GPS, IMU and radio branches. Controller and
+battery-sense paths are also explicit. There is no removable raw-cell connector.
+These are design inputs, not routed/fitted or electrically qualified assemblies.
+The legacy inventory and CAD remain unchanged pending electrical qualification.
+
+The existing rail ownership is retained: 5 V powers LEDs and Sparkle;
+Sparkle's 3.3 V output powers BlackPill, GPS, IMU and radio. The
+[GPS power pin](https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts)
+requires 3.3 V directly. The audit rejects moving those peripheral paths to
+the 5 V LED rail. Their coincident total is checked against
+[Sparkle's published 500 mA peak output](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+Unknown demand cannot pass this comparison. The peak rating alone does not
+qualify continuous temperature, output tolerance or dynamic regulation.
+Sparkle's 5 V input demand must include its internal load and conversion of
+all peripheral demand; that input bound remains unknown. The passive network
+does not invent a conversion efficiency or equate 3.3 V and 5 V currents.
+
+The selected Thermax parts are M22759/16-18-2 and -18-0 for main, distribution
+and LED power, and -22-2 and -22-0 for board and sense leads. The suffixes select
+red/black insulation; durable polarity marks remain a separate enclosure
+requirement. The [manufacturer catalogue, printed page 41](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf)
+lists maximum conductor resistance at **20°C** of 6.23 and 16.2 Ω/1000 ft,
+respectively. The source revision and PDF SHA-256 are retained in the input.
+The calculation uses the imperial values before exact unit conversion, avoiding
+rounding in the metric column. Neither insulation temperature nor nominal wire
+weight establishes ampacity, thermal performance or a worn-mass upper bound.
+
+Every cut length includes both stripped ends. Positive and return conductors
+are separate rows and are each counted once. Solder joints, PCB copper, contacts,
+fuse and switch resistance remain explicitly unbounded series elements rather
+than zero-ohm idealizations. Branch protection elements identify unresolved
+coordination locations; they are **not selected or installed fuse parts**.
+The selected wire lengths require subsequent CAD routing, bends, strain relief
+and termination-envelope checks before manufacture.
+
+| At the declared 20°C wire condition | Wide | Narrow |
+| --- | ---: | ---: |
+| Total proposed conductor length, all listed branches | 4,040 mm | 3,200 mm |
+| Five main supply/return conductors | 500 mm | 400 mm |
+| Main wire-only resistance maximum | 0.0102198163 Ω | 0.0081758530 Ω |
+| Main wire drop at 6.25 W / 85% / 2.9 V = 2.535497 A | 0.0259123 V | 0.0207299 V |
+| Main wire loss at that reference current | 0.0657006 W | 0.0525605 W |
+
+The last two rows exclude controller/sense current and all non-wire losses;
+they are **not** assembled path bounds or proof of boost headroom. No temperature
+extrapolation or minimum resistance is inferred from the catalogue maximum.
+In particular it cannot bound prospective short current.
+
+[electrical_path.py](electrical_path.py) checks path continuity and both load
+terminals, accumulates currents on shared conductors before calculating I²R,
+and counts shared dissipation once. A missing load bound propagates through
+all shared supply/return segments. A missing branch resistance affects that
+branch without concealing otherwise calculable paths. Parallel paths, cycles,
+reverse current paths, orphan segments and wires crossing the protection
+netlist's rail ownership are rejected by this radial DC model.
+
+Continuous, coincident PWM/radio and inrush demands have distinct required
+records. Their real assembly values remain unknown; the calculator's 5%
+brightness scenario and reference average are not hardware current limits.
+The analytical tests use synthetic loads with independent voltage/energy-balance
+oracles, not asserted measurements of these boards. USB/data/signal ingress,
+sense injection, return bypasses, active converter dynamics, capacitance,
+complete PCB/terminations, fuse coordination and enclosed heat still require
+engineering. All seven qualification failures remain active. Both harness files
+are required hashed Pages inputs; deleting or changing either invalidates the
+captured release inputs. No dependent CAD freeze or publication is enabled.

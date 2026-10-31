@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 
 from electrical_reset import off_envelope
+from electrical_path import harness_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -717,8 +718,11 @@ def main():
         result['schmitt_control_revision'] = schmitt_control_study(spec, control)
         interlock = json.loads((HERE/'electrical-boost-interlock.json').read_text())
         result['boost_interlock_revision'] = boost_interlock_study(spec, control, interlock)
-        result['reset_revision'] = reset_study(
-            spec, control, interlock, json.loads((HERE/'electrical-reset-revision.json').read_text()))
+        reset = json.loads((HERE/'electrical-reset-revision.json').read_text())
+        result['reset_revision'] = reset_study(spec, control, interlock, reset)
+        result['harness_revision'] = harness_study(
+            json.loads((HERE/'electrical-harness.json').read_text()),
+            reset_netlist(spec, control, interlock, reset), spec['limits'])
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1
