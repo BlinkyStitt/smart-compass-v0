@@ -14,6 +14,7 @@ import re
 
 from electrical_reset import off_envelope
 from electrical_path import harness_study
+from electrical_fault import fault_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -723,6 +724,9 @@ def main():
         result['harness_revision'] = harness_study(
             json.loads((HERE/'electrical-harness.json').read_text()),
             reset_netlist(spec, control, interlock, reset), spec['limits'])
+        result['fault_coordination'] = fault_study(
+            spec, json.loads((HERE/'electrical-harness.json').read_text()),
+            json.loads((HERE/'electrical-fault-coordination.json').read_text()))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1

@@ -194,6 +194,7 @@ def source_snapshot(*, include_samples=True):
         "hardware/enclosure/electrical-boost-interlock.json",
         "hardware/enclosure/electrical-reset-revision.json", "hardware/enclosure/electrical_reset.py",
         "hardware/enclosure/electrical-harness.json", "hardware/enclosure/electrical_path.py",
+        "hardware/enclosure/electrical-fault-coordination.json", "hardware/enclosure/electrical_fault.py",
         "hardware/enclosure/electrical-review.md", "hardware/enclosure/electrical.py",
         "hardware/enclosure/component-inventory.json", "hardware/enclosure/README.md",
         "designs/stacked/README.md", "demo/README.md", "design-v2.md",

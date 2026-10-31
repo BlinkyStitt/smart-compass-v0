@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-f1-fault-coordination-1",
+  "defect_id": "dd66f992-c9b6-4bac-8944-dee0901d3302",
+  "scope": "F1 backup fault requirements at six fixed-contact harness locations, in ON and OFF, per design. Does not model all load branches, reversal, active conversion, arcing faults, or qualify an assembly.",
+  "sources": {
+    "fuse": {
+      "url": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05",
+      "revision": "459 Series, revised 2015-11-11",
+      "sections": "Electrical Characteristics and Electrical Specifications by Item p. 1; Temperature Re-rating note p. 2",
+      "reviewed": "2026-10-31",
+      "retrieval": "Web PDF text; direct file download returned HTTP 403, no local PDF hash claimed"
+    },
+    "fuseology": {
+      "url": "https://www.littelfuse.com/assetdocs/littelfuse-fuseology?assetguid=c81c1a21-b903-44b6-b46d-180c48f7c3c5",
+      "revision": "FUSEOLOGY, six-page document, no revision printed in retrieved text",
+      "sections": "III B/C interrupting rating and average curves; I2t definitions on PDF p. 5",
+      "reviewed": "2026-10-31"
+    },
+    "dc_coordination": {
+      "url": "https://us.mersen.com/en/resources/welcome-arc-flash-info-center/reducing-arc-energies-fuses",
+      "revision": "Web page retrieved 2026-10-31",
+      "sections": "Ip versus I2t: DC voltage, available fault current and circuit time constant; component withstand"
+    }
+  },
+  "fuse": {
+    "part": "Littelfuse 0459004.UR",
+    "rating_a": 4,
+    "interrupt_a": 300,
+    "voltage_max_v": 125,
+    "catalog_opening_points": [
+      {
+        "current_a": 8,
+        "opening_max_s": 1
+      },
+      {
+        "current_a": 12,
+        "opening_max_s": 0.1
+      }
+    ],
+    "catalog_only": {
+      "cold_resistance_nominal_ohm": 0.0197,
+      "melting_i2t_nominal_a2s": 2.35,
+      "continuous_derating_factor_before_temperature": 0.75
+    },
+    "total_clearing_max_s": null,
+    "clearing_note": "The specified opening points are retained as source facts. Neither interpolation nor extrapolation to variable-current faults, temperature corners or total DC clearing is established. Nominal melting I2t omits arcing and is not an upper bound."
+  },
+  "conditions": {
+    "passive_dc_source_bound": null,
+    "fuse_dc_conditions_covered": null,
+    "clearing_bound_covers_fault_range": null,
+    "capacitors_isolated_passive_rc": null,
+    "no_external_or_inductive_sources": null,
+    "withstand_conditions_covered": null
+  },
+  "designs": {
+    "wide": {
+      "a_copper": null,
+      "boost_joints": null,
+      "boost_return": null,
+      "boost_supply": null,
+      "cell_internal": null,
+      "cell_return": null,
+      "controller_feed": null,
+      "controller_return": null,
+      "efuse_b_copper": null,
+      "fuse_switch": null,
+      "negative_contact": null,
+      "positive_contact": null,
+      "s1": null,
+      "switch_a": null
+    },
+    "narrow": {
+      "a_copper": null,
+      "boost_joints": null,
+      "boost_return": null,
+      "boost_supply": null,
+      "cell_internal": null,
+      "cell_return": null,
+      "controller_feed": null,
+      "controller_return": null,
+      "efuse_b_copper": null,
+      "fuse_switch": null,
+      "negative_contact": null,
+      "positive_contact": null,
+      "s1": null,
+      "switch_a": null
+    }
+  },
+  "withstand": {
+    "a_copper": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "boost_joints": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "boost_return": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "boost_supply": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "cell_internal": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "cell_return": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "controller_feed": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "controller_return": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "efuse_b_copper": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "fuse_switch": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "negative_contact": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "positive_contact": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "s1": {
+      "peak_a": null,
+      "i2t_a2s": null
+    },
+    "switch_a": {
+      "peak_a": null,
+      "i2t_a2s": null
+    }
+  },
+  "capacitor_sources": {
+    "A": {
+      "capacitance_max_f": null,
+      "voltage_max_v": null,
+      "resistance_min_ohm": null
+    },
+    "B": {
+      "capacitance_max_f": null,
+      "voltage_max_v": null,
+      "resistance_min_ohm": null
+    },
+    "C": {
+      "capacitance_max_f": null,
+      "voltage_max_v": null,
+      "resistance_min_ohm": null
+    },
+    "FIVE_V": {
+      "capacitance_max_f": null,
+      "voltage_max_v": null,
+      "resistance_min_ohm": null
+    }
+  },
+  "remaining_evidence": [
+    "Independently supported passive source-voltage/current envelope and non-fuse loop resistance minima over charge, temperature and tolerances; no use of cell pulse label, maximum wire DCR or nominal fuse resistance as a lower bound.",
+    "Maximum total DC clearing time or waveform across the entire prospective-current range, ambient and L/R; include arcing, not nominal melting I2t or average time-current curves.",
+    "Peak and total I2t withstand of cell, both contacts/interfaces, switch, both conductors, copper/vias and solder terminations at their actual temperatures; continuous current ratings do not supply these.",
+    "Insulated pre-fuse terminal geometry and faults bypassing F1 require prevention/containment; F1 cannot interrupt a current that never passes through it.",
+    "Charged-rail capacitance, initial voltage, discharge-loop ESR/resistance and coupling; passive RC assumptions exclude active converters, USB ingress and inductive stored energy.",
+    "Extend the bounded subset to every load/sense/return branch and reversal state after the full circuit is defined. Current-limited or resistive faults may persist without opening F1."
+  ]
+}

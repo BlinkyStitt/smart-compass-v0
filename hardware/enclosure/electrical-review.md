@@ -500,3 +500,84 @@ complete PCB/terminations, fuse coordination and enclosed heat still require
 engineering. All seven qualification failures remain active. Both harness files
 are required hashed Pages inputs; deleting or changing either invalidates the
 captured release inputs. No dependent CAD freeze or publication is enabled.
+
+## Recovery: F1 backup fault coordination
+
+Defect `dd66f992-c9b6-4bac-8944-dee0901d3302` now has an executable
+[fault model](electrical_fault.py) and [source/bound record](electrical-fault-coordination.json).
+The qualification check includes the result; Pages hashes both inputs. This
+adds fault calculations and rejection coverage, **not a qualified circuit or
+permission to freeze the compartments**. The seven electrical failures remain.
+
+The model follows actual harness segments at six fault locations: before F1,
+after F1, S1 input, rail A, controller input, and boost input with U1 failed
+conducting. Each is evaluated in ON and OFF for both designs. It verifies
+endpoint continuity and ledger ownership, including return copper, the return
+lead, both contacts and their interfaces. A fault bridge connects the named
+endpoints. Locations before S1 remain battery-fed in OFF; a pre-F1 short has
+no F1 protection. U1's current setting cannot bound an upstream short or the
+independent F1 backup case. These cases do not yet cover every load branch,
+reversal, resistive fault or active converter state.
+
+### Prospective current and fuse evidence
+
+For a passive DC source envelope, prospective current is bounded by
+`V_max / sum(non-fuse R_min)`. F1 is replaced by a short for this calculation.
+Unknown individual resistance minima contribute zero; a supported positive
+subtotal can still give a conservative bound. With no positive subtotal,
+current is unbounded. The selected wires' maximum DCR, the contacts' maximum
+resistance and the cell's advertised pulse current cannot supply that subtotal.
+Neither can U1's on-resistance in its failed-short state.
+
+At the retained dated 4.3 V cell limit, the 300 A comparison requires at least
+**0.0143333333 Ω outside F1**. This is a derived requirement, not an achieved
+minimum. Every actual loop minimum remains unsupported. Cell transient behavior,
+source conditions and the circuit's inductance also need bounds before using
+the passive-source result for fuse selection.
+
+The [459 datasheet, revision 2015-11-11](https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05)
+gives 300 A interruption at 125 VDC for F1, with opening-time maxima of 1 s
+at 8 A and 0.1 s at 12 A. Its 0.0197 Ω cold resistance and 2.35 A²s melting
+value are nominal. The record preserves these facts separately from the
+missing total-clearing bound; it does not interpolate the average curve or
+promote nominal melting energy into a maximum. Direct PDF download returned
+HTTP 403; review used the accessible web PDF text, with no invented file hash.
+
+[Littelfuse's Fuseology, PDF pp. 2–3 and 5](https://www.littelfuse.com/assetdocs/littelfuse-fuseology?assetguid=c81c1a21-b903-44b6-b46d-180c48f7c3c5)
+distinguishes average melting curves from specifications, and total clearing
+from melting plus arcing. The missing clearing bound must cover the complete
+fault-current range and temperature conditions. A current-limited fault may
+persist without blowing F1. [Mersen's DC coordination discussion](https://us.mersen.com/en/resources/welcome-arc-flash-info-center/reducing-arc-energies-fuses)
+also identifies voltage, available current and circuit time constant as relevant
+to I²t, and requires coordination with component withstand.
+
+### Stored energy and withstand
+
+Given independently established peak current and maximum total clearing time,
+the battery contribution has the conservative bound `I_peak² × t_clear`.
+The model gives no time bound to a pre-F1 fault. Insulation and prevention of
+that bypass still need the specified geometry and failure analysis.
+
+Each of A, B, C and FIVE_V has a separate charged-capacitor source record.
+For an isolated passive RC discharge, `E = C_max × V_max² / 2`,
+`I_peak = V_max / R_min`, and `I²t = E / R_min`. Stored energy alone does not
+bound peak current or I²t without a positive resistance minimum. F1 clearing
+does not remove these sources. Their actual capacitance, initial voltage and
+discharge-path bounds remain unknown; the RC model excludes active conversion,
+USB sources and inductive energy.
+
+Concurrent sources require cross terms: the conservative aggregate is
+`(sum(sqrt(source_I²t)))²`, with summed absolute peak currents. Adding I²t
+values alone would underestimate coincident pulses. The model conservatively
+applies this overlap to each fault-loop member; it makes no unproved timing or
+isolation credit. Each member must satisfy both peak and total-I²t withstand,
+under supported source/clearing/discharge/temperature conditions. Continuous
+contact or switch ratings are not surge withstand. These conditions and actual
+withstand values remain unknown, and every assembly case remains unqualified.
+
+Automated tests integrate an independent RC waveform, check coincident and
+shifted pulses, mutate return paths, exercise both switch states and reject
+missing ratings, source conditions and design records. Synthetic fixtures test
+the solver only; they are not measurements or selected assembly bounds.
+`just validate` retains the electrical failure gate before native regeneration
+and publication. No physical result or service dwell is claimed.
