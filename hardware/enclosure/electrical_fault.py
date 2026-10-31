@@ -102,7 +102,7 @@ def fault_study(spec, harness, revision):
     model. A downstream short assumes U1 failed conducting: its programmed
     current limit cannot be used to size the independent F1 backup.
     """
-    if revision['schema_version'] != 1:
+    if revision['schema_version'] != 2:
         raise ValueError('Unsupported fault coordination schema')
     fuse = revision['fuse']
     if fuse['part'] != spec['candidate']['F1'] or fuse['part'] != 'Littelfuse 0459004.UR':
@@ -113,6 +113,11 @@ def fault_study(spec, harness, revision):
     for field in ('interrupt_a', 'rating_a', 'voltage_max_v'):
         if nonnegative(fuse[field], field) == 0:
             raise ValueError('F1 ratings must be positive')
+    if fuse['voltage_max_v'] != 125:
+        raise ValueError('F1 must retain its sourced 125 VDC rating')
+    terminal_voltage = fuse['terminal_voltage_max_v']
+    if terminal_voltage is not None:
+        nonnegative(terminal_voltage, 'F1 terminal voltage')
     voltage = nonnegative(spec['limits']['cell_charge_upper_v_dated_spec'], 'cell upper voltage')
     segments = harness['segments']
     paths = harness['paths']
@@ -152,7 +157,8 @@ def fault_study(spec, harness, revision):
     conditions = revision['conditions']
     required_conditions = {'passive_dc_source_bound', 'fuse_dc_conditions_covered',
                            'clearing_bound_covers_fault_range', 'capacitors_isolated_passive_rc',
-                           'no_external_or_inductive_sources', 'withstand_conditions_covered'}
+                           'no_external_or_inductive_sources', 'withstand_conditions_covered',
+                           'fuse_terminal_stress_covered'}
     if set(conditions) != required_conditions or any(
             value is not None and not isinstance(value, bool) for value in conditions.values()):
         raise ValueError('Fault study requires explicit model conditions')
@@ -195,14 +201,31 @@ def fault_study(spec, harness, revision):
                     nonnegative(i2t, 'calculated battery I2t')
                 battery = {'peak_a': peak, 'i2t_a2s': i2t}
                 combined = combine_pulses([battery, cap_total])
-                interruption = (True if not connected else False if not has_fuse else
-                                None if peak is None else peak <= fuse['interrupt_a']
-                                and voltage <= fuse['voltage_max_v'])
+                # A battery-only comparison is insufficient: charged rails may
+                # feed F1 in either direction. Until their paths are bounded,
+                # take the sum of absolute source peaks with no cancellation or
+                # OFF-state isolation credit. The new premise must establish
+                # that these pulse bounds also cover every path THROUGH F1.
+                # Source charge voltage alone does not bound recovery voltage
+                # across an opening fuse (opposed rails, switching and ringing).
+                fuse_checks = {
+                    'battery_path_protected': not connected or has_fuse,
+                    'peak_a': None if combined['peak_a'] is None else
+                    combined['peak_a'] <= fuse['interrupt_a'],
+                    'voltage_v': None if terminal_voltage is None else
+                    terminal_voltage <= fuse['voltage_max_v'],
+                }
+                interruption = (False if any(value is False for value in fuse_checks.values())
+                                else None if any(value is None for value in fuse_checks.values())
+                                else True)
                 checks = {name: withstand(combined, revision['withstand'][name]) for name in members}
                 results[design][location + ':' + switch] = {
                     'fault_bridge': [high, low], 'battery_connected': connected,
                     'battery_loop': members, 'f1_in_battery_path': has_fuse,
                     'battery': battery, 'all_sources_overlap': combined,
+                    'f1_prospective_peak_upper_a': combined['peak_a'],
+                    'f1_terminal_voltage_upper_v': terminal_voltage,
+                    'f1_rating_checks': fuse_checks,
                     'f1_rating_comparison': interruption,
                     'withstand': checks,
                     'conditional_pass': conditions_pass and interruption is True

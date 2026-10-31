@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "revision": "ski-1230-f1-fault-coordination-1",
+  "schema_version": 2,
+  "revision": "ski-1230-f1-fault-coordination-2",
   "defect_id": "dd66f992-c9b6-4bac-8944-dee0901d3302",
   "scope": "F1 backup fault requirements at six fixed-contact harness locations, in ON and OFF, per design. Does not model all load branches, reversal, active conversion, arcing faults, or qualify an assembly.",
   "sources": {
@@ -44,6 +44,8 @@
       "continuous_derating_factor_before_temperature": 0.75
     },
     "total_clearing_max_s": null,
+    "terminal_voltage_max_v": null,
+    "terminal_stress_note": "Bound voltage across F1 throughout interruption and recovery in all audited faults and switch states, including opposed charged rails. Sum absolute battery/capacitor prospective peaks for the current-rating comparison; no source cancellation or OFF isolation credit. The fuse_terminal_stress_covered premise must establish that capacitor discharge bounds cover all paths through F1, not just paths to the fault. This conservative comparison is not proof that every capacitor actually discharges through F1, nor that the catalogue DC test covers the resulting waveform.",
     "clearing_note": "The specified opening points are retained as source facts. Neither interpolation nor extrapolation to variable-current faults, temperature corners or total DC clearing is established. Nominal melting I2t omits arcing and is not an upper bound."
   },
   "conditions": {
@@ -52,7 +54,8 @@
     "clearing_bound_covers_fault_range": null,
     "capacitors_isolated_passive_rc": null,
     "no_external_or_inductive_sources": null,
-    "withstand_conditions_covered": null
+    "withstand_conditions_covered": null,
+    "fuse_terminal_stress_covered": null
   },
   "designs": {
     "wide": {
@@ -169,6 +172,7 @@
     }
   },
   "remaining_evidence": [
+    "F1 terminal prospective current from all charged rails, and terminal voltage during opening/recovery, across every fault and switch state. Capacitor-to-fault discharge bounds do not automatically bound paths through F1; OFF disconnects only the modeled battery path. Prove waveform applicability before using the catalogue interruption rating.",
     "Independently supported passive source-voltage/current envelope and non-fuse loop resistance minima over charge, temperature and tolerances; no use of cell pulse label, maximum wire DCR or nominal fuse resistance as a lower bound.",
     "Maximum total DC clearing time or waveform across the entire prospective-current range, ambient and L/R; include arcing, not nominal melting I2t or average time-current curves.",
     "Peak and total I2t withstand of cell, both contacts/interfaces, switch, both conductors, copper/vias and solder terminations at their actual temperatures; continuous current ratings do not supply these.",

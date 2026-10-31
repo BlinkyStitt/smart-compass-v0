@@ -95,7 +95,57 @@ class HarnessFaultTests(unittest.TestCase):
         for row in self.revision['capacitor_sources'].values():
             row.update(capacitance_max_f=.001, voltage_max_v=5, resistance_min_ohm=1)
         self.revision['fuse']['total_clearing_max_s'] = .1
+        self.revision['fuse']['terminal_voltage_max_v'] = 10
         self.revision['conditions'] = dict.fromkeys(self.revision['conditions'], True)
+
+    def test_capacitor_current_can_exceed_fuse_interruption_rating_with_battery_off(self):
+        self.synthetic_bounds()
+        # The battery-only prospective current is below 300 A. Four 100 A
+        # capacitor pulses exceed it even with no battery current in this path.
+        for cap in self.revision['capacitor_sources'].values():
+            cap['resistance_min_ohm'] = .05
+        for switch in ('ON', 'OFF'):
+            with self.subTest(switch=switch):
+                row = self.calculate()['designs']['wide']['a_to_ground:' + switch]
+                self.assertLess(row['battery']['peak_a'], 300)
+                self.assertGreater(row['all_sources_overlap']['peak_a'], 300)
+                self.assertFalse(row['f1_rating_comparison'])
+                self.assertFalse(row['conditional_pass'])
+
+    def test_unknown_capacitor_current_cannot_approve_interruption(self):
+        self.synthetic_bounds()
+        self.revision['capacitor_sources']['B']['resistance_min_ohm'] = None
+        row = self.calculate()['designs']['wide']['after_f1:ON']
+        self.assertLess(row['battery']['peak_a'], 300)
+        self.assertIsNone(row['f1_rating_comparison'])
+
+    def test_fuse_terminal_voltage_is_separate_from_cell_charge_voltage(self):
+        self.synthetic_bounds()
+        for voltage in (None, 126):
+            with self.subTest(voltage=voltage):
+                self.revision['fuse']['terminal_voltage_max_v'] = voltage
+                row = self.calculate()['designs']['wide']['after_f1:ON']
+                self.assertIsNot(row['f1_rating_comparison'], True)
+                self.assertFalse(row['conditional_pass'])
+
+    def test_fuse_terminal_applicability_is_not_inferred_from_passing_numbers(self):
+        self.synthetic_bounds()
+        self.revision['conditions']['fuse_terminal_stress_covered'] = None
+        row = self.calculate()['designs']['wide']['after_f1:ON']
+        self.assertTrue(row['f1_rating_comparison'])
+        self.assertFalse(row['conditional_pass'])
+
+    def test_fuse_terminal_bounds_validate_numbers_and_preserve_rating(self):
+        self.synthetic_bounds()
+        for value in (-1, True, math.nan, math.inf):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.revision['fuse']['terminal_voltage_max_v'] = value
+                self.calculate()
+        self.revision['fuse']['terminal_voltage_max_v'] = 125
+        self.assertTrue(self.calculate()['designs']['wide']['after_f1:ON']['f1_rating_comparison'])
+        self.revision['fuse']['voltage_max_v'] = 126
+        with self.assertRaises(ValueError):
+            self.calculate()
 
     def test_actual_candidate_stays_unbounded_in_both_designs(self):
         report = self.calculate()

@@ -983,3 +983,46 @@ closed-form RC limits, and check missing bounds, initial charge, blanking,
 strict ordering and independent design data. Pages provenance includes the
 new solver. `just validate` retains every required gate; electrical qualification
 still fails, so dependent CAD/access, mass and publication work remains incomplete.
+
+## Recovery: F1 terminal stress and cold-operation bounds
+
+The second repairs for fault coordination (`dd66f992-c9b6-4bac-8944-dee0901d3302`)
+and state/thermal qualification (`aeca6807-29f0-429a-918d-5555e9779659`) close two
+false-pass paths in the conditional models. They do not supply the missing
+assembly bounds or qualify either design.
+
+The prior F1 rating comparison used battery current and cell voltage alone,
+although the withstand calculation already included charged capacitors. The
+comparison now conservatively sums absolute battery/capacitor prospective peaks,
+including when S1 removes the battery path. It separately requires an upper bound
+on voltage across F1 during interruption and recovery. A new applicability premise
+must establish that the source bounds cover paths through F1 in every audited
+fault/switch state. There is no cancellation, isolation or DC waveform credit
+from the OFF label. Pre-fuse battery faults remain unprotected. The
+[459 datasheet](https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05)
+retains the 300 A / 125 VDC rating;
+[Littelfuse Fuseology, III A/B](https://www.littelfuse.com/assetdocs/littelfuse-fuseology?assetguid=c81c1a21-b903-44b6-b46d-180c48f7c3c5)
+requires comparison against available circuit voltage and fault current. The
+all-source sum is our conservative modeling choice, not a manufacturer-approved
+assembly rating. Unknown terminal voltage or capacitor peak cannot pass.
+
+The thermal gate now checks both ends of the operating range. For the same
+positive linear transfer model, signed local power is bounded by
+`-cooling_upper_w <= P <= heat_upper_w`. Its cold envelope is
+`min(boundary_lower, initial_lower) - sum(Z * cooling_upper_w)`; the existing hot
+envelope is retained. Every source needs both bounds and every observer needs
+both operating limits. Beneficial self-heating and cooling are not credited.
+Unknown cooling is not silently zero. The eFuse floor is fixed at -40°C alongside
+the existing +125°C ceiling, matching the
+[TI TPS25947 operating range](https://www.ti.com/product/TPS25947).
+These limits describe the IC, not cell, skin or enclosure qualification.
+
+Regression fixtures demonstrate capacitor peaks exceeding 300 A with battery
+OFF, unknown/excess F1 terminal voltage, and a -45°C start failing the eFuse floor
+while remaining below its hot limit. Independent RC solutions and integration
+check heating, cooling, cross-transfer and repeated signed pulses. Fixture
+values are not installed hardware measurements. Both version-2 definitions
+retain unknown real terminal, temperature, heat and transfer inputs, and
+`python3 hardware/enclosure/electrical.py check` must continue to fail until the
+complete electrical evidence exists. Dependent compartment/media work remains
+unqualified; no physical trial is a completion gate.

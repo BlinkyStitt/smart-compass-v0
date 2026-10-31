@@ -6,6 +6,9 @@ source-to-observer DC transfer over the actual assembly/environment. P must
 bound instantaneous local heat, including faults and stored-energy release.
 This deliberately takes no credit for pulse duration, optical escape or cooling
 between swaps. Unknown coefficients, powers and premises cannot pass.
+The assembly gate also bounds cold operation using the same positive transfer
+matrix and separate cooling magnitudes; an upper heat bound cannot prove that
+all local heat flows are nonnegative.
 """
 
 import math
@@ -69,6 +72,39 @@ def temperature_envelope(powers, transfer, limits, boundary_c, initial_c):
     return {'observers': rows, 'pass': all(row['pass'] for row in rows.values())}
 
 
+def temperature_interval(heating, cooling, transfer, minimums, maximums,
+                         boundary_lower_c, boundary_upper_c, initial_lower_c, initial_upper_c):
+    """Bound signed local power -cooling <= P <= heating at every instant.
+
+    Positive thermal impulse responses permit independent bounds on heating
+    and cooling. Negating temperatures turns the cold bound into the existing
+    upper-envelope problem. No beneficial self-heating or cooling is credited.
+    Boundary/initial bounds cover all nodes, not only observed parts.
+    """
+    if set(heating) != set(cooling) or set(minimums) != set(maximums):
+        raise ValueError('Both temperature bounds need every source and observer')
+    for name, low, high in [('boundary', boundary_lower_c, boundary_upper_c),
+                            ('initial', initial_lower_c, initial_upper_c),
+                            *[(key, minimums[key], maximums[key]) for key in minimums]]:
+        for value in (low, high):
+            if value is not None:
+                number(value, name)
+        if low is not None and high is not None and low > high:
+            raise ValueError('Inverted temperature interval: ' + name)
+
+    def negate(value):
+        return None if value is None else -value
+
+    hot = temperature_envelope(heating, transfer, maximums, boundary_upper_c, initial_upper_c)
+    cold = temperature_envelope(cooling, transfer, {key: negate(value) for key, value in minimums.items()},
+                                negate(boundary_lower_c), negate(initial_lower_c))
+    return {
+        'hot': hot, 'cold': cold,
+        'lower_c': {key: negate(row['upper_c']) for key, row in cold['observers'].items()},
+        'pass': hot['pass'] and cold['pass'],
+    }
+
+
 def heat_ownership(candidate, harness):
     """Partition physical losses; transported converter power is not local heat.
 
@@ -128,7 +164,7 @@ def reference_heat(spec):
 
 def thermal_study(definition, spec, candidate, harness):
     """Enforce complete per-design/state coverage without inventing missing data."""
-    if definition['schema_version'] != 1:
+    if definition['schema_version'] != 2:
         raise ValueError('Unsupported thermal schema')
     states = {
         'normal', 'pwm_radio_peak', 'startup', 'absent_cell', 'depleted_cell',
@@ -144,9 +180,11 @@ def thermal_study(definition, spec, candidate, harness):
     observers = sorted({asset for group in ownership.values() for asset in group}
                        | {'front_surface', 'rear_skin_surface'})
     limits = dict.fromkeys(observers)
-    if definition['efuse_operating_max_c'] != 125:
-        raise ValueError('TPS25947 operating junction maximum must retain the sourced 125 C')
+    minimums = dict.fromkeys(observers)
+    if definition['efuse_operating_max_c'] != 125 or definition['efuse_operating_min_c'] != -40:
+        raise ValueError('TPS25947 operating junction range must retain the sourced -40 to 125 C')
     limits['part:U1'] = definition['efuse_operating_max_c']
+    minimums['part:U1'] = definition['efuse_operating_min_c']
     results = {}
     for design, assembly in definition['designs'].items():
         if set(assembly['states']) != states:
@@ -155,6 +193,7 @@ def thermal_study(definition, spec, candidate, harness):
         if transfer is None:
             transfer = {observer: dict.fromkeys(sources) for observer in observers}
         local_limits = dict(limits)
+        local_minimums = dict(minimums)
         for name, value in assembly['temperature_limits_c'].items():
             if name not in observers:
                 raise ValueError('Unknown temperature observer: ' + name)
@@ -163,6 +202,14 @@ def thermal_study(definition, spec, candidate, harness):
             if local_limits[name] is not None and (value is None or value > local_limits[name]):
                 raise ValueError('Cannot relax a sourced operating temperature limit')
             local_limits[name] = value
+        for name, value in assembly['temperature_min_limits_c'].items():
+            if name not in observers:
+                raise ValueError('Unknown temperature observer: ' + name)
+            if value is not None:
+                number(value, name + '.minimum_c')
+            if local_minimums[name] is not None and (value is None or value < local_minimums[name]):
+                raise ValueError('Cannot relax a sourced minimum operating temperature')
+            local_minimums[name] = value
         cases = {}
         for state, bounds in assembly['states'].items():
             powers = bounds['heat_upper_w']
@@ -170,8 +217,13 @@ def thermal_study(definition, spec, candidate, harness):
                 powers = dict.fromkeys(sources)
             if set(powers) != set(sources):
                 raise ValueError('State must include every local heat source: ' + state)
-            envelope = temperature_envelope(powers, transfer, local_limits,
-                                            assembly['boundary_upper_c'], bounds['initial_upper_c'])
+            cooling = bounds['cooling_upper_w']
+            if cooling is None:
+                cooling = dict.fromkeys(sources)
+            interval = temperature_interval(
+                powers, cooling, transfer, local_minimums, local_limits,
+                assembly['boundary_lower_c'], assembly['boundary_upper_c'],
+                bounds['initial_lower_c'], bounds['initial_upper_c'])
             premises = bounds['premises']
             if set(premises) != {'passive_linear_transfer', 'instantaneous_heat_bounds',
                                  'complete_circuit_state', 'temperature_range_covered'}:
@@ -179,7 +231,8 @@ def thermal_study(definition, spec, candidate, harness):
             if any(value is not None and type(value) is not bool for value in premises.values()):
                 raise ValueError('Thermal premises must be boolean or unknown')
             unresolved = [name for name, value in premises.items() if value is not True]
-            rows = envelope['observers']
+            rows = interval['hot']['observers']
+            cold_rows = interval['cold']['observers']
             # Keep the report bounded; do not print thousands of identical null terms.
             cases[state] = {
                 'bounded_temperature_upper_c': {name: row['upper_c'] for name, row in sorted(rows.items())
@@ -187,16 +240,26 @@ def thermal_study(definition, spec, candidate, harness):
                 'bounded_temperature_margin_c': {name: row['margin_c'] for name, row in sorted(rows.items())
                                                  if row['margin_c'] is not None},
                 'unbounded_temperature_count': sum(row['upper_c'] is None for row in rows.values()),
+                'bounded_temperature_lower_c': {name: value for name, value in sorted(interval['lower_c'].items())
+                                                if value is not None},
+                'bounded_temperature_lower_margin_c': {name: row['margin_c'] for name, row in sorted(cold_rows.items())
+                                                       if row['margin_c'] is not None},
+                'unbounded_temperature_lower_count': sum(value is None for value in interval['lower_c'].values()),
                 'bounded_heat_upper_w': {name: value for name, value in sorted(powers.items()) if value is not None},
                 'unbounded_heat_count': sum(value is None for value in powers.values()),
+                'bounded_cooling_upper_w': {name: value for name, value in sorted(cooling.items()) if value is not None},
+                'unbounded_cooling_count': sum(value is None for value in cooling.values()),
                 'missing_boundary': assembly['boundary_upper_c'] is None,
+                'missing_boundary_lower': assembly['boundary_lower_c'] is None,
                 'missing_initial_temperature': bounds['initial_upper_c'] is None,
+                'missing_initial_temperature_lower': bounds['initial_lower_c'] is None,
                 'unresolved_premises': unresolved,
-                'pass': envelope['pass'] and not unresolved,
+                'pass': interval['pass'] and not unresolved,
             }
         results[design] = {
             'missing_transfer_coefficients': sum(value is None for row in transfer.values() for value in row.values()),
             'missing_temperature_limits': sorted(name for name, value in local_limits.items() if value is None),
+            'missing_temperature_min_limits': sorted(name for name, value in local_minimums.items() if value is None),
             'cases': cases,
         }
     return {
