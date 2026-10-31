@@ -374,8 +374,10 @@ The selected reservoir has ±20% initial capacitance tolerance, giving 1200 µF
 at that condition. Its nominal body is Ø10 × 16 mm with 5 mm lead pitch;
 this excludes loaded leads and insulation. This does not bound capacitor
 aging/temperature, internal module capacitance or every load board. The model
-lists each external capacitor, including KILL/dVdt and U5/U6 bypasses, without
-silently treating their missing bounds as zero.
+lists each external capacitor, including KILL/dVdt and U5/U6 bypasses. The
+four-rail sizing calculation below does not include the KILL/dVdt nodes;
+the final-netlist storage audit at the end of this document now covers them
+and rejects missing bounds.
 [Panasonic EEUFR1A102 specification](https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102).
 
 For the controller, rising supply UVLO is 1.0–1.3 V with 30–200 mV hysteresis:
@@ -410,6 +412,7 @@ series resistance, 1200 µF output storage and illustrative A/B/C capacitances.
 It gives a 49.306 mV floor, 0.591996 s time constant and **2.735660 s** to the
 0.1 V boundary. At five seconds the upper envelope is **50.412 mV**. This is
 a component-sizing result, **not a qualified five-second service dwell**.
+It is a synthetic four-rail example, not a bound for the complete netlist.
 All actual assembly capacitance/ingress/series/initial-voltage fields and the
 converter/isolation premises remain explicit unknowns, so the assembly result
 is `unbounded` with no dwell. USB connection or a still-switching boost cannot
@@ -714,3 +717,62 @@ boundaries, instantaneous collapse, unknown inputs, independent design data,
 clamp overload, and retained interlock/latch wiring. The existing seven
 qualification failures remain intact. `electrical.py check` must still return
 1; the CAD, mass, service and publication work remains gated by that result.
+
+## Recovery: complete stored-charge ownership
+
+Reset defect `9e825925-8386-4670-a036-0b0fca2c85d8` remains unqualified. The
+previous calculation listed KILL/dVdt capacitors but used only four supply
+rails when calculating discharge time. The new `reset_storage_audit` runs
+against the composed candidate, including U7. It derives all nine external
+capacitor owners from both terminals and the nominal-value inventory. Missing,
+duplicated, floating or additional capacitor terminals fail. Every IC, the
+converter, BatterySense and the unresolved load assembly also need an explicit
+internal-storage record; an unknown record cannot be counted as zero. The
+record for `loads` remains aggregate pending the complete circuit, and does
+not establish that individual load-board storage is covered.
+
+The six known storage nodes are A, B, C, FIVE_V, KILL and DVDT. The four
+existing bleeders and the KILL divider supply the resistor graph. KILL can
+discharge directly through its bottom resistor or through its top resistor
+and C's drain. The dVdt internal drain remains unknown. Added series resistance
+includes both conductors and terminations. The checker sums individual
+capacitance intervals at their actual nodes; it cannot substitute the legacy
+four aggregate capacitances or a nominal reservoir value for missing data.
+
+`storage_envelope()` adds an analytical bound for nodes without direct drains.
+For each node, let `R_i` be an upper bound on a resistor path to ground,
+`Cmin_i/Cmax_i` bound its differential capacitance, and `I_i` bound incoming
+current magnitude. With total resistor dissipation `P`, Cauchy–Schwarz gives
+`V_i² <= R_i × P`. Therefore total stored energy satisfies
+`E <= tau × P / 2`, where `tau = sum(Cmax_i × R_i)`. Define
+`x = sqrt(2E)` and `k = sum(I_i / sqrt(Cmin_i))`; then
+`dx/dt <= -x/tau + k`. The exponential envelope for x gives each node's
+voltage bound `|V_i| <= x/sqrt(Cmin_i)`. Initial energy includes every node's
+maximum initial voltage and capacitance. This deliberately conservative bound
+allows additional passive dissipative coupling; it does not assume independent
+RC discharge or integrate a waveform with an arbitrary time step.
+
+Unknown capacitance, ingress, ground paths or energy inventory yields no
+finite dwell. The model requires time-independent capacitance characteristics
+and no unrepresented inductive, absorption, conversion or backpower state.
+It does not certify a reset pulse, ramp, latch recovery or device pin rating.
+The complete-inventory flag cannot override missing device records. Both
+mathematical discharge routines remain conditional; neither supplies an
+assembly service interval.
+
+The source review found no applicable numerical bound to fill these gaps.
+[TPS25947 Rev C, §6.7](https://www.ti.com/lit/ds/symlink/tps25947.pdf)
+conditions switching data on discharged OUT and settled input. That does not
+bound dVdt discharge through arbitrary retained-rail states. The
+[U3V70F5 resource list](https://www.pololu.com/product/2891/resources)
+provides mechanical files, without an internal capacitance BOM or stored-charge
+bound. The [controller's startup sequence](https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf)
+still starts its lockout after power application; that interval is not OFF time.
+These evidence limits remain engineering work, not human acceptance requests.
+
+Run `python3 -m unittest discover -s hardware/enclosure -p 'test_electrical_storage.py' -v`.
+Expected: analytical single-node and two-node solutions remain below the bound,
+and omission, unknown-storage, charge-transfer and leakage-floor regressions
+pass. `just validate` includes these tests and the electrical gate. The current
+assembly still has no finite qualified OFF dwell; electrical qualification
+must fail, preserving the CAD/publication dependency.

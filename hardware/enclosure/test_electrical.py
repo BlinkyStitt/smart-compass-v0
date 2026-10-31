@@ -84,6 +84,11 @@ class ElectricalReviewTests(unittest.TestCase):
         headroom = report['local_headroom_revision']
         self.assertFalse(headroom['qualified'])
         self.assertTrue(all(not row['pass'] for row in headroom['designs'].values()))
+        storage = report['reset_storage_audit']
+        self.assertFalse(storage['qualified'])
+        self.assertIsNone(storage['assembly']['required_off_s'])
+        self.assertIn('internal_storage.U7', storage['assembly']['missing'])
+        self.assertIn('DVDT.ground_path', storage['assembly']['missing'])
 
     def test_discharge_includes_leakage_and_unreachable_targets(self):
         import math

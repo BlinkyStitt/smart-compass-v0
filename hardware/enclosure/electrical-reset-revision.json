@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-coupled-rail-discharge-1",
+  "revision": "ski-1230-coupled-rail-discharge-2",
   "defect_id": "9e825925-8386-4670-a036-0b0fca2c85d8",
   "status": "Discharge network revision; complete OFF and restart behavior remains unqualified",
   "nets": {
@@ -73,7 +73,87 @@
     "Reset low-pulse duration, power-up ramp, fault-specific recovery and contact-bounce waveforms",
     "Bleeder series resistance and assembled temperature/power derating"
   ],
+  "storage_audit": {
+    "scope": "Final candidate ownership, including U7; all capacitance bounds are differential and must include voltage, temperature and retained internal charge. No nominal value is substituted for a missing bound.",
+    "complete_storage": null,
+    "external_capacitance_f": {
+      "C_A": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_B_CERAMIC": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_B_BULK": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_C": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_OUT": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_KILL": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_DVDT": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_U5": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      },
+      "C_U6": {
+        "capacitance_min_f": null,
+        "capacitance_max_f": null
+      }
+    },
+    "internal_capacitance_f": {
+      "U1": null,
+      "U2": null,
+      "U3": null,
+      "U4": null,
+      "U5": null,
+      "U6": null,
+      "U7": null,
+      "BatterySense": null,
+      "loads": null
+    },
+    "control_nodes": {
+      "KILL": {
+        "incoming_max_a": null,
+        "initial_max_v": null
+      },
+      "DVDT": {
+        "incoming_max_a": null,
+        "initial_max_v": null
+      }
+    },
+    "control_path_series_max_ohm": {
+      "R_KILL_TOP": null,
+      "R_KILL_BOTTOM": null
+    },
+    "dvdt_drain_max_ohm": null
+  },
   "sources": {
+    "boost_storage": {
+      "url": "https://www.pololu.com/product/2891/resources",
+      "revision": "Manufacturer resource list retrieved 2026-10-31",
+      "finding": "Resources list dimensions, STEP and drill guide; no circuit/BOM or guaranteed internal stored-charge bounds. True shutdown is not a zero-storage claim."
+    },
+    "efuse_storage": {
+      "url": "https://www.ti.com/lit/ds/symlink/tps25947.pdf",
+      "revision": "SLVSFC9C, May 2026",
+      "sections": "6.7 switching-characteristic conditions; retained-rail OFF states are outside that test",
+      "reviewed": "2026-10-31",
+      "finding": "Switching data assume discharged OUT and a settled source. They do not supply a worst-case dVdt-node discharge resistance for arbitrary retained-rail OFF states."
+    },
     "bleeders": {
       "url": "https://www.vishay.com/docs/20035/dcrcwe3.pdf",
       "revision": "20035, 14-Apr-2026",

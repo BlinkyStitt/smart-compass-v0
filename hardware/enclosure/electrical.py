@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import re
 
-from electrical_reset import off_envelope
+from electrical_reset import capacitor_nodes, off_envelope, storage_envelope
 from electrical_path import harness_study
 from electrical_fault import fault_study
 from electrical_thermal import thermal_study
@@ -559,15 +559,7 @@ def reset_study(spec, control, interlock, revision):
     if (revision['reference_case']['rails']['FIVE_V']['capacitance_max_f']
             < cap['nominal_f'] * (1 + cap['initial_tolerance'])):
         raise ValueError('Reference case omits part of the output reservoir')
-    external_caps = {}
-    for net, pins in candidate['nets'].items():
-        for pin in pins:
-            if pin.startswith('C_') and pin.endswith('.1'):
-                name = pin[:-2]
-                if name + '.2' not in candidate['nets']['GND']:
-                    raise ValueError('Discharge capacitor return is not accounted for: ' + name)
-                external_caps[name] = {'node': net,
-                                      'nominal_f': candidate['capacitors_nominal_f'].get(name)}
+    external_caps = capacitor_nodes(candidate)
     controller = revision['controller']
     rising = interval(controller['uvlo_rising_v'], 'controller UVLO')
     hysteresis = interval(controller['uvlo_hysteresis_v'], 'controller UVLO hysteresis')
@@ -615,6 +607,100 @@ def reset_study(spec, control, interlock, revision):
         'added_c_bleeder_wh_per_day_at_nominal_c': nominal_c**2 / c_resistance * 24,
         'remaining_evidence': revision['remaining_evidence'],
     }
+
+
+def reset_storage_study(candidate, spec, control, revision):
+    """Bind discharge evidence to all capacitor owners in the final netlist.
+
+    Unlike the historical four-rail sizing case, include control-node charge
+    and require storage declarations for every IC/module/load. Unknown internal
+    storage cannot become zero by setting a completeness flag or populating the
+    four aggregate rail fields. The lumped passive model still needs evidence
+    that inductive, dielectric-absorption and other hidden states are covered.
+    """
+    definition = revision['storage_audit']
+    external = capacitor_nodes(candidate)
+    if set(definition['external_capacitance_f']) != set(external):
+        raise ValueError('Reset storage ownership disagrees with external capacitors')
+    owners = {pin.split('.')[0] for pins in candidate['nets'].values() for pin in pins
+              if re.match(r'U[0-9]+\.', pin) or pin.startswith(('BatterySense.', 'loads.'))}
+    if set(definition['internal_capacitance_f']) != owners:
+        raise ValueError('Reset storage ownership disagrees with IC/module/load inventory')
+    contributions = {row['node']: [] for row in external.values()}
+    for name, capacitor in external.items():
+        contributions[capacitor['node']].append(definition['external_capacitance_f'][name])
+    unknown_owners = []
+    for owner, nodes in definition['internal_capacitance_f'].items():
+        if nodes is None:
+            unknown_owners.append(owner)
+            continue
+        if not isinstance(nodes, dict) or not nodes:
+            raise ValueError('Internal storage needs explicit node contributions: ' + owner)
+        for node, row in nodes.items():
+            if node not in candidate['nets'] or node in ('GND', 'CELL_POS', 'FUSED', 'OFF_DRAIN'):
+                raise ValueError('Internal storage references a non-discharge node: ' + node)
+            if not any(pin.startswith(owner + '.') for pin in candidate['nets'][node]):
+                raise ValueError('Internal storage node is not connected to owner: ' + owner)
+            contributions.setdefault(node, []).append(row)
+    assembly = revision['assembly_bounds']
+    conditions = {**assembly['rails'], **definition['control_nodes']}
+    if set(conditions) != set(contributions):
+        raise ValueError('Every stored-charge node needs voltage and ingress bounds')
+    nodes = {}
+    for node, rows in contributions.items():
+        for row in rows:
+            for field in ('capacitance_min_f', 'capacitance_max_f'):
+                value = row[field]
+                if value is not None and finite(value, field) < 0:
+                    raise ValueError('Negative storage contribution: ' + node)
+            low, high = row['capacitance_min_f'], row['capacitance_max_f']
+            if low is not None and high is not None and low > high:
+                raise ValueError('Reversed capacitor contribution: ' + node)
+        nodes[node] = {field: None if any(row[field] is None for row in rows)
+                      else sum(row[field] for row in rows)
+                      for field in ('capacitance_min_f', 'capacitance_max_f')}
+        nodes[node].update({field: conditions[node][field]
+                           for field in ('incoming_max_a', 'initial_max_v')})
+    resistors = {}
+    for name, part in revision['resistors'].items():
+        supply_node = 'OFF_DRAIN' if name == 'R_OFF' else part['rail']
+        if (name + '.1' not in candidate['nets'][supply_node]
+                or name + '.2' not in candidate['nets']['GND']):
+            raise ValueError('Discharge resistor moved: ' + name)
+        series = assembly['rails'][part['rail']]['series_max_ohm']
+        if series is not None and finite(series, 'drain series resistance') < 0:
+            raise ValueError('Negative drain series resistance')
+        maximum = resistor_bounds(part['ohm'], revision['resistor_model'])[1]
+        resistors[name] = {'ends': [part['rail'], 'GND'],
+                           'resistance_max_ohm': None if series is None else maximum + series}
+    if set(definition['control_path_series_max_ohm']) != {'R_KILL_TOP', 'R_KILL_BOTTOM'}:
+        raise ValueError('Missing KILL discharge path')
+    for name, ends in [('R_KILL_TOP', ['C', 'KILL']), ('R_KILL_BOTTOM', ['KILL', 'GND'])]:
+        for number, node in enumerate(ends, 1):
+            if name + '.' + str(number) not in candidate['nets'][node]:
+                raise ValueError('KILL discharge resistor moved: ' + name)
+        series = definition['control_path_series_max_ohm'][name]
+        if series is not None and finite(series, 'control series resistance') < 0:
+            raise ValueError('Negative control series resistance')
+        maximum = resistor_bounds(control['resistors'][name]['ohm'], control['resistor_model'])[1]
+        resistors[name] = {'ends': ends,
+                           'resistance_max_ohm': None if series is None else maximum + series}
+    resistors['U1_DVDT_DRAIN'] = {'ends': ['DVDT', 'GND'],
+                                'resistance_max_ohm': definition['dvdt_drain_max_ohm']}
+    complete = definition['complete_storage']
+    if complete is not None and type(complete) is not bool:
+        raise ValueError('complete_storage must be boolean or unknown')
+    result = storage_envelope(
+        nodes, resistors, revision['reference_case']['drain_target_v'],
+        spec['candidate']['proposed_off_dwell_s'],
+        sources_disconnected=assembly['sources_disconnected'],
+        passive_transfer_only=assembly['passive_transfer_only'],
+        complete_storage=None if unknown_owners else complete)
+    result['missing'] = sorted(result['missing'] + ['internal_storage.' + owner for owner in unknown_owners])
+    return {'defect_id': revision['defect_id'], 'qualified': False,
+            'external_capacitors': external, 'nodes': nodes, 'drains': resistors,
+            'assembly': result,
+            'scope': 'Passive stored-charge bound only; reset pulse/ramp and fault recovery are separate requirements'}
 
 
 def review(spec):
@@ -697,9 +783,10 @@ def review(spec):
         {'id': 'loaded-path-and-branches', 'detail': 'Exact PCB/copper, terminals, wire gauges, '
          'branch fuses, loaded envelopes and USB/sense/return/backfeed circuits remain undesigned. '
          'Reference average load is not a continuous/PWM/radio/inrush peak rating.'},
-        {'id': 'reset-and-recovery', 'detail': 'The coupled passive-rail revision sizes direct drains, '
-         'but total capacitance, incoming current, converter shutdown and reset timing remain '
-         'unbounded. Five-second OFF dwell is unqualified. CE=GND on LM66100 does not '
+        {'id': 'reset-and-recovery', 'detail': 'The stored-charge audit includes control capacitors '
+         'and final-netlist device ownership, but internal storage, incoming current, discharge '
+         'paths, converter shutdown and reset timing remain unbounded. Five-second OFF dwell '
+         'is unqualified. CE=GND on LM66100 does not '
          'establish isolation; startup lockout begins after power is reapplied.'},
         {'id': 'state-and-thermal-qualification', 'detail': 'Absent/depleted/reversed/bouncing '
          'cells, rebound, charged capacitors, overload/short, cleared faults and USB '
@@ -729,6 +816,7 @@ def main():
         headroom = json.loads((HERE/'electrical-headroom.json').read_text())
         result['local_headroom_revision'] = headroom_study(spec, candidate, headroom)
         candidate = headroom_netlist(candidate, headroom)
+        result['reset_storage_audit'] = reset_storage_study(candidate, spec, control, reset)
         result['harness_revision'] = harness_study(
             json.loads((HERE/'electrical-harness.json').read_text()),
             candidate, spec['limits'])
