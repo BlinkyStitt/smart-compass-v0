@@ -15,6 +15,7 @@ import re
 from electrical_reset import off_envelope
 from electrical_path import harness_study
 from electrical_fault import fault_study
+from electrical_thermal import thermal_study
 
 HERE = Path(__file__).resolve().parent
 
@@ -701,7 +702,9 @@ def review(spec):
          'establish isolation; startup lockout begins after power is reapplied.'},
         {'id': 'state-and-thermal-qualification', 'detail': 'Absent/depleted/reversed/bouncing '
          'cells, rebound, charged capacitors, overload/short, cleared faults and USB '
-         'states lack a complete circuit model. Enclosed temperature bounds remain open.'},
+         'states lack a complete circuit model. The thermal envelope requires instantaneous '
+         'heat, enclosure transfer, initial/boundary temperature and operating-limit evidence; '
+         'both assemblies remain unbounded.'},
     ])
     return result
 
@@ -727,6 +730,10 @@ def main():
         result['fault_coordination'] = fault_study(
             spec, json.loads((HERE/'electrical-harness.json').read_text()),
             json.loads((HERE/'electrical-fault-coordination.json').read_text()))
+        result['thermal_state_envelope'] = thermal_study(
+            json.loads((HERE/'electrical-thermal.json').read_text()), spec,
+            reset_netlist(spec, control, interlock, reset),
+            json.loads((HERE/'electrical-harness.json').read_text()))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1

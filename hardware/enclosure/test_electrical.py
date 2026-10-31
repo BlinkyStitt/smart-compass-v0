@@ -76,6 +76,10 @@ class ElectricalReviewTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn('ELECTRICAL CHECK FAILED', result.stdout)
         self.assertNotIn('NaN', result.stdout)
+        report, _ = json.JSONDecoder().raw_decode(result.stdout)
+        thermal = report['thermal_state_envelope']
+        self.assertFalse(thermal['conditional_pass'])
+        self.assertEqual(set(thermal['designs']), {'wide', 'narrow'})
 
     def test_discharge_includes_leakage_and_unreachable_targets(self):
         import math

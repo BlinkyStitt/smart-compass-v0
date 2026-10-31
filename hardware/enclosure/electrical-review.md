@@ -581,3 +581,74 @@ missing ratings, source conditions and design records. Synthetic fixtures test
 the solver only; they are not measurements or selected assembly bounds.
 `just validate` retains the electrical failure gate before native regeneration
 and publication. No physical result or service dwell is claimed.
+
+## Recovery: circuit-state thermal envelope
+
+Defect `aeca6807-29f0-429a-918d-5555e9779659` now has a conditional
+[thermal model](electrical_thermal.py) and [source/state record](electrical-thermal.json).
+The electrical command evaluates both designs in 14 required states, including
+warm replacement, reversal, rebound, retained capacitors, overload, faults and
+cell-removed USB service. These are coverage obligations; they are **not circuit
+simulation results**. Every actual case remains unqualified, and the existing
+seven electrical failure conditions remain active.
+
+The model partitions every composed-netlist part and harness segment into one
+local heat owner. Shared device/segment records (eFuse, fuse, switch, contacts
+and sense assembly) count once. Each member still needs its own temperature
+limit. New capacitors, bleeders, devices or conductors introduce unknown heat
+instead of silently disappearing. A combined owner's transfer bounds must cover
+all possible internal heat distributions. The ownership list covers the defined
+netlist; it cannot establish that USB/signal and other missing paths are complete.
+
+U4 and Sparkle dissipate their internal/conversion loss; power forwarded to
+other boards belongs to those boards. Summing converter input power and its
+load power would double count heat. For the unchanged 6.25 W/85% reference,
+the boost loss is **1.102941 W**, and load-plus-converter power is **7.352941 W**
+when all output power is assigned to heat. Neither number bounds instantaneous
+heat. Cell electrochemistry, contacts, control, bleeders, wiring and other losses
+remain outside that reference subtotal. No cooling credit is taken for escaping
+light or radio energy. The separate 0.289294 W eFuse calculation is a resistance
+sensitivity, not a linear-mode or assembled heat bound.
+LED transfer bounds must cover both local heat and every possible optical
+reabsorption site in the mirror stack. Depositing all photon energy at the LED
+junction alone does not necessarily bound heating at the other surfaces.
+
+For a fixed passive linear thermal network, use
+`T_i <= max(boundary_upper, initial_upper) + sum_j(Z_ij_upper * P_j_upper)`.
+The initial bound must cover **all internal thermal storage**, including the
+shell, and every boundary must stay below its bound. Nonnegative thermal
+impulse responses ensure their integrals cannot exceed their DC transfer
+coefficients. Bounding each instantaneous heat source by its maximum therefore
+bounds its contribution for any pulse sequence. This includes cross heating and
+warm starts without taking credit for brief pulses or off-time cooling. The
+coefficients must describe the actual assembly or a proved dominating model;
+nonlinear or changing contacts/convection need a separate comparison proof.
+The result is labelled `conditional_pass`: it evaluates upper temperatures
+only, not cold operation, electrical function or physical qualification.
+Power bounds must hold throughout the temperature range, avoiding circular use
+of room-temperature resistance to prove a hot-state limit. Averaged PWM load,
+stored energy alone, or a protection trip temperature cannot supply those bounds.
+
+[TI SPRA953D, §1.1](https://www.ti.com/lit/an/spra953d/spra953d.pdf) explains
+why package-to-ambient ratings depend on the test board and environment. The
+[TPS25947 Rev C, §§6.3–6.5](https://www.ti.com/lit/ds/symlink/tps25947.pdf)
+lists 41.7 and 74.5 K/W for two different four-layer test boards. Neither is
+used as an enclosure coefficient. Its 125°C operating junction maximum limits
+U1 only; cell, conductors, insulation and both touch surfaces require separate
+limits. Current limiting requires voltage-drop × current heat, not the on-state
+resistance formula. The [Pololu efficiency/current plots](https://www.pololu.com/product/2891)
+are typical and depend on cooling; 85% cannot become a guaranteed minimum by
+copying it into a thermal calculation. Source revisions and the thermal-note
+PDF hash are retained in the input record.
+
+Automated tests use independent steady heat-balance and RC transient solutions,
+including repeated pulses and a hot restart. They reject missing cross terms,
+invalid numbers, overflow, missing states, omitted heat owners and relaxed
+operating limits. Both thermal files are required hashed Pages inputs. Run
+`python3 -m unittest discover -s hardware/enclosure -p 'test_electrical_thermal.py'`.
+Expected result: the analytical/regression tests pass. Run
+`python3 hardware/enclosure/electrical.py check` to evaluate the assembly:
+it still exits **1**, with no bounded assembly temperature or qualified dwell.
+Enclosure transfer, actual heat sources and complete circuit-state evidence
+remain agent-owned engineering work. No physical test or human acceptance gate
+is introduced; dependent CAD freeze and publication remain gated.

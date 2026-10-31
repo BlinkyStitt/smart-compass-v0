@@ -140,6 +140,11 @@ class MovieTests(unittest.TestCase):
 
 
 class BuildInputTests(unittest.TestCase):
+    def test_thermal_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-thermal.json', 'electrical_thermal.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
     def test_fault_definition_and_model_are_required_hashed_release_inputs(self):
         for path in ('electrical-fault-coordination.json', 'electrical_fault.py'):
             with self.subTest(path=path):
