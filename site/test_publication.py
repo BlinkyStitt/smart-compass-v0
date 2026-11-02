@@ -21,7 +21,10 @@ class PublicationTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.output = Path(self.temporary.name)/'pages'
+        # publish() resolves parent symlinks before replacing directories. macOS
+        # exposes its temporary directory through /var -> /private/var, so the
+        # failure hooks must compare the same canonical path as the publisher.
+        self.output = (Path(self.temporary.name)/'pages').resolve()
         publication.publish(self.output, lambda directory: render(directory, 'old'), lambda: None)
         self.before = {p.relative_to(self.output): p.read_bytes() for p in self.output.rglob('*') if p.is_file()}
 
