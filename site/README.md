@@ -207,7 +207,11 @@ The driver is Playwright 1.64.1 (Apache-2.0, Node >=20), pinned with integrity
 hashes in `package-lock.json`. The [npm registry](https://registry.npmjs.org/playwright)
 records its 2026-10-14 publication, meeting the seven-day age rule on
 2026-10-31; installation reported zero advisories. Chromium is the matching
-driver-managed version. CI pins Godot 4.7.2 and the release asset SHA-256 from
+driver-managed version. The verifier selects the full Chromium new headless
+runtime (`channel: 'chromium'`), including its media implementation; do not
+install only the separate headless shell. See the
+[Playwright browser documentation](https://playwright.dev/docs/browsers#chromium-new-headless-mode).
+CI pins Godot 4.7.2 and the release asset SHA-256 from
 the [official release](https://github.com/godotengine/godot-builds/releases/tag/4.7.2-stable).
 
 The study creates a temporary localhost fixture from the actual calculator,

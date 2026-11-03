@@ -39,7 +39,9 @@ async function agreement(page) {
   return actual;
 }
 
-const browser = await chromium.launch({headless: true});
+// Use the pinned full Chromium runtime, including its media implementation.
+// The separate headless shell does not complete this fixture on macOS.
+const browser = await chromium.launch({headless: true, channel: 'chromium'});
 try {
   for (const width of [320, 1280]) {
     const context = await browser.newContext({viewport: {width, height: 900}, reducedMotion: 'reduce'});
