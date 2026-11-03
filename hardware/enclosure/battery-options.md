@@ -1,54 +1,77 @@
-# Single removable 26650: decision and qualification
+# Single removable protected cell: decision and qualification
 
-Engineering review: 2026-10-31, SKI-1230. **Use one removable Efest Purple
-IMR26650 5200 mAh flat-top, with charged spares carried separately. Neither
-enclosure implements it yet.** Complete worn mass, including the installed cell
-and necklace, must be at most **2.5 lb = 1,133.980925 g**, with useful margin.
-The electrical and loaded-holder qualification below has not passed; dependent
-CAD, inventory and release work remains pending. The [executable electrical
-review](electrical-review.md) records startup-headroom and unpowered-PG
-failures in the proposed custom circuit. These are agent-owned engineering
-tasks; no human-supplied schematic is required.
+Engineering decision: 2026-11-03, SKI-1230. Use one **XTAR protected
+INR21700-50E 5000 mAh / 3.6 V / 10 A button-top**, with charged spares carried
+separately. Bryan authorized replacing the Efest with a safer battery and using
+assembled power modules. The protected cell adds overcharge, over-discharge
+and short-circuit protection to each cell and spare. It does not establish
+complete device safety or an inherently safer chemistry.
 
-This decision supersedes the earlier four-hour-per-pack target, pouch-pack,
-belt-pack and two-bay proposals here and in `design-v2.md`. No cartridge, second
-installed cell, selector, parallel/series connection, hot swap or onboard
-charging is in scope. Firmware voltage reporting is not cell protection.
+**Neither enclosure implements this selection yet.** Complete worn mass,
+including the installed cell and necklace, must be at most
+**2.5 lb = 1,133.980925 g**, with a separate 50 g margin target. Electrical and
+loaded-holder qualification has not passed. CAD, inventory and release work
+remain pending. The [electrical review](electrical-review.md) and its original
+Efest calculations remain rejection evidence for the earlier custom circuit;
+they do not describe a qualified XTAR/module circuit.
+
+This decision replaces the Efest cell selection and earlier pouch, belt-pack,
+two-bay and four-hour-per-pack proposals. Use a dedicated holder for the
+protected button-top cell. Do not use an adapter, second installed cell,
+selector, parallel/series connection, hot swap or onboard charging. Firmware
+voltage reporting is not cell protection.
 
 ## Energy and cell evidence
 
-Retain the Pololu U3V70F5 1S boost and the provisional **5 V / 1.25 A total
-(6.25 W)** load assumption, including all electronics and LED idle current:
+The [XTAR product page](https://www.xtar.cc/product/xtar-21700-5000mah-battery-50e.html)
+identifies the protected INR21700-50E button-top, 3.6 V nominal, 5000 mAh and
+constant 10 A discharge. Select this product, not an unprotected 21700/21700HP
+or a USB-equipped variant. A 10 A discharge rating does not bound short-circuit
+current or qualify the holder, fuse, wires or enclosed temperature.
+
+The [maker comparison table](https://www.xtar.cc/21700-battery.html) and
+[maker brochure, page 2](https://www.tme.com/Document/521a53995197f524da9632d69c941ea9/XTAR-21700-5AH-10A.pdf)
+give diameter 21.5 ±0.3 mm and length 74.5 ±0.5 mm: cell-only maxima
+**21.8 × 75.0 mm**. Add holder/contact travel, insulation, manufacturing
+clearance and the full removal sweep. The protected cell is longer than the
+old Efest reference. Existing 26650/pouch geometry is not compatible evidence.
+Exact upper cell mass and protection thresholds, delays and recovery remain
+unsupported. The brochure's 2.5 V end-of-discharge value is not a guaranteed
+protection trip or release threshold. Do not use it to certify the retained
+Pololu regulator's 2.9 V input requirement.
+
+Retain the **5 V / 6.25 W total output reference** and assumed 85% conversion
+for the unqualified energy study:
 
 ```text
-5.2 Ah × 3.7 V = 19.24 Wh
-19.24 Wh × 0.85 / 6.25 W = 2.61664 h ≈ 2.62 calculated hours per cell
+5.0 Ah × 3.6 V = 18.0 Wh
+18.0 Wh × 0.85 / 6.25 W = 2.448 h ≈ 2.45 calculated hours per cell
 ```
 
-This is before reserve, efficiency variation, aging, temperature, contact/wire
-losses, cutoff losses and swap downtime. It is not measured runtime or a
-four-hour guarantee. Permitted brightness remains unverified.
+The shared [electrical input record](../../site/electrical-inputs.json) owns this
+reference and the calculator defaults. This is nominal arithmetic before
+reserve, efficiency variation, aging, temperature, contact/wire loss, cutoff
+and swap downtime. It is not measured runtime, guaranteed usable energy or a
+peak-load rating. Permitted brightness remains unverified.
 
-[HKJ's 2016 independent report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
-reproduces 26.22 ± 0.15 mm diameter, 66.2 ± 0.15 mm length and 92 ± 1 g mass.
-These give a **26.37 mm diameter × 66.35 mm length reference maximum** and
-91–93 g reference mass range. They are dated specifications for the reviewed
-variant, not measurements of Bryan's cells or a loaded holder. The report's
-15 A continuous / 40 A pulse labels do not rate the rest of the circuit; its
-high-current tests also report substantial heating. Do not substitute a
-protected/button-top cell or unspecified 18650 into the fit model.
+Historical Efest evidence remains in the original electrical review:
+[HKJ's 2016 report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
+reproduced 26.22 ±0.15 × 66.2 ±0.15 mm and 92 ±1 g for the reviewed variant.
+Its 19.24 Wh nominal reference gave 2.61664 h at the same output/efficiency.
+Do not transfer that cell's mass, dimensions or current labels to the XTAR.
 
 ## Pre-CAD qualification: unresolved
 
-Published evidence was checked for these candidates. None establishes a complete,
-installable power assembly with the required field recovery.
+The following table records earlier candidate investigations. The 26650 holder
+and custom circuit are historical candidates, not current assembly selections.
+No complete module circuit has passed the required field-recovery checks.
 
 | Element | Evidence | Decision / missing qualification |
 | --- | --- | --- |
 | Fixed holder: Keystone 1107 | [Manufacturer product](https://www.keyelco.com/product.cfm/product_id/14077) and [drawing](https://www.keyelco.com/product-pdf.cfm?p=14077) identify a one-cell 26650 solder-lug holder; the [catalog, page 30](https://beta.keyelco.com/userAssets/file/M70p23-33.pdf) specifies PBT and nickel-plated stainless-steel lugs. | Candidate only. Reviewed evidence does not establish continuous/pulse current, contact resistance, or allowable loaded contact travel for the 66.35 mm flat-top reference. Do not infer loaded height, terminal clearance or removal travel from an empty-holder outline. |
 | Pack protector: Tenergy 32195 | [Manufacturer specification](https://power.tenergy.com/tenergy-1s-li-ion-8-5a-18a-pcb-discharging-cut-off-voltage-2-8v/) lists 28.8 × 7 × 2.5 mm, 8.5 A operation, 2.80 ± 0.10 V undervoltage detection and 18.5 ± 4 A overcurrent detection; overcurrent release requires removing the load. | Not selected. Reverse insertion is unspecified. The undervoltage delay mixes seconds and milliseconds, and the release tolerance needs clarification. Removal/reinsertion startup and charger-reset requirements are unspecified. Its trip range cannot be assumed to protect an unrated holder or harness. |
 | Integrated circuit alternative: TI TPS25947 | [TI datasheet, sections 4, 7 and 8](https://www.ti.com/lit/ds/symlink/tps25947.pdf) specifies 2.7–23 V operation, negative-input tolerance, adjustable UVLO/current limit/inrush, and distinct auto-retry/latch-off variants. | Plausible custom circuit, not a selected module. Requires an exact variant, schematic, tolerance analysis, upstream fuse coordination, PCB/thermal design, loaded envelope and depletion/restart analysis. A 2 × 2 mm IC package is not a board envelope. |
-| Retained boost: Pololu U3V70F5, item 2891 | [Manufacturer specification](https://www.pololu.com/product/2891): 2.9–5 V input, 40.6 × 15.2 × 4.6 mm bare board, reverse-voltage protection and short-circuit hiccup recovery. | Retain as the regulator assumption. Its protection applies at the regulator, not to upstream contacts, wires or protection electronics. Its typical 2.4 V falling UVLO and 10 A switch limit do not replace cell/path protection. |
+| Retained boost: Pololu U3V70F5, item 2891 | [Manufacturer specification](https://www.pololu.com/product/2891): 2.9–5 V input, 40.6 × 15.2 × 4.6 mm bare board, reverse-voltage protection and short-circuit hiccup recovery. | Historical regulator assumption; an assembled replacement is permitted. Its protection applies at the regulator, not to upstream contacts, wires or protection electronics. Its typical 2.4 V falling UVLO and 10 A switch limit do not replace cell/path protection. |
 
 Reset behavior is a selection boundary. For example,
 [TI's BQ2970 removable-battery guidance](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/818910/bq2970-removable-batteries)
@@ -73,7 +96,7 @@ one removable cell in a fixed insulated holder
   → contact-adjacent fault protection
   → reverse-insertion-safe hardware undervoltage/overcurrent/short protection
   → externally accessible physical OFF control
-  → Pololu U3V70F5 → regulated 5 V distribution / Sparkle Motion
+  → selected assembled boost → regulated 5 V distribution / Sparkle Motion
   → Sparkle 3.3 V → BlackPill, GPS, radio and sensors
 ```
 
@@ -125,7 +148,8 @@ GPS acquisition and normal controller startup may be needed again.
 | Charger/reset dependency | An external charger acts on the removed cell, not the fixed pendant protector. A protector needing a charger across its terminals after a normal swap is unsuitable. Never bridge terminals or bypass protection to wake it. |
 
 Charge off-body, outside the enclosure, in a charger explicitly supporting
-3.6/3.7 V nominal, 4.2 V charge-termination Li-ion flat-top 26650 cells. Follow
+3.6 V nominal, 4.2 V charge-termination Li-ion protected button-top 21700 cells
+up to the selected cell length. Follow
 the cell and charger current/temperature limits. The
 [XTAR VC4SL manufacturer manual](https://www.xtar.cc/companyfile/vc4sl-user-manual-88.html)
 is a candidate reference, not an owned or qualified charger. Do not use a 4.35 V
@@ -141,7 +165,7 @@ At baseline `7449b57648bb006e8d53136469745242bf09b43c`, both parameter JSON file
 and generated inventories still represent the **190 g / 37 Wh,
 80 × 65 × 20 mm CU-MM109 pouch candidate**. Its two-strap wide cradle and
 screw-fastened rear access do not satisfy field replacement. The old 5.03-hour
-calculation on Pages describes that pack, not the selected 26650. Historical
+calculation on Pages describes that pack, not the selected protected XTAR. Historical
 belt/pouch guidance in `design-v2.md` and generated tables is not an alternative
 approved architecture for SKI-1230. Do not relabel existing CAD, clips or mass
 numbers as the removable-cell design.
@@ -152,12 +176,13 @@ The wide scene records a 38.0048 mm body depth; its assembly bounds span
 occupied bounds and include the open-door/removal envelope. Evaluate widening
 against depth and mass after loaded parts are qualified.
 
-Current complete-worn estimates from the checked-in inventory and site resolver:
+Legacy complete-worn estimates from the regenerated inventory and site resolver
+(2026-11-03):
 
 | Legacy design | Nominal | Summed allowance bounds | Margin to 1,133.980925 g at upper bound |
 | --- | ---: | ---: | ---: |
-| Wide | 1,081.3 g | 833.5–1,345.3 g | −211.3 g |
-| Narrow | 1,120.6 g | 860.3–1,384.6 g | −250.6 g |
+| Wide | 1,082.9 g | 834.6–1,347.3 g | −213.3 g |
+| Narrow | 1,123.6 g | 862.3–1,388.1 g | −254.1 g |
 
 These bounds are not confidence intervals; neither establishes weight acceptance.
 The narrow result still transfers wide fittings/harness allowances. Replacing

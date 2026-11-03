@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "status": "parameter-study-only; hardware model not qualified for publication",
-  "cell": {"name": "One Efest Purple IMR26650 5200 mAh flat-top", "nominal_v": 3.7, "capacity_ah": 5.2},
+  "cell": {"name": "One XTAR protected INR21700-50E 5000 mAh button-top", "nominal_v": 3.6, "capacity_ah": 5.0},
   "reference": {"output_w": 6.25, "efficiency": 0.85},
-  "defaults": {"brightness": 0.05, "efficiency": 0.85, "reserve": 0.15, "capacity_ah": 5.2, "cell_v": 3.7, "non_led_w": 0.5, "quiescent_w": 0.002, "path_ohm": 0.085},
+  "defaults": {"brightness": 0.05, "efficiency": 0.85, "reserve": 0.15, "capacity_ah": 5.0, "cell_v": 3.6, "non_led_w": 0.5, "quiescent_w": 0.002, "path_ohm": 0.085},
   "mapping": "Clamp each shared Godot RGB channel times electrical brightness to [0,1], round to the nearest 8-bit PWM code; no optical gamma, shader brightness, reflections or glow. A modeling scenario, not a delivered firmware cap.",
   "groups": {
     "wide": [
@@ -20,6 +20,7 @@
     ]
   },
   "evidence": [
+    {"url": "https://www.xtar.cc/product/xtar-21700-5000mah-battery-50e.html", "claim": "Selected protected button-top INR21700-50E: 3.6 V nominal, 5000 mAh nominal, overcharge/over-discharge/short protection. Nominal 18 Wh is not guaranteed usable energy or a qualified recovery/thermal/fault bound."},
     {"url": "https://www.evilgeniuslabs.org/fibonacci256", "claim": "Manufacturer describes 256 WS2812 LEDs and theoretical 60 mA per LED at full white. Equal 20 mA channels are a model assumption, not measured individual channel coefficients."},
     {"url": "https://www.pololu.com/product/2891", "claim": "Regulator minimum input is 2.9 V; typical no-load quiescent current below 1 mA is not a maximum efficiency or quiescent bound."},
     {"path": "hardware/enclosure/component-inventory.json", "claim": "Ring stock remains unresolved. The same 20 mA channel / 1 mA idle study coefficients are not qualified strip ratings."}

@@ -53,7 +53,7 @@ try {
       await page.goto(url);
       const initial = await agreement(page);
       assert.equal(initial.design, 'wide'); assert.equal(initial.pattern, 'rainbow');
-      assert.ok((await page.locator('#energy-reference').innerText()).includes('2.62'));
+      assert.ok((await page.locator('#energy-reference').innerText()).includes('2.45'));
       assert.equal(await page.locator('#energy-result').getAttribute('aria-live'), 'polite');
       assert.equal(await page.locator('#energy-error').getAttribute('role'), 'alert');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Viewport overflow');

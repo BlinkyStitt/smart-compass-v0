@@ -23,7 +23,7 @@ The `GitHub Pages` workflow builds on pull requests, and deploys on pushes to
 `master` or a manual run from `master`. Repository Pages must use GitHub Actions
 as its source. The build fetches all LFS inputs so both native freshness inventories can be verified.
 The workflow also requires the electrical gate, which currently rejects the
-unqualified 26650 candidate; this checkpoint is not deployable.
+unqualified removable-cell candidate; this checkpoint is not deployable.
 
 After a successful deployment, the workflow sends one ntfy notification linking
 to the deployed site, commit and workflow attempt. Configure these repository
@@ -110,7 +110,8 @@ the narrow CAD materials and strip lengths, and transfers the electronics, harne
 and fitting allowances provisionally. The narrow design has no final fitting BOM.
 Runtime uses the documented 37 Wh pack, 85% efficiency and 1.25 A total at 5 V. It
 is an energy calculation before reserve, aging, temperature and cutoff losses;
-useful brightness at that cap remains unverified. The design target is four hours.
+useful brightness and peak demand remain unverified. These legacy pouch values
+do not describe the selected protected-cell revision or set a current cap.
 
 
 Three paired comparisons immediately before Silver PETG show Rainbow • dark
@@ -153,8 +154,11 @@ qualified electrical model and complete Pages release remain undelivered.
 The calculator and browser verifier operate as a separate, explicitly
 unqualified parameter study. Existing rendered geometry and the 37 Wh site
 calculation remain explicitly legacy pouch evidence. The selected one-cell
-reference is 2.62 calculated hours before reserve/other losses; see the
-[electrical review](../hardware/enclosure/electrical-review.md).
+reference is **2.448 h (display 2.45 h)** from the selected protected XTAR
+INR21700-50E: 3.6 V × 5.0 Ah = 18 Wh, at 6.25 W and assumed 85% efficiency,
+before reserve/other losses. This replaces the historical Efest reference,
+not the legacy geometry or mass model. See the
+[battery decision](../hardware/enclosure/battery-options.md).
 
 ## Reproducible electrical study
 

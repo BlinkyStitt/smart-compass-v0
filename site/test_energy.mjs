@@ -7,7 +7,13 @@ export async function check() {
   const model = JSON.parse(await readFile(new URL('./electrical-inputs.json', import.meta.url), 'utf8'));
   const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-10, `${a} != ${b}`);
   const settings = {...model.defaults, path_ohm: 0};
+  // Retain the historical Efest arithmetic as a regression, separate from the
+  // selected cell consumed by the CLI and browser.
   near(runtime(usableEnergy(5.2, 3.7, 0), 6.25 / .85).hours, 2.61664);
+  near(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), 18);
+  near(runtime(18, model.reference.output_w / model.reference.efficiency).hours, 2.448);
+  assert.equal(model.defaults.capacity_ah, model.cell.capacity_ah);
+  assert.equal(model.defaults.cell_v, model.cell.nominal_v);
   assert.equal(runtime(1, 0).state, 'unbounded');
   assert.equal(runtime(1, 0).hours, null);
   assert.equal(runtime(0, 0).hours, 0);
@@ -30,8 +36,8 @@ export async function check() {
   near(evaluate(sample, groups, {...settings, brightness: .5}).average_led_a, .001 + .03 * 128 / 255);
   near(evaluate(sample, groups, {...settings, reserve: 1}).runtime.hours, 0);
   near(evaluate(sample, groups, {...settings, capacity_ah: 0}).runtime.hours, 0);
-  near(evaluate(sample, groups, {...settings, reserve: .5}).usable_wh, 9.62);
-  near(evaluate(sample, groups, {...settings, capacity_ah: 10.4}).runtime.hours,
+  near(evaluate(sample, groups, {...settings, reserve: .5}).usable_wh, 9);
+  near(evaluate(sample, groups, {...settings, capacity_ah: 2 * settings.capacity_ah}).runtime.hours,
        2 * evaluate(sample, groups, settings).runtime.hours);
   for (const key of Object.keys(settings)) {
     for (const invalid of [NaN, Infinity, -Infinity, -1, '1', true, null]) {
