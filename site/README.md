@@ -140,8 +140,10 @@ posters use the copied clip. `build-info.json` records input and output hashes.
 
 Output is built in a private sibling directory under a per-output process lock.
 Only a complete artifact replaces the prior directory. A persisted journal
-restores the previous complete artifact after interruption, including process
-death between the directory renames. Arbitrary existing directories and symlinks
+restores the previous complete artifact after interruption before commit,
+including process death between the directory renames. After commit, the journal
+keeps the new release and resumes backup cleanup even if deletion stopped part
+way through. Recovery cleanup is also restartable. Arbitrary directories and symlinks
 are refused. Choose a fresh output path for an older artifact without the new
 publication inventory; the builder preserves it rather than guessing ownership.
 

@@ -124,6 +124,94 @@ raise SystemExit(1)
         self.assertIn('Another Pages build', child.stdout)
         self.assertPrevious()
 
+    def test_partial_committed_backup_cleanup_can_resume(self):
+        original = publication.shutil.rmtree
+        previous = self.output.parent / '.pages.previous'
+
+        def interrupt(path, *args, **kwargs):
+            if Path(path) == previous:
+                (previous / 'index.html').unlink()
+                raise OSError('interrupted backup cleanup')
+            return original(path, *args, **kwargs)
+
+        with patch.object(publication.shutil, 'rmtree', side_effect=interrupt):
+            with self.assertRaisesRegex(OSError, 'interrupted backup cleanup'):
+                publication.publish(self.output, render, lambda: None)
+        self.assertEqual(publication.verify(self.output)['value'], 'new')
+        journal = self.output.parent / '.pages.transaction.json'
+        self.assertEqual(json.loads(journal.read_text())['phase'], 'committed')
+        publication.recover(self.output)
+        publication.recover(self.output)
+        self.assertFalse(previous.exists())
+        self.assertFalse(journal.exists())
+        publication.publish(self.output, lambda stage: render(stage, 'next'), lambda: None)
+        self.assertEqual(publication.verify(self.output)['value'], 'next')
+
+    def test_process_death_after_commit_and_during_cleanup_keeps_new_release(self):
+        code = '''
+import os, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import publication as p
+from test_publication import render
+output = Path(sys.argv[2])
+write = p._write_journal
+remove = p.shutil.rmtree
+def commit(path, record):
+    write(path, record)
+    if record['phase'] == 'committed' and sys.argv[3] == 'commit': os._exit(73)
+def cleanup(path, *args, **kwargs):
+    if Path(path).name == '.pages.previous' and sys.argv[3] == 'cleanup':
+        (Path(path) / 'index.html').unlink()
+        os._exit(73)
+    return remove(path, *args, **kwargs)
+p._write_journal = commit
+p.shutil.rmtree = cleanup
+p.publish(output, render, lambda: None)
+'''
+        for point in ('commit', 'cleanup'):
+            with self.subTest(point=point):
+                child = subprocess.run([sys.executable, '-c', code, str(Path(__file__).parent),
+                                        str(self.output), point], capture_output=True, text=True, timeout=10)
+                self.assertEqual(child.returncode, 73, child.stderr)
+                self.assertEqual(publication.verify(self.output)['value'], 'new')
+                publication.recover(self.output)
+                publication.recover(self.output)
+                self.assertEqual(publication.verify(self.output)['value'], 'new')
+
+    def test_partial_rollback_cleanup_can_resume(self):
+        stage = self.output.parent / '.pages.stage-recovery'
+        stage.mkdir()
+        render(stage)
+        journal = self.output.parent / '.pages.transaction.json'
+        publication._write_journal(journal, {'publisher': publication.OWNER, 'stage': stage.name,
+                                            'had_previous': True, 'phase': 'prepared'})
+        original = publication.shutil.rmtree
+
+        def interrupt(path, *args, **kwargs):
+            if Path(path) == stage:
+                (stage / 'index.html').unlink()
+                raise OSError('interrupted rollback cleanup')
+            return original(path, *args, **kwargs)
+
+        with patch.object(publication.shutil, 'rmtree', side_effect=interrupt):
+            with self.assertRaisesRegex(OSError, 'interrupted rollback cleanup'):
+                publication.recover(self.output)
+        self.assertEqual(publication.verify(self.output)['value'], 'old')
+        self.assertEqual(json.loads(journal.read_text())['phase'], 'rolled_back')
+        publication.recover(self.output)
+        publication.recover(self.output)
+        self.assertPrevious()
+
+    def test_backup_without_owning_transaction_is_preserved(self):
+        previous = self.output.parent / '.pages.previous'
+        previous.mkdir()
+        (previous / 'notes.txt').write_text('keep')
+        with self.assertRaisesRegex(RuntimeError, 'no owning transaction'):
+            publication.recover(self.output)
+        self.assertEqual((previous / 'notes.txt').read_text(), 'keep')
+        self.assertPrevious()
+
     def test_unowned_directory_and_symlink_are_preserved(self):
         other = self.output.parent/'unrelated'
         other.mkdir()

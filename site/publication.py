@@ -1,7 +1,7 @@
 """Publish complete Pages directories with locking and crash rollback.
 
-The journal is written before moving the old release. An interrupted transaction
-always rolls back on the next build; no mixture of old/new files is accepted.
+The journal is written before moving the old release. An interrupted installation
+rolls back; after the durable commit, recovery finishes cleanup instead.
 Only directories carrying our complete, verified file inventory are replaceable.
 """
 
@@ -88,25 +88,38 @@ def recover(output):
     journal = output.parent/('.'+output.name+'.transaction.json')
     previous = output.parent/('.'+output.name+'.previous')
     if not journal.exists():
-        if previous.exists():
-            # A crash after committing the journal deletion can leave the old
-            # release. Both releases must verify before retiring the older one.
-            verify(output)
-            verify(previous)
-            shutil.rmtree(previous)
+        if previous.exists() or previous.is_symlink():
+            raise RuntimeError('Pages backup has no owning transaction; retained for inspection')
         return
     record = json.loads(journal.read_text())
     name = record.get('stage', '')
     if (record.get('publisher') != OWNER or Path(name).name != name
             or not name.startswith('.'+output.name+'.stage-')
-            or not isinstance(record.get('had_previous'), bool)):
+            or not isinstance(record.get('had_previous'), bool)
+            or record.get('phase') not in ('prepared', 'committed', 'rolled_back')):
         raise RuntimeError('Invalid Pages publication journal; retained for inspection')
     stage = output.parent/name
-    _restore(output, previous, stage, record['had_previous'])
+    if stage.is_symlink() or previous.is_symlink():
+        raise RuntimeError('Symlink in Pages transaction; retained for inspection')
+    if record['phase'] == 'prepared':
+        _restore(output, previous, stage, record['had_previous'])
+        record['phase'] = 'rolled_back'
+        _write_journal(journal, record)
+    if record['phase'] == 'committed':
+        verify(output)
+        retired = previous
+    else:
+        if record['had_previous']:
+            verify(output)
+        elif output.exists():
+            raise RuntimeError('Unexpected Pages output after rollback; retained for inspection')
+        retired = stage
+    # The durable phase owns this directory even after a partially completed
+    # deletion. Its old file inventory cannot be required during cleanup.
+    if retired.exists():
+        shutil.rmtree(retired)
     journal.unlink()
     _sync_directory(output.parent)
-    if stage.exists():
-        shutil.rmtree(stage)
 
 
 def _restore(output, previous, stage, had_previous):
@@ -157,23 +170,20 @@ def publish(output, render, unchanged):
                 _sync_directory(directory)
             _sync_directory(stage)
             _write_journal(journal, {'publisher': OWNER, 'stage': stage.name,
-                                    'had_previous': output.exists()})
+                                    'had_previous': output.exists(), 'phase': 'prepared'})
             try:
                 if output.exists():
                     os.replace(output, previous)
                     _sync_directory(output.parent)
                 os.replace(stage, output)
                 _sync_directory(output.parent)
-                journal.unlink()
-                _sync_directory(output.parent)
+                _write_journal(journal, {'publisher': OWNER, 'stage': stage.name,
+                                        'had_previous': previous.exists(), 'phase': 'committed'})
             except BaseException:
                 if journal.exists():
                     recover(output)
-                elif previous.exists():
-                    _restore(output, previous, stage, True)
                 raise
-            if previous.exists():
-                shutil.rmtree(previous)
+            recover(output)
         finally:
             if stage.exists() and not journal.exists():
                 shutil.rmtree(stage)
