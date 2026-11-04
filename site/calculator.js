@@ -44,7 +44,7 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
   const result = root.querySelector('#energy-result');
   const error = root.querySelector('#energy-error');
   const inputs = Object.fromEntries([...form.elements].filter(element => element.name).map(element => [element.name, element]));
-  root.querySelector('#energy-basis').textContent = `${model.cell.name}. Parameter study: ${model.uncertainty}`;
+  root.querySelector('#energy-basis').textContent = `${model.cell.name}. ${model.uncertainty}`;
   root.querySelector('#energy-reference').textContent = `Reference: ${runtime(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), model.reference.output_w / model.reference.efficiency).hours.toFixed(2)} calculated hours at ${model.reference.output_w} W and ${model.reference.efficiency * 100}% efficiency, before reserve and other losses. Swaps interrupt operation and startup.`;
   let generation = 0;
   const cache = new Map();
@@ -90,7 +90,7 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
       result.dataset.result = JSON.stringify({design, pattern, settings: values, ...value, savings: saved});
       const hours = value.runtime.state === 'unbounded' ? value.runtime.explanation : `${value.runtime.hours.toFixed(2)} calculated hours per cell`;
       result.textContent = `${design === 'wide' ? 'Wide' : 'Narrow'} · ${names[patterns.indexOf(pattern)]} · ${values.brightness * 100}% electrical brightness: ${hours}. `
-        + `LED current ${value.average_led_a.toFixed(3)} A average, ${value.sampled_peak_led_a.toFixed(3)} A sampled peak. `
+        + `Estimated LED current ${value.average_led_a.toFixed(3)} A average, ${value.sampled_peak_led_a.toFixed(3)} A sampled peak. `
         + `Total output ${value.average_output_w.toFixed(3)} W; battery input ${value.average_battery_w.toFixed(3)} W / ${value.average_battery_a.toFixed(3)} A at ${values.cell_v} V. `
         + `Savings against full rainbow at the same settings: ${saved.watts.toFixed(3)} W (${saved.percent.toFixed(1)}%). `
         + `${value.groups.map(group => `${group.name}: ${group.average_a.toFixed(3)} A`).join('; ')}. `

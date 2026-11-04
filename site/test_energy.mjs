@@ -34,6 +34,15 @@ export async function check() {
   assert.equal(zero.runtime.hours, null);
   near(zero.average_battery_w, 0);
   near(evaluate(sample, groups, {...settings, brightness: .5}).average_led_a, .001 + .03 * 128 / 255);
+  // A saturated HSV rainbow traverses these six vertices. Two channels mix,
+  // with a mean channel sum of 1.5; RGB white is not its operating load.
+  const neopixel = [{id: 0, name: 'NeoPixel', count: 1, idle_a: .001, channel_a: [.02, .02, .02]}];
+  const rainbow = {steps: 6, period_s: 8, leds: [{group: 0, index: 0}],
+                   rgb: [1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1]};
+  near(evaluate(rainbow, neopixel, {...settings, brightness: 1}).average_led_a, .031);
+  near(evaluate(rainbow, neopixel, {...settings, brightness: .05}).average_led_a,
+       .001 + .02 * 1.5 * 13 / 255);
+  near(evaluate(rainbow, neopixel, {...settings, brightness: 0}).average_led_a, .001);
   near(evaluate(sample, groups, {...settings, reserve: 1}).runtime.hours, 0);
   near(evaluate(sample, groups, {...settings, capacity_ah: 0}).runtime.hours, 0);
   near(evaluate(sample, groups, {...settings, reserve: .5}).usable_wh, 9);
@@ -74,6 +83,15 @@ export async function check() {
       assert.ok(row.runtime.hours > baseline.runtime.hours);
     }
     assert.ok(row.sampled_peak_led_a >= row.average_led_a);
+    if (row.pattern === 'rainbow') {
+      const count = model.groups[row.design].reduce((sum, group) => sum + group.count, 0);
+      // Check the real Godot cycle against the HSV integral, allowing only
+      // independent nearest-code quantization error in each channel.
+      const expected = count * (.001 + .02 * 1.5 * model.defaults.brightness);
+      const rounding = count * .02 * 3 / (2 * 255);
+      assert.ok(Math.abs(row.average_led_a - expected) <= rounding,
+                'Shared rainbow demand must agree with its RGB duty cycle');
+    }
   }
   console.log('ENERGY MODEL PASS: reference, encoding, groups, losses, reserve, zero/invalid inputs and monotonicity; hardware assumptions unqualified');
 }

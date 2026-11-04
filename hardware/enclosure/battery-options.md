@@ -52,7 +52,15 @@ The shared [electrical input record](../../site/electrical-inputs.json) owns thi
 reference and the calculator defaults. This is nominal arithmetic before
 reserve, efficiency variation, aging, temperature, contact/wire loss, cutoff
 and swap downtime. It is not measured runtime, guaranteed usable energy or a
-peak-load rating. Permitted brightness remains unverified.
+peak-load rating. The
+[rainbow demand basis](../../site/README.md#rainbow-demand-basis) uses
+Adafruit's NeoPixel channel/idle estimates and samples the real shared pattern.
+This estimate does not require replacing Fibonacci256 or obtaining supplier
+data. At the current 5% calculator brightness, all Wide pixels average about
+1.245 A at 5 V; Narrow averages 1.174 A. With the documented reserve and other
+loss assumptions, calculated runtime is about 1.83 h / 1.94 h respectively.
+Five percent is not a firmware-enforced limit. Physical brightness and runtime
+remain unmeasured; fault, inrush and thermal checks remain separate.
 
 Historical Efest evidence remains in the original electrical review:
 [HKJ's 2016 report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)

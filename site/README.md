@@ -182,7 +182,7 @@ design/pattern's average input-power change is at most max(0.1%, 1 mW).
 `energy.mjs` is the pure calculation shared by browser and CLI consumers.
 `--evaluate` accepts JSON on stdin with `samples`, `groups` and `settings`; the
 sampler's binary reader is in `sample_check.mjs`. `electrical-inputs.json` owns
-the one-cell reference and explicitly unqualified study coefficients. It maps
+the one-cell reference and sourced NeoPixel planning coefficients. It maps
 raw channels to rounded 8-bit PWM after electrical brightness; optical shader
 controls never enter the calculation. Idle demand remains at black. Non-LED
 demand, converter quiescent input, constant efficiency, series loss and reserve
@@ -191,12 +191,60 @@ averaging. Runtime is usable energy divided by average battery demand; zero
 energy gives zero, while positive energy at zero demand returns a named
 unbounded state with `hours: null`, never numeric infinity.
 
-The study distinguishes sampled peaks from hardware limits. Its equal-channel
-board approximation, unresolved strip stock, idle coefficients, radio/controller
-duty, contact/converter losses and cutoff reserve are not qualified bounds.
-These outputs must not become product predictions or lower protection ratings.
-The Pages build remains blocked by the electrical gate. Physical behavior stays
-unmeasured; no owner trial or human sign-off is a completion condition.
+### Rainbow demand basis
+
+Use the actual shared rainbow for normal runtime planning. Full-white,
+full-brightness operation is outside the intended use. Use the
+[Adafruit NeoPixel figures](https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels)
+as the prototype's LED estimate. The model uses 20 mA per fully driven channel
+and retains a separate 1 mA logic allowance for each powered pixel. This makes
+the white comparison 61 mA including logic. These are engineering estimates.
+
+Our `Color.from_hsv(..., 1, 1)` rainbow averages `R + G + B = 1.5` over its
+eight-second cycle before 8-bit rounding. Thus its dynamic channel demand
+averages half of white at equal electrical brightness. The model samples the
+actual function and layout rather than applying a fixed discount. Adafruit's
+[Sipping Power guide](https://learn.adafruit.com/sipping-power-with-neopixels/insights)
+also explains this near-50% duty cycle for a saturated rainbow. Its general
+20 mA-per-pixel animation rule is a different approximation; do not apply that
+rule and then discount for rainbow a second time.
+
+At the current 5% default, 1024 samples over eight seconds give:
+
+| Rainbow load at 5 V | Average current | Average LED power | Sampled frame peak |
+| --- | ---: | ---: | ---: |
+| Fibonacci256 alone | 0.645 A | 3.225 W | — |
+| Wide, all 494 pixels | 1.245 A | 6.223 W | 1.246 A |
+| Narrow, all 466 pixels | 1.174 A | 5.870 W | 1.176 A |
+
+With the current additional assumptions (0.5 W controller/sensors/radio,
+85% conversion, 0.085 ohm battery path, 0.002 W input quiescent loss, nominal
+3.6 V/5 Ah cell and 15% reserve), calculated rainbow runtime is about
+**1.83 h Wide / 1.94 h Narrow**. These include more load and loss than the
+separate 2.448 h reference arithmetic. They are unmeasured estimates, not
+guaranteed usable runtime. Regenerate samples after changing any model input.
+
+Brightness matters: Fibonacci256 alone averages about 1.034 A at 10% and
+2.181 A at 25%. All Wide pixels average 1.995 A and 4.209 A respectively;
+Narrow averages 1.882 A and 3.970 A. Five percent is a calculator default,
+not a delivered firmware limit or a claim of adequate visible brightness.
+
+[PJRC's original measurements](https://www.pjrc.com/how-much-current-do-ws2812-neopixel-leds-really-use/)
+found roughly 33.5 mA and 52.5 mA white maxima for two WS2812B products, both
+just under 1 mA dark. The
+[FastLED 3.6.0 source](https://github.com/FastLED/FastLED/blob/23c67b720d09dc386799f310739bcae93163e646/src/power_mgt.cpp)
+uses measured-strip estimates of 16/11/15 mA for red/green/blue plus 1 mA
+dark. These sources support variation and channel-based estimation. They are
+not measurements of our assembly. FastLED's rainbow color conversion also
+differs from the Godot HSV function; its name alone does not establish the
+same RGB duty cycle. We retain the requested Adafruit model.
+
+The estimate does not require replacing Fibonacci256 or obtaining supplier
+data. Sampled frame peaks remain distinct from internal PWM, radio bursts,
+inrush and fault limits. Protection/recovery, exact strip stock, wiring,
+converter and thermal design still need their own checks. The Pages release
+remains gated on that design work. Physical behavior stays unmeasured; no
+owner trial or human sign-off is a completion condition.
 
 ## Automated browser checks
 
