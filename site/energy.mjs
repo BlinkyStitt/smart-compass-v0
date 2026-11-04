@@ -4,6 +4,10 @@ export class InputError extends Error {
   constructor(field, detail) { super(`${field}: ${detail}`); this.field = field; }
 }
 
+export class PowerEquilibriumError extends InputError {
+  constructor() { super('path_ohm', 'load has no constant-power equilibrium; lower load or path resistance'); }
+}
+
 function number(value, field, minimum = 0, maximum = Number.MAX_VALUE) {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < minimum || value > maximum)
     throw new InputError(field, `enter a finite number from ${minimum} to ${maximum}`);
@@ -33,8 +37,10 @@ export function batteryPower(outputW, settings) {
   const requiredW = outputW / efficiency + quiescent;
   if (!Number.isFinite(requiredW)) throw new InputError('efficiency', 'calculation exceeds the finite numeric range');
   const discriminant = voltage ** 2 - 4 * resistance * requiredW;
-  if (!Number.isFinite(discriminant) || discriminant < 0)
-    throw new InputError('path_ohm', 'load has no constant-power equilibrium; lower load or path resistance');
+  if (!Number.isFinite(discriminant))
+    throw new InputError('path_ohm', 'calculation exceeds the finite numeric range');
+  if (discriminant < 0)
+    throw new PowerEquilibriumError();
   // Rationalized high-voltage solution: avoids cancellation at R=0/small P.
   const current = 2 * requiredW / (voltage + Math.sqrt(discriminant));
   return {watts: voltage * current, amps: current, converter_v: voltage - resistance * current};

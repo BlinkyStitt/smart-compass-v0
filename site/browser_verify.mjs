@@ -69,6 +69,21 @@ try {
           if (pattern !== 'rainbow') assert.ok(changed.savings.watts > 0);
         }
       }
+      // The selected dark pattern can be feasible while its rainbow baseline
+      // is not. Keep its current/runtime visible without inventing savings.
+      await page.getByLabel('Design', {exact: true}).selectOption('wide');
+      await page.getByLabel('Pattern', {exact: true}).selectOption('dark-sectors');
+      await page.getByLabel('Electrical brightness (%)', {exact: true}).fill('50');
+      const comparison = await agreement(page);
+      assert.equal(comparison.savings.state, 'unavailable');
+      assert.equal(comparison.savings.watts, null);
+      assert.equal(comparison.savings.percent, null);
+      assert.ok(comparison.runtime.hours > 0);
+      assert.ok((await page.locator('#energy-result').innerText()).includes('comparison unavailable'));
+      assert.equal(await page.locator('#energy-error').innerText(), '');
+      assert.equal(await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).getAttribute('aria-invalid'), null);
+      await page.getByRole('button', {name: 'Reset calculator'}).click();
+      assert.equal((await agreement(page)).savings.state, 'available');
       for (const [label, value] of [['Electrical brightness (%)', '0'], ['Cell capacity (Ah)', '10.4'],
                                   ['Usable cell energy (Wh, after reserve)', '12'], ['Conversion efficiency (%)', '90'],
                                   ['Reserve and cutoff allowance (%)', '20'], ['Controller, sensors and radio output (W)', '0.3']]) {

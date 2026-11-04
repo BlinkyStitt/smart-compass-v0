@@ -1,4 +1,4 @@
-import {evaluate, runtime, savings, usableEnergy, InputError} from './energy.mjs';
+import {evaluate, runtime, savings, usableEnergy, InputError, PowerEquilibriumError} from './energy.mjs';
 
 const fields = [
   ['brightness', 'Electrical brightness (%)', 0, 100, .1],
@@ -85,14 +85,23 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
       const [selected, base] = await Promise.all([sample(design, pattern), sample(design, 'rainbow')]);
       if (current !== generation) return;
       const value = evaluate(selected, model.groups[design], values);
-      const baseline = evaluate(base, model.groups[design], values);
-      const saved = savings(value, baseline);
+      let saved;
+      try {
+        const baseline = evaluate(base, model.groups[design], values);
+        saved = {state: 'available', ...savings(value, baseline)};
+      } catch (reason) {
+        if (!(reason instanceof PowerEquilibriumError)) throw reason;
+        saved = {state: 'unavailable', watts: null, percent: null,
+                 explanation: 'Full-rainbow comparison unavailable: its load has no constant-power equilibrium at these settings.'};
+      }
       result.dataset.result = JSON.stringify({design, pattern, settings: values, ...value, savings: saved});
       const hours = value.runtime.state === 'unbounded' ? value.runtime.explanation : `${value.runtime.hours.toFixed(2)} calculated hours per cell`;
       result.textContent = `${design === 'wide' ? 'Wide' : 'Narrow'} · ${names[patterns.indexOf(pattern)]} · ${values.brightness * 100}% electrical brightness: ${hours}. `
         + `Estimated LED current ${value.average_led_a.toFixed(3)} A average, ${value.sampled_peak_led_a.toFixed(3)} A sampled peak. `
         + `Total output ${value.average_output_w.toFixed(3)} W; battery input ${value.average_battery_w.toFixed(3)} W / ${value.average_battery_a.toFixed(3)} A at ${values.cell_v} V. `
-        + `Savings against full rainbow at the same settings: ${saved.watts.toFixed(3)} W (${saved.percent.toFixed(1)}%). `
+        + (saved.state === 'available'
+          ? `Savings against full rainbow at the same settings: ${saved.watts.toFixed(3)} W (${saved.percent.toFixed(1)}%). `
+          : `${saved.explanation} `)
         + `${value.groups.map(group => `${group.name}: ${group.average_a.toFixed(3)} A`).join('; ')}. `
         + `Sampled every ${value.sample_interval_s} s over ${value.sample_period_s} s. Sampled peaks are not PWM, radio, inrush or fault ratings.`;
       result.hidden = false;

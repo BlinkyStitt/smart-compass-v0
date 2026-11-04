@@ -191,6 +191,11 @@ averaging. Runtime is usable energy divided by average battery demand; zero
 energy gives zero, while positive energy at zero demand returns a named
 unbounded state with `hours: null`, never numeric infinity.
 
+If the selected pattern has a valid result but full rainbow has no constant-power
+equilibrium at the same settings, the calculator keeps the selected result and
+labels the savings comparison unavailable. It still rejects invalid inputs and
+damaged sample data. An unavailable comparison never becomes zero savings.
+
 ### Rainbow demand basis
 
 Use the actual shared rainbow for normal runtime planning. Full-white,

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
-import {evaluate, batteryPower, runtime, usableEnergy, savings, InputError} from './energy.mjs';
+import {evaluate, batteryPower, runtime, usableEnergy, savings, InputError, PowerEquilibriumError} from './energy.mjs';
 
 export async function check() {
   const model = JSON.parse(await readFile(new URL('./electrical-inputs.json', import.meta.url), 'utf8'));
@@ -69,7 +69,9 @@ export async function check() {
   near(rows.average_led_a, .032);
   const withLoss = batteryPower(6.25, {...settings, path_ohm: .085});
   near(withLoss.watts, 6.25 / settings.efficiency + settings.quiescent_w + withLoss.amps ** 2 * .085);
-  assert.throws(() => batteryPower(1000, {...settings, path_ohm: 1}), InputError);
+  assert.throws(() => batteryPower(1000, {...settings, path_ohm: 1}), PowerEquilibriumError);
+  assert.throws(() => batteryPower(1, {...settings, path_ohm: Number.MAX_VALUE}),
+                error => error instanceof InputError && !(error instanceof PowerEquilibriumError));
   assert.ok(batteryPower(4, settings).watts > batteryPower(3, settings).watts);
   for (const [design, expected] of [['wide', 494], ['narrow', 466]])
     assert.equal(model.groups[design].reduce((sum, group) => sum + group.count, 0), expected);
