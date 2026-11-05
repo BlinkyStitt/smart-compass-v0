@@ -5,33 +5,41 @@
     "source_record": "site/electrical-inputs.json#cell"
   },
   "contact": {
-    "part": "Mill-Max 0850-0-15-20-83-14-11-0",
+    "part": "Mill-Max 0854-0-15-20-82-14-11-0",
     "quantity": 2,
     "full_stroke_mm": 2.286,
-    "source_length_tolerance_mm": 0.15,
+    "source_length_tolerance_mm": 0.1524,
     "unloaded_tip_gap_mm": [
       73.8,
       74.0
     ],
     "datum_basis": "Assembly acceptance settings: 73.9 +/-0.1 mm between unloaded tips and 1.82 +/-0.05 mm negative-plunger compression at its insulating stop. These are specified settings, not measured or guaranteed print dimensions. Adjust and lock carriers, verify with gauges, and do not assume equal spring compression. Replace the nominal 0.25 mm insulating shim washers to set the actual tip gap; finish/shim the negative insulating bearing face to its measured stop setting. The nominal CAD does not establish these achieved settings.",
     "carrier_adjustment_mm": 0.5,
-    "source": "https://static6.arrow.com/aropdfconversion/51cd24f6bbea76697111e1326022061c9a4b0141/085-00-152-08-314110.pdf",
+    "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
     "drawing": {
-      "initial_tip_to_mount_mm": 5.588,
+      "initial_tip_to_mount_mm": 8.6106,
       "flange_thickness_mm": 0.762,
-      "flange_diameter_mm": 3.8862,
+      "flange_diameter_mm": 3.175,
       "barrel_diameter_mm": 2.413,
       "rear_diameter_mm": 2.2098,
       "tip_diameter_mm": 1.27,
-      "total_height_mm": 10.0076,
-      "source_revision": "2018-06-07 dimensioned manufacturer drawing; 2025-04-29 electrical/tolerance sheet",
-      "drawing_source": "https://static.chipdip.ru/lib/717/DOC051717440.pdf"
+      "total_height_mm": 15.2146,
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "drawing_source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "cup_outer_diameter_mm": 2.54,
+      "cup_hole_diameter_mm": 1.7018,
+      "cup_length_mm": 4.572,
+      "cup_depth_mm": 2.8448,
+      "front_plate_bore_radius_mm": 1.375,
+      "back_plate_bore_radius_mm": 1.375
     },
-    "carrier": "Two screwed 1.8 mm insulating clamp plates per terminal. Flange captured between plates; no removable cell connector. Modeled source dimensions are nominal; retain full tolerance clearance and verify actual carrier setting.",
+    "carrier": "Two screwed insulating clamp plates capture the flange. Finish both bores to2.75+/-0.05mm bores and gauge source barrel clearances before assembly. Negative-stop bridge spans the longer selected barrel. Use the designed wire solder cup; no lap joint on a PCB-mount barrel.",
     "negative_stop_compression_mm": [
       1.77,
       1.87
-    ]
+    ],
+    "full_stroke_tolerance_mm": 0.127,
+    "source_record": "sources/battery-contact-0854/index.json"
   },
   "cradle": {
     "length_mm": 104.0,
@@ -87,7 +95,7 @@
     "finger_radius_mm": 12.0,
     "finger_start_z_mm": -10.0,
     "noncontact_clearance_mm": 0.25,
-    "status": "Press the cell against the fixed negative-end insulating stop, then pull outward with the ribbon after opening the independent keeper. The source/cell/assembly corners leave at least 0.27 mm at the positive end and 0.266 mm mechanical stroke margin. Spring force, contact/wrapper wiping and assembly settings remain unmeasured.",
+    "status": "Press the cell against the fixed negative-end insulating stop, then pull outward with the ribbon after opening the independent keeper. The source/cell/assembly corners leave at least 0.27 mm at the positive end and 0.289 mm mechanical stroke margin. Spring force, contact/wrapper wiping and assembly settings remain unmeasured.",
     "positive_end_release_gap_mm": 0.25
   },
   "designs": {
@@ -158,7 +166,7 @@
   "hardware": {
     "hinge": "DIN 912 M3 x 100 A2 socket screw, finish under-head length to 97 mm; DIN 934 M3 A2 nut, retained threadlocker after assembly. No loose fastener during ordinary access. Two printed 3.95/0.75 mm axial spacers and two DIN 125 M3 washers leave 0.2 mm nominal axial play. Verify assembled play.",
     "keeper": "ISO 7380-1 M3 x 12 A2 button-head screw and two DIN 934 M3 A2 jammed nuts; set 0.25 mm lower and upper rotational play, then jam nuts without clamping bar. Verify supplied head envelope.",
-    "contacts": "Four DIN 912 M2 x 16 A2 screws and four DIN 934 M2 A2 nuts; two screws per flange clamp. Set tip gap before locking. Each screw clamps through a printed compression tube, a nominal 0.25 mm PET shim washer and a DIN 125 M2 washer. Replace matched shim stacks during initial setup; ordinary cell swaps leave them fixed.",
+    "contacts": "Four DIN912 M2x16 A2 stock screws, finish under-head length to13mm; four DIN934 M2 A2 nuts and four DIN125 M2 washers. Two per fixed flange clamp. Retain matched PET shims and printed compression tubes; set tip gap before locking.",
     "qualification": "Fastener strength, retention, print dimensions and compass disturbance remain unmeasured.",
     "case_mounts": "Four DIN912 M3x10 A2 screws, four DIN125 M3 washers and four DIN934 M3 A2 nuts. Screws bear on the2mm rear plate; flange bearing starts atZ2mm. Clamp flange/washer/nut without an unsupported gap. These remain fitted during cell service. Actual plate/rib relief and thread retention require complete assembly checks."
   },
@@ -182,17 +190,23 @@
     "status": "Maximum-stock representative drape; supplied tape, sewn joint, flexibility, wear, trapped-ribbon response and pull force are unmeasured."
   },
   "contact_leads": {
-    "bend_start_x_from_cell_mm": 51.0,
+    "bend_start_x_from_cell_mm": 56,
     "individual_bend_radius_mm": 6.0,
-    "between_bends_straight_mm": 10.5,
-    "conduit_start_x_from_cell_mm": 50.0,
-    "conduit_inner_radius_mm": 1.2,
+    "between_bends_straight_mm": 10.969138929554134,
+    "conduit_start_x_from_cell_mm": 54.4,
+    "conduit_inner_radius_mm": 1.25,
     "conduit_outer_radius_mm": 2.6,
-    "strip_each_end_mm": 3.0,
-    "blank_length_mm": 42.0,
+    "strip_each_end_mm": 3.5,
+    "blank_length_mm": 50,
     "main_fuse_centre_x_from_cell_mm": 41.0,
     "bend_basis": "Specified individual-wire routing target. NASA-STD-8739.4A Change4 Table7-1, p30:3x outside diameter minimum for AWG10-or-smaller non-coax/non-polyimide harness. This does not qualify the wire, bends, solder joints or a thicker bundle.",
     "bend_source": "https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf",
-    "limits": "Two fixed insulated main leads and a main-fuse reservation only. Joint insulation, fuse lacing, downstream wiring and both installed assemblies remain incomplete; no physical acceptance."
+    "limits": "Two fixed insulated main leads and a main-fuse reservation only. Joint insulation, fuse lacing, downstream wiring and both installed assemblies remain incomplete; no physical acceptance.",
+    "final_return_straight_mm": 5,
+    "route_descent_deg": 11.6,
+    "cup_collar_start_x_from_cell_mm": 49.8,
+    "cup_collar_end_x_from_cell_mm": 54.5,
+    "cup_collar_inner_radius_mm": 1.6,
+    "cup_collar_outer_radius_mm": 2.95
   }
 }

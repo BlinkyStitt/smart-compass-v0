@@ -1,7 +1,9 @@
 """Check source-sized cell clearance and required assembly contact settings."""
 import unittest
+from pathlib import Path
+import tempfile
 
-from battery_access import definition, contact_travel, validate
+from battery_access import definition, contact_travel, validate, contact_source
 
 
 class BatteryAccessTests(unittest.TestCase):
@@ -16,7 +18,7 @@ class BatteryAccessTests(unittest.TestCase):
             self.assertEqual(result['individual_initial_compression_mm'], [0, result['initial_total_max_mm']])
             self.assertAlmostEqual(result['released_gap_min_mm'], .27)
             self.assertAlmostEqual(result['compressed_max_mm'], 1.87)
-            self.assertAlmostEqual(result['available_stroke_min_mm'], 2.136)
+            self.assertAlmostEqual(result['available_stroke_min_mm'], 2.159)
         self.assertIn('not measured or guaranteed', spec['contact']['datum_basis'])
 
     def test_longer_cell_small_gap_or_excessive_shift_is_rejected(self):
@@ -67,6 +69,43 @@ class BatteryAccessTests(unittest.TestCase):
             spec=definition()
             spec[section][key]=float('nan')
             with self.assertRaises(ValueError): validate(spec,'narrow')
+
+    def test_selected_wire_cup_source_and_tolerance_cannot_be_inflated(self):
+        for key,value in [('full_stroke_tolerance_mm',.01),('source_length_tolerance_mm',.01),
+                          ('part','Mill-Max 0850-0-15-20-83-14-11-0')]:
+            spec=definition();spec['contact'][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):validate(spec,'wide')
+        for key in ('cup_hole_diameter_mm','cup_depth_mm','total_height_mm'):
+            spec=definition();spec['contact']['drawing'][key]+=1
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'source drawing'):validate(spec,'wide')
+
+    def test_finished_clamp_holes_retain_clearance_and_flange_bearing(self):
+        for key,value in [('front_plate_bore_radius_mm',1.5),('front_plate_bore_radius_mm',1.2),
+                          ('back_plate_bore_radius_mm',1.5),('back_plate_bore_radius_mm',1.1),
+                          ('back_plate_bore_radius_mm',float('nan'))]:
+            spec=definition();spec['contact']['drawing'][key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(spec,'narrow')
+
+    def test_rear_plate_must_pass_the_source_maximum_solder_cup(self):
+        spec=definition()
+        drawing=spec['contact']['drawing']
+        self.assertGreater(2*drawing['back_plate_bore_radius_mm']-.05,
+                           drawing['cup_outer_diameter_mm']+.0508+.1)
+        drawing['back_plate_bore_radius_mm']=1.275
+        with self.assertRaisesRegex(ValueError,'cannot pass'):
+            validate(spec,'wide')
+
+    def test_missing_and_changed_contact_sheet_cannot_pass(self):
+        source=Path(__file__).parent/'sources/battery-contact-0854'
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(OSError):contact_source(temporary)
+            target=Path(temporary)/'sources/battery-contact-0854'
+            target.mkdir(parents=True)
+            for name in ('index.json','mill-max-0854-2024.pdf'):
+                (target/name).write_bytes((source/name).read_bytes())
+            self.assertEqual(contact_source(temporary)['part'],'0854-0-15-20-82-14-11-0')
+            (target/'mill-max-0854-2024.pdf').write_bytes(b'changed primary sheet')
+            with self.assertRaisesRegex(ValueError,'source changed'):contact_source(temporary)
 
     def test_inflating_source_stroke_or_removing_cell_does_not_create_clearance(self):
         spec=definition()

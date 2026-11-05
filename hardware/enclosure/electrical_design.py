@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 
 import electrical_imu
+from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
 
@@ -70,8 +71,8 @@ CRITICAL_PARTS = {
     'CELL': 'XTAR protected 21700 6000 mAh button-top',
     'SPARKLE': 'Adafruit Sparkle Motion, board revision D',
     'BLACKPILL': 'WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input',
-    'CONTACT_P': 'Mill-Max 0850-0-15-20-83-14-11-0',
-    'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
+    'CONTACT_P': 'Mill-Max 0854-0-15-20-82-14-11-0',
+    'CONTACT_N': 'Mill-Max 0854-0-15-20-82-14-11-0',
     'F1': 'Littelfuse 0251004.NRT1L, 4 A, axial',
     'S1': 'C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC',
     'S1_NUT': 'C&K 700201201, 1/4-40 UNS open hex mounting nut, nickel-plated brass',
@@ -162,6 +163,13 @@ def assess(design, directory=HERE):
     for name, selected in CRITICAL_PARTS.items():
         require(parts.get(name, {}).get('part') == selected, 'selected-part:' + name,
                 'Changed protection, cell or capacitor selection requires a circuit review.')
+    try:
+        contact = contact_source(directory)
+        for name in ('CONTACT_P', 'CONTACT_N'):
+            require(parts.get(name, {}).get('source') == contact['source'],
+                    'contact-source:' + name, 'Use the retained wire-mount contact sheet.')
+    except (ValueError, OSError) as error:
+        require(False, 'contact-source', str(error))
     terminals = parts.get('SPARKLE', {}).get('led_terminals', {})
     require(terminals.get('assembly') == 'Factory-installed JP1 nine-position 2.54mm screw terminal strip on Sparkle Motion Rev D'
             and terminals.get('wire_group') == 'branches'

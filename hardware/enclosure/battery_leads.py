@@ -16,10 +16,16 @@ def layout(spec, design, electrical=None):
     electrical = electrical if electrical is not None else json.loads(
         Path(__file__).with_name('electrical-design.json').read_text())
     settings = spec['contact_leads']
+    if any(electrical['parts'][key]['part']!=spec['contact']['part'] for key in ('CONTACT_P','CONTACT_N')):
+        raise ValueError('Contact geometry and selected circuit must use the same wire-mount part')
     for name,value in settings.items():
         if name.endswith('_mm') and (isinstance(value,bool) or not isinstance(value,(int,float))
                                     or not math.isfinite(value) or value<=0):
             raise ValueError('Contact-lead target must be finite and positive: '+name)
+    tilt=settings['route_descent_deg']
+    if isinstance(tilt,bool) or not isinstance(tilt,(int,float)) or not math.isfinite(tilt) or not 0<=tilt<45:
+        raise ValueError('Contact route descent needs a finite angle in[0,45)degrees')
+    tilt=math.radians(tilt)
     main=electrical['wiring']['stock_limits']['main']
     if main['stock']!='M22759/16-18' or electrical['parts']['F1']['part']!='Littelfuse 0251004.NRT1L, 4 A, axial':
         raise ValueError('Review the contact wire/fuse before changing their mechanical model')
@@ -42,18 +48,36 @@ def layout(spec, design, electrical=None):
         raise ValueError('Retain the specified insulation wall and individual-wire bend radius')
     tip=sum(spec['contact']['unloaded_tip_gap_mm'])/4
     tail=tip+spec['contact']['drawing']['total_height_mm']
-    if bend_x-tail<2*(2*wire_r) or not tail<start_x<bend_x:
-        raise ValueError('The first bend must clear the supported contact joint')
-    length=bend_x-tail+math.pi*r+straight
+    cup_start=tail-spec['contact']['drawing']['cup_length_mm']
+    wall_start=spec['cradle']['length_mm']/2-spec['cradle']['wall_mm']
+    collar_start=settings['cup_collar_start_x_from_cell_mm']
+    collar_end=settings['cup_collar_end_x_from_cell_mm']
+    collar_inner=settings['cup_collar_inner_radius_mm']
+    collar_outer=settings['cup_collar_outer_radius_mm']
+    cup_max_r=(spec['contact']['drawing']['cup_outer_diameter_mm']+.0508)/2
+    if collar_inner-cup_max_r<spec['removal']['noncontact_clearance_mm'] or collar_outer-collar_inner<1.35:
+        raise ValueError('The selected cup needs source-tolerance clearance and its full insulator wall')
+    if (bend_x-tail<2*(2*wire_r) or not cup_start<collar_start<wall_start<tail<start_x<collar_end<bend_x
+            or collar_end-tail<2*wire_r):
+        raise ValueError('Keep supported cup/insulation overlap and the first bend clear of the joint')
+    return_length=settings['final_return_straight_mm']
+    length=bend_x-tail+math.pi*r+straight+return_length
     cut=length+2*settings['strip_each_end_mm']
     if cut>settings['blank_length_mm']:
         raise ValueError('The blank cannot supply the route and both stripped ends')
-    if settings['main_fuse_centre_x_from_cell_mm']+10!=bend_x:
+    if settings['main_fuse_centre_x_from_cell_mm']+10!=bend_x-return_length:
         raise ValueError('Positive lead must end at the selected main-fuse input')
-    return {'radius_mm':r,'bend_x_mm':bend_x,'straight_mm':straight,
+    plane_offset=-2*r-straight
+    final_drop=plane_offset*math.sin(tilt)
+    if spec['cradle']['cell_axis_z_mm']+final_drop-5-2<1.35:
+        raise ValueError('Fuse cavity leaves less than1.35mm above its rear-bearing hood brace')
+    return {'cup_collar_start_mm':collar_start,'cup_collar_end_mm':collar_end,
+            'cup_collar_inner_radius_mm':collar_inner,'cup_collar_outer_radius_mm':collar_outer,
+            'tilt_rad':tilt,'plane_final_offset_mm':plane_offset,
+            'radius_mm':r,'bend_x_mm':bend_x,'straight_mm':straight,
             'conduit_start_x_mm':start_x,'conduit_inner_radius_mm':inner_r,
             'conduit_outer_radius_mm':outer_r,'wire_radius_mm':wire_r,
-            'tail_x_mm':tail,'final_offset_y_mm':-2*r-straight,
+            'return_length_mm':return_length,'tail_x_mm':tail,'final_offset_y_mm':plane_offset*math.cos(tilt),'final_offset_z_mm':final_drop,
             'routed_centreline_mm':length,'finished_cut_target_mm':cut,
             'cell_centre_xy_mm':spec['designs'][design]['cell_centre_xy_mm']}
 
@@ -66,10 +90,10 @@ def native_shapes(spec,design):
     cx,cy=data['cell_centre_xy_mm']
     z=spec['cradle']['cell_axis_z_mm']
     r=data['radius_mm'];bend_x=data['bend_x_mm'];straight=data['straight_mm']
-    final_offset=data['final_offset_y_mm'];tail=data['tail_x_mm']
+    final_offset=data['plane_final_offset_mm'];tail=data['tail_x_mm']
     wire_r=data['wire_radius_mm'];inner_r=data['conduit_inner_radius_mm']
     outer_r=data['conduit_outer_radius_mm']
-    def point(side,x,y):return App.Vector(cx+side*x,cy+y,z)
+    def point(side,x,y):return App.Vector(cx+side*x,cy+y*math.cos(data['tilt_rad']),z+y*math.sin(data['tilt_rad']))
     def route(side,start_x):
         q=math.sqrt(.5)
         a=point(side,bend_x,0)
@@ -79,7 +103,8 @@ def native_shapes(spec,design):
         return Part.Wire([Part.makeLine(point(side,start_x,0),a),
             Part.Arc(a,point(side,bend_x+r*q,-r+r*q),b).toShape(),
             Part.makeLine(b,c),
-            Part.Arc(c,point(side,bend_x+r*q,final_offset+r-r*q),d).toShape()])
+            Part.Arc(c,point(side,bend_x+r*q,final_offset+r-r*q),d).toShape(),
+            Part.makeLine(d,point(side,bend_x-data['return_length_mm'],final_offset))])
     def sweep(path,radius,side,start_x):
         profile=Part.Wire(Part.makeCircle(radius,point(side,start_x,0),App.Vector(side,0,0)))
         return path.makePipeShell([profile],True,False)
@@ -93,17 +118,23 @@ def native_shapes(spec,design):
         shell=sweep(protected,outer_r,side,data['conduit_start_x_mm'])
         bore=sweep(protected,inner_r,side,data['conduit_start_x_mm'])
         shells.append(shell);bores.append(bore)
+        collar_length=data['cup_collar_end_mm']-data['cup_collar_start_mm']
+        shells.append(Part.makeCylinder(data['cup_collar_outer_radius_mm'],collar_length,
+                      point(side,data['cup_collar_start_mm'],0),App.Vector(side,0,0)))
+        bores.append(Part.makeCylinder(data['cup_collar_inner_radius_mm'],collar_length,
+                     point(side,data['cup_collar_start_mm'],0),App.Vector(side,0,0)))
         lengths[name]={'routed_insulated_centreline_mm':path.Length,
                        'finished_cut_target_mm':path.Length+2*settings['strip_each_end_mm'],
                        'blank_mm':settings['blank_length_mm'],'strip_each_end_mm':settings['strip_each_end_mm'],
-                       'instruction':'Thread before closing the fixed contact carriers; fit and trim the blank to the declared route/joint target. Support the lap joint. No live plug. Cut/fit settings are unmeasured.'}
+                       'instruction':'Thread before closing the fixed contact carriers; fit and trim the blank to the declared route/joint target. Bottom the stripped conductor in the selected0854 solder cup; keep the insulation outside the joint. No live plug. Cut/fit settings are unmeasured.'}
     # Main fuse is an insulated20x5x5 assembly reservation, not a glass-body scan.
-    fx,fy=cx+settings['main_fuse_centre_x_from_cell_mm'],cy+final_offset
+    fx,fy=cx+settings['main_fuse_centre_x_from_cell_mm'],cy+data['final_offset_y_mm']
+    z+=data['final_offset_z_mm']
     fuse=Part.makeBox(20,5,5,App.Vector(fx-10,fy-2.5,z-2.5))
     housing=Part.makeBox(23.2,8.2,8.2,App.Vector(fx-11.6,fy-4.1,z-4.1))
     cavity=Part.makeBox(20.5,5.5,7.75,App.Vector(fx-10.25,fy-2.75,z-5))
     # Rear-open installation is inside the intact rear panel, outside its cell
-    # opening. Two lacing slots restrain sleeved lead joints, not the glass body.
+    # opening. Two lacing slots restrain sleeved lead joints, not the epoxy fuse body.
     for dx in (-8,8):
         cavity=cavity.fuse(Part.makeBox(2.9,10,1.1,App.Vector(fx+dx-1.45,fy-5,z-2.25)))
     exit_hole=Part.makeCylinder(inner_r,5,App.Vector(fx-13,fy,z),App.Vector(1,0,0))

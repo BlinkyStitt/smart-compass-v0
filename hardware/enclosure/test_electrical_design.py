@@ -46,6 +46,15 @@ class PrototypeDesignTests(unittest.TestCase):
                          'Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V')
         self.assertIn('WTP-2812-2020-120-0405', self.design['parts']['RING1']['part'])
 
+    def test_pcb_contact_and_unreviewed_contact_source_fail(self):
+        for name in ('CONTACT_P', 'CONTACT_N'):
+            design = self.reviewed_fixture()
+            design['parts'][name]['part'] = 'Mill-Max 0850-0-15-20-83-14-11-0'
+            self.assertIn('selected-part:' + name, self.failure_ids(design))
+            design = self.reviewed_fixture()
+            design['parts'][name]['source'] = 'unreviewed replacement sheet'
+            self.assertIn('contact-source:' + name, self.failure_ids(design))
+
     def test_calculator_and_bench_scenario_cannot_drift(self):
         design = self.reviewed_fixture()
         design['operating_plan']['path_estimate_ohm'] = .085

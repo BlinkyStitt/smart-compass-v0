@@ -20,12 +20,15 @@ the hinged door. A separate captive quarter-turn bar retains the cell when the
 door opens. Both controls require deliberate movement. Engraved + and - strokes
 remain visible in the empty compartment. The lower door saddles constrain seating.
 
-Two fixed Mill-Max 0850-0-15-20-83-14-11-0 contacts use screwed insulating flange
-clamps. The 2018-06-07 manufacturer drawing defines the nominal barrel, flange,
-plunger and tail. The 2025-04-29 sheet gives 2.286 mm stroke and standard length
-tolerance +/-0.15 mm. The study conservatively uses 2.136 mm available stroke.
-[Dimensioned maker sheet](https://static.chipdip.ru/lib/717/DOC051717440.pdf),
-[2025 maker sheet](https://static6.arrow.com/aropdfconversion/51cd24f6bbea76697111e1326022061c9a4b0141/085-00-152-08-314110.pdf).
+Two fixed Mill-Max0854-0-15-20-82-14-11-0 contacts use screwed insulating flange
+clamps. The2-Feb-2024 manufacturer drawing defines the nominal barrel, flange,
+plunger and wire solder cup. It gives2.286mm stroke with+/-0.127mm stroke
+tolerance and+/-0.1524mm ordinary length tolerance. The study uses2.159mm
+available stroke. Finish both bores to2.75+/-0.05mm. At the source diameter limits, the minimum bore clears the maximum cup by0.1092mm in diameter. Each bore retains at least0.1621mm radial flange bearing. These are assembly gauge requirements, not guaranteed print output. The intended wire-mount cup accepts up to16AWG; use the
+selected18AWG wire with its insulation outside the soldered cup. The cup has a
+1.7018mm nominal bore and2.8448mm nominal depth. Physical insertion, solder
+quality, strain relief and temperatures remain unmeasured.
+[Maker sheet,2-Feb-2024](https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf).
 
 Set the unloaded contact-tip gap to **73.9 +/-0.1 mm**. Set the fixed negative
 insulating stop for **1.82 +/-0.05 mm** negative-contact compression. These are
@@ -41,7 +44,7 @@ Across the selected cell and assembly settings:
 - Total initial contact interference is 0.3-1.5 mm.
 - Pressing against the negative insulating stop leaves at least 0.27 mm at the
   positive end. The maximum negative-contact compression is 1.87 mm.
-- The conservative remaining mechanical stroke is at least 0.266 mm.
+- The conservative remaining mechanical stroke is at least 0.289 mm.
 
 The negative stop gives a defined release endpoint. The ribbon then pulls the
 cell outward. The intended gold-plunger contact with the negative end face
@@ -122,21 +125,27 @@ compound of every installed object.
 ## Fixed contact leads and main fuse
 
 The component census includes two M22759/16-18 contact leads and a
-Littelfuse 0251004.NRT1L main-fuse assembly reservation. The common JSON owns
-the lead targets. Each lead follows two 6 mm-radius quarter turns and a
-10.5 mm straight section. The exact centreline is 33.3919559 mm. Add 3 mm at
-each end for the specified lap joint. The finished cut target is 39.3919559 mm
-from a 42 mm blank. These are fabrication targets, not measured lengths.
-Positive and negative use separate conduits. A thicker bundle needs a new
-bend-radius review.
+Littelfuse0251004.NRT1L main-fuse reservation. The JSON owns the route.
+Each lead has two6mm-radius quarter turns, a10.9691389296mm straight
+section and a5mm inward return. The plane descends11.6degrees. Its fuse centre
+isX41/Y-69.5/Z8.3814132935mm. The38.6540948511mm centreline plus3.5mm at each
+end gives a45.6540948511mm cut target from50mm stock. These are fabrication
+targets; fit and trim the actual joints. They are not measured lengths.
 
-The wire maker gives a 1.8542 mm maximum outer diameter. Each conduit has
-2.4 mm inside diameter and 5.2 mm outside diameter. Radial wire clearance is
-0.2729 mm; the printed wall is 1.4 mm. The conduit starts before the first
-bend. Contact hoods cover the contact tails. Joint insulation and its fit at
-the hood/conduit transition still need completion. This study does not accept
-an exposed solder joint. Do not add sleeving through the bends without a
-review of its larger diameter and bend radius.
+Use separate printed insulators. Each straight cup collar starts atX49.8mm
+inside the end wall and ends atX54.5mm. Its inner/outer radii are1.6/2.95mm,
+with0.3046mm source-tolerance cup clearance and1.35mm wall. The wire-only tube
+starts atX54.4mm, overlaps the collar by0.1mm, and uses1.25/2.6mm radii. It
+retains0.3229mm radial wire clearance and1.35mm wall. Keep the first bend at
+X56mm, more than two wire diameters beyond the cup. The hood bridge starts
+atZ2mm; at least1.3814132935mm remains below the fuse cavity. This specifies
+connected geometry, not a measured bearing against the assembled rear skin.
+
+The source wire maximum OD remains1.8542mm. The6mm bend radius exceeds
+three diameters. Joint soldering, fuse lacing, insulation inspection and
+strain relief still need assembly qualification and downstream design. No
+accepted full harness follows from this component study. StandardM3x10 case
+screws remain; the smaller wire-only tubes remove the need to shorten them.
 [Wire catalog, printed page 41](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf).
 
 The 6 mm radius exceeds three times the wire's maximum diameter. This uses
@@ -159,3 +168,11 @@ walls are 1.35 mm thick, with the existing 2 mm lower lip and 1.5 mm ceiling.
 Each actual rear panel must support the full case-mount bearing ring at the
 specified 2 mm datum. The checker rejects a thin rear skin below that datum.
 These geometry checks do not establish printed strength.
+
+For initial assembly, thread each unterminated50mm blank through its fixed tube.
+Pull its contact end into the empty cell bay. Solder the contact cup off the
+printed part. Let the joint cool completely. Pull the far wire end through the
+fuse outlet while you slide the cup into its collar. Fit and gauge the clamps
+and shims. Solder the fuse end last. Keep the wire insulation outside the cup;
+the printed collar supplies secondary insulation. This sequence is a specified
+process. Joint quality, retention and physical assembly remain unmeasured.

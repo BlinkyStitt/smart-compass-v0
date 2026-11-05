@@ -367,3 +367,13 @@ design. An installed flash chip can conflict with that function. The newer
 upstream KiCad README describes different SPI2 pins; use the original V3.1
 schematic for this board. Preserve the existing firmware pin allocation.
 [WeAct schematic, 17 April 2021, pinned revision](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf).
+
+## Wire-mount cell contacts
+
+Use two Mill-Max0854-0-15-20-82-14-11-0 wire-mount contacts. The selected18AWG
+leads use their solder cups. The retained2-Feb-2024 manufacturer sheet and its
+hash bind this selection. The sheet gives12A at30C rise,9.6A after20% derating,
+and20mohm maximum component resistance under its stated test methods. These
+figures do not qualify the assembled cell interface, solder joints, fault
+withstand or enclosed temperature. See [the compartment study](battery-access.md)
+for clamp gauge targets, wire routing and the limits of the native checks.

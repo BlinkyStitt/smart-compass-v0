@@ -4,6 +4,7 @@ Native factories import FreeCAD only when called. Assembly settings below are
 manufacturing requirements, not measurements of an owned cell or printed part.
 """
 
+import hashlib
 import itertools
 import json
 import math
@@ -23,6 +24,20 @@ METAL_PARTS = MOUNT_PARTS | frozenset({'BatteryHingePin','BatteryHingeNut','Batt
 WIRE_PARTS=frozenset({'BatteryLeadP','BatteryLeadN'})
 PROTECTION_PARTS=frozenset({'BatteryMainFuse'})
 PART_NAMES = PRINTED_PARTS | SHIM_PARTS | METAL_PARTS | WIRE_PARTS | PROTECTION_PARTS | {'BatteryCell','BatteryPullRibbon'}
+
+
+def contact_source(directory=Path(__file__).parent):
+    """Read the retained manufacturer sheet for the one selected wire contact."""
+    source = Path(directory) / 'sources/battery-contact-0854'
+    record = json.loads((source / 'index.json').read_text())
+    raw = (source / 'mill-max-0854-2024.pdf').read_bytes()
+    if (record.get('part') != '0854-0-15-20-82-14-11-0'
+            or record.get('file') != 'mill-max-0854-2024.pdf'
+            or record.get('bytes') != len(raw)
+            or record.get('sha256') != '722040057ba3552bdb3e355f5986913c9f94ea59e6104aab51ee5d0d93996edc'
+            or hashlib.sha256(raw).hexdigest() != record['sha256']):
+        raise ValueError('Selected contact source changed; review the actual wire-mount drawing')
+    return record
 
 
 def definition():
@@ -49,7 +64,7 @@ def contact_travel(spec):
             'individual_initial_compression_mm': [0, max(total)],
             'compressed_max_mm': max(stop), 'released_gap_min_mm': min(release),
             'maximum_push_from_any_initial_mm': max(stop),
-            'available_stroke_min_mm': contact['full_stroke_mm'] - contact['source_length_tolerance_mm']}
+            'available_stroke_min_mm': contact['full_stroke_mm'] - contact['full_stroke_tolerance_mm']}
 
 
 
@@ -71,17 +86,43 @@ def validate(spec, design):
                 or values[0]>values[1]):
             raise ValueError('Contact '+name+' needs positive ordered limits')
     for section,keys in (
-        ('contact',('full_stroke_mm','source_length_tolerance_mm')),
+        ('contact',('full_stroke_mm','source_length_tolerance_mm','full_stroke_tolerance_mm')),
         ('removal',('positive_end_release_gap_mm','withdrawal_mm','finger_radius_mm','noncontact_clearance_mm')),
         ('cradle',('width_mm','length_mm','top_z_mm','wall_mm','side_wall_mm','ceiling_mm','cell_axis_z_mm'))):
         for name in keys:
             v=spec[section][name]
             if isinstance(v,bool) or not isinstance(v,(float,int)) or not math.isfinite(v) or v<=0:
                 raise ValueError(section+'/'+name+' must be finite and positive')
-    if (spec['contact']['part']!='Mill-Max 0850-0-15-20-83-14-11-0'
+    if (spec['contact']['part']!='Mill-Max 0854-0-15-20-82-14-11-0'
             or spec['contact']['full_stroke_mm']!=2.286
-            or spec['contact']['source_length_tolerance_mm']!=.15):
+            or spec['contact']['source_length_tolerance_mm']!=.1524
+            or spec['contact']['full_stroke_tolerance_mm']!=.127):
         raise ValueError('Contact source/stroke changed; review the selected part first')
+    record=contact_source()
+    if (spec['contact'].get('source_record')!='sources/battery-contact-0854/index.json'
+            or spec['contact'].get('source')!=record['source']):
+        raise ValueError('Selected contact source changed; review the actual wire-mount drawing')
+    expected_drawing={'initial_tip_to_mount_mm':8.6106,'flange_thickness_mm':.762,
+        'flange_diameter_mm':3.175,'barrel_diameter_mm':2.413,'rear_diameter_mm':2.2098,
+        'tip_diameter_mm':1.27,'total_height_mm':15.2146,'cup_outer_diameter_mm':2.54,
+        'cup_hole_diameter_mm':1.7018,'cup_length_mm':4.572,'cup_depth_mm':2.8448}
+    if any(spec['contact']['drawing'].get(key)!=value for key,value in expected_drawing.items()):
+        raise ValueError('Contact source drawing dimensions changed; review before regeneration')
+    drawing=spec['contact']['drawing']
+    # The cup must pass through the rear plate before its flange is clamped.
+    # Check the smallest specified finished bore against the largest source cup.
+    if 2*drawing['back_plate_bore_radius_mm']-.05 < drawing['cup_outer_diameter_mm']+.0508+.1:
+        raise ValueError('Rear contact bore cannot pass the source maximum cup with0.1mm diameter clearance')
+    # Finished-hole acceptance targets are engineering settings. Ordinary print
+    # output does not establish them. Include their specified+/-0.05mm diameter.
+    flange_min_r=(drawing['flange_diameter_mm']-.0508)/2
+    for key,body_key in (('front_plate_bore_radius_mm','barrel_diameter_mm'),
+                         ('back_plate_bore_radius_mm','rear_diameter_mm')):
+        bore=drawing[key]
+        if (not isinstance(bore,(int,float)) or isinstance(bore,bool) or not math.isfinite(bore)
+                or bore-.025-(drawing[body_key]+.0508)/2<.1
+                or flange_min_r-(bore+.025)<.15):
+            raise ValueError('Finished contact bore loses barrel clearance or flange bearing')
     travel = contact_travel(spec)
     if (travel['initial_total_min_mm'] <= 0 or travel['released_gap_min_mm'] < spec['removal']['positive_end_release_gap_mm']
             or travel['available_stroke_min_mm']-travel['compressed_max_mm'] < spec['removal']['noncontact_clearance_mm']):
@@ -241,10 +282,17 @@ def native_shapes(spec, design):
         sleeve = axial_cylinder(pin_dims['barrel_diameter_mm']/2, nose_end, flange_front)
         sleeve = sleeve.fuse(axial_cylinder(pin_dims['flange_diameter_mm']/2, flange_front, face))
         sleeve = sleeve.fuse(axial_cylinder(pin_dims['rear_diameter_mm']/2, face, tip+pin_dims['total_height_mm']))
+        # Retain a conservative cylindrical cup exterior. The actual open-sided
+        # cup accepts18AWG; its published hole/depth are not a lap-joint post.
+        cup_end=tip+pin_dims['total_height_mm']
+        cup_start=cup_end-pin_dims['cup_length_mm']
+        sleeve=sleeve.fuse(axial_cylinder(pin_dims['cup_outer_diameter_mm']/2,cup_start,cup_end))
+        sleeve=sleeve.cut(axial_cylinder(pin_dims['cup_hole_diameter_mm']/2,
+                                       cup_end-pin_dims['cup_depth_mm'],cup_end+.1))
         plunger = axial_cylinder(pin_dims['tip_diameter_mm']/2, cell_end, nose_end)
         contact_parts['BatteryContact'+suffix] = sleeve.fuse(plunger)
         contact_sleeves[suffix] = sleeve
-        for label, start, bore in (('Front',front_x,1.5),('Back',back_x,1.4)):
+        for label, start, bore in (('Front',front_x,pin_dims['front_plate_bore_radius_mm']),('Back',back_x,pin_dims['back_plate_bore_radius_mm'])):
             centre_x = cx+side*(start+.9)
             plate = box(1.8,36,18,centre_x,cy,c['cell_axis_z_mm']-9)
             plate = plate.cut(axial_cylinder(bore,start-.1,start+1.9))
@@ -258,9 +306,12 @@ def native_shapes(spec, design):
                     axial_cylinder(1.5,stop_face-.1,stop_face+1.3))
                 # For the negative end, the upper bridge joins the ring to the
                 # front clamp plate while clearing the nominal sleeve.
-                bridge=box(.9,6,6.3,cx+side*(front_x+.05),cy,c['cell_axis_z_mm']+2.7)
+                bridge_start,bridge_end=stop_face+.8,front_x+.5
+                bridge_width=bridge_end-bridge_start
+                bridge_centre=(bridge_start+bridge_end)/2
+                bridge=box(bridge_width,6,6.3,cx+side*bridge_centre,cy,c['cell_axis_z_mm']+2.7)
                 plate=plate.fuse(stop).fuse(bridge)
-                frame=frame.cut(box(2.2,7,7,cx+side*(front_x-.3),cy,c['cell_axis_z_mm']+2.4))
+                frame=frame.cut(box(bridge_width+.4,7,7,cx+side*bridge_centre,cy,c['cell_axis_z_mm']+2.4))
             contact_parts['BatteryContact'+suffix+label] = plate
             # The two plates leave the flange recess at the source datum.
             relief=box(2.3,36.5,18.5,centre_x,cy,c['cell_axis_z_mm']-9.25)
@@ -299,7 +350,7 @@ def native_shapes(spec, design):
             frame=frame.cut(hole)
             frame=frame.cut(cylinder(2.15,2.3,cx+side*(front_x+.1),cy+y,
                                       c['cell_axis_z_mm']+z,(-side,0,0)))
-            stem=cylinder(1,16,cx+side*front_x,cy+y,c['cell_axis_z_mm']+z,(side,0,0))
+            stem=cylinder(1,13,cx+side*front_x,cy+y,c['cell_axis_z_mm']+z,(side,0,0))
             head=cylinder(1.9,2,cx+side*front_x,cy+y,c['cell_axis_z_mm']+z,(-side,0,0))
             contact_parts[f'BatteryContact{suffix}Screw{i}']=stem.fuse(head)
             m2_flats,m2_thickness=nut_dimensions('M2')
@@ -309,8 +360,12 @@ def native_shapes(spec, design):
             nut=Part.Face(Part.makePolygon(verts+[verts[0]])).extrude(App.Vector(side*m2_thickness,0,0))
             nut=nut.cut(cylinder(1.05,m2_thickness+.2,cx+side*(nut_start-.1),cy+y,c['cell_axis_z_mm']+z,(side,0,0)))
             contact_parts[f'BatteryContact{suffix}Nut{i}']=nut
-    front_x=tip+pin_dims['initial_tip_to_mount_mm']-pin_dims['flange_thickness_mm']-1.8
-    frame=frame.cut(box(2.2,7,7,cx-front_x+.3,cy,c['cell_axis_z_mm']+2.4))
+    # The negative carrier bridge remains removable after the later hood fuses.
+    frame=frame.cut(box(bridge_width+.4,7,7,cx-bridge_centre,cy,c['cell_axis_z_mm']+2.4))
+    # Source cup extends through the end wall. Its surrounding fixed conduit
+    # supplies secondary insulation; the clamp plates retain the contact.
+    for side in (-1,1):
+        frame=frame.cut(cylinder(1.6,4,cx+side*49.5,cy,c['cell_axis_z_mm'],(side,0,0)))
     # Shallow door saddles prevent a cell outside the designed seat from
     # clearing the closed door. This is geometry, not a measured latch force.
     for offset in (-14,14):
@@ -344,6 +399,10 @@ def native_shapes(spec, design):
     cutout=cutout.fuse(box(tw+5,7,10,cx,cy-16.5,-5))
     import battery_leads
     leads=battery_leads.native_shapes(spec,design)
+    # Rear-bearing web keeps the positive terminal hood connected below the
+    # fuse cavity. It starts at the actual2mm rear interface and clears the
+    # contact-clamp screw head and the cell withdrawal envelope.
+    frame=frame.fuse(box(1.8,4.85,6,cx+39.7,cy-17.075,2))
     frame=frame.fuse(Part.makeCompound(leads['secondary_shells']))
     frame=frame.cut(Part.makeCompound(leads['secondary_bores']))
     chamfer=c['upper_chamfer']

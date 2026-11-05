@@ -143,6 +143,9 @@ class BuildInputTests(unittest.TestCase):
     def test_active_module_design_and_sources_are_required_hashed_inputs(self):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
                      'electrical_imu.py',
+                     'battery_access.py', 'battery_leads.py', 'battery-compartment.json', 'battery-access.md',
+                     'sources/battery-contact-0854/index.json',
+                     'sources/battery-contact-0854/mill-max-0854-2024.pdf',
                      'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.brd',
                      'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.sch',
                      'sources/lsm9ds1-classic/index.json',

@@ -17,11 +17,12 @@ class BatteryLeadTests(unittest.TestCase):
     def test_cut_list_includes_both_joints_and_uses_raw_route_length(self):
         for design in ('wide','narrow'):
             data=layout(self.spec,design,self.electrical)
-            expected=51-(73.9/2+10.0076)+math.pi*6+10.5
+            expected=56-(73.9/2+15.2146)+math.pi*6+(22.5/math.cos(math.radians(11.6))-12)+5
             self.assertAlmostEqual(data['routed_centreline_mm'],expected)
-            self.assertAlmostEqual(data['finished_cut_target_mm'],expected+6)
-            self.assertLess(data['finished_cut_target_mm'],42)
-            self.assertEqual(data['final_offset_y_mm'],-22.5)
+            self.assertAlmostEqual(data['finished_cut_target_mm'],expected+7)
+            self.assertLess(data['finished_cut_target_mm'],50)
+            self.assertAlmostEqual(data['final_offset_y_mm'],-22.5)
+            self.assertAlmostEqual(data['final_offset_z_mm'],-22.5*math.tan(math.radians(11.6)))
             self.assertAlmostEqual(data['wire_radius_mm'],1.8542/2)
 
     def test_thicker_stock_does_not_keep_old_clearance_or_bend(self):
@@ -34,7 +35,9 @@ class BatteryLeadTests(unittest.TestCase):
     def test_short_blank_tight_bend_and_thin_insulation_fail(self):
         for key,value in [('blank_length_mm',35),('individual_bend_radius_mm',5),
                           ('conduit_outer_radius_mm',2.5),('bend_start_x_from_cell_mm',50),
-                          ('conduit_start_x_from_cell_mm',51)]:
+                          ('conduit_start_x_from_cell_mm',51),('conduit_start_x_from_cell_mm',45),
+                          ('conduit_inner_radius_mm',1.5),('cup_collar_inner_radius_mm',1.5),
+                          ('cup_collar_end_x_from_cell_mm',53),('cup_collar_outer_radius_mm',2.8)]:
             spec=copy.deepcopy(self.spec);spec['contact_leads'][key]=value
             with self.subTest(key=key),self.assertRaises(ValueError):layout(spec,'wide',self.electrical)
 
@@ -48,8 +51,18 @@ class BatteryLeadTests(unittest.TestCase):
         for section,key,value in [('F1','loaded_envelope_mm',[20,6,5]),('F1','part','another fuse')]:
             electrical=copy.deepcopy(self.electrical);electrical['parts'][section][key]=value
             with self.assertRaises(ValueError):layout(self.spec,'wide',electrical)
+        for key in ('CONTACT_P','CONTACT_N'):
+            electrical=copy.deepcopy(self.electrical)
+            electrical['parts'][key]['part']='Mill-Max 0850-0-15-20-83-14-11-0'
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'same wire-mount part'):
+                layout(self.spec,'wide',electrical)
         self.electrical['wiring']['stock_limits']['main']['stock']='another wire'
         with self.assertRaises(ValueError):layout(self.spec,'wide',self.electrical)
+
+    def test_descent_must_keep_the_rear_bearing_brace(self):
+        for value in (True,float('nan'),-1,45,20):
+            spec=copy.deepcopy(self.spec);spec['contact_leads']['route_descent_deg']=value
+            with self.subTest(value=value),self.assertRaises(ValueError):layout(spec,'narrow',self.electrical)
 
     def test_three_new_parts_are_required_in_the_compartment_census(self):
         from battery_access import PART_NAMES, WIRE_PARTS, PROTECTION_PARTS

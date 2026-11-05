@@ -9,12 +9,16 @@
       "source": "https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight"
     },
     "CONTACT_P": {
-      "part": "Mill-Max 0850-0-15-20-83-14-11-0",
-      "source": "https://www.mill-max.com/products/spring-loaded/pcb-solder-tail-spring-loaded-pin/0850"
+      "part": "Mill-Max 0854-0-15-20-82-14-11-0",
+      "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "basis": "Wire-mount solder cup accepts up to16AWG; selected18AWG uses the intended termination.12A at30C rise/9.6A20%-derated per2024 sheet;20mohm maximum contact resistance. These component conditions do not qualify contact to cell, solder joints, fault withstand or enclosed heat."
     },
     "CONTACT_N": {
-      "part": "Mill-Max 0850-0-15-20-83-14-11-0",
-      "source": "https://www.mill-max.com/products/spring-loaded/pcb-solder-tail-spring-loaded-pin/0850"
+      "part": "Mill-Max 0854-0-15-20-82-14-11-0",
+      "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "basis": "Wire-mount solder cup accepts up to16AWG; selected18AWG uses the intended termination.12A at30C rise/9.6A20%-derated per2024 sheet;20mohm maximum contact resistance. These component conditions do not qualify contact to cell, solder joints, fault withstand or enclosed heat."
     },
     "F1": {
       "part": "Littelfuse 0251004.NRT1L, 4 A, axial",
