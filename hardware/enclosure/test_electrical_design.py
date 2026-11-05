@@ -130,6 +130,12 @@ class PrototypeDesignTests(unittest.TestCase):
         design['parts']['START']['part'] = 'Pololu 1400'
         self.assertIn('selected-part:START', self.failure_ids(design))
 
+    def test_optional_blackpill_flash_cannot_share_battery_sense(self):
+        design=self.reviewed_fixture();design['module_rework']['BLACKPILL.do_not_install']=[]
+        self.assertIn('blackpill-flash-conflict',self.failure_ids(design))
+        design=self.reviewed_fixture();design['parts']['BLACKPILL']['part']='WeAct board with U3 flash fitted'
+        self.assertIn('selected-part:BLACKPILL',self.failure_ids(design))
+
     def test_source_controls_and_unused_inputs_remain_checked(self):
         for key, value in [('BOOST.remove', []), ('LATCH.leave_open', []),
                            ('BOOST.do_not_install', []), ('SPARKLE.usb_pd_v', 20),

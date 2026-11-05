@@ -310,3 +310,10 @@ Do not infer a guaranteed settling time or reset delay from nominal RC
 values. Measure PA4 settling and injection during power sequencing. The
 source's simulation pages show typical responses, not maximum ratings.
 [Manufacturer part sheet](https://search.kemet.com/component-documentation/download/specsheet/C315C104K5R5TA).
+
+Select the **WeAct V3.1 STM32F411CEU6 without optional U3 flash**. Its original
+schematic connects U3 to PA4/PA5/PA6/PA7. PA4 is the battery-sense input in this
+design. An installed flash chip can conflict with that function. The newer
+upstream KiCad README describes different SPI2 pins; use the original V3.1
+schematic for this board. Preserve the existing firmware pin allocation.
+[WeAct schematic, 17 April 2021, pinned revision](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf).

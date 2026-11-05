@@ -66,6 +66,7 @@ REQUIRED_BENCH_TESTS = frozenset({
 })
 CRITICAL_PARTS = {
     'CELL': 'XTAR protected 21700 6000 mAh button-top',
+    'BLACKPILL': 'WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input',
     'CONTACT_P': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'F1': 'Littelfuse 0251004.NRT1L, 4 A, axial',
@@ -179,6 +180,8 @@ def assess(design, directory=HERE):
     require(rework.get('BOOST.do_not_install') == ['B1', 'CN1', 'X1', 'X2']
             and rework.get('SPARKLE.usb_pd_v') == 5,
             'external-power-paths', 'Keep unused connectors absent and USB service at 5 V.')
+    require(rework.get('BLACKPILL.do_not_install') == ['U3'],
+            'blackpill-flash-conflict', 'Optional V3.1 U3 flash shares the PA4 battery-sense input; select the unpopulated variant.')
     record = design.get('source_record', {})
     source_path = Path(record.get('path', ''))
     if source_path.is_absolute() or '..' in source_path.parts:

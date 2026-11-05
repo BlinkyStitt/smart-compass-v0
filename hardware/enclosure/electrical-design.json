@@ -160,8 +160,11 @@
       "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts"
     },
     "BLACKPILL": {
-      "part": "WeAct BlackPill STM32F411, 3.3 V input",
-      "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1"
+      "part": "WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input",
+      "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf",
+      "source_revision": "WeAct V3.1 schematic,4/17/2021; pinned upstream6a7f7d434a9d6361f91590d4cdd16b4a70ce7513, sheet1 zonesB/C headers andD1 optional flash",
+      "basis": "Select the F411CEU6 board without optional U3 flash. In the actual V3.1 schematic, U3 shares PA4 chip-select, PA5 clock, PA6 MISO, PA7 MOSI. PA4 is the external battery divider input here. Do not use the newer KiCad README claim of SPI2/PB12-PB15 for this board. No new firmware or pin reassignment.",
+      "source_sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565"
     },
     "GPS": {
       "part": "Adafruit Ultimate GPS FeatherWing, 3V input",
@@ -598,7 +601,10 @@
       "X2"
     ],
     "SPARKLE.usb_pd_v": 5,
-    "BOOST.nominal_output_v": 5.2
+    "BOOST.nominal_output_v": 5.2,
+    "BLACKPILL.do_not_install": [
+      "U3"
+    ]
   },
   "source_record": {
     "path": "sources/powerboost-1000-basic/extracted-connectivity.json",
