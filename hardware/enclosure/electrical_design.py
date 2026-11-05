@@ -156,6 +156,13 @@ def assess(design, directory=HERE):
             and finite(operating.get('efficiency_estimate'))
             and 0 < operating['efficiency_estimate'] <= 1,
             'operating-range', 'Brightness and efficiency must be fractions in (0,1].')
+    model = json.loads((Path(directory).parents[1] / 'site/electrical-inputs.json').read_text())
+    defaults = model['defaults']
+    require(operating.get('model_record') == 'site/electrical-inputs.json#defaults'
+            and all(operating.get(plan) == defaults.get(key) for plan, key in (
+                ('brightness', 'brightness'), ('non_led_budget_w', 'non_led_w'),
+                ('efficiency_estimate', 'efficiency'), ('path_estimate_ohm', 'path_ohm'))),
+            'planning-model-agreement', 'Bench planning and calculator defaults must use the same declared scenario.')
     cell_range = operating.get('cell_v', [])
     require(len(cell_range) == 2 and all(finite(v) for v in cell_range)
             and 2.2 <= cell_range[0] < cell_range[1] <= 4.2,

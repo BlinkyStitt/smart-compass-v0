@@ -23,14 +23,14 @@
     "efficiency": 0.85
   },
   "defaults": {
-    "brightness": 0.05,
+    "brightness": 0.02,
     "efficiency": 0.85,
-    "reserve": 0.15,
+    "reserve": 0.25,
     "capacity_ah": 6.0,
     "cell_v": 3.6,
-    "non_led_w": 0.5,
-    "quiescent_w": 0.002,
-    "path_ohm": 0.085
+    "non_led_w": 2.0,
+    "quiescent_w": 0.045,
+    "path_ohm": 0.12
   },
   "mapping": "Clamp each shared Godot RGB channel times electrical brightness to [0,1], round to the nearest 8-bit PWM code; no optical gamma, shader brightness, reflections or glow. A modeling scenario, not a delivered firmware cap.",
   "operating_basis": {
@@ -43,7 +43,7 @@
     "excluded_normal_use": "Full-white, full-brightness operation is outside the intended use. It is not the runtime sizing case.",
     "led_model": "Adafruit NeoPixel engineering estimate: 20 mA per fully driven RGB channel plus a separately retained 1 mA logic allowance per powered pixel.",
     "pattern_model": "Sample the shared Godot RGB functions over the full eight-second cycle. The full-saturation HSV rainbow has mean R+G+B of 1.5 before 8-bit quantization, so its dynamic channel demand averages half of RGB white at equal brightness.",
-    "brightness": "5% is the calculator default, not a firmware-enforced ceiling. Other brightness settings require their own demand calculation.",
+    "brightness": "2% is the initial bench planning scenario and calculator default, not a firmware-enforced ceiling. Other settings need their own load review.",
     "protection": "Use average estimates for runtime and normal operating load planning. Retain separate inrush, fault, cutoff, recovery and thermal checks; software brightness is not a hardware fault limit."
   },
   "groups": {
@@ -172,13 +172,21 @@
       "claim": "Reference comparison only: 16/11/15 mA red/green/blue plus 1 mA dark at 5 V. These measured-strip calibration coefficients are not substituted into the selected Adafruit model, and FastLED hsv2rgb_rainbow is not our Godot HSV function."
     },
     {
-      "url": "https://www.pololu.com/product/2891",
-      "claim": "Regulator minimum input is 2.9 V; typical no-load quiescent current below 1 mA is not a maximum efficiency or quiescent bound."
+      "url": "https://www.adafruit.com/product/2030",
+      "claim": "Selected stock5.2V boost: Adafruit gives5mA enabled quiescent current with its power LED on and output-current examples at stated battery conditions. These do not establish guaranteed enclosed efficiency, quiescent maxima or transient/thermal performance.",
+      "source_revision": "PowerBoost1000Basic product specification, read2026-11-04"
     },
     {
       "path": "hardware/enclosure/component-inventory.json",
       "claim": "The NeoPixel planning approximation also applies to the current ring counts. Exact strip stock, protection and assembly ratings remain separate design work."
     }
   ],
-  "uncertainty": "Estimated NeoPixel average demand from Adafruit channel/idle figures and the actual shared RGB pattern. Pixel variants differ; PJRC measurements show this variation. Controller/radio load, efficiency, path loss and reserve remain adjustable planning assumptions. Calculated runtime is an estimate, not a measured result. Sampled frame peaks exclude internal PWM, radio bursts, inrush and faults; hardware protection and thermal qualification remain separate."
+  "uncertainty": "Estimated NeoPixel average demand from Adafruit channel/idle figures and the actual shared RGB pattern. Pixel variants differ; PJRC measurements show this variation. Controller/radio load, efficiency, path loss and reserve remain adjustable planning assumptions. Calculated runtime is an estimate, not a measured result. Sampled frame peaks exclude internal PWM, radio bursts, inrush and faults; hardware protection and thermal qualification remain separate.",
+  "loss_basis": {
+    "kind": "Engineering estimates; no measured or guaranteed assembly loss/usable capacity",
+    "quiescent_w": "0.045W input planning allowance: enabled PowerBoost maker5mA plus input-side1kohm drain, Pololu indicator/current and sense divider at up to4.2V. This is not a guaranteed maximum. Output-side drains are inside the2W non-LED allowance.",
+    "path_ohm": "0.12ohm estimated cell-to-boost path. Two20mohm reference contacts + Pololu26mohm specified at1.8V + switch below10mohm typical + fuse19.7mohm nominal already total about95.7mohm before wiring/joints. No guaranteed or measured assembly bound is claimed.",
+    "reserve": "25% engineering allowance for cutoff, aging, temperature and usable-capacity uncertainty; not derived from a published XTAR discharge/cutoff curve. Count once in usable energy.",
+    "non_led_w": "2W average planning allowance includes controllers/sensors/radio, Sparkle barrel/PTC/3.3V distribution and three output bleed resistors. Conversion efficiency remains a separate constant85% estimate."
+  }
 }

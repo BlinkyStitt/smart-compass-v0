@@ -73,6 +73,8 @@ try {
       // is not. Keep its current/runtime visible without inventing savings.
       await page.getByLabel('Design', {exact: true}).selectOption('wide');
       await page.getByLabel('Pattern', {exact: true}).selectOption('dark-sectors');
+      await page.getByLabel('Controller, sensors and radio output (W)', {exact: true}).fill('0.5');
+      await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).fill('0.085');
       await page.getByLabel('Electrical brightness (%)', {exact: true}).fill('50');
       const comparison = await agreement(page);
       assert.equal(comparison.savings.state, 'unavailable');

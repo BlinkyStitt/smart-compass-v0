@@ -216,24 +216,24 @@ also explains this near-50% duty cycle for a saturated rainbow. Its general
 20 mA-per-pixel animation rule is a different approximation; do not apply that
 rule and then discount for rainbow a second time.
 
-At the current 5% default, 1024 samples over eight seconds give:
+At the current 2% default, 1024 samples over eight seconds give:
 
 | Rainbow load at 5 V | Average current | Average LED power | Sampled frame peak |
 | --- | ---: | ---: | ---: |
-| Fibonacci256 alone | 0.645 A | 3.225 W | — |
-| Wide, all 494 pixels | 1.245 A | 6.223 W | 1.246 A |
-| Narrow, all 466 pixels | 1.174 A | 5.870 W | 1.176 A |
+| Fibonacci256 alone | 0.408 A | 2.038 W | — |
+| Wide, all 494 pixels | 0.786 A | 3.932 W | 0.788 A |
+| Narrow, all 466 pixels | 0.742 A | 3.710 W | 0.743 A |
 
-With the current additional assumptions (0.5 W controller/sensors/radio,
-85% conversion, 0.085 ohm battery path, 0.002 W input quiescent loss, nominal
-3.6 V/6 Ah cell and 15% reserve), calculated rainbow runtime is about
-**2.19 h Wide / 2.32 h Narrow**. These include more load and loss than the
+With the current additional assumptions (2 W controller/sensors/radio,
+85% conversion, 0.12 ohm battery path, 0.045 W input static loss, nominal
+3.6 V/6 Ah cell and 25% reserve), calculated rainbow runtime is about
+**2.14 h Wide / 2.23 h Narrow**. These include more load and loss than the
 separate 2.9376 h reference arithmetic. They are unmeasured estimates, not
 guaranteed usable runtime. Regenerate samples after changing any model input.
 
 Brightness matters: Fibonacci256 alone averages about 1.034 A at 10% and
 2.181 A at 25%. All Wide pixels average 1.995 A and 4.209 A respectively;
-Narrow averages 1.882 A and 3.970 A. Five percent is a calculator default,
+Narrow averages 1.882 A and 3.970 A. Two percent is the initial bench scenario and calculator default,
 not a delivered firmware limit or a claim of adequate visible brightness.
 
 [PJRC's original measurements](https://www.pjrc.com/how-much-current-do-ws2812-neopixel-leds-really-use/)
@@ -297,3 +297,10 @@ The workflow runs local verification before uploading and live verification
 after deployment. At this checkpoint the electrical gate prevents reaching
 either release check. The legacy cards/mass model still require the fitted
 assembly migration before publication can be qualified.
+
+The shared input record explains the loss estimates. The0.045W input allowance
+includes the boost's enabled current, the input-side drain and latch. The2W
+output allowance includes controller loads, distribution loss and output drains.
+The0.12ohm path allows for selected contact, latch, switch and fuse losses plus
+wiring; it is not a measured or guaranteed bound. The25% reserve is an
+engineering allowance for cutoff and usable-capacity uncertainty. Count it once.

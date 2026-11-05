@@ -161,7 +161,7 @@ gives thermal-current examples at 12 V input and 22 C still air. Neither establi
 an enclosed single-cell thermal limit. Use these conditions as source context,
 not as wearable acceptance. Review average/frame demand separately from internal
 PWM, radio bursts, inrush and faults. Do not claim that the 85% efficiency or
-0.085 ohm path estimate is a guaranteed bound.
+0.12 ohm path estimate is a guaranteed bound.
 
 ## Physical qualification
 
@@ -216,3 +216,10 @@ lead space. The1.79Arms rating applies at100kHz/+105C. Apply the maker's
 frequency factors to the measured waveform before physical acceptance.
 Do not treat its100kHz impedance as a broadband maximum ESR.
 [Panasonic FR-A,01-Sep-2025](https://industrial.panasonic.com/cdbs/www-data/pdf/RDF0000/ABA0000C1259.pdf).
+
+The calculator now defaults to the same2%/2W bench scenario. Its0.045W
+input-side static-loss allowance and0.12ohm path are estimates. The old0.085ohm
+path omitted too much of the selected contacts, switch, fuse and latch. The25%
+reserve is an engineering allowance, not a measured cutoff-capacity result.
+`site/electrical-inputs.json` owns these assumptions and their loss basis; the
+electrical check rejects drift from the shared planning scenario.

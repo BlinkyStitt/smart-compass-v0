@@ -404,13 +404,14 @@
     "brightness": 0.02,
     "non_led_budget_w": 2.0,
     "efficiency_estimate": 0.85,
-    "path_estimate_ohm": 0.085,
+    "path_estimate_ohm": 0.12,
     "battery_current_review_a": 3.0,
     "ambient_c": [
       10,
       30
     ],
-    "basis": "Initial bench configuration only. Verify 2% electrical brightness and the 2 W non-LED allowance before operation. No firmware ceiling or safe current limit is claimed; higher brightness needs another load review. Enclosed temperatures and current transients are unmeasured."
+    "basis": "Initial bench configuration only. Verify 2% electrical brightness and the 2 W non-LED allowance before operation. No firmware ceiling or safe current limit is claimed; higher brightness needs another load review. Enclosed temperatures and current transients are unmeasured.",
+    "model_record": "site/electrical-inputs.json#defaults"
   },
   "service": {
     "off_dwell_s": null,

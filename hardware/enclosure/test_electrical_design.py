@@ -46,6 +46,11 @@ class PrototypeDesignTests(unittest.TestCase):
                          'Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V')
         self.assertIn('WTP-2812-2020-120-0405', self.design['parts']['RING1']['part'])
 
+    def test_calculator_and_bench_scenario_cannot_drift(self):
+        design = self.reviewed_fixture()
+        design['operating_plan']['path_estimate_ohm'] = .085
+        self.assertIn('planning-model-agreement', self.failure_ids(design))
+
     def test_direct_low_battery_to_enable_is_rejected(self):
         design = self.reviewed_fixture()
         design['nets']['LATCH_OFF'].remove('BOOST.R20.2')
