@@ -12,6 +12,7 @@ from pathlib import Path
 import electrical_imu
 import electrical_boost
 import electrical_latch
+import capacitor_mount
 from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
@@ -172,6 +173,11 @@ def assess(design, directory=HERE):
                     'contact-source:' + name, 'Use the retained wire-mount contact sheet.')
     except (ValueError, OSError) as error:
         require(False, 'contact-source', str(error))
+    try:
+        capacitor_targets=capacitor_mount.geometry(parts.get('C_OUT',{}),directory)
+    except (ValueError,OSError) as error:
+        capacitor_targets={}
+        require(False,'capacitor-source-and-fit',str(error))
     terminals = parts.get('SPARKLE', {}).get('led_terminals', {})
     require(terminals.get('assembly') == 'Factory-installed JP1 nine-position 2.54mm screw terminal strip on Sparkle Motion Rev D'
             and terminals.get('wire_group') == 'branches'
@@ -302,5 +308,6 @@ def assess(design, directory=HERE):
         'imu_source_terminals': imu_terminals,
         'boost_source_terminals': boost_terminals,
         'latch_source_terminals': latch_terminals,
+        'bulk_capacitor_targets':capacitor_targets,
         'historical_recovery': design.get('historical_recovery'),
     }

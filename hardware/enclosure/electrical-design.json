@@ -198,7 +198,30 @@
         31,
         14
       ],
-      "basis": "Source nominal10x16mm; FR-A 01-Sep-2025 drawing gives diameter +/-0.5mm and length +/-1.5mm. Lay horizontally in12x31x14mm engineering reservation including leads. Published1.79Arms is at100kHz/+105C; apply the source frequency correction to the measured waveform, not to its frame average."
+      "basis": "Source nominal10x16mm; FR-A 01-Sep-2025 drawing gives diameter +/-0.5mm and length +/-1.5mm. Lay horizontally in12x31x14mm engineering reservation including leads. Published1.79Arms is at100kHz/+105C; apply the source frequency correction to the measured waveform, not to its frame average.",
+      "source_record": "sources/capacitor-fr-a/index.json",
+      "body_diameter_mm": [
+        9.5,
+        10.5
+      ],
+      "body_length_mm": [
+        14.5,
+        17.5
+      ],
+      "lead_diameter_mm": [
+        0.55,
+        0.65
+      ],
+      "lead_pitch_mm": [
+        4.5,
+        5.5
+      ],
+      "minimum_vent_clearance_mm": 2,
+      "mount": {
+        "shim_part": "RS PRO770-787 white polyester shim stock",
+        "shim_source": "https://uk.rs-online.com/web/p/plastic-shims/0770787",
+        "shim_nominal_mm": 0.25
+      }
     },
     "R_A": {
       "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",

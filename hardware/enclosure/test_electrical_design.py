@@ -55,6 +55,12 @@ class PrototypeDesignTests(unittest.TestCase):
             design['parts'][name]['source'] = 'unreviewed replacement sheet'
             self.assertIn('contact-source:' + name, self.failure_ids(design))
 
+    def test_capacitor_source_corners_and_pressure_valve_space_are_required(self):
+        for key,value in [('minimum_vent_clearance_mm',0),('body_diameter_mm',[10,10]),('lead_pitch_mm',[5,5])]:
+            design=self.reviewed_fixture();design['parts']['C_OUT'][key]=value
+            with self.subTest(key=key):
+                self.assertIn('capacitor-source-and-fit',self.failure_ids(design))
+
     def test_calculator_and_bench_scenario_cannot_drift(self):
         design = self.reviewed_fixture()
         design['operating_plan']['path_estimate_ohm'] = .085
