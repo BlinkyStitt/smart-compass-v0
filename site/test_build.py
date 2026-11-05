@@ -143,6 +143,13 @@ class BuildInputTests(unittest.TestCase):
     def test_active_module_design_and_sources_are_required_hashed_inputs(self):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
                      'electrical_imu.py',
+                     'electrical_boost.py',
+                     'sources/powerboost-1000-basic/Adafruit PowerBoost 1000 Basic.brd',
+                     'sources/powerboost-1000-basic/Adafruit PowerBoost 1000 Basic.sch',
+                     'sources/powerboost-terminals/index.json',
+                     'sources/powerboost-terminals/README.md',
+                     'sources/powerboost-terminals/2444.html',
+                     'sources/powerboost-terminals/2444-dimension.jpg',
                      'battery_access.py', 'battery_leads.py', 'battery-compartment.json', 'battery-access.md',
                      'sources/battery-contact-0854/index.json',
                      'sources/battery-contact-0854/mill-max-0854-2024.pdf',

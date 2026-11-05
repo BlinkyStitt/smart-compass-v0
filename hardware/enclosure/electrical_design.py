@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 
 import electrical_imu
+import electrical_boost
 from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
@@ -21,8 +22,8 @@ REQUIRED_CONNECTIONS = {
     'FUSED_CELL': {'F1.2', 'S1.1'},
     'A': {'S1.2', 'LATCH.VIN'},
     'A_DRAIN': {'S1.3', 'R_A.1'},
-    'B': {'LATCH.VOUT', 'BOOST.JP1.1', 'R_B.1', 'R_SENSE_TOP.1'},
-    'BOOST_OUT': {'BOOST.JP1.6', 'S1.4', 'R_BOOST.1'},
+    'B': {'LATCH.VOUT', 'BOOST.X2.2', 'R_B.1', 'R_SENSE_TOP.1'},
+    'BOOST_OUT': {'BOOST.X1.2', 'S1.4', 'R_BOOST.1'},
     'LOAD_5V': {'S1.5', 'R_LOAD.1', 'SPARKLE.X7.PWR'},
     'OUTPUT_OFF': {'S1.6'},
     'LATCH_OFF': {'BOOST.R20.2', 'LATCH.OFF', 'R_OFF.1'},
@@ -57,7 +58,7 @@ REQUIRED_CONNECTIONS = {
     'GPS_ENABLE': {'BLACKPILL.PB7', 'GPS.EN'},
     'MODE': {'BLACKPILL.PB13','MODE.1'},
     'ACTION': {'BLACKPILL.PB14','ACTION.1'},
-    'GND': {'CONTACT_N.tail', 'LATCH.GND', 'BOOST.JP1.2', 'C_OUT.N',
+    'GND': {'CONTACT_N.tail', 'LATCH.GND', 'BOOST.X2.1', 'BOOST.X1.1', 'C_OUT.N',
             'R_A.2', 'R_B.2', 'R_OUT.2', 'R_BOOST.2', 'R_LOAD.2', 'R_OFF.2', 'START.3',
             'R_SENSE_BOTTOM.2', 'C_SENSE.2', 'MODE.3', 'ACTION.3', 'SPARKLE.X7.GND', 'BLACKPILL.GND',
             'GPS.GND', 'IMU.GND', 'RADIO.GND', 'FIBONACCI.GND',
@@ -188,6 +189,15 @@ def assess(design, directory=HERE):
         imu_terminals = electrical_imu.terminals(parts.get('IMU', {}), directory)
     except (ValueError, OSError) as error:
         require(False, 'imu-terminal-binding', str(error))
+    boost_terminals = {}
+    try:
+        boost_terminals = electrical_boost.terminals(parts.get('BOOST', {}), directory)
+        electrical_boost.terminal_blocks(parts.get('BOOST', {}), directory)
+        require(design.get('wiring', {}).get('stock_limits', {}).get('main', {}).get('stock') == 'M22759/16-18'
+                and design.get('wiring', {}).get('stock_limits', {}).get('branches', {}).get('stock') == 'M22759/16-22',
+                'boost-wire-gauges', 'Use18AWG input and22AWG output wires in the selected clamps.')
+    except (ValueError, OSError) as error:
+        require(False, 'boost-terminal-binding', str(error))
     require(parts.get('BOOST', {}).get('part') == 'Adafruit PowerBoost 1000 Basic, PID 2030'
             and parts.get('LATCH', {}).get('part') == 'Pololu 2808 Mini Pushbutton Power Switch LV',
             'module-selection', 'Connection checks apply only to the reviewed boost/latch pair.')
@@ -203,10 +213,11 @@ def assess(design, directory=HERE):
             'low-battery-inversion', 'Remove the LED resistor and use its T1-collector pad, not LBO or EN.')
     require(rework.get('BOOST.nominal_output_v') == 5.2,
             'regulated-output', 'Retain the stock nominal 5.2 V module setting for the reviewed barrel-feed path.')
-    require(rework.get('BOOST.leave_open') == ['JP1.3', 'JP1.4']
+    require(rework.get('BOOST.leave_open') == ['JP1.' + str(i) for i in range(1, 7)]
             and rework.get('LATCH.leave_open') == ['B', 'ON', 'CTRL'],
             'latch-controls', 'No continuously asserted ON, direct LBO-to-EN or unreviewed control source.')
-    require(rework.get('BOOST.do_not_install') == ['B1', 'CN1', 'X1', 'X2']
+    require(rework.get('BOOST.do_not_install') == ['B1', 'CN1']
+            and rework.get('BOOST.install') == {'X1':'Pololu2444','X2':'Pololu2444'}
             and rework.get('SPARKLE.usb_pd_v') == 5,
             'external-power-paths', 'Keep unused connectors absent and USB service at 5 V.')
     require(rework.get('BLACKPILL.do_not_install') == ['U3'],
@@ -283,5 +294,6 @@ def assess(design, directory=HERE):
         'service': design.get('service', {}),
         'off_positive_contact_isolation': isolation,
         'imu_source_terminals': imu_terminals,
+        'boost_source_terminals': boost_terminals,
         'historical_recovery': design.get('historical_recovery'),
     }

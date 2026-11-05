@@ -163,6 +163,7 @@ class PrototypeDesignTests(unittest.TestCase):
     def test_source_controls_and_unused_inputs_remain_checked(self):
         for key, value in [('BOOST.remove', []), ('LATCH.leave_open', []),
                            ('BOOST.do_not_install', []), ('SPARKLE.usb_pd_v', 20),
+                           ('BOOST.install', {}), ('BOOST.leave_open', ['JP1.3','JP1.4']),
                            ('BOOST.nominal_output_v', 5.0)]:
             with self.subTest(key=key):
                 design = self.reviewed_fixture()
@@ -171,6 +172,18 @@ class PrototypeDesignTests(unittest.TestCase):
         design = self.reviewed_fixture()
         design['source_record']['sha256'] = '0' * 64
         self.assertIn('module-source-hash', self.failure_ids(design))
+
+    def test_boost_current_cannot_return_to_the_small_header_pads(self):
+        for net,selected,old in [('B','BOOST.X2.2','BOOST.JP1.1'),
+                                 ('BOOST_OUT','BOOST.X1.2','BOOST.JP1.6'),
+                                 ('GND','BOOST.X2.1','BOOST.JP1.2')]:
+            design=self.reviewed_fixture()
+            design['nets'][net].remove(selected);design['nets'][net].append(old)
+            with self.subTest(net=net):self.assertIn('net:'+net,self.failure_ids(design))
+        design=self.reviewed_fixture();design['nets']['GND'].remove('BOOST.X1.1')
+        self.assertIn('net:GND',self.failure_ids(design))
+        design=self.reviewed_fixture();design['wiring']['stock_limits']['main']['stock']='M22759/16-22'
+        self.assertIn('boost-wire-gauges',self.failure_ids(design))
 
     def test_unsupported_part_substitution_cannot_reuse_wiring_checks(self):
         design = self.reviewed_fixture()

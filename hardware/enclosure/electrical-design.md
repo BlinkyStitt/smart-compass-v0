@@ -150,8 +150,36 @@ latch is not a safety disconnect; S1 supplies that separate mechanical function.
 Do not connect LBO directly to EN. The TPS61030 disables its low-battery
 comparator when EN is low. That arrangement cannot provide this latched shutdown.
 Leave PowerBoost EN and LBO header pins without external connections. EN retains
-its stock 200 kohm pull-up. Do not install the optional JST battery connector,
-USB-A socket or terminal blocks. Use fixed, insulated soldered leads.
+its stock 200 kohm pull-up. Do not install the optional JST battery connector
+or USB-A socket. Install two **Pololu2444 two-pin3.5mm side-entry terminal
+blocks** at X1 and X2. Keep every JP1 header pad without an external lead.
+The retained board and schematic bind the actual positions; positive is pin2
+on both blocks. The source net label `5.0V` identifies the stock nominal5.2V
+output. Do not change the feedback setting to match that label.
+
+| Pad | Use | Wire |
+| --- | --- | --- |
+| X2.2 | Switched battery input from latch VOUT |18AWG main |
+| X2.1 | Input return directly to the negative star |18AWG main |
+| X1.2 | Output through S1 poleB to Sparkle X7.PWR |22AWG branch |
+| X1.1 | Output return to Sparkle X7.GND |22AWG branch |
+| R20.2 | Low-battery request to Pololu OFF |26AWG signal |
+
+The input return bypasses the Pololu ground trace. Its ground lead carries
+control current. Keep each power feed with its return. The seller specifies
+24–18AWG wire,10A and5mm stripped length for2444. Put one untinned stranded
+conductor in each used clamp. Support the insulated leads near the entries.
+These clamps remain closed during cell replacement.
+[Seller specifications](https://www.pololu.com/product/2444).
+
+The nominal terminal body is7.96x6.8x8.4mm, with0.8mm round pins. Published pin
+length is3.7+/-0.3mm. Adafruit's footprints have1mm nominal drills. The output
+body reaches X30.451mm on the29.21mm nominal board. Use these actual source
+positions for the carrier; the old rectangular PCB reservation does not prove
+fit. The retained seller drawing gives no other body/pin tolerance. Supplied
+fit, solder quality, screw retention and enclosed operation remain unmeasured.
+Do not force pins or enlarge plated holes. The published20mohm resistance has
+no stated maximum qualifier, so it cannot supply a worst-case loss bound.
 
 ### OFF and restart
 

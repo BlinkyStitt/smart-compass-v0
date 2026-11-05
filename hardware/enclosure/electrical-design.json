@@ -41,7 +41,53 @@
     },
     "BOOST": {
       "part": "Adafruit PowerBoost 1000 Basic, PID 2030",
-      "source": "https://www.adafruit.com/product/2030"
+      "source": "https://www.adafruit.com/product/2030",
+      "board_revision": "493d06d70537ce418355b395bb251a661d683150",
+      "source_record": "sources/powerboost-1000-basic/index.json",
+      "terminal_bindings": {
+        "BAT": "X2.2",
+        "INPUT_GND": "X2.1",
+        "OUT": "X1.2",
+        "OUTPUT_GND": "X1.1",
+        "TRIP": "R20.2"
+      },
+      "wire_terminals": {
+        "part": "Pololu2444 two-pin3.5mm side-entry screw terminal block",
+        "quantity": 2,
+        "positions": [
+          "X1",
+          "X2"
+        ],
+        "source": "https://www.pololu.com/product/2444",
+        "source_record": "sources/powerboost-terminals/index.json",
+        "wire_awg_range": [
+          24,
+          18
+        ],
+        "published_current_a": 10,
+        "current_basis": "Seller UL10A/125V, IEC10A/130V; no enclosed thermal or fault-clearing qualification.",
+        "strip_target_mm": 5,
+        "wires_per_clamp": 1,
+        "nominal_body_mm": [
+          7.96,
+          6.8,
+          8.4
+        ],
+        "nominal_pin_diameter_mm": 0.8,
+        "pin_length_mm": [
+          3.4,
+          4.0
+        ],
+        "wire_groups": {
+          "X2.1": "main",
+          "X2.2": "main",
+          "X1.1": "branches",
+          "X1.2": "branches"
+        },
+        "retention": "Solder both blocks before fixed harness assembly. Keep wire insulation outside clamps, one untinned stranded conductor per used clamp, and restrain insulated leads near each entry. Ordinary battery access leaves all clamps closed. Check supplied pin fit, solder quality, screw retention and temperatures physically; do not force or drill the plated holes.",
+        "contact_resistance_basis": "20mohm published; seller does not identify it as a guaranteed maximum. Do not use it as a worst-case path bound.",
+        "fit_boundary": "Source PCB drills1mm and terminal pins0.8mm are nominal. Published pin length is3.7+/-0.3mm. Other body/pin/PCB tolerances and actual fit remain unmeasured. The output terminal nominal body reaches X30.451mm on the29.21mm board. Fit from source geometry rather than the old loaded PCB rectangle."
+      }
     },
     "START": {
       "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
@@ -408,12 +454,12 @@
     ],
     "B": [
       "LATCH.VOUT",
-      "BOOST.JP1.1",
+      "BOOST.X2.2",
       "R_B.1",
       "R_SENSE_TOP.1"
     ],
     "BOOST_OUT": [
-      "BOOST.JP1.6",
+      "BOOST.X1.2",
       "S1.4",
       "R_BOOST.1"
     ],
@@ -495,7 +541,7 @@
     "GND": [
       "CONTACT_N.tail",
       "LATCH.GND",
-      "BOOST.JP1.2",
+      "BOOST.X2.1",
       "C_OUT.N",
       "R_A.2",
       "R_B.2",
@@ -516,7 +562,8 @@
       "R_LOAD.2",
       "C_SENSE.2",
       "MODE.3",
-      "ACTION.3"
+      "ACTION.3",
+      "BOOST.X1.1"
     ],
     "SPARKLE_TX": [
       "SPARKLE.JP3.3",
@@ -623,8 +670,12 @@
     ],
     "BOOST.tap": "R20.2",
     "BOOST.leave_open": [
+      "JP1.1",
+      "JP1.2",
       "JP1.3",
-      "JP1.4"
+      "JP1.4",
+      "JP1.5",
+      "JP1.6"
     ],
     "LATCH.leave_open": [
       "B",
@@ -633,15 +684,17 @@
     ],
     "BOOST.do_not_install": [
       "B1",
-      "CN1",
-      "X1",
-      "X2"
+      "CN1"
     ],
     "SPARKLE.usb_pd_v": 5,
     "BOOST.nominal_output_v": 5.2,
     "BLACKPILL.do_not_install": [
       "U3"
-    ]
+    ],
+    "BOOST.install": {
+      "X1": "Pololu2444",
+      "X2": "Pololu2444"
+    }
   },
   "source_record": {
     "path": "sources/powerboost-1000-basic/extracted-connectivity.json",
@@ -649,11 +702,11 @@
     "upstream_commit": "493d06d70537ce418355b395bb251a661d683150"
   },
   "wiring": {
-    "main": "M22759/16-18-2 and M22759/16-18-0, 18 AWG; fixed soldered joints, insulated and strain-relieved",
+    "main": "M22759/16-18-2 and M22759/16-18-0,18AWG, fixed soldered and supported screw-clamp connections. No lead is disconnected during cell service.",
     "branches": "M22759/16-22-2 and M22759/16-22-0, 22 AWG; Fibonacci2A, each ring1A, auxiliary0.5A branch fuses",
     "sense": "100 kohm/100 kohm divider from B to PA4; no raw-cell reporting bypass",
     "source": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf",
-    "routing": "Place F1 at positive contact; insulate the unfused tail and both contact backs. Route paired supply/return; protect every fuse and solder joint. No raw-cell plug or external battery entry.",
+    "routing": "Place F1 at positive contact; insulate the unfused tail and both contact backs. Route paired supply/return; protect every fuse and solder joint. No raw-cell plug or external battery entry. Use18AWG from the negative star toBOOST.X2.1; return only the latch control current throughLATCH.GND. Use a paired22AWG output feed fromBOOST.X1.2/X1.1 throughS1 poleB and toSparkleX7.PWR/GND. BOOST input current does not pass through the latch ground trace.",
     "signals": "M22759/18-26-* colour-coded 26 AWG thin-wall ETFE; fixed soldered signal/control leads, insulated and strain-relieved",
     "stock_limits": {
       "source_revision": "Thermax/Amphenol M22759 catalog, header 2012-09-07, printed pages41-42",
