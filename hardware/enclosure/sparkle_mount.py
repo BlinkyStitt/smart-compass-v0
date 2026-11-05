@@ -42,6 +42,9 @@ def geometry(design=None,directory=HERE):
         raise ValueError('Sparkle mechanical source hash/revision mismatch')
     return {'mount_xy_mm':mounts,'mount_drill_mm':2.5,'terminals':terminals,'datum_mm':[25.4,16.51],
             'pcb_thickness_mm':1.57,'source_solids':239,'removed_source_solid':159,
+            'underboard_source_indices':[174,177,180,183,186,189,192,195,198],
+            'underboard_source_bounds_mm':{'x':[42.92,47.32],'y':[5.39,27.67],'z':[-1.93,0]},
+            'underboard_xy_margin_mm':.25,
             'loaded_bounds_mm':{'x':[-1,50.8],'y':[0,33.147],'z':[-2.1,15]}}
 
 
@@ -86,7 +89,18 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=None,design=None):
             raise ValueError('A retained source body exceeds the full loaded reservation: '+str(i))
     pcb=pcb.copy();pcb.translate(App.Vector(-25.4,-16.51,z))
     top=Part.makeBox(51.8,33.147,15-1.57,App.Vector(-26.4,-16.51,z+1.57))
-    lower=Part.makeBox(51.8,33.147,2.1,App.Vector(-26.4,-16.51,z-2.1))
+    # Only the nine retained JP1 pin bodies extend below the source PCB.
+    # Preserve their complete source bounds plus an explicit assembly margin.
+    # The earlier whole-board underside box also reserved empty board space.
+    underside=[(i,body.BoundBox) for i,body in enumerate(source.Solids)
+               if i!=data['removed_source_solid'] and body.BoundBox.ZMin < -1e-6]
+    if [i for i,b in underside]!=data['underboard_source_indices']:raise ValueError('Review changed Sparkle underside bodies')
+    actual=(min(b.XMin for i,b in underside),max(b.XMax for i,b in underside),
+            min(b.YMin for i,b in underside),max(b.YMax for i,b in underside),min(b.ZMin for i,b in underside))
+    if any(abs(a-b)>1e-6 for a,b in zip(actual,(42.92,47.32,5.39,27.67,-1.93))):
+        raise ValueError('Review changed Sparkle underside source bounds')
+    margin=data['underboard_xy_margin_mm'];x0,x1=data['underboard_source_bounds_mm']['x'];y0,y1=data['underboard_source_bounds_mm']['y']
+    lower=Part.makeBox(x1-x0+2*margin,y1-y0+2*margin,2.1,App.Vector(x0-margin-25.4,y0-margin-16.51,z-2.1))
     products={'SparklePCB':pcb};additions=[];cuts=[];probes=[];paths=[]
     flat,nh=nut_dimensions('M2');pflat,ph=nut_dimensions('M2',pocket=True)
     def cylinder(radius,height,x,y,bottom):return Part.makeCylinder(radius,height,App.Vector(x,y,bottom))
@@ -95,7 +109,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=None,design=None):
         additions.append(cylinder(3.1,z-2.1,x,y,0).fuse(cylinder(1.95,2.1,x,y,z-2.1)))
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,ph))
-        entry,path=native_tools(x,y,nz,(-1 if x<0 else 1,0));paths.append(path)
+        entry,path=native_tools(x,y,nz,(0,-1 if y<0 else 1));paths.append(path)
         cuts.extend((pocket,entry,cylinder(1.1,z+.2,x,y,-.1)))
         products['SparkleScrew'+str(i)]=cylinder(1,6.8,x,y,z+1.57-6.8).fuse(cylinder(1.9,2,x,y,z+1.57))
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,flat)]
@@ -127,6 +141,11 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('Sparkle fixture interference '+a+'/'+b+': '+str(volume))
     source,_=source_module();source.translate(App.Vector(-25.4,-16.51,pcb_bottom_z));source.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
+    clip=Part.makeBox(100,100,2.1,App.Vector(-50,-50,pcb_bottom_z-2.1))
+    for i in geometry()['underboard_source_indices']:
+        below=source.Solids[i].common(clip)
+        if below.Volume<=0 or below.cut(shapes['SparkleUnderboard']).Volume>1e-6:
+            raise ValueError('Sparkle underside pins exceed their reservation: '+str(i))
     for name in HARDWARE_NAMES:
         for i,body in enumerate(source.Solids):
             if i==159 or box_distance(shapes[name].BoundBox,body.BoundBox)>1e-6:continue
@@ -147,5 +166,6 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
     return {'scope':'source Sparkle PCB and mount component study','physical_products':9,'references':2,
             'source_solids':239,'removed_source_solid':159,'removed_component':'X7 / DCJACK_2MM_PTH',
             'retained_input_protection':['D2','PTC1'],'source_body_hardware_clearance':'pass',
+            'source_underside_pin_containment':'pass','underboard_xy_assembly_margin_mm':.25,
             'screw_tip_projection_mm':tips,'loaded_reservation':envelope(pcb_bottom_z,rotation_deg),
             'physical_acceptance':'unmeasured','installed_assembly':'not checked'}

@@ -28,6 +28,12 @@ try:
             except ValueError as error:
                 if 'census' not in str(error):raise
             else:raise ValueError('Missing Sparkle product/reference accepted: '+name)
+        broken=dict(shapes);broken['SparkleUnderboard']=shapes['SparkleUnderboard'].copy()
+        broken['SparkleUnderboard'].translate(App.Vector(-10,0,0))
+        try:sparkle_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'underside pins exceed' not in str(error):raise
+        else:raise ValueError('Uncovered source underside pins were accepted')
         broken=dict(shapes);broken['rear_addition']=shapes['rear_addition'].copy()
         broken['rear_addition'].translate(App.Vector(0,0,-.2))
         try:sparkle_mount.native_check(broken,z)

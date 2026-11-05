@@ -13,6 +13,8 @@ turn in Narrow. Each fixture uses four selected M2 × 8 cap screws finished to
 0.43 mm past the nut. The integral posts have a 3.1 mm lower radius and a
 1.95 mm bearing radius. Their narrow neck extends 2.1 mm below the PCB to
 clear the reserved underside parts. Insert nuts before the board and screws.
+Each nut entry faces outward in source Y. This keeps the Wide insertion path
+clear of the separate capacitor holder.
 
 Remove only **X7**, the stock barrel jack, to expose its input holes. Preserve
 the pads, traces, **D2** diode and **PTC1**. Connect the paired fixed 22 AWG
@@ -21,12 +23,16 @@ output rail instead. The original source model remains unchanged in the
 repository. Its identified DCJACK_2MM_PTH body, index159, selects the connector
 removal; the factory checks the source bytes, body volume and bounds.
 
-The top reservation retains the full 15 mm loaded height. The lower reservation
-extends 2.1 mm below the PCB. Both include the USB connector's 0.986 mm nominal
-overhang with a 1 mm target. These are conservative design spaces, not measured
-part tolerances. Only screw clearance regions are removed. Input joint and wire
-spaces still need explicit fitted geometry before harness acceptance. Count
-the purchased module once; the two reservations are not additional parts.
+The top reservation retains the full 15 mm loaded height and includes the USB
+connector's 0.986 mm nominal overhang with a 1 mm target. The lower reservation
+covers all nine retained JP1 pin bodies. Their combined source bounds are
+X = 42.92..47.32 and Y = 5.39..27.67 mm. Add 0.25 mm in X/Y and reserve 2.1 mm
+below the PCB for the nominal 1.93 mm pin protrusion. The native check verifies
+every source pin's containment. It does not reserve the empty space below the
+rest of the PCB. These are nominal source dimensions and assembly margins,
+not guaranteed part tolerances. Input joint and wire spaces still need explicit
+fitted geometry before harness acceptance. Count the purchased module once;
+the two reservations are not additional parts.
 
 Run `SparkleMountCheck.FCMacro` in FreeCAD with `SC_CAD_DIR` set to this
 directory. Set `SC_SPARKLE_CHECK_RESULT` to a new result path. Require its named
