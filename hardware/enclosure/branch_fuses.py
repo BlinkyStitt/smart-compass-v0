@@ -31,7 +31,7 @@ def geometry(design='narrow',electrical=None):
             raise ValueError('Review changed branch fuse/assembly space: '+name)
     return {'design':design,'rotation_deg':90 if design=='wide' else 0,
             'translation_xy_mm':[11,25] if design=='wide' else [0,0],
-            'stations_mm':[[9,-5],[9,16]],'nut_entry_axes':[[0,-1],[0,1]],'nut_entry_length_mm':12,
+            'stations_mm':[[9,4],[9,15]],'nut_entry_axes':[[-1,0],[0,1]],'nut_entry_lengths_mm':[18,12],
             'floor_bottom_z_mm':16.75,'floor_thickness_mm':1.35,
             'fuses':{'F_FIB':[0,-3,0],'F_RING1':[0,5,0],'F_RING2':[0,13,0],
                      'F_RING3':[24.5,-7,90],'F_AUX':[32.5,-7,90]},
@@ -76,7 +76,7 @@ def native_shapes(design='narrow'):
         floor=floor.fuse(cylinder(3.1,16.1,x,y,2))
         points=[App.Vector(x+a,y+b,14.85) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,ph))
-        entry,path=native_tools(x,y,14.85,data['nut_entry_axes'][i],length=12);paths.append(path)
+        entry,path=native_tools(x,y,14.85,data['nut_entry_axes'][i],length=data['nut_entry_lengths_mm'][i]);paths.append(path)
         # Stop the shaft bore below the floor top: retain the insulating roof
         # above the finished screw, rather than expose its tip to a fuse.
         floor=floor.cut(pocket.fuse(entry)).cut(cylinder(1.1,15.35,x,y,1.9))

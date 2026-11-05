@@ -4,7 +4,7 @@ from hardware_spec import hexagon,nut_dimensions
 
 
 def entry_dimensions(size='M2',length=8):
-    if size!='M2' or length not in (8,9,12):raise ValueError('Use a reviewed M2 entry length')
+    if size!='M2' or length not in (8,9,12,18):raise ValueError('Use a reviewed M2 entry length')
     flats,height=nut_dimensions(size);pflat,ph=nut_dimensions(size,pocket=True)
     return {'length':length,'width':2*pflat/math.sqrt(3),'height':ph,
             'travel':length-flats/math.sqrt(3)-.1,'nut_height':height}

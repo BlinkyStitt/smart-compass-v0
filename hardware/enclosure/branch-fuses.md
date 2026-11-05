@@ -33,9 +33,9 @@ The [TE part page and A2 drawing](https://www.te.com/en/product-5052994073.html)
 give the tubing conditions; do not shrink tubing inside the case.
 
 The carrier has one 1.35 mm floor at Z = 16.75..18.1 mm. Two integral posts
-stand on rear bosses at source XY [9,−5] and [9,16] mm. Fit the two M2 nuts
-before the fuses or other electronics. Insert the first from source −Y and
-the second from source +Y through the 12 mm entries. The native check covers
+stand on rear bosses at source XY [9,4] and [9,15] mm. Fit the two M2 nuts
+before the fuses or other electronics. Insert the first from source −X through an 18 mm entry and
+the second from source +Y through a 12 mm entry. The native check covers
 the complete nut lowering/entry paths and full pocket-roof bearing.
 
 Fit two M2 × 20 screws finished to 17.5 mm under head and two 0.35 mm M2

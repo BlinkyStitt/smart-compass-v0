@@ -5,7 +5,7 @@ from hardware_spec import nut_dimensions,hexagon
 class FastenerAccessTests(unittest.TestCase):
  def test_entry_clears_nut_corners_and_leaves_room_to_lower_the_nut(self):
   flats,_=nut_dimensions('M2')
-  for length,minimum in ((8,3.1),(9,3.9),(12,6.85)):
+  for length,minimum in ((8,3.1),(9,3.9),(12,6.85),(18,12.85)):
    data=entry_dimensions(length=length)
    self.assertGreater(data['width'],2*flats/math.sqrt(3))
    self.assertGreater(data['travel']-flats/math.sqrt(3),minimum)
