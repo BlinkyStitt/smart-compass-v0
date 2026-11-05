@@ -97,6 +97,14 @@ class PrototypeDesignTests(unittest.TestCase):
         design['parts']['F_FIB']['part'] = 'Littelfuse 0459001.UR, 1 A'
         self.assertIn('selected-part:F_FIB', self.failure_ids(design))
 
+    def test_start_uses_opposite_contact_groups(self):
+        design = self.reviewed_fixture()
+        self.assertIn('START.3', design['nets']['GND'])
+        design['nets']['GND'].remove('START.3')
+        design['nets']['GND'].append('START.2')
+        self.assertIn('net:GND', self.failure_ids(design))
+        self.assertIn('unreviewed-connections', self.failure_ids(design))
+
     def test_start_selection_cannot_revert_to_short_actuator(self):
         design = self.reviewed_fixture()
         design['parts']['START']['part'] = 'Pololu 1400'

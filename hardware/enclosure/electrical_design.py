@@ -53,7 +53,7 @@ REQUIRED_CONNECTIONS = {
     'GPS_PPS': {'GPS.PPS', 'BLACKPILL.PA0'},
     'GPS_ENABLE': {'BLACKPILL.PB7', 'GPS.EN'},
     'GND': {'CONTACT_N.tail', 'LATCH.GND', 'BOOST.JP1.2', 'C_OUT.N',
-            'R_A.2', 'R_B.2', 'R_OUT.2', 'R_BOOST.2', 'R_LOAD.2', 'R_OFF.2', 'START.2',
+            'R_A.2', 'R_B.2', 'R_OUT.2', 'R_BOOST.2', 'R_LOAD.2', 'R_OFF.2', 'START.3',
             'R_SENSE_BOTTOM.2', 'SPARKLE.X7.GND', 'BLACKPILL.GND',
             'GPS.GND', 'IMU.GND', 'RADIO.GND', 'FIBONACCI.GND',
             'RING1.GND', 'RING2.GND', 'RING3.GND'},

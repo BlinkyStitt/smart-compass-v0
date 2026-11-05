@@ -267,6 +267,9 @@ contains inconsistent option/height entries; the design does not use those
 entries as guaranteed travel or force bounds. A printed plunger would need
 additional overtravel data. It is not part of this direct-actuator proposal.
 Actual mounting, finger reach and switching force remain unmeasured.
+Connect pin 1 to Pololu A and pin 3 to ground. Pins 1/2 form one internal
+contact group; pins 3/4 form the other. Leave duplicate pins 2/4 externally
+unconnected and insulate them. Wiring pins 1 and 2 would hold START closed.
 
 Use M22759/16-18 for the main paths, /16-22 for protected power branches and
 **M22759/18-26** for signals and control. The selected catalog does not list
