@@ -8,8 +8,9 @@ cell mass. It retains a protected single-cell architecture and external charging
 The existing CAD and mass ledger still describe the legacy pouch until rebuilt.
 The historical custom-circuit review and recovery counters remain unchanged.
 
-**Neither enclosure implements this selection yet.** Complete worn mass,
-including the installed cell and necklace, must be at most
+**Canonical release artifacts have not integrated this selection.** Component
+and private installed-geometry studies do not complete the wired assembly.
+Complete worn mass, including the installed cell and necklace, must be at most
 **2.5 lb = 1,133.980925 g**, with a separate 50 g margin target. The active
 [module design](electrical-design.md) still requires fitted integration. CAD,
 inventory and publication remain pending. Physical acceptance stays unmeasured.
@@ -63,11 +64,12 @@ reproduced 26.22 ±0.15 × 66.2 ±0.15 mm and 92 ±1 g for the reviewed variant.
 Its 19.24 Wh nominal reference gave 2.61664 h at the same output/efficiency.
 Do not transfer that cell's mass, dimensions or current labels to the XTAR.
 
-## Pre-CAD qualification: unresolved
+## Historical candidate investigations
 
-The following table records earlier candidate investigations. The 26650 holder
-and custom circuit are historical candidates, not current assembly selections.
-No complete module circuit has passed the required field-recovery checks.
+The following table records earlier candidate investigations. These parts do not
+define the active module prototype. Use [electrical-design.json](electrical-design.json)
+and its [design review](electrical-design.md) for the selected circuit, open
+design items and physical test procedures. The fitted harness remains incomplete.
 
 | Element | Evidence | Decision / missing qualification |
 | --- | --- | --- |
@@ -76,79 +78,86 @@ No complete module circuit has passed the required field-recovery checks.
 | Integrated circuit alternative: TI TPS25947 | [TI datasheet, sections 4, 7 and 8](https://www.ti.com/lit/ds/symlink/tps25947.pdf) specifies 2.7–23 V operation, negative-input tolerance, adjustable UVLO/current limit/inrush, and distinct auto-retry/latch-off variants. | Plausible custom circuit, not a selected module. Requires an exact variant, schematic, tolerance analysis, upstream fuse coordination, PCB/thermal design, loaded envelope and depletion/restart analysis. A 2 × 2 mm IC package is not a board envelope. |
 | Retained boost: Pololu U3V70F5, item 2891 | [Manufacturer specification](https://www.pololu.com/product/2891): 2.9–5 V input, 40.6 × 15.2 × 4.6 mm bare board, reverse-voltage protection and short-circuit hiccup recovery. | Historical regulator assumption; an assembled replacement is permitted. Its protection applies at the regulator, not to upstream contacts, wires or protection electronics. Its typical 2.4 V falling UVLO and 10 A switch limit do not replace cell/path protection. |
 
-Reset behavior is a selection boundary. For example,
-[TI's BQ2970 removable-battery guidance](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/818910/bq2970-removable-batteries)
-describes a wake-up intervention after battery removal. A pack protector cannot
-be assumed to start merely because a charged loose cell is inserted. A field
-design requiring a charger connection, electronics access or a protection bypass
-to restart fails this requirement.
+The earlier [TI BQ2970 recovery discussion](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/818910/bq2970-removable-batteries)
+shows why a different pack protector can need a wake-up intervention. It does
+not establish the selected XTAR cell's recovery behavior. Its exact protection
+thresholds, delays and fault recovery remain unpublished and physically unmeasured.
+Do not transfer another protector's settings or test results to this cell.
 
-**Unblocking deliverable:** a hardware-reviewed holder and complete cell-to-load
-schematic/BOM, supported by published ratings and loaded drawings, with bounded
-protection thresholds and recovery for removal, depletion, reversal and trips.
-Resolve this before choosing either bay's dimensions. No purchase or measurement
-of unowned parts is required to resolve the documentation/design gap. Subsequent
-physical qualification remains separate.
+## Active module design and remaining work
 
-## Required circuit boundaries
-
-This is a functional requirement, **not a wiring diagram for assembly**:
+The selected topology is:
 
 ```text
-one removable cell in a fixed insulated holder
-  → contact-adjacent fault protection
-  → reverse-insertion-safe hardware undervoltage/overcurrent/short protection
-  → externally accessible physical OFF control
-  → selected assembled boost → regulated 5 V distribution / Sparkle Motion
-  → Sparkle 3.3 V → BlackPill, GPS, radio and sensors
+cell+ → fixed contact → adjacent F1 → S1 pole A → Pololu 2808 → PowerBoost
+PowerBoost output → S1 pole B → Sparkle Motion → separately fused displays
+                                             → fused 3.3 V peripherals
+cell− → fixed return/star → all required returns
 ```
 
-Account for both conductors and every branch. Protect the first electronic stage
-against reversed cell voltage. Put fault protection at the source and mechanically
-isolate the contact-to-protector section: a downstream device cannot clear a short
-ahead of it. Specify fuse time/current behavior, interrupt rating, contact/lead
-fault withstand and insulation together. Route the voltage divider from the
-protected, switched side so it cannot bypass a disconnect. Include USB/service
-power backfeed paths in the review.
+The [complete netlist](electrical-design.json) owns the individual terminals,
+branch fuses, drains, sense filter, START and existing controls. Use its selected
+wire gauges and terminations. The boost input return goes directly to the
+negative star; it does not carry boost current through the latch ground trace.
+The battery sense divider connects to switched B. Keep the selected USB policy:
+remove the cell, leave S1 OFF and use only Sparkle USB at 5 V, off-body. Do not
+connect a powered BlackPill USB cable or a probe target supply at the same time.
+Do not charge a cell inside the pendant.
 
-At 2.9 V and assumed 85% efficiency the boost needs about **2.54 A average
-input**, before upstream losses; at 3.0 V it needs about 2.45 A. These are sizing
-calculations, not maximum-current ratings. Bound continuous current, capacitor
-inrush, LED PWM/radio peaks, voltage drop and enclosed heat for the holder,
-terminals, wires, connectors, switch and protection together. Set the cutoff and
-its tolerances with allowance for voltage drop and load-release rebound.
-Document quiescent drain after cutoff and prevent repeated restart cycling on a
-depleted cell. A cell or regulator current rating alone is insufficient.
+The digital review checks concrete parts, connections, supply interfaces,
+physical OFF topology and source records. It still rejects the missing fitted
+harness. Both designs need installed wire routes and cut lists, joint insulation,
+taps, bends, strain relief and clearance checks. The final per-design inventory,
+worn-mass and balance ledgers, CAD exports, service illustrations, media and
+Pages remain required. A passing component study does not close these items.
 
-## Access and recovery acceptance
+The old 2.9 V boost calculation belongs to the superseded Pololu design. It is
+not the PowerBoost's minimum input rating or a measured shutdown point. The
+active bench plan uses 2% electrical brightness and a 2 W non-LED allowance;
+these are planning settings, not firmware limits or guaranteed peak bounds.
+The loss/runtime model and electrical review retain their stated approximations.
+Measure PWM/radio/inrush behavior, depletion/rebound, OFF decay, fault withstand
+and temperatures on the actual assemblies. Keep those physical outcomes
+unmeasured until results exist. Physical manufacturing and qualification are
+outside this digital delivery and do not require a human sign-off to finish it.
 
-Each future design must illustrate this sequence with rear, optics and necklace
-fitted:
+## Specified replacement sequence
 
-```text
-support pendant → switch OFF → qualified discharge dwell → open captive door → grip/remove cell
-  → insert charged cell to visible +/− marks → latch → switch ON/restart
-```
+This is the specified sequence for the unbuilt removable-cell assembly. It is
+not an instruction to put a loose cell into the existing pouch cradle. Both
+final service guides must illustrate it with the rear, optics and necklace fitted.
 
-Keep the holder and wiring fixed. An isolated, captive, tool-free door must
-prevent access to other electronics and leave fittings undisturbed. Model
-contact travel, terminals, insulation, bends/strain relief, seal, latch, fingers
-and the entire removal sweep together. Prefer a shared door/latch where both
-layouts permit it. Provide durable polarity marks visible before insertion,
-tactile or geometric latch confirmation independent of colour, a grip feature,
-pinch clearance and protection against accidental release or a falling cell.
+1. Support the pendant by hand or on a padded surface. Use the case as support.
+   Do not hang it from wires or the door.
+2. Put physical S1 fully OFF. Disconnect USB, SWD and every other live interface.
+   A dark display does not prove that S1 is OFF.
+3. Release the door catch and open the captive door. The separate keeper still
+   retains the cell. Release the keeper only when you have control of the cell.
+4. Press the cell towards the fixed negative insulating stop. Lift the positive
+   end clear and use the ribbon to remove the cell deliberately. Keep it clear
+   of the contacts and protect the wrapper and end insulator.
+5. Check the accessible contacts, wrapper, end insulator and polarity marks.
+   Insert one compatible, externally charged XTAR cell to the durable +/− marks.
+   Put the ribbon in its specified path. Close the keeper, then latch the door.
+   Do not force a partly seated cell or trapped ribbon into closure.
+6. Select ON and press the on-only START button. A swap interrupts operation.
+   Power restoration does not prove GPS acquisition, radio synchronization or
+   pattern readiness. No new diagnostic indication is delivered by this task.
 
-These are requirements for the unbuilt replacement, not instructions to insert
-a loose cell into the current pouch cradle. A swap interrupts all operation;
-GPS acquisition and normal controller startup may be needed again.
+With S1 OFF and external power absent, the reviewed topology disconnects the
+positive cell contact from the downstream stored-charge rails. Mechanical removal
+does not depend on a timed electronic reset. **No qualified OFF/reset dwell is
+available.** Residual charge and all decay/reset times remain unmeasured. A rapid
+replacement can retain electronic state. Do not promise a full reset from this
+sequence or use blank LEDs as evidence that stored charge has disappeared.
 
-| Event | Required recovery and user boundary |
+| Event | Specified action and evidence limit |
 | --- | --- |
-| Normal swap / depletion | OFF, remove cell, insert an externally charged compatible cell, latch, then ON must restart without a charger, bypass or electronics access. Qualify empty-bay dwell and residual-capacitor states. |
-| Reverse insertion | Hardware must tolerate the event throughout the path. Switch OFF before correcting orientation; inspect the wrapper, end insulator and accessible contacts. Stop if damaged, hot, contaminated or abnormal. |
-| Overcurrent / short / contact loss | OFF first. Remove the cause before a documented reset. Persistent or unexplained trips require service; repeatedly cycling power is not a repair. Test contact bounce, dust, wear and reset lockout. |
-| Dark display, cause unknown | Darkness does not diagnose depletion. Support the pendant and switch OFF; check the latch, marked polarity and accessible cell/contact condition. If normal, allow one charged-spare restart attempt under the qualified recovery procedure. If still dark or it trips again, stop and service it. |
-| Charger/reset dependency | An external charger acts on the removed cell, not the fixed pendant protector. A protector needing a charger across its terminals after a normal swap is unsuitable. Never bridge terminals or bypass protection to wake it. |
+| Depletion | Support, OFF and remove the depleted cell. This separates it from residual downstream drain. Insert a compatible charged spare, latch, ON and START. Verify actual latch/rebound and startup behavior during physical qualification. |
+| Reverse insertion | OFF before correcting orientation. Inspect the wrapper, end insulator and contacts. Stop if damaged, hot, contaminated or abnormal. The selected protection does not establish whole-assembly fault acceptance. |
+| Short, overload or repeated trip | OFF first. Remove the known cause before a reset. Persistent or unexplained trips need service. Do not repeatedly cycle power, bridge a fuse or bypass protection. |
+| Darkness, cause unknown | Support and OFF. Check the latch, marked polarity and accessible cell/contact condition. If normal, permit one compatible charged-spare restart. If it stays dark or trips again, stop and service it. Darkness does not diagnose depletion. |
+| Cell protection will not recover | Remove the cell for inspection and follow the cell maker's limits. Do not apply a charger across the pendant contacts or bypass protection to wake it. A blown fuse needs service. |
 
 Charge off-body, outside the enclosure, in a charger explicitly supporting
 3.6 V nominal, 4.2 V charge-termination Li-ion protected button-top 21700 cells
@@ -177,7 +186,7 @@ The wide scene records a 38.0048 mm body depth; its assembly bounds span
 47.2048 mm including screw projections. The narrow body is 200 mm diameter ×
 57.6 mm deep. Future comparisons must distinguish body dimensions from complete
 occupied bounds and include the open-door/removal envelope. Evaluate widening
-against depth and mass after loaded parts are qualified.
+against depth and mass after the complete fitted layout review.
 
 Legacy complete-worn estimates from the regenerated inventory and site resolver
 (2026-11-03):
@@ -205,8 +214,9 @@ walking comfort.
 
 ## Resume and release boundary
 
-After qualification, change each design's parameter JSON first; saved CAD
-spreadsheets and Pages are outputs. Rebuild wide, then narrow, then Pages.
+After required digital design checks pass, update each design's parameter JSON;
+saved CAD spreadsheets and Pages are outputs. Rebuild Wide, then Narrow, then
+Pages.
 Update `design-v2.md` through its inventory generator, both enclosure READMEs,
 service materials, site calculations/cards and size comparison in the same
 release. Remove obsolete pouch/belt accounting with its replacement inventory.
