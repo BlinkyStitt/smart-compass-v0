@@ -104,3 +104,17 @@ use, worn mass, electrical performance or temperature. Those physical outcomes
 remain **unmeasured**. The common mechanism also needs both complete installed
 assemblies, wire exits/strain relief, guarded power controls, the full mass and
 balance ledgers, and illustrated service instructions before digital closeout.
+
+The native function also accepts named fixed `surroundings`. It checks every
+supplied solid against the closed components and all service motions. The
+complete assembly caller must supply its full fixed-product census. An empty
+list remains a component study; no argument marks an assembly complete. The
+macro rejects a thin obstruction along a service motion as a negative test.
+
+The native motion check keeps each fixed solid separate. It computes the exact
+minimum distance and uses whole-solid axis-aligned box distances only as lower
+bounds to skip solids that cannot improve an already computed minimum. It
+does not exempt names or materials. The continuous-motion displacement bound
+and required clearances stay unchanged. A thin obstacle in the service sweep
+must still fail. This avoids repeated FreeCAD support-index work on one large
+compound of every installed object.

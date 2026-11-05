@@ -370,16 +370,26 @@ def native_shapes(spec, design):
             'latch_hook': hook, 'latch_pad': pad, 'latch_axis': [-1, 0, 0]}
 
 
-def native_check(spec, design, shapes):
+def native_check(spec, design, shapes, *, surroundings=()):
     """Check closed solids and continuous motion envelopes of the prototype.
 
     The latch path assumes the specified hook deflection. It does not prove
     print strain, release force or fatigue. Contact/end-insulator wiping and
     fitted electrical hardware remain separate open physical/design reviews.
+    The caller must supply every fixed installed product to check a complete
+    assembly; this function does not infer assembly completeness from a flag.
     """
     import FreeCAD as App
     import Part
 
+    surroundings=list(surroundings)
+    extra_names=[name for name, _ in surroundings]
+    if (len(set(extra_names)) != len(extra_names)
+            or set(extra_names) & (PART_NAMES | {'rear_interface'})):
+        raise ValueError('Installed surroundings need distinct non-component names')
+    for name, shape in surroundings:
+        if not name or not shape.isValid() or shape.Volume <= 0:
+            raise ValueError('Invalid installed fixed solid: '+str(name))
     names=tuple(sorted(PART_NAMES))
     actual={name for name in shapes if name.startswith('Battery')}
     if actual != PART_NAMES:
@@ -391,7 +401,10 @@ def native_check(spec, design, shapes):
             raise ValueError(name + ' must be one valid solid')
     checked={name:shapes[name] for name in names}
     checked['rear_interface']=shapes['rear_interface']
+    checked.update(surroundings)
     for a, b in itertools.combinations(checked, 2):
+        if a not in PART_NAMES and b not in PART_NAMES:
+            continue  # The complete native builder checks its fixed assembly.
         ab,bb=checked[a].BoundBox,checked[b].BoundBox
         if any(min(getattr(ab,axis+'Max'),getattr(bb,axis+'Max'))
                -max(getattr(ab,axis+'Min'),getattr(bb,axis+'Min')) <= 1e-7 for axis in 'XYZ'):
@@ -399,6 +412,8 @@ def native_check(spec, design, shapes):
         volume = checked[a].common(checked[b]).Volume
         if volume > 1e-5:
             raise ValueError(f'Battery closed-position interference: {a}/{b}: {volume:g} mm3')
+
+    from solid_clearance import distance
 
     def rotate(shape, axis, direction, angle):
         moved = shape.copy()
@@ -418,7 +433,7 @@ def native_check(spec, design, shapes):
         count = math.ceil(abs(last)/step)
         half_interval = math.radians(abs(last)/count)/2
         displacement = 2*radius*math.sin(half_interval/2)
-        distances = [rotate(moving, axis, direction, last*i/count).distToShape(fixed)[0]
+        distances = [distance(rotate(moving, axis, direction, last*i/count),fixed)
                      for i in range(count+1)]
         bound = min(distances)-displacement
         if bound <= 0:
@@ -428,14 +443,14 @@ def native_check(spec, design, shapes):
     released = shapes['latch_hook'].copy()
     released.translate(App.Vector(-spec['door']['latch_release_mm'], 0, 0))
     released_door = shapes['BatteryDoor'].cut(shapes['latch_hook']).fuse(released)
-    fixed_door=Part.makeCompound([shapes['rear_interface']]+[shapes[name] for name in names if name not in {'BatteryDoor','BatteryPullRibbon'}])
+    fixed_door=[shape for _,shape in surroundings]+[shapes['rear_interface']]+[shapes[name] for name in names if name not in {'BatteryDoor','BatteryPullRibbon'}]
     door_gap = rotation_clearance(released_door, fixed_door,
                                   shapes['hinge_axis'], (1, 0, 0),
                                   -spec['door']['open_angle_deg'],step=.25)
     opened_door = rotate(released_door, shapes['hinge_axis'], (1, 0, 0),
                          -spec['door']['open_angle_deg'])
-    fixed_keeper=Part.makeCompound([opened_door,shapes['rear_interface']]+[shapes[name] for name in names
-                                  if name not in {'BatteryDoor','BatteryKeeper','BatteryPullRibbon'}])
+    fixed_keeper=[shape for _,shape in surroundings]+[opened_door,shapes['rear_interface']]+[shapes[name] for name in names
+                                  if name not in {'BatteryDoor','BatteryKeeper','BatteryPullRibbon'}]
     keeper_gap = rotation_clearance(shapes['BatteryKeeper'], fixed_keeper,
                                     shapes['keeper_axis'], (0, 0, 1),
                                     spec['keeper']['open_angle_deg'],step=.25)
@@ -470,9 +485,10 @@ def native_check(spec, design, shapes):
     gaps.update({name:sweep.distToShape(shapes[name])[0] for name in names
                  if name not in {'BatteryCell','BatteryCradle','BatteryDoor','BatteryKeeper',
                                  'BatteryContactP','BatteryContactN','BatteryPullRibbon'}})
+    gaps.update({'installed:'+name:sweep.distToShape(shape)[0] for name,shape in surroundings})
     finger=Part.makeCylinder(removal['finger_radius_mm'],45,
                               App.Vector(cx,cy,removal['finger_start_z_mm']-30))
-    finger_fixed=[shapes['rear_interface'],shapes['BatteryCradle'],opened_door,opened_keeper]
+    finger_fixed=[shape for _,shape in surroundings]+[shapes['rear_interface'],shapes['BatteryCradle'],opened_door,opened_keeper]
     finger_fixed += [shapes[name] for name in names if name not in
                     {'BatteryCell','BatteryCradle','BatteryDoor','BatteryKeeper','BatteryPullRibbon'}]
     finger_gap=min(finger.distToShape(shape)[0] for shape in finger_fixed)
@@ -495,7 +511,7 @@ def native_check(spec, design, shapes):
         raise ValueError('A 1 mm unseated cell clears the closed seating saddles')
     if min(gaps.values()) < removal['noncontact_clearance_mm']-1e-6:
         raise ValueError('Cell removal clearance failed: ' + str(gaps))
-    return {'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
+    return {'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
             'keeper_continuous_clearance_mm': keeper_gap,
             'cell_continuous_clearance_mm': gaps,
             'intended_insulating_stop_contact_mm3': sweep.common(stop_part).Volume,

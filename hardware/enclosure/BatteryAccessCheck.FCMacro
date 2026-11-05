@@ -12,6 +12,7 @@ import sys
 import traceback
 
 import FreeCAD as App
+import Part
 from PySide import QtCore
 
 source = Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
@@ -24,7 +25,7 @@ try:
 
     paths = [source / name for name in ('battery_access.py', 'battery-compartment.json',
                                         'hardware_spec.py', 'component-inventory.json',
-                                        'BatteryAccessCheck.FCMacro', 'test_battery_access.py', 'battery-access.md')]
+                                        'BatteryAccessCheck.FCMacro', 'test_battery_access.py', 'battery-access.md','solid_clearance.py','test_solid_clearance.py')]
     paths.append(source.parents[1] / 'site/electrical-inputs.json')
     def snapshot():
         return {path.relative_to(source.parents[1]).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
@@ -34,6 +35,16 @@ try:
     for design in ('wide', 'narrow'):
         shapes = battery_access.native_shapes(spec, design)
         checks[design] = battery_access.native_check(spec, design, shapes)
+        if design == 'wide':
+            cx,cy=spec['designs'][design]['cell_centre_xy_mm']
+            blocker=Part.makeBox(.1,.1,.1,App.Vector(cx+30-.05,cy-.05,-18))
+            try:
+                battery_access.native_check(spec,design,shapes,surroundings=[('ThinServiceObstruction',blocker)])
+            except ValueError as error:
+                if not any(text in str(error) for text in ('motion has no positive','Cell removal clearance failed')):
+                    raise
+            else:
+                raise ValueError('A thin obstruction in the service motion was ignored')
         for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1'):
             broken=dict(shapes)
             del broken[missing]
