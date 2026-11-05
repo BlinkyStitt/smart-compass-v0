@@ -9,32 +9,35 @@ result=os.environ.get('SC_CAPACITOR_CHECK_RESULT')
 try:
  if result and Path(result).exists():raise ValueError('Choose a new result path; preserve existing evidence')
  import capacitor_mount
- paths=[source/name for name in ('capacitor_mount.py','test_capacitor_mount.py','capacitor-mounts.md','CapacitorMountCheck.FCMacro','electrical-design.json','hardware_spec.py','component-inventory.json','solid_clearance.py')]+sorted((source/capacitor_mount.SOURCE).iterdir())
+ paths=[source/name for name in ('capacitor_mount.py','test_capacitor_mount.py','capacitor-mounts.md','CapacitorMountCheck.FCMacro','electrical-design.json','hardware_spec.py','fastener_access.py','test_fastener_access.py','component-inventory.json','solid_clearance.py')]+sorted((source/capacitor_mount.SOURCE).iterdir())
  def snapshot():return {str(p.relative_to(source.parents[1])):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
- before=snapshot();shapes=capacitor_mount.native_shapes();record=capacitor_mount.native_check(shapes)
- for name in ('BulkCapacitor','CapacitorCover','CapacitorLowerShim','CapacitorScrew0','CapacitorNut1','CapacitorVentClearance','CapacitorPositiveLeadVariation'):
-  bad=dict(shapes);del bad[name]
-  try:capacitor_mount.native_check(bad)
+ before=snapshot()
+ results={}
+ for design in ('wide','narrow'):
+  shapes=capacitor_mount.native_shapes(design);results[design]=capacitor_mount.native_check(shapes,design)
+  for name in ('BulkCapacitor','CapacitorCover','CapacitorLowerShim','CapacitorScrew0','CapacitorNut1','CapacitorVentClearance','CapacitorPositiveLeadVariation'):
+   bad=dict(shapes);del bad[name]
+   try:capacitor_mount.native_check(bad,design)
+   except ValueError as error:
+    if 'census' not in str(error):raise
+   else:raise ValueError('Missing capacitor product/reference accepted: '+name)
+  bad=dict(shapes);bad['rear_addition']=shapes['rear_addition'].fuse(Part.makeBox(13.7,.1,1,App.Vector(-6.85,13,6))).removeSplitter()
+  try:capacitor_mount.native_check(bad,design)
   except ValueError as error:
-   if 'census' not in str(error):raise
-  else:raise ValueError('Missing capacitor product/reference accepted: '+name)
- bad=dict(shapes);bad['rear_addition']=shapes['rear_addition'].fuse(Part.makeBox(13.7,.1,1,App.Vector(-6.85,13,6))).removeSplitter()
- try:capacitor_mount.native_check(bad)
- except ValueError as error:
-  if 'CapacitorVentClearance' not in str(error):raise
- else:raise ValueError('Thin pressure-valve obstruction accepted')
- bad=dict(shapes);bad['rear_addition']=shapes['rear_addition'].copy();bad['rear_addition'].translate(App.Vector(0,0,-.2))
- try:capacitor_mount.native_check(bad)
- except ValueError as error:
-  if 'incomplete hard-stop bearing' not in str(error):raise
- else:raise ValueError('Floating capacitor cover hard stops accepted')
- bad=dict(shapes);bad['CapacitorScrew0']=shapes['CapacitorScrew0'].copy();bad['CapacitorScrew0'].translate(App.Vector(0,0,1))
- try:capacitor_mount.native_check(bad)
- except ValueError as error:
-  if 'engage the full nut' not in str(error):raise
- else:raise ValueError('Capacitor screw missing full engagement accepted')
+   if 'CapacitorVentClearance' not in str(error):raise
+  else:raise ValueError('Thin pressure-valve obstruction accepted')
+  bad=dict(shapes);bad['rear_addition']=shapes['rear_addition'].copy();bad['rear_addition'].translate(App.Vector(0,0,-.2))
+  try:capacitor_mount.native_check(bad,design)
+  except ValueError as error:
+   if 'incomplete hard-stop bearing' not in str(error):raise
+  else:raise ValueError('Floating capacitor cover hard stops accepted')
+  bad=dict(shapes);bad['CapacitorScrew0']=shapes['CapacitorScrew0'].copy();bad['CapacitorScrew0'].translate(App.Vector(0,0,1))
+  try:capacitor_mount.native_check(bad,design)
+  except ValueError as error:
+   if 'engage the full nut' not in str(error):raise
+  else:raise ValueError('Capacitor screw missing full engagement accepted')
  if before!=snapshot():raise ValueError('Capacitor inputs changed during native checks')
- record.update(inputs=before,freecad_version=App.Version())
+ record={'scope':'both source-sized capacitor holders; component only','designs':results,'inputs':before,'freecad_version':App.Version()}
  if result:
   with Path(result).open('x') as f:json.dump(record,f,indent=2)
  print('CAPACITOR MOUNT COMPONENT CHECK PASS',flush=True)

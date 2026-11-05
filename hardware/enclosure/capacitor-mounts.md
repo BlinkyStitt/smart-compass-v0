@@ -26,9 +26,16 @@ lead channel has0.8mm radius. Two separate1.6mm-radius joint pockets cover
 Y-14.5..-10.5mm and leave1.8mm plastic between them. Wired joint geometry and
 its cut list remain unfinished; empty pockets do not qualify solder joints.
 
+Wide uses the two side posts atX+/-10/Y8.5mm. Narrow uses posts at
+X0.5/Y-9.5 andX4.25/Y19mm. The latter clears the2.5mm valve reservation.
+A1.35mm outer bridge joins its cover ear outside the valve path. Narrow's7mm
+base strip clears the keeper hood; recut lead channels pass through the lead-side
+post without reaching its screw bore. The two profiles share the can, lead,
+shim, hard-stop and source limits. They do not move the radio or controls.
+
 The lower clamshell and two screw posts fuse into the actual rear panel. The
 upper clamshell lifts off after removing two screws. Use SSCF-M2-8-A2 stock
-screws finished/deburred to6.6mm and two NUT203 M2-B A4 nuts from the existing
+screws finished/deburred to6.6mm forWide or7.6mm forNarrow and two NUT203 M2-B A4 nuts from the existing
 hardware inventory. Hard stops take the screw load. The nominal tip projection
 is0.4mm. Gauge the actual stack and check full nut engagement.
 
@@ -55,3 +62,12 @@ references and the integral rear material. It checks all closed intersections,
 actual lower-shim support, connected rear geometry, complete hard-stop bearing,
 full nut engagement and pressure-valve clearance. Missing parts, a thin valve
 obstruction, floating hard stops and short screw engagement must fail.
+
+Nut entries clear the corners. Wide lowers each nut into a9mm entry toward-Y;
+Narrow uses a12mm entry at the lead-side post and9mm at the vent-side post,
+both toward+X. Insert nuts before fitting the can, cover, other boards or
+screws. The native check sweeps the outer nut profile through lowering and
+sliding against the integral rear. The compact interior screw has a2.15mm
+radius counterbore and raised seat. Its2.35mm ear leaves1.55mm nominal wall
+above the0.8mm-radius lead channel. Both designs use3.9mm-radius nut pods with7.2mm X flats. The source-sized
+nut pockets keep at least1.35mm nominal surrounding wall.

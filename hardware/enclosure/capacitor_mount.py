@@ -41,42 +41,66 @@ def geometry(part=None,directory=HERE):
     return {'axis_z_mm':8.85,'can_start_y_mm':-5,'can_end_y_mm':12.5,
             'finished_lead_mm':9.5,'vent_target_mm':2.5,'maximum_accepted_axial_motion_mm':.25,
             'lead_channel_radius_mm':.8,'joint_channel_radius_mm':1.6,
-            'shim_nominal_mm':.25,'post_xy_mm':[[-10,8.5],[10,8.5]],
-            'finished_screw_length_mm':6.6}
+            'shim_nominal_mm':.25,
+            'profiles':{'wide':{'post_xy_mm':[[-10,8.5],[10,8.5]],'floor_width_mm':13.7,
+                                'entry_axes':[[0,-1],[0,-1]],'entry_lengths_mm':[9,9],
+                                'cover_ear_thickness_mm':1.35,'finished_screw_length_mm':6.6},
+                        'narrow':{'post_xy_mm':[[.5,-9.5],[4.25,19]],'floor_width_mm':7,
+                                  'entry_axes':[[1,0],[1,0]],'entry_lengths_mm':[12,9],
+                                  'cover_ear_thickness_mm':2.35,'finished_screw_length_mm':7.6}},
+            'post_radius_mm':3.9,'post_flat_width_mm':7.2}
 
 
-def native_shapes(part=None):
+def mounting(design,part=None):
+    data=geometry(part)
+    if design not in data['profiles']:raise ValueError('Choose the Wide or Narrow capacitor holder')
+    return {**data,**data['profiles'][design],'selected_design':design}
+
+
+def native_shapes(design,part=None):
     import FreeCAD as App
     import Part
     from hardware_spec import nut_dimensions,hexagon
-    data=geometry(part);z=data['axis_z_mm']
+    from fastener_access import native_tools
+    data=mounting(design,part);z=data['axis_z_mm'];ear_h=data['cover_ear_thickness_mm'];radius=data['post_radius_mm']
     def box(w,l,h,x,y,bottom):return Part.makeBox(w,l,h,App.Vector(x-w/2,y-l/2,bottom))
     def cylinder(r,h,x,y,bottom):return Part.makeCylinder(r,h,App.Vector(x,y,bottom))
+    def post(h,x,y,bottom):
+        return cylinder(radius,h,x,y,bottom).common(box(data['post_flat_width_mm'],2*radius,h,x,y,bottom))
     def axial(r,start,end,x=0):return Part.makeCylinder(r,end-start,App.Vector(x,start,z),App.Vector(0,1,0))
     outer=axial(6.85,-15.5,15.5)
     cavity=axial(5.5,-5.25,15.6)
     for x in (-2.5,2.5):cavity=cavity.fuse(axial(.8,-15.6,-5.15,x)).fuse(axial(1.6,-14.5,-10.5,x))
     shell=outer.cut(cavity)
     lowbox=box(40,40,z,-0.,0,0);highbox=box(40,40,20,0,0,z)
-    lower=shell.common(lowbox).fuse(box(13.7,31,3.35,0,0,0)).fuse(box(27.6,7.6,3.35,0,8.5,0)).cut(cavity)
+    lower=shell.common(lowbox).fuse(box(data['floor_width_mm'],31,3.35,0,0,0)).cut(cavity)
+    if design=='wide':lower=lower.fuse(box(27.6,7.6,3.35,0,8.5,0)).cut(cavity)
     upper=shell.common(highbox)
-    products={};cuts=[];probes=[]
+    products={};cuts=[];probes=[];nut_paths=[]
     flat,nh=nut_dimensions('M2');pflat,ph=nut_dimensions('M2',pocket=True)
     for i,(x,y) in enumerate(data['post_xy_mm']):
-        lower=lower.fuse(cylinder(3.8,z,x,y,0))
+        lower=lower.fuse(post(z,x,y,0))
         side=-1 if x<0 else 1
-        ear=cylinder(3.8,1.35,x,y,z).fuse(box(4,4,1.35,side*8,y,z))
+        ear=post(ear_h,x,y,z)
+        if design=='wide':ear=ear.fuse(box(4,4,ear_h,side*8,y,z))
+        elif i==1:ear=ear.fuse(box(1.35,5,ear_h,6.175,16.5,z))
         upper=upper.fuse(ear)
         nz=4.0;vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,ph))
-        entry=box(4,pflat,ph,x+side*2,y,nz)
-        bore=cylinder(1.1,7,x,y,3.4);cuts.extend((pocket,entry,bore))
-        upper=upper.cut(bore)
-        products['CapacitorScrew'+str(i)]=cylinder(1,6.6,x,y,z+1.35-6.6).fuse(cylinder(1.9,2,x,y,z+1.35))
+        entry,path=native_tools(x,y,nz,data['entry_axes'][i],data['entry_lengths_mm'][i]);nut_paths.append(path)
+        seat=z+ear_h;length=data['finished_screw_length_mm']
+        bore=cylinder(1.1,seat-3.4+.2,x,y,3.4);cuts.extend((pocket,entry,bore))
+        # Counterbore the compact interior screw so its head does not occupy
+        # the solid roof. Its raised seat leaves1.55mm above the lead channel.
+        upper=upper.cut(bore).cut(cylinder(2.15,20-seat,x,y,seat))
+        products['CapacitorScrew'+str(i)]=cylinder(1,length,x,y,seat-length).fuse(cylinder(1.9,2,x,y,seat))
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,flat)]
         products['CapacitorNut'+str(i)]=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,nh)).cut(cylinder(1.1,nh+.2,x,y,nz-.1))
-        probes.append(cylinder(3.8,.05,x,y,z-.05).cut(cylinder(1.1,.1,x,y,z-.075)))
-    cutout=Part.makeCompound(cuts);lower=lower.cut(cutout).removeSplitter()
+        probes.append(post(.05,x,y,z-.05).cut(cylinder(1.1,.1,x,y,z-.075)).cut(cavity))
+    # Recut both halves after adding the posts. The compact lead-side post
+    # surrounds the two separate lead channels without filling either one.
+    cutout=Part.makeCompound(cuts);lower=lower.cut(cutout).cut(cavity).removeSplitter()
+    upper=upper.cut(cavity)
     can=axial(5.25,-5,12.5)
     for name,x in (('Positive',-2.5),('Negative',2.5)):
         can=can.fuse(axial(.325,-14.5,-5,x))
@@ -85,15 +109,16 @@ def native_shapes(part=None):
     products.update(BulkCapacitor=can.removeSplitter(),CapacitorCover=upper.removeSplitter(),
                     CapacitorUpperShim=shim.common(highbox),CapacitorLowerShim=shim.common(lowbox),
                     CapacitorVentClearance=axial(5.25,12.5,15.0))
-    return {**products,'rear_addition':lower,'rear_cutout':cutout,'mount_probes':probes,'targets':data}
+    return {**products,'rear_addition':lower,'rear_cutout':cutout,'mount_probes':probes,'nut_paths':nut_paths,'targets':data}
 
 
-def native_check(shapes,part=None):
+def native_check(shapes,design,part=None):
     import FreeCAD as App
     import Part
     from solid_clearance import box_distance
-    data=geometry(part)
-    if set(shapes)-{'rear_addition','rear_cutout','mount_probes','targets'}!=CHECK_NAMES:raise ValueError('Capacitor fixture census is incomplete')
+    data=mounting(design,part)
+    if shapes.get('targets')!=data:raise ValueError('Capacitor fixture differs from its selected design')
+    if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths','targets'}!=CHECK_NAMES:raise ValueError('Capacitor fixture census is incomplete')
     for name in CHECK_NAMES|{'rear_addition'}:
         if not shapes[name].isValid() or len(shapes[name].Solids)!=1:raise ValueError('Capacitor fixture is invalid or detached: '+name)
     rear=Part.makeBox(32,36,2,App.Vector(-16,-18,0)).fuse(shapes['rear_addition']).cut(shapes['rear_cutout']).removeSplitter()
@@ -112,6 +137,8 @@ def native_check(shapes,part=None):
     support=moved.common(shapes['CapacitorLowerShim']).Volume/.05
     if support<5:raise ValueError('Capacitor floats above the specified lower shim')
     if data['vent_target_mm']-data['maximum_accepted_axial_motion_mm']<2:raise ValueError('Capacitor pressure-valve margin is insufficient')
+    from fastener_access import native_check_paths
+    native_check_paths(shapes.get('nut_paths'),rear,2)
     return {'scope':'source-sized capacitor holder component only','physical_products':len(PRODUCT_NAMES),'references':len(REFERENCE_NAMES),
             'nominal_support_probe_mm2':support,'screw_tip_projection_mm':tips,'targets':data,
             'physical_acceptance':'unmeasured','installed_assembly':'not checked','fitted_joints':'not checked'}
