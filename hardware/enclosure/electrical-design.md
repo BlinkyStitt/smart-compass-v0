@@ -439,8 +439,11 @@ Retain a 100 nF capacitor from the PA4/divider midpoint to ground, beside
 BlackPill. Select **KEMET C315C104K5R5TA**, 100 nF, 50 V, ±10%, X7R, radial
 leads. The maker's sheet, generated 11/05/2026, gives maximum body dimensions
 of 3.81 x 2.54 x 3.14 mm and lead pitch of 2.54 ±0.78 mm. It specifies
-capacitance at 1 kHz/1 Vrms. The 7 x 7 x 6 mm loaded reservation is an
-assembly target. Temperature, bias and aging affect capacitance.
+capacitance at 1 kHz/1 Vrms, 7 mm minimum lead length and 0.485..0.61 mm
+lead diameter. The selected horizontal RC loom uses a 12 x 8.5 x 3.5 mm
+finished capacitor assembly space on the [BlackPill sense bridge](blackpill-mounts.md).
+This is a formed/sleeved assembly gauge target, not a supplied maximum or
+measurement. Temperature, bias and aging affect capacitance.
 
 Do not infer a guaranteed settling time or reset delay from nominal RC
 values. Measure PA4 settling and injection during power sequencing. The

@@ -5,15 +5,16 @@ import math
 from pathlib import Path
 
 import electrical_blackpill
+import blackpill_sense
 
 HERE=Path(__file__).resolve().parent
 L=52.806999206543
 W=20.778999328613253
 DATUM=(L/2,W/2)
 HARDWARE_NAMES=frozenset('BlackPill'+kind+str(i) for kind in ('Screw','Nut') for i in range(4))
-PRINTED_PARTS=frozenset({'BlackPillCarrier'}|{'BlackPillRetainer'+str(i) for i in range(4)})
-PRODUCT_NAMES=HARDWARE_NAMES|PRINTED_PARTS|{'BlackPillPCB'}
-REFERENCE_NAMES=frozenset({'BlackPillLoadedReservation','BlackPillUnderboardReservation'})
+PRINTED_PARTS=frozenset({'BlackPillCarrier'}|{'BlackPillRetainer'+str(i) for i in range(4)}|blackpill_sense.PRINTED)
+PRODUCT_NAMES=HARDWARE_NAMES|PRINTED_PARTS|{'BlackPillPCB'}|blackpill_sense.PRODUCT_NAMES
+REFERENCE_NAMES=frozenset({'BlackPillLoadedReservation','BlackPillUnderboardReservation'}|blackpill_sense.REFERENCE_NAMES)
 CHECK_NAMES=PRODUCT_NAMES|REFERENCE_NAMES
 
 
@@ -105,6 +106,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=90,design=None):
     for y0,y1 in ((0,1.2),(W-1.2,W)):top=top.cut(box(-.1,L+.1,y0,y1,z+1.65,12))
     products['BlackPillLoadedReservation']=top
     products['BlackPillUnderboardReservation']=box(0,49.75,1.2,W-1.2,z-1,1)
+    blackpill_sense.augment(products,z,W,data['bodies'],design)
     result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),
             'mount_probes':mount_probes,'stop_probes':stop_probes,'nut_paths':paths}
     for value in result.values():
@@ -145,6 +147,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
     data=geometry();envelope(pcb_bottom_z,rotation_deg);z=pcb_bottom_z
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','stop_probes','nut_paths'}!=CHECK_NAMES:
         raise ValueError('BlackPill fixture census is incomplete')
+    sense_result=blackpill_sense.native_check(shapes,z)
     for name in CHECK_NAMES:
         if not shapes[name].isValid() or len(shapes[name].Solids)!=1:raise ValueError('Invalid/detached BlackPill shape: '+name)
     rear=Part.makeBox(80,60,2,App.Vector(-40,-30,0)).fuse(shapes['rear_addition']).cut(shapes['rear_cutout']).removeSplitter()
@@ -194,7 +197,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
         captures.append({'source_thickness_case_mm':thickness,'capture_translation_checks':'pass','supplied_tolerance_claim':False})
     remaining={name:shapes[name] for name in PRODUCT_NAMES if name=='BlackPillCarrier' or name.startswith('BlackPillNut')}
     service=native_service_check(shapes,z,{**remaining,'RearInterface':rear})
-    return {'scope':'source-based BlackPill carrier component study','physical_products':14,'references':2,
+    return {'scope':'source-based BlackPill carrier component study','physical_products':len(PRODUCT_NAMES),'references':len(REFERENCE_NAMES),'sense_loom':sense_result,
             'nominal_source_component_boxes':130,'source_body_fixture_clearance':'pass','pcb_bearing_area_mm2':bearing,
-            'capture_cases':captures,'screw_tip_projection_mm':tips,'stock_screw':'M2x12; finish '+str(z+2.75)+'mm',
+            'capture_cases':captures,'screw_tip_projection_mm':tips,'stock_screws':{'0/1':'M2x12; finish '+str(z+2.75)+'mm','2/3':'M2x16; finish '+str(z+6.4)+'mm'},
             'service':service,'installed_assembly':'not checked','physical_acceptance':'unmeasured'}

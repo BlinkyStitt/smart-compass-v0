@@ -296,7 +296,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_SENSE_BOTTOM": {
       "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
@@ -311,7 +315,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "SPARKLE": {
       "part": "Adafruit Sparkle Motion, board revision D",
@@ -598,12 +606,17 @@
         3.32
       ],
       "loaded_envelope_mm": [
-        7,
-        7,
-        6
+        12,
+        8.5,
+        3.5
       ],
-      "basis": "100nF at1kHz/1Vrms; +/-10% initial tolerance, X7R temperature behavior and DC bias/aging apply. The loaded envelope is an engineering assembly reservation, not supplied-part measurement. No guaranteed settling/reset time or mass bound is inferred.",
-      "source_sha256": "3532a937a01c65f20f1a722a547962c9ceaf2ba4ffef1d2284be5bf380a516a5"
+      "basis": "Source body/lead limits and retained PDF hash. The selected formed/sleeved horizontal assembly spans12x8.5x3.5mm on the BlackPill sense bridge; this is an incoming/final gauge target, not a supplied bound or measurement. No guaranteed settling/reset time or mass bound is inferred.",
+      "source_sha256": "3532a937a01c65f20f1a722a547962c9ceaf2ba4ffef1d2284be5bf380a516a5",
+      "lead_diameter_mm": [
+        0.485,
+        0.61
+      ],
+      "lead_length_min_mm": 7
     }
   },
   "nets": {
