@@ -105,7 +105,7 @@
         "floor_thickness_mm": 1.35,
         "floor_size_mm": [
           32,
-          24
+          22.75
         ],
         "post_x_mm": 13,
         "post_y_mm": [
@@ -117,7 +117,11 @@
         "lip_y_length_mm": 3,
         "clamp_thickness_mm": 1.2,
         "finished_screw_length_mm": 17,
-        "hardware": "Four DIN912 M2x20 A2 stock screws finished to17mm, eight DIN125 M2 washers, four DIN934 M2 A4 nuts. Four screws fasten carrier and clamps through the full2mm case bearing lands. No guessed PCB mounting holes."
+        "hardware": "Four DIN912 M2x20 A2 stock screws finished to17mm, eight DIN125 M2 washers, four DIN934 M2 A4 nuts. Four screws fasten carrier and clamps through the full2mm case bearing lands. No guessed PCB mounting holes.",
+        "floor_centre_xy_mm": [
+          0,
+          -0.625
+        ]
       }
     },
     "BOOST": {

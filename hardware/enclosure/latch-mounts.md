@@ -44,7 +44,10 @@ soldering, screw retention, fault withstand and enclosed heat remain unmeasured.
 Do not force pins or enlarge plated holes.
 [Catalog15A, printed page6, version1](https://www.camdenboss.com/media/1546/camblock-plus-catalogue-15a.pdf).
 
-The printed carrier has a32 x24 x1.35 mm floor atZ2 mm. The PCB bottom is
+The printed carrier has a32 x22.75 x1.35 mm floor atZ2 mm, centred atX0/Y-0.625 mm.
+Its Y edges are-12 and10.75 mm. The shorter unused edge leaves0.25 mm
+clearance to the Narrow pull-ribbon anchor at the selected module position.
+The posts, spine, PCB bearing and terminal clearance stay unchanged. The PCB bottom is
 Z12.2 mm. This leaves0.35 mm nominal clearance below the8.5 mm terminal
 bodies. A central spine supports the real PCB underside. Four separate clips
 bear on the side edges, clear of the populated centre. Each lip retains a

@@ -28,7 +28,7 @@ def placement(part):
         value=m[name]
         if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:
             raise ValueError('Finite positive latch mounting target required: '+name)
-    if m['floor_size_mm']!=[32,24] or m['post_y_mm']!=[3.5,-7.8] or m['floor_bottom_z_mm']!=2:
+    if (m['floor_size_mm']!=[32,22.75] or m.get('floor_centre_xy_mm')!=[0,-.625]) or m['post_y_mm']!=[3.5,-7.8] or m['floor_bottom_z_mm']!=2:
         raise ValueError('Review the selected case clamp stations and full2mm bearing datum')
     if m['floor_thickness_mm']<1.35 or m['post_radius_mm']<2.75 or m['clamp_thickness_mm']<1.2:
         raise ValueError('Do not thin the selected carrier, full washer bearing or clamp')
@@ -71,7 +71,7 @@ def native_shapes(part=None):
         for y in (7.62,5.08,2.54,0):body=body.fuse(box(.5,.8,3.8,side*6.35,y,z))
         products['LatchTerminal'+name]=body.removeSplitter()
     floor=m['floor_bottom_z_mm'];thickness=m['floor_thickness_mm']
-    carrier=box(32,24,thickness,0,0,floor).fuse(box(4,16.8,z-floor-thickness,0,0,floor+thickness))
+    carrier=box(*m['floor_size_mm'],thickness,*m['floor_centre_xy_mm'],floor).fuse(box(4,16.8,z-floor-thickness,0,0,floor+thickness))
     rear_lands=[];rear_cuts=[];bearing=[]
     washer=WASHERS['M2'];flats,nh=nut_dimensions('M2')
     def ring(x,y,bottom):return cylinder(washer['od']/2,washer['thickness'],x,y,bottom).cut(cylinder(washer['id']/2,washer['thickness']+.2,x,y,bottom-.1))

@@ -38,6 +38,15 @@ class LatchMountTests(unittest.TestCase):
   self.assertGreaterEqual(result['minimum_specified_lip_bearing_mm2'],.5)
   self.assertEqual(len(result['stations']),4)
   self.assertEqual(len(PRODUCT_NAMES),24)
+ def test_floor_keeps_bearing_and_clears_the_narrow_ribbon_anchor(self):
+  m=definition()['mount']
+  self.assertEqual(m['floor_size_mm'],[32,22.75])
+  self.assertEqual(m['floor_centre_xy_mm'],[0,-.625])
+  self.assertAlmostEqual(m['floor_centre_xy_mm'][1]-m['floor_size_mm'][1]/2,-12)
+  self.assertAlmostEqual(-77+m['floor_centre_xy_mm'][1]+m['floor_size_mm'][1]/2,-66.25)
+  for key,value in [('floor_size_mm',[32,24]),('floor_centre_xy_mm',[0,0])]:
+   part=definition();part['mount'][key]=value
+   with self.subTest(key=key),self.assertRaises(ValueError):placement(part)
  def test_low_board_thin_carrier_or_floating_clamp_are_rejected(self):
   for key,value in [('pcb_bottom_z_mm',11),('floor_thickness_mm',1),
                     ('finished_screw_length_mm',16),('finished_screw_length_mm',18),
