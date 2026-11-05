@@ -122,7 +122,8 @@ For ordinary cell removal, S1 OFF separates the positive contact from all those
 stored-charge rails. The digital check conservatively treats every module's
 internal terminals as conducting and still requires that separation. Thus a
 timed electronic reset does not gate mechanical removal in this prototype plan.
-Support the assembly, put S1 fully OFF and remove USB before opening. Actual
+Support the assembly, put S1 fully OFF and remove USB, SWD and every other
+live interface before opening. Actual
 switch operation, insulation and assembly safety remain unmeasured. A rapid swap
 can retain electronic state; do not claim that all boards reset.
 
@@ -283,3 +284,9 @@ distinction. Actual route lengths, joints and strain relief remain open.
 The 3.2–4.2 V bench sweep includes depletion. PowerBoost senses its own input,
 after the loaded input path. Its nominal 3.2 V threshold does not imply
 operation down to 3.2 V at the cell contacts.
+
+The rear controls use separate printed mounts and the sourced open mounting
+nut/lockwasher. See [control-mounts.md](control-mounts.md) for the specified
+clamp stack and component-study command. Full enclosure integration remains
+open. GPS EN has a factory pull-down and is **high to disable**; retain that
+default and the assigned PB7 control. No pull-up or new firmware is added.

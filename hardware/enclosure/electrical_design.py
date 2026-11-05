@@ -68,6 +68,8 @@ CRITICAL_PARTS = {
     'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'F1': 'Littelfuse 0251004.NRT1L, 4 A, axial',
     'S1': 'C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC',
+    'S1_NUT': 'C&K 700201201, 1/4-40 UNS open hex mounting nut, nickel-plated brass',
+    'S1_WASHER': 'C&K 700303202, internal-tooth lockwasher for 1/4-40 bushing, nickel-plated steel',
     'START': 'C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole',
     'C_OUT': 'Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body',
     'F_AUX': 'Littelfuse 0251.500NRT1L, 0.5 A, axial',

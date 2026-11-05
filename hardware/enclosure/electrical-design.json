@@ -284,6 +284,16 @@
         3.5
       ],
       "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+    },
+    "S1_NUT": {
+      "part": "C&K 700201201, 1/4-40 UNS open hex mounting nut, nickel-plated brass",
+      "source": "https://www.ckswitches.com/media/1960/switchhardware.pdf",
+      "source_revision": "Hardware mounting-nut drawing; nominal .307in across flats,.062in thick; source dimensions are not supplied-part measurements or guaranteed tolerances"
+    },
+    "S1_WASHER": {
+      "part": "C&K 700303202, internal-tooth lockwasher for 1/4-40 bushing, nickel-plated steel",
+      "source": "https://www.ckswitches.com/media/1960/switchhardware.pdf",
+      "source_revision": "Hardware lockwasher drawing,VL01/21/26; nominal .402in OD,.018in thick; teeth/compression and supplied fit are unmeasured"
     }
   },
   "nets": {
@@ -583,7 +593,7 @@
   },
   "service": {
     "off_dwell_s": null,
-    "instruction": "Support the assembly, put physical S1 fully OFF and disconnect USB before opening. The reviewed topology isolates the positive cell contact from all downstream stored-charge rails; it does not require a timed electronic reset for mechanical removal. Physical switch operation/insulation and all decay/reset times remain unmeasured. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. A rapid swap may retain electronic state; do not promise a full reset or navigation/radio readiness from light output.",
+    "instruction": "Support the assembly, put physical S1 fully OFF and disconnect USB, SWD and every other live interface before opening. The reviewed topology isolates the positive cell contact from all downstream stored-charge rails; it does not require a timed electronic reset for mechanical removal. Physical switch operation/insulation and all decay/reset times remain unmeasured. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. A rapid swap may retain electronic state; do not promise a full reset or navigation/radio readiness from light output.",
     "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant.",
     "removal_basis": "Ordinary OFF topology only, with no external power. All downstream module terminals are treated as conducting in the digital contact-isolation check. A failed switch, damaged insulation or an untested assembly is not physically qualified by this graph."
   },
@@ -639,7 +649,8 @@
       "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts",
       "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
     ],
-    "unused": "No GPS backup coin cell. No external sensor power. BlackPill5V and USB remain disconnected. Program BlackPill through SWD with target power supplied by Sparkle; the probe does not supply target voltage."
+    "unused": "No GPS backup coin cell. No external sensor power. BlackPill5V and USB remain disconnected. Program BlackPill through SWD with target power supplied by Sparkle; the probe does not supply target voltage.",
+    "gps_enable": "GPS EN is a power-disable input: factory100kohm pull-down enables normal operation; drive PB7 high to disable. Preserve the pull-down; no new pull-up or firmware is added."
   },
   "supply_allocation": {
     "basis": "Engineering allocations for bench verification, not guaranteed component maxima or measurements. Verify concurrent radio/PWM peaks and average current before accepting the prototype operating plan.",

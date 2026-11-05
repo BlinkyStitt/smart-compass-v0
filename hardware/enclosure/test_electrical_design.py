@@ -105,6 +105,11 @@ class PrototypeDesignTests(unittest.TestCase):
         self.assertIn('net:GND', self.failure_ids(design))
         self.assertIn('unreviewed-connections', self.failure_ids(design))
 
+    def test_switch_hardware_requires_the_selected_thread(self):
+        design = self.reviewed_fixture()
+        design['parts']['S1_NUT']['part'] = 'Unreviewed 1/4-20 nut'
+        self.assertIn('selected-part:S1_NUT', self.failure_ids(design))
+
     def test_start_selection_cannot_revert_to_short_actuator(self):
         design = self.reviewed_fixture()
         design['parts']['START']['part'] = 'Pololu 1400'
