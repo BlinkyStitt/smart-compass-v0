@@ -1,0 +1,68 @@
+"""Check the shared compartment prototype in an isolated FreeCAD process.
+
+SC_BATTERY_CHECK_RESULT selects a NEW result file and exits the isolated process.
+Without it, print the result and leave the user's FreeCAD session open. This
+check does not replace either complete installed-assembly build or its manifest.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+
+import FreeCAD as App
+from PySide import QtCore
+
+source = Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0, str(source))
+result_path = os.environ.get('SC_BATTERY_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():
+        raise ValueError('Choose a new battery-check result file; preserve the existing evidence')
+    import battery_access
+
+    paths = [source / name for name in ('battery_access.py', 'battery-compartment.json',
+                                        'hardware_spec.py', 'component-inventory.json',
+                                        'BatteryAccessCheck.FCMacro', 'test_battery_access.py', 'battery-access.md')]
+    paths.append(source.parents[1] / 'site/electrical-inputs.json')
+    def snapshot():
+        return {path.relative_to(source.parents[1]).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+    before = snapshot()
+    spec = battery_access.definition()
+    checks = {}
+    for design in ('wide', 'narrow'):
+        shapes = battery_access.native_shapes(spec, design)
+        checks[design] = battery_access.native_check(spec, design, shapes)
+        for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1'):
+            broken=dict(shapes)
+            del broken[missing]
+            try:
+                battery_access.native_check(spec,design,broken)
+            except ValueError as error:
+                if 'component census' not in str(error): raise
+            else:
+                raise ValueError('Missing component accepted: '+missing)
+        broken={**shapes,'BatteryCell2':shapes['BatteryCell']}
+        try:
+            battery_access.native_check(spec,design,broken)
+        except ValueError as error:
+            if 'component census' not in str(error): raise
+        else:
+            raise ValueError('A second installed cell was accepted')
+    if snapshot() != before:
+        raise ValueError('Battery study inputs changed during native checks')
+    record = {'scope': 'shared-compartment-component-study', 'inputs': before,
+              'freecad_version': App.Version(), 'checks': checks,
+              'installed_assembly': 'not checked by this command', 'physical_acceptance': 'unmeasured'}
+    if result_path:
+        with Path(result_path).open('x') as output:
+            json.dump(record, output, indent=2)
+            output.write('\n')
+    print(json.dumps(record), flush=True)
+    print('BATTERY ACCESS COMPONENT CHECK PASS', flush=True)
+except Exception:
+    traceback.print_exc()
+finally:
+    if result_path:
+        QtCore.QTimer.singleShot(0, QtCore.QCoreApplication.quit)

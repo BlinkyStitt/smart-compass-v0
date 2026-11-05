@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "cell": {
+    "quantity": 1,
+    "source_record": "site/electrical-inputs.json#cell"
+  },
+  "contact": {
+    "part": "Mill-Max 0850-0-15-20-83-14-11-0",
+    "quantity": 2,
+    "full_stroke_mm": 2.286,
+    "source_length_tolerance_mm": 0.15,
+    "unloaded_tip_gap_mm": [
+      73.8,
+      74.0
+    ],
+    "datum_basis": "Assembly acceptance settings: 73.9 +/-0.1 mm between unloaded tips and 1.82 +/-0.05 mm negative-plunger compression at its insulating stop. These are specified settings, not measured or guaranteed print dimensions. Adjust and lock carriers, verify with gauges, and do not assume equal spring compression. Replace the nominal 0.25 mm insulating shim washers to set the actual tip gap; finish/shim the negative insulating bearing face to its measured stop setting. The nominal CAD does not establish these achieved settings.",
+    "carrier_adjustment_mm": 0.5,
+    "source": "https://static6.arrow.com/aropdfconversion/51cd24f6bbea76697111e1326022061c9a4b0141/085-00-152-08-314110.pdf",
+    "drawing": {
+      "initial_tip_to_mount_mm": 5.588,
+      "flange_thickness_mm": 0.762,
+      "flange_diameter_mm": 3.8862,
+      "barrel_diameter_mm": 2.413,
+      "rear_diameter_mm": 2.2098,
+      "tip_diameter_mm": 1.27,
+      "total_height_mm": 10.0076,
+      "source_revision": "2018-06-07 dimensioned manufacturer drawing; 2025-04-29 electrical/tolerance sheet",
+      "drawing_source": "https://static.chipdip.ru/lib/717/DOC051717440.pdf"
+    },
+    "carrier": "Two screwed 1.8 mm insulating clamp plates per terminal. Flange captured between plates; no removable cell connector. Modeled source dimensions are nominal; retain full tolerance clearance and verify actual carrier setting.",
+    "negative_stop_compression_mm": [
+      1.77,
+      1.87
+    ]
+  },
+  "cradle": {
+    "length_mm": 104.0,
+    "width_mm": 32.0,
+    "top_z_mm": 26.5,
+    "wall_mm": 2.0,
+    "ceiling_mm": 1.5,
+    "cell_axis_z_mm": 13.0,
+    "rear_opening_mm": [
+      110.0,
+      36.0
+    ],
+    "mount_x_mm": 58.0,
+    "mount_y_offset_mm": 9.0,
+    "mount_bottom_z_mm": 2.2,
+    "mount_thickness_mm": 3.0
+  },
+  "door": {
+    "length_mm": 108.0,
+    "width_mm": 36.0,
+    "bottom_z_mm": -5.5,
+    "thickness_mm": 1.8,
+    "hinge_y_offset_mm": -20.0,
+    "hinge_z_mm": -3.7,
+    "hinge_radius_mm": 3.5,
+    "hinge_pin_radius_mm": 1.5,
+    "hinge_bore_radius_mm": 1.75,
+    "hinge_pin_length_mm": 97,
+    "open_angle_deg": 120.0,
+    "latch_release_mm": 1.2,
+    "status": "Printed captive hinge and positive flex latch; strength, force, fatigue, dust seal and low-light service remain unmeasured."
+  },
+  "keeper": {
+    "pivot_x_mm": -20.0,
+    "pivot_y_offset_mm": 18.0,
+    "length_mm": 32.0,
+    "width_mm": 6.0,
+    "bottom_z_mm": -0.5,
+    "thickness_mm": 1.6,
+    "open_angle_deg": 90.0,
+    "status": "Independent captive quarter-turn bar prevents a cell drop after opening the door. Deliberately turn it before pulling the ribbon."
+  },
+  "removal": {
+    "tilt_deg": 0.0,
+    "withdrawal_mm": 40.0,
+    "finger_radius_mm": 12.0,
+    "finger_start_z_mm": -10.0,
+    "noncontact_clearance_mm": 0.25,
+    "status": "Press the cell against the fixed negative-end insulating stop, then pull outward with the ribbon after opening the independent keeper. The source/cell/assembly corners leave at least 0.27 mm at the positive end and 0.266 mm mechanical stroke margin. Spring force, contact/wrapper wiping and assembly settings remain unmeasured.",
+    "positive_end_release_gap_mm": 0.25
+  },
+  "designs": {
+    "wide": {
+      "case_diameter_mm": 250.0,
+      "cell_centre_xy_mm": [
+        0,
+        -47
+      ],
+      "boost_centre_xy_mm": [
+        87.0,
+        -30.0
+      ],
+      "latch_centre_xy_mm": [
+        0.0,
+        -90.0
+      ],
+      "switch_centre_xy_mm": [
+        70.0,
+        -70.0
+      ],
+      "start_centre_xy_mm": [
+        20.0,
+        -20.0
+      ],
+      "capacitor_centre_xy_mm": [
+        6.0,
+        -18.0
+      ],
+      "imu_centre_xy_mm": [
+        -62.0,
+        69.0
+      ]
+    },
+    "narrow": {
+      "case_diameter_mm": 200.0,
+      "cell_centre_xy_mm": [
+        0,
+        -47
+      ],
+      "boost_centre_xy_mm": [
+        -62,
+        -7.5
+      ],
+      "latch_centre_xy_mm": [
+        0,
+        -78
+      ],
+      "switch_centre_xy_mm": [
+        70,
+        -40
+      ],
+      "start_centre_xy_mm": [
+        20.0,
+        -20.0
+      ],
+      "capacitor_centre_xy_mm": [
+        6.0,
+        -18.0
+      ],
+      "imu_centre_xy_mm": [
+        -24.0,
+        -16.0
+      ]
+    }
+  },
+  "acceptance": "Prototype compartment geometry only. Source-sized bodies and specified contact settings do not prove spring force, wrapper/end-insulator wiping, print fit or assembled electrical acceptance. Integration and all physical results remain incomplete.",
+  "hardware": {
+    "hinge": "DIN 912 M3 x 100 A2 socket screw, finish under-head length to 97 mm; DIN 934 M3 A2 nut, retained threadlocker after assembly. No loose fastener during ordinary access. Two printed 3.95/0.75 mm axial spacers and two DIN 125 M3 washers leave 0.2 mm nominal axial play. Verify assembled play.",
+    "keeper": "ISO 7380-1 M3 x 12 A2 button-head screw and two DIN 934 M3 A2 jammed nuts; set 0.25 mm lower and upper rotational play, then jam nuts without clamping bar. Verify supplied head envelope.",
+    "contacts": "Four DIN 912 M2 x 16 A2 screws and four DIN 934 M2 A2 nuts; two screws per flange clamp. Set tip gap before locking. Each screw clamps through a printed compression tube, a nominal 0.25 mm PET shim washer and a DIN 125 M2 washer. Replace matched shim stacks during initial setup; ordinary cell swaps leave them fixed.",
+    "qualification": "Fastener strength, retention, print dimensions and compass disturbance remain unmeasured."
+  },
+  "ribbon": {
+    "part": "Bally Ribbon Mills pattern 4462, MIL-DTL-5038K Type III Class 1A, 3/8 inch nylon tape, unfinished",
+    "cut_length_mm": 100,
+    "width_mm": [
+      8.73125,
+      10.31875
+    ],
+    "thickness_mm": [
+      0.381,
+      0.635
+    ],
+    "max_oz_per_yard": 0.12,
+    "minimum_stock_breaking_lbf": 200,
+    "maker": "https://www.ballyribbon.com/mil-spec/5038",
+    "limits_source": "https://acw1.com/wp-content/uploads/2024/08/ACW-MIL-DTL-5038K.pdf",
+    "source_revision": "MIL-DTL-5038K, 22 June 2016, Table III; maker pattern 4462 Class 1a specification retrieved 2026-11-04.",
+    "attachment": "Thread around the integral insulating anchor bar and sew the fixed loop before final enclosure assembly. Fold and sew an 8 mm free pull tab. Finish cut ends. No adhesive/wire carries extraction load.",
+    "status": "Maximum-stock representative drape; supplied tape, sewn joint, flexibility, wear, trapped-ribbon response and pull force are unmeasured."
+  }
+}
