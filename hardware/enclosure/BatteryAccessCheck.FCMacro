@@ -25,7 +25,7 @@ try:
 
     paths = [source / name for name in ('battery_access.py', 'battery-compartment.json',
                                         'hardware_spec.py', 'component-inventory.json',
-                                        'BatteryAccessCheck.FCMacro', 'test_battery_access.py', 'battery-access.md','solid_clearance.py','test_solid_clearance.py')]
+                                        'BatteryAccessCheck.FCMacro', 'test_battery_access.py', 'battery-access.md','battery_leads.py','test_battery_leads.py','electrical-design.json','solid_clearance.py','test_solid_clearance.py')]
     paths.append(source.parents[1] / 'site/electrical-inputs.json')
     def snapshot():
         return {path.relative_to(source.parents[1]).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
@@ -39,13 +39,19 @@ try:
             cx,cy=spec['designs'][design]['cell_centre_xy_mm']
             blocker=Part.makeBox(.1,.1,.1,App.Vector(cx+30-.05,cy-.05,-18))
             try:
+                battery_access.native_check(spec,design,shapes,surroundings=[('RearPlate',Part.makeCylinder(125,1))])
+            except ValueError as error:
+                if 'Missing full-height battery mount bearing' not in str(error):raise
+            else:
+                raise ValueError('A rear skin below the specified mount datum was accepted')
+            try:
                 battery_access.native_check(spec,design,shapes,surroundings=[('ThinServiceObstruction',blocker)])
             except ValueError as error:
                 if not any(text in str(error) for text in ('motion has no positive','Cell removal clearance failed')):
                     raise
             else:
                 raise ValueError('A thin obstruction in the service motion was ignored')
-        for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1'):
+        for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1','BatteryLeadP','BatteryMainFuse'):
             broken=dict(shapes)
             del broken[missing]
             try:

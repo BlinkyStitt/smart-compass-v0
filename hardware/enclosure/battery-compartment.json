@@ -41,7 +41,7 @@
     "ceiling_mm": 1.5,
     "cell_axis_z_mm": 13.0,
     "rear_opening_mm": [
-      110.0,
+      106,
       36.0
     ],
     "mount_x_mm": 58.0,
@@ -53,7 +53,8 @@
       "bottom_radius_mm": 82.5,
       "top_radius_mm": 79.0,
       "basis": "Common cradle corner clearance below the existing Wide tapered circle seat; keep the original board seat and optics. Native assembly check still required."
-    }
+    },
+    "side_wall_mm": 1.35
   },
   "door": {
     "length_mm": 108.0,
@@ -179,5 +180,19 @@
     "source_revision": "MIL-DTL-5038K, 22 June 2016, Table III; maker pattern 4462 Class 1a specification retrieved 2026-11-04.",
     "attachment": "Thread around the integral insulating anchor bar and sew the fixed loop before final enclosure assembly. Fold and sew an 8 mm free pull tab. Finish cut ends. No adhesive/wire carries extraction load.",
     "status": "Maximum-stock representative drape; supplied tape, sewn joint, flexibility, wear, trapped-ribbon response and pull force are unmeasured."
+  },
+  "contact_leads": {
+    "bend_start_x_from_cell_mm": 51.0,
+    "individual_bend_radius_mm": 6.0,
+    "between_bends_straight_mm": 10.5,
+    "conduit_start_x_from_cell_mm": 50.0,
+    "conduit_inner_radius_mm": 1.2,
+    "conduit_outer_radius_mm": 2.6,
+    "strip_each_end_mm": 3.0,
+    "blank_length_mm": 42.0,
+    "main_fuse_centre_x_from_cell_mm": 41.0,
+    "bend_basis": "Specified individual-wire routing target. NASA-STD-8739.4A Change4 Table7-1, p30:3x outside diameter minimum for AWG10-or-smaller non-coax/non-polyimide harness. This does not qualify the wire, bends, solder joints or a thicker bundle.",
+    "bend_source": "https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf",
+    "limits": "Two fixed insulated main leads and a main-fuse reservation only. Joint insulation, fuse lacing, downstream wiring and both installed assemblies remain incomplete; no physical acceptance."
   }
 }

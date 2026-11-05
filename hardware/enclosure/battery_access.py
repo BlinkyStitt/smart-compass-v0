@@ -20,7 +20,9 @@ METAL_PARTS = MOUNT_PARTS | frozenset({'BatteryHingePin','BatteryHingeNut','Batt
                          'BatteryKeeperScrew','BatteryKeeperNut0','BatteryKeeperNut1'} | {
     'BatteryContact'+end+part for end in ('P','N')
     for part in ('','Screw0','Screw1','Nut0','Nut1','Washer0','Washer1')})
-PART_NAMES = PRINTED_PARTS | SHIM_PARTS | METAL_PARTS | {'BatteryCell','BatteryPullRibbon'}
+WIRE_PARTS=frozenset({'BatteryLeadP','BatteryLeadN'})
+PROTECTION_PARTS=frozenset({'BatteryMainFuse'})
+PART_NAMES = PRINTED_PARTS | SHIM_PARTS | METAL_PARTS | WIRE_PARTS | PROTECTION_PARTS | {'BatteryCell','BatteryPullRibbon'}
 
 
 def definition():
@@ -71,7 +73,7 @@ def validate(spec, design):
     for section,keys in (
         ('contact',('full_stroke_mm','source_length_tolerance_mm')),
         ('removal',('positive_end_release_gap_mm','withdrawal_mm','finger_radius_mm','noncontact_clearance_mm')),
-        ('cradle',('width_mm','length_mm','top_z_mm','wall_mm','ceiling_mm','cell_axis_z_mm'))):
+        ('cradle',('width_mm','length_mm','top_z_mm','wall_mm','side_wall_mm','ceiling_mm','cell_axis_z_mm'))):
         for name in keys:
             v=spec[section][name]
             if isinstance(v,bool) or not isinstance(v,(float,int)) or not math.isfinite(v) or v<=0:
@@ -85,7 +87,7 @@ def validate(spec, design):
             or travel['available_stroke_min_mm']-travel['compressed_max_mm'] < spec['removal']['noncontact_clearance_mm']):
         raise ValueError('Contact travel cannot retain the cell and release its negative end')
     cradle = spec['cradle']
-    if cradle['width_mm'] - 2*cradle['wall_mm'] <= spec['cell']['diameter_mm'][1]:
+    if cradle['width_mm'] - 2*cradle['side_wall_mm'] <= spec['cell']['diameter_mm'][1]:
         raise ValueError('Cradle has no radial cell clearance')
     top = cradle['cell_axis_z_mm'] + spec['cell']['diameter_mm'][1]/2
     if cradle['top_z_mm'] - cradle['ceiling_mm'] - top < spec['removal']['noncontact_clearance_mm']:
@@ -110,7 +112,7 @@ def native_shapes(spec, design):
         return Part.makeCylinder(radius, length, App.Vector(x, y, z), App.Vector(*axis))
 
     outer = box(c['length_mm'], c['width_mm'], c['top_z_mm'], cx, cy, 0)
-    inner = box(c['length_mm']-4, c['width_mm']-4,
+    inner = box(c['length_mm']-2*c['wall_mm'], c['width_mm']-2*c['side_wall_mm'],
                 c['top_z_mm']-c['ceiling_mm']+1, cx, cy, -1)
     frame = outer.cut(inner)
     lip=box(c['length_mm'],c['width_mm'],3.4,cx,cy,-3.4).cut(
@@ -340,6 +342,10 @@ def native_shapes(spec, design):
     # remains continuous between the compartment and unrelated electronics.
     frame=frame.cut(box(tw+.5,4,7,cx,cy-15.8,1)).fuse(well).fuse(anchor_bar)
     cutout=cutout.fuse(box(tw+5,7,10,cx,cy-16.5,-5))
+    import battery_leads
+    leads=battery_leads.native_shapes(spec,design)
+    frame=frame.fuse(Part.makeCompound(leads['secondary_shells']))
+    frame=frame.cut(Part.makeCompound(leads['secondary_bores']))
     chamfer=c['upper_chamfer']
     low=chamfer['bottom_z_mm']
     height=c['top_z_mm']-low
@@ -361,7 +367,7 @@ def native_shapes(spec, design):
     length = spec['cell']['length_mm'][1]
     cell = cylinder(spec['cell']['diameter_mm'][1]/2, length,
                     cx-length/2, cy, c['cell_axis_z_mm'], (1, 0, 0))
-    return {**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
+    return {**{name:leads[name] for name in WIRE_PARTS|PROTECTION_PARTS},'wire_cuts':leads['wire_cuts'],**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
             'BatteryKeeper': bar.removeSplitter(), 'BatteryHingePin': pin,
             'BatteryHingeNut': hinge_nut, 'BatteryKeeperScrew': keeper_pin,
             'BatteryKeeperNut0': keeper_nuts[0], 'BatteryKeeperNut1': keeper_nuts[1],
@@ -390,6 +396,17 @@ def native_check(spec, design, shapes, *, surroundings=()):
     for name, shape in surroundings:
         if not name or not shape.isValid() or shape.Volume <= 0:
             raise ValueError('Invalid installed fixed solid: '+str(name))
+    rear_parts=[shape for name,shape in surroundings if name in ('RearPlate','RearCover')]
+    bearing=[]
+    for rear_shape in rear_parts:
+        for side,end in itertools.product((-1,1),repeat=2):
+            x=spec['designs'][design]['cell_centre_xy_mm'][0]+side*spec['cradle']['mount_x_mm']
+            y=spec['designs'][design]['cell_centre_xy_mm'][1]+end*spec['cradle']['mount_y_offset_mm']
+            z=spec['cradle']['mount_bottom_z_mm']
+            ring=Part.makeCylinder(3.5,.05,App.Vector(x,y,z-.05)).cut(Part.makeCylinder(1.7,.07,App.Vector(x,y,z-.06)))
+            missing=ring.cut(rear_shape).Volume
+            if missing>1e-6:raise ValueError('Missing full-height battery mount bearing: '+str((x,y,missing)))
+            bearing.append({'centre_xy_mm':[x,y],'missing_bearing_mm3':missing})
     names=tuple(sorted(PART_NAMES))
     actual={name for name in shapes if name.startswith('Battery')}
     if actual != PART_NAMES:
@@ -511,7 +528,7 @@ def native_check(spec, design, shapes, *, surroundings=()):
         raise ValueError('A 1 mm unseated cell clears the closed seating saddles')
     if min(gaps.values()) < removal['noncontact_clearance_mm']-1e-6:
         raise ValueError('Cell removal clearance failed: ' + str(gaps))
-    return {'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
+    return {'contact_wire_cuts':shapes['wire_cuts'],'mount_bearing':bearing,'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
             'keeper_continuous_clearance_mm': keeper_gap,
             'cell_continuous_clearance_mm': gaps,
             'intended_insulating_stop_contact_mm3': sweep.common(stop_part).Volume,

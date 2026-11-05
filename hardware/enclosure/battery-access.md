@@ -118,3 +118,44 @@ does not exempt names or materials. The continuous-motion displacement bound
 and required clearances stay unchanged. A thin obstacle in the service sweep
 must still fail. This avoids repeated FreeCAD support-index work on one large
 compound of every installed object.
+
+## Fixed contact leads and main fuse
+
+The component census includes two M22759/16-18 contact leads and a
+Littelfuse 0251004.NRT1L main-fuse assembly reservation. The common JSON owns
+the lead targets. Each lead follows two 6 mm-radius quarter turns and a
+10.5 mm straight section. The exact centreline is 33.3919559 mm. Add 3 mm at
+each end for the specified lap joint. The finished cut target is 39.3919559 mm
+from a 42 mm blank. These are fabrication targets, not measured lengths.
+Positive and negative use separate conduits. A thicker bundle needs a new
+bend-radius review.
+
+The wire maker gives a 1.8542 mm maximum outer diameter. Each conduit has
+2.4 mm inside diameter and 5.2 mm outside diameter. Radial wire clearance is
+0.2729 mm; the printed wall is 1.4 mm. The conduit starts before the first
+bend. Contact hoods cover the contact tails. Joint insulation and its fit at
+the hood/conduit transition still need completion. This study does not accept
+an exposed solder joint. Do not add sleeving through the bends without a
+review of its larger diameter and bend radius.
+[Wire catalog, printed page 41](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf).
+
+The 6 mm radius exceeds three times the wire's maximum diameter. This uses
+NASA-STD 8739.4A Change 4 Table 7-1 as a workmanship reference for a harness
+with AWG 10 or smaller wire, without coaxial or polyimide-insulated wire.
+It is not a wire-maker flex limit or NASA qualification. The source also
+requires fixed routing without installation stress and protected joints
+outside bends.
+[Source, pages 30–31](https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf).
+
+The positive lead ends at the 20 x 5 x 5 mm main-fuse reservation. Its integral
+insulating holder opens toward the rear, outside the cell opening. Fit it
+before bolting down the cradle. Two lacing slots reserve joint restraint.
+Lacing selection, joint insulation, downstream wiring, actual strain relief,
+fault withstand and both full installed checks remain incomplete.
+The electrical `fitted-harness` failure stays active.
+
+The rear opening is 106 mm long. The end walls stay 2 mm thick. The long side
+walls are 1.35 mm thick, with the existing 2 mm lower lip and 1.5 mm ceiling.
+Each actual rear panel must support the full case-mount bearing ring at the
+specified 2 mm datum. The checker rejects a thin rear skin below that datum.
+These geometry checks do not establish printed strength.
