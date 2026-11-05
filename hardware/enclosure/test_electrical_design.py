@@ -97,6 +97,11 @@ class PrototypeDesignTests(unittest.TestCase):
         design['parts']['F_FIB']['part'] = 'Littelfuse 0459001.UR, 1 A'
         self.assertIn('selected-part:F_FIB', self.failure_ids(design))
 
+    def test_start_selection_cannot_revert_to_short_actuator(self):
+        design = self.reviewed_fixture()
+        design['parts']['START']['part'] = 'Pololu 1400'
+        self.assertIn('selected-part:START', self.failure_ids(design))
+
     def test_source_controls_and_unused_inputs_remain_checked(self):
         for key, value in [('BOOST.remove', []), ('LATCH.leave_open', []),
                            ('BOOST.do_not_install', []), ('SPARKLE.usb_pd_v', 20),

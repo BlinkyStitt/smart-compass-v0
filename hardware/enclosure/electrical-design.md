@@ -254,3 +254,27 @@ parts for OFF and the two sense-divider positions. The12x3.5x3.5mm loaded
 reservation includes formed/sleeved leads. The source125mg mass is a
 published value without a maximum tolerance.
 [Vishay28724,07-Mar-2016](https://www.vishay.com/docs/28724/mrs16m25.pdf).
+
+### Direct START actuator and wire stock
+
+START uses C&K **PTS645SL70-2 LFS**, a normally-open through-hole switch
+with a 7 mm round actuator. Use its stock actuator directly. The selected
+[PTS645 source](https://www.ckswitches.com/media/1471/pts645.pdf)
+(MI 10/02/26, pages 1, 2, 5 and 7) gives the ordering code, 7 ±0.1 mm
+height from the PCB datum and the 6 ×6 ×3.45 mm nominal body. Actuator
+height is not operating travel. The source's mechanical-characteristics table
+contains inconsistent option/height entries; the design does not use those
+entries as guaranteed travel or force bounds. A printed plunger would need
+additional overtravel data. It is not part of this direct-actuator proposal.
+Actual mounting, finger reach and switching force remain unmeasured.
+
+Use M22759/16-18 for the main paths, /16-22 for protected power branches and
+**M22759/18-26** for signals and control. The selected catalog does not list
+26 AWG in /16. The [Thermax/Amphenol catalog](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf)
+(header 2012-09-07, printed pages 41–42) supplies maximum outer diameters and
+20 °C resistance values. Its wire masses are nominal. The JSON retains this
+distinction. Actual route lengths, joints and strain relief remain open.
+
+The 3.2–4.2 V bench sweep includes depletion. PowerBoost senses its own input,
+after the loaded input path. Its nominal 3.2 V threshold does not imply
+operation down to 3.2 V at the cell contacts.
