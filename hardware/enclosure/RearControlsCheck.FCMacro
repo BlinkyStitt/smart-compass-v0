@@ -15,14 +15,15 @@ try:
  import control_fixture
  import solid_clearance
  if result_path and Path(result_path).exists():raise ValueError('Choose a new result file; preserve previous evidence')
- paths=[source/name for name in ('control_fixture.py','solid_clearance.py','hardware_spec.py','component-inventory.json','electrical-design.json','electrical_design.py','RearControlsCheck.FCMacro','control-mounts.md')]
+ paths=[source/name for name in ('control_fixture.py','solid_clearance.py','hardware_spec.py','component-inventory.json','electrical-design.json','electrical_design.py','RearControlsCheck.FCMacro','control-mounts.md','test_control_fixture.py')]
  from electrical_design import CRITICAL_PARTS
  selected=json.loads((source/'electrical-design.json').read_text())['parts']
- if any(selected[n]['part']!=CRITICAL_PARTS[n] for n in ('S1','START','S1_NUT','S1_WASHER')):raise ValueError('Selected control identity changed')
- if selected['START']['body_nominal_mm'] != [6,6,control_fixture.START_BODY_HEIGHT] or selected['START']['actuator_height_mm'] != list(control_fixture.START_HEIGHT_LIMITS):raise ValueError('Selected START geometry changed')
+ if any(selected[n]['part']!=CRITICAL_PARTS[n] for n in ('S1','START','MODE','ACTION','S1_NUT','S1_WASHER')):raise ValueError('Selected control identity changed')
+ for name in ('START','MODE','ACTION'):
+  if selected[name]['body_nominal_mm'] != [6,6,control_fixture.START_BODY_HEIGHT] or selected[name]['actuator_height_mm'] != list(control_fixture.START_HEIGHT_LIMITS):raise ValueError('Selected button geometry changed: '+name)
  def snapshot():return {str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
  before=snapshot();results={}
- for design,diameter,args,options in [('wide',250,((79,-70),(20,-16)),{'switch_rotation_deg':90,'guard_mount_offset_mm':13.5}),('narrow',200,((79,-18),(-5,7.5)),{})]:
+ for design,diameter,args,options in [('wide',250,((79,-70),(20,-16),(-18,-16),(-47,-16)),{'switch_rotation_deg':90,'guard_mount_offset_mm':13.5}),('narrow',200,((79,-18),(-5,7.5),(-51,-8),(5,-16)),{})]:
   shapes=control_fixture.native_shapes(*args,**options)
   rear=Part.makeCylinder(diameter/2,2).fuse(shapes['rear_addition']).cut(shapes['rear_cutout'])
   products={name:shapes[name] for name in control_fixture.PRODUCT_NAMES}
@@ -33,7 +34,7 @@ try:
     if sa.BoundBox.intersect(sb.BoundBox):
      overlap=sa.common(sb).Volume
      if overlap>1e-5:raise ValueError('Control interference: '+design+' '+a+'/'+b+' '+str(overlap))
-  for missing in ('StartMountScrew0','PowerDisconnectNut','StartCompression1'):
+  for missing in ('StartMountScrew0','PowerDisconnectNut','StartCompression1','ModeSwitch','ActionBackplate'):
    broken=dict(shapes);del broken[missing]
    try:control_fixture.native_check(broken,checked)
    except ValueError as e:
@@ -43,6 +44,11 @@ try:
   except ValueError as e:
    if 'component census differs' not in str(e):raise
   else:raise ValueError('Duplicate START component accepted')
+  for installed in ([item for item in checked if item[0]!='ModeSwitch'],[*checked,checked[0]]):
+   try:control_fixture.native_check(shapes,installed)
+   except ValueError as e:
+    if 'Installed rear control product census differs' not in str(e):raise
+   else:raise ValueError('Incomplete or duplicate installed controls accepted')
   results[design]=control_fixture.native_check(shapes,checked)
   results[design]['volumes_cm3']={name:shape.Volume/1000 for name,shape in checked}
   blocked=[*checked,('ThinFingerObstruction',Part.makeBox(.1,.1,.1,App.Vector(args[1][0]-.05,args[1][1]-.05,-10)))]

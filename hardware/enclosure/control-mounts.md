@@ -68,3 +68,17 @@ checks still belong to each enclosure's publication contract.
 Physical fit, print strength, tightening, fatigue, finger reach, operating
 force and electrical switching are **unmeasured**. These component fixtures
 are not an installed-enclosure or safe-to-wear result.
+
+## Retained Mode and Action controls
+
+Use the same direct actuator and bolted clamp stack for START, Mode and
+Action. Each has its own bezel, backplate, two compression collars and two
+screw/washer/nut sets. The full control census is 43 products: 13 printed
+parts, 24 ordinary fasteners, three momentary switches, and the DPDT switch
+with its nut and lockwasher. The Mode/Action circuit uses PB13/PB14 and
+ground. START retains its separate on-only Pololu input.
+
+Each enclosure generator must supply all four locations: physical OFF/ON,
+START, Mode and Action. The native study checks every button's finger probe
+against all other products. A missing Mode switch or Action backplate fails
+the census. The whole-enclosure fit and physical operation remain unmeasured.

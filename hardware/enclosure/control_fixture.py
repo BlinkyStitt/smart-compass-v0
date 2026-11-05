@@ -10,19 +10,25 @@ import math
 START_DATUM_Z = 3.65
 START_BODY_HEIGHT = 3.45
 START_HEIGHT_LIMITS = (6.9, 7.1)
-PRINTED_PARTS = frozenset({'StartBackplate','StartBezel','SwitchGuard','StartCompression0','StartCompression1'})
-HARDWARE_PARTS = frozenset('StartMount'+kind+str(i)
-                         for kind in ('Screw', 'Washer', 'Nut') for i in (0,1)) | frozenset('GuardMount'+kind+str(i) for kind in ('Screw','Washer','Nut') for i in (0,1))
-PRODUCT_NAMES = PRINTED_PARTS | HARDWARE_PARTS | {'StartSwitch','PowerDisconnect','PowerDisconnectNut','PowerDisconnectLockwasher'}
+BUTTONS=('Start','Mode','Action')
+PRINTED_PARTS=frozenset({'SwitchGuard'} | {
+    prefix+suffix for prefix in BUTTONS
+    for suffix in ('Backplate','Bezel','Compression0','Compression1')})
+HARDWARE_PARTS=frozenset(prefix+'Mount'+kind+str(i)
+    for prefix in (*BUTTONS,'Guard') for kind in ('Screw','Washer','Nut') for i in (0,1))
+PRODUCT_NAMES=PRINTED_PARTS | HARDWARE_PARTS | {
+    prefix+'Switch' for prefix in BUTTONS} | {
+    'PowerDisconnect','PowerDisconnectNut','PowerDisconnectLockwasher'}
 
 
-def placement(switch_xy, start_xy, rear_thickness=2):
-    if (len(switch_xy)!=2 or len(start_xy)!=2
+def placement(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2):
+    if (any(len(xy)!=2 for xy in (switch_xy,start_xy,mode_xy,action_xy))
             or any(isinstance(v,bool) or not isinstance(v,(float,int)) or not math.isfinite(v)
-                   for v in (*switch_xy,*start_xy,rear_thickness))
+                   for v in (*switch_xy,*start_xy,*mode_xy,*action_xy,rear_thickness))
             or rear_thickness != 2):
         raise ValueError('Rear controls require finite XY locations and the specified 2mm clamp lands')
     return {'switch_xy':tuple(switch_xy), 'start_xy':tuple(start_xy),
+            'mode_xy':tuple(mode_xy),'action_xy':tuple(action_xy),
             'start_tip_z_mm':[START_DATUM_Z-h for h in reversed(START_HEIGHT_LIMITS)],
             'start_body_front_z_mm':START_DATUM_Z-START_BODY_HEIGHT,
             'start_projection_beyond_bezel_mm':START_HEIGHT_LIMITS[0]-START_DATUM_Z-.6,
@@ -31,10 +37,10 @@ def placement(switch_xy, start_xy, rear_thickness=2):
             'finger_radius_mm':12}
 
 
-def native_shapes(switch_xy, start_xy, rear_thickness=2, *, switch_rotation_deg=0, guard_mount_offset_mm=6):
+def native_shapes(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2, *, switch_rotation_deg=0, guard_mount_offset_mm=6):
     """Return actual products, rear additions/cuts and service probes.
 
-    The guard and START bezel bolt to full-height panel lands. The direct actuator
+    The guard and three button bezels bolt to full-height panel lands. The direct actuator
     has no printed plunger. Cut the retaining screws from M2x10 stock to the
     specified finished length; verify the actual clamp stack before assembly.
     """
@@ -42,8 +48,8 @@ def native_shapes(switch_xy, start_xy, rear_thickness=2, *, switch_rotation_deg=
     import Part
     from hardware_spec import WASHERS, nut_dimensions, hexagon
 
-    settings=placement(switch_xy,start_xy,rear_thickness)
-    sx,sy=switch_xy; bx,by=start_xy
+    settings=placement(switch_xy,start_xy,mode_xy,action_xy,rear_thickness)
+    sx,sy=switch_xy
     if switch_rotation_deg not in (0,90) or guard_mount_offset_mm not in (6,13.5):
         raise ValueError('Review the rear control orientation and attachment before changing it')
     rear_lands=[]
@@ -81,33 +87,38 @@ def native_shapes(switch_xy, start_xy, rear_thickness=2, *, switch_rotation_deg=
     points=[App.Vector(a+sx,b+sy,-lock_h-nut_h) for a,b in hexagon(0,0,.307*25.4)]
     switch_nut=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,nut_h)).cut(
         cylinder(3.175,nut_h+.2,sx,sy,-lock_h-nut_h-.1))
-    bezel=box(10,20,.8,bx,by,-.6).cut(cylinder(2.1,1,bx,by,-.7))
-    back=box(10,20,1.5,bx,by,START_DATUM_Z)
-    start=box(6,6,START_BODY_HEIGHT,bx,by,.2)
-    start=start.fuse(cylinder(1.75,START_HEIGHT_LIMITS[1]-START_BODY_HEIGHT,bx,by,START_DATUM_Z-START_HEIGHT_LIMITS[1]))
-    for dy in (-7,7):
-        back=back.fuse(cylinder(3.8,1.5,bx,by+dy,START_DATUM_Z))
-    for dx in (-3.25,3.25):
-        for dy in (-2.25,2.25):
-            # Keep the full lead envelope, including source outer span7.9.
-            start=start.fuse(box(1.4,.8,3,bx+dx,by+dy,START_DATUM_Z))
-            back=back.cut(cylinder(.85,1.7,bx+dx,by+dy,START_DATUM_Z-.1))
-    products={'StartSwitch':start,'StartBackplate':back,'SwitchGuard':guard,'PowerDisconnect':switch,
+    products={'SwitchGuard':guard,'PowerDisconnect':switch,
               'PowerDisconnectNut':switch_nut,'PowerDisconnectLockwasher':lockwasher}
-    cuts=box(8.4,6.4,8,bx,by,-1).fuse(box(10.4,20.4,1.2,bx,by,-1)).fuse(cylinder(3.4,8,sx,sy,-4))
-    for i,dy in enumerate((-7,7)):
-        x,y=bx,by+dy
-        bezel=bezel.fuse(cylinder(2.4,START_DATUM_Z-.2,x,y,.2))
-        bezel=bezel.cut(cylinder(1.1,6,x,y,-.7))
-        back=back.cut(cylinder(1.1,2,x,y,START_DATUM_Z-.1))
-        products['StartMountScrew'+str(i)]=cylinder(1,7.95,x,y,-.6).fuse(cylinder(1.9,2,x,y,-2.6))
-        products['StartMountWasher'+str(i)]=washer(WASHERS['M2']['od']/2,WASHERS['M2']['id']/2,.35,x,y,5.15)
-        products['StartMountNut'+str(i)]=nut('M2',x,y,5.50)
-        products['StartCompression'+str(i)]=washer(3.8,2.6,1.65,x,y,2)
-        rear_lands.append(cylinder(4.5,2,x,y,0))
-        cuts=cuts.fuse(cylinder(2.6,4,x,y,-1))
-    products['StartBackplate']=back
-    products['StartBezel']=bezel
+    cuts=cylinder(3.4,8,sx,sy,-4)
+    probes={};button_bearing=[]
+    for prefix,(bx,by) in zip(BUTTONS,(start_xy,mode_xy,action_xy)):
+        bezel=box(10,20,.8,bx,by,-.6).cut(cylinder(2.1,1,bx,by,-.7))
+        back=box(10,20,1.5,bx,by,START_DATUM_Z)
+        button=box(6,6,START_BODY_HEIGHT,bx,by,.2)
+        button=button.fuse(cylinder(1.75,START_HEIGHT_LIMITS[1]-START_BODY_HEIGHT,
+                                    bx,by,START_DATUM_Z-START_HEIGHT_LIMITS[1]))
+        for dy in (-7,7):back=back.fuse(cylinder(3.8,1.5,bx,by+dy,START_DATUM_Z))
+        for dx in (-3.25,3.25):
+            for dy in (-2.25,2.25):
+                button=button.fuse(box(1.4,.8,3,bx+dx,by+dy,START_DATUM_Z))
+                back=back.cut(cylinder(.85,1.7,bx+dx,by+dy,START_DATUM_Z-.1))
+        cuts=cuts.fuse(box(8.4,6.4,8,bx,by,-1)).fuse(box(10.4,20.4,1.2,bx,by,-1))
+        for i,dy in enumerate((-7,7)):
+            x,y=bx,by+dy
+            bezel=bezel.fuse(cylinder(2.4,START_DATUM_Z-.2,x,y,.2))
+            bezel=bezel.cut(cylinder(1.1,6,x,y,-.7))
+            back=back.cut(cylinder(1.1,2,x,y,START_DATUM_Z-.1))
+            products[prefix+'MountScrew'+str(i)]=cylinder(1,7.95,x,y,-.6).fuse(cylinder(1.9,2,x,y,-2.6))
+            products[prefix+'MountWasher'+str(i)]=washer(WASHERS['M2']['od']/2,WASHERS['M2']['id']/2,.35,x,y,5.15)
+            products[prefix+'MountNut'+str(i)]=nut('M2',x,y,5.50)
+            products[prefix+'Compression'+str(i)]=washer(3.8,2.6,1.65,x,y,2)
+            rear_lands.append(cylinder(4.5,2,x,y,0))
+            cuts=cuts.fuse(cylinder(2.6,4,x,y,-1))
+            button_bearing.append((prefix+str(i),washer(3.8,2.6,.05,x,y,1.95)))
+        products[prefix+'Switch']=button
+        products[prefix+'Backplate']=back
+        products[prefix+'Bezel']=bezel
+        probes[prefix.upper()]=cylinder(12,30,bx,by,-33.25)
     # Two guard screws clamp its three-mm flange and the two-mm panel.
     guard_names={'SwitchGuard','PowerDisconnect','PowerDisconnectNut','PowerDisconnectLockwasher'}
     for i,side in enumerate((-1,1)):
@@ -127,7 +138,6 @@ def native_shapes(switch_xy, start_xy, rear_thickness=2, *, switch_rotation_deg=
     products['SwitchGuard']=guard
     if switch_rotation_deg:
         for name in guard_names:products[name].rotate(App.Vector(sx,sy,0),App.Vector(0,0,1),switch_rotation_deg)
-    probes={'START':cylinder(12,30,bx,by,-33.25)}
     # Continuous full-throw finger approach: convex sweep between both ends.
     throw=10.67*math.sin(math.radians(25))
     probes['OFF_ON']=cylinder(12,30,sx,sy-throw,-45.5).fuse(
@@ -137,19 +147,23 @@ def native_shapes(switch_xy, start_xy, rear_thickness=2, *, switch_rotation_deg=
     bearing=[(name,washer(2.5,1.1,.05,*((sx+side*14.5,sy+guard_mount_offset_mm)),1.95)) for side,name in ((-1,'Guard0'),(1,'Guard1'))]
     if switch_rotation_deg:
         for _,shape in bearing:shape.rotate(App.Vector(sx,sy,0),App.Vector(0,0,1),switch_rotation_deg)
-    bearing += [('Start'+str(i),washer(3.8,2.6,.05,bx,by+dy,1.95)) for i,dy in enumerate((-7,7))]
+    bearing += button_bearing
     return {**products,'panel_bearing':bearing,'rear_addition':Part.makeCompound(rear_lands).cut(cuts),'rear_cutout':cuts,
             'finger_probes':probes,'settings':settings}
 
 def native_check(shapes, surroundings):
     from solid_clearance import distance
-    actual={name for name in shapes if name.startswith(('Start','GuardMount','PowerDisconnect','SwitchGuard'))}
+    actual={name for name in shapes if name.startswith((*BUTTONS,'GuardMount','PowerDisconnect','SwitchGuard'))}
     if actual!=PRODUCT_NAMES:
         raise ValueError('Rear control component census differs')
     for name in PRODUCT_NAMES:
         shape=shapes[name]
         if not shape.isValid() or shape.Volume<=0 or (name in PRINTED_PARTS and len(shape.Solids)!=1):
             raise ValueError('Invalid rear control product: '+name)
+    surroundings=list(surroundings)
+    installed_names=[name for name,_ in surroundings]
+    if len(set(installed_names))!=len(installed_names) or not PRODUCT_NAMES<=set(installed_names):
+        raise ValueError('Installed rear control product census differs')
     panels=[shape for name,shape in surroundings if name in ('RearPlate','RearCover')]
     if len(panels)!=1:raise ValueError('Control bearing check requires one actual rear panel')
     for name,bearing in shapes['panel_bearing']:
@@ -157,7 +171,7 @@ def native_check(shapes, surroundings):
             raise ValueError('Missing full-height control bearing: '+name)
     gaps={}
     for name,probe in shapes['finger_probes'].items():
-        target='StartSwitch' if name=='START' else 'PowerDisconnect'
+        target=name.title()+'Switch' if name in ('START','MODE','ACTION') else 'PowerDisconnect'
         fixed=[shape for part,shape in surroundings if part!=target]
         gap=distance(probe,fixed)
         if gap < .2:
