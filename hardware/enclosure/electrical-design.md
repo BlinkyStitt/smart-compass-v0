@@ -290,3 +290,23 @@ nut/lockwasher. See [control-mounts.md](control-mounts.md) for the specified
 clamp stack and component-study command. Full enclosure integration remains
 open. GPS EN has a factory pull-down and is **high to disable**; retain that
 default and the assigned PB7 control. No pull-up or new firmware is added.
+
+### Retained Mode/Action and ADC filter
+
+Keep Mode on BlackPill PB13 and Action on PB14. Each uses the same direct
+C&K PTS645SL70-2 actuator as START. Connect pin 1 to its assigned input and
+pin 3 to ground. Leave pins 2/4 externally unconnected and insulated. These
+are active-low inputs with the existing MCU pull-up configuration. Their
+mounts and wiring remain part of the unfinished fitted layout.
+
+Retain a 100 nF capacitor from the PA4/divider midpoint to ground, beside
+BlackPill. Select **KEMET C315C104K5R5TA**, 100 nF, 50 V, ±10%, X7R, radial
+leads. The maker's sheet, generated 11/05/2026, gives maximum body dimensions
+of 3.81 x 2.54 x 3.14 mm and lead pitch of 2.54 ±0.78 mm. It specifies
+capacitance at 1 kHz/1 Vrms. The 7 x 7 x 6 mm loaded reservation is an
+assembly target. Temperature, bias and aging affect capacitance.
+
+Do not infer a guaranteed settling time or reset delay from nominal RC
+values. Measure PA4 settling and injection during power sequencing. The
+source's simulation pages show typical responses, not maximum ratings.
+[Manufacturer part sheet](https://search.kemet.com/component-documentation/download/specsheet/C315C104K5R5TA).

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-module-prototype-3",
+  "revision": "ski-1230-module-prototype-4",
   "acceptance": "Digital prototype design review. Physical electrical, thermal, runtime and wearing qualification is unmeasured; this record is not physical acceptance for wearing an untested assembly.",
   "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
   "parts": {
@@ -294,6 +294,59 @@
       "part": "C&K 700303202, internal-tooth lockwasher for 1/4-40 bushing, nickel-plated steel",
       "source": "https://www.ckswitches.com/media/1960/switchhardware.pdf",
       "source_revision": "Hardware lockwasher drawing,VL01/21/26; nominal .402in OD,.018in thick; teeth/compression and supplied fit are unmeasured"
+    },
+    "MODE": {
+      "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
+      "source": "https://www.ckswitches.com/media/1471/pts645.pdf",
+      "source_revision": "PTS645, MI 10/02/26, pages 1,2,5,7",
+      "body_nominal_mm": [
+        6,
+        6,
+        3.45
+      ],
+      "actuator_height_mm": [
+        6.9,
+        7.1
+      ],
+      "basis": "Ordering: S straight, L 1.3N nominal force, 70 height7mm,2 through-hole,LFS silver/RoHS. Source specifies50mA/12VDC and100mohm maximum initial contact resistance. Height is from PCB mounting datum;7mm is not travel. Use the supplied actuator directly through a retaining bezel; no printed plunger or inferred overtravel. Verify actual part, mounting and finger reach. Physical force/travel/fit remain unmeasured. The mechanical-characteristics table has inconsistent option/height entries; do not use those entries as bounds.",
+      "terminal_use": "Pin1 to BLACKPILL.PB13; pin3 to GND. Pins1/2 are internally common; pins3/4 are internally common. Leave duplicate pins2/4 externally unconnected and insulated. Use the stock actuator directly. Preserve the existing MCU pull-up and active-low input assignment; no new firmware."
+    },
+    "ACTION": {
+      "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
+      "source": "https://www.ckswitches.com/media/1471/pts645.pdf",
+      "source_revision": "PTS645, MI 10/02/26, pages 1,2,5,7",
+      "body_nominal_mm": [
+        6,
+        6,
+        3.45
+      ],
+      "actuator_height_mm": [
+        6.9,
+        7.1
+      ],
+      "basis": "Ordering: S straight, L 1.3N nominal force, 70 height7mm,2 through-hole,LFS silver/RoHS. Source specifies50mA/12VDC and100mohm maximum initial contact resistance. Height is from PCB mounting datum;7mm is not travel. Use the supplied actuator directly through a retaining bezel; no printed plunger or inferred overtravel. Verify actual part, mounting and finger reach. Physical force/travel/fit remain unmeasured. The mechanical-characteristics table has inconsistent option/height entries; do not use those entries as bounds.",
+      "terminal_use": "Pin1 to BLACKPILL.PB14; pin3 to GND. Pins1/2 are internally common; pins3/4 are internally common. Leave duplicate pins2/4 externally unconnected and insulated. Use the stock actuator directly. Preserve the existing MCU pull-up and active-low input assignment; no new firmware."
+    },
+    "C_SENSE": {
+      "part": "KEMET C315C104K5R5TA, 100 nF 50 V +/-10%, X7R radial",
+      "source": "https://search.kemet.com/component-documentation/download/specsheet/C315C104K5R5TA",
+      "source_revision": "Manufacturer individual part sheet, generated11/05/2026; dimensions/specifications p1; simulations are typical and are not bounds",
+      "body_max_mm": [
+        3.81,
+        2.54,
+        3.14
+      ],
+      "lead_pitch_mm": [
+        1.76,
+        3.32
+      ],
+      "loaded_envelope_mm": [
+        7,
+        7,
+        6
+      ],
+      "basis": "100nF at1kHz/1Vrms; +/-10% initial tolerance, X7R temperature behavior and DC bias/aging apply. The loaded envelope is an engineering assembly reservation, not supplied-part measurement. No guaranteed settling/reset time or mass bound is inferred.",
+      "source_sha256": "3532a937a01c65f20f1a722a547962c9ceaf2ba4ffef1d2284be5bf380a516a5"
     }
   },
   "nets": {
@@ -344,7 +397,8 @@
     "SENSE": [
       "R_SENSE_TOP.2",
       "R_SENSE_BOTTOM.1",
-      "BLACKPILL.PA4"
+      "BLACKPILL.PA4",
+      "C_SENSE.1"
     ],
     "LED_DISTRIBUTION": [
       "SPARKLE.JP1.9",
@@ -419,7 +473,10 @@
       "RING2.GND",
       "RING3.GND",
       "R_BOOST.2",
-      "R_LOAD.2"
+      "R_LOAD.2",
+      "C_SENSE.2",
+      "MODE.3",
+      "ACTION.3"
     ],
     "SPARKLE_TX": [
       "SPARKLE.JP3.3",
@@ -488,6 +545,14 @@
     "GPS_ENABLE": [
       "BLACKPILL.PB7",
       "GPS.EN"
+    ],
+    "MODE": [
+      "BLACKPILL.PB13",
+      "MODE.1"
+    ],
+    "ACTION": [
+      "BLACKPILL.PB14",
+      "ACTION.1"
     ]
   },
   "switch_positions": {
@@ -606,7 +671,7 @@
   "physical_qualification": {
     "startup_and_pulses": {
       "status": "unmeasured",
-      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current.",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current. Check Mode/Action contact behavior and measure the filtered PA4 startup/settling and unpowered-pin current. No ADC calibration or existing software timing is established by the nominal RC estimate.",
       "results": []
     },
     "latch_and_rebound": {
@@ -650,7 +715,9 @@
       "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
     ],
     "unused": "No GPS backup coin cell. No external sensor power. BlackPill5V and USB remain disconnected. Program BlackPill through SWD with target power supplied by Sparkle; the probe does not supply target voltage.",
-    "gps_enable": "GPS EN is a power-disable input: factory100kohm pull-down enables normal operation; drive PB7 high to disable. Preserve the pull-down; no new pull-up or firmware is added."
+    "gps_enable": "GPS EN is a power-disable input: factory100kohm pull-down enables normal operation; drive PB7 high to disable. Preserve the pull-down; no new pull-up or firmware is added.",
+    "buttons": "Preserve design-v2 ModePB13 and ActionPB14: active-low momentary contacts to commonGND, MCU pull-ups. Three direct PTS645SL70-2 actuators including START; no added firmware.",
+    "sense_filter": "Retain100nF from PA4/divider midpoint to GND beside BlackPill, in addition to two100kohm resistors. Use a fixed insulated axial/radial assembly on a printed carrier; no custom PCB is implied. Assembly fit/settling/injection remain unmeasured."
   },
   "supply_allocation": {
     "basis": "Engineering allocations for bench verification, not guaranteed component maxima or measurements. Verify concurrent radio/PWM peaks and average current before accepting the prototype operating plan.",

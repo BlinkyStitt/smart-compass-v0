@@ -105,6 +105,21 @@ class PrototypeDesignTests(unittest.TestCase):
         self.assertIn('net:GND', self.failure_ids(design))
         self.assertIn('unreviewed-connections', self.failure_ids(design))
 
+    def test_existing_buttons_and_sense_filter_cannot_disappear(self):
+        for net,pin in [('MODE','BLACKPILL.PB13'),('ACTION','ACTION.1'),
+                        ('GND','MODE.3'),('GND','ACTION.3'),
+                        ('SENSE','C_SENSE.1'),('GND','C_SENSE.2')]:
+            design=self.reviewed_fixture();design['nets'][net].remove(pin)
+            with self.subTest(net=net,pin=pin):
+                self.assertIn('net:'+net,self.failure_ids(design))
+        for name in ('MODE','ACTION'):
+            design=self.reviewed_fixture()
+            design['nets']['GND'].remove(name+'.3')
+            design['nets']['GND'].append(name+'.2')
+            self.assertIn('unreviewed-connections',self.failure_ids(design))
+        design=self.reviewed_fixture();del design['parts']['C_SENSE']
+        self.assertIn('bom-coverage',self.failure_ids(design))
+
     def test_switch_hardware_requires_the_selected_thread(self):
         design = self.reviewed_fixture()
         design['parts']['S1_NUT']['part'] = 'Unreviewed 1/4-20 nut'
