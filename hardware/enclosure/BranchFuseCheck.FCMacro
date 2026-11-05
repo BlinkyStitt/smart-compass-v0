@@ -1,0 +1,46 @@
+"""Check the selected branch-fuse carrier as a component, before full routing."""
+import hashlib,json,os,sys,traceback
+from pathlib import Path
+import FreeCAD as App
+from PySide import QtCore
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source));result_path=os.environ.get('SC_BRANCH_FUSE_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a fresh branch-fuse result path')
+    import branch_fuses
+    names=('branch_fuses.py','test_branch_fuses.py','branch-fuses.md','BranchFuseCheck.FCMacro','electrical-design.json',
+           'blackpill_mount.py','blackpill_sense.py','hardware_spec.py','component-inventory.json','fastener_access.py','solid_clearance.py')
+    def snapshot():return {str((source/name).relative_to(source.parents[1])):hashlib.sha256((source/name).read_bytes()).hexdigest() for name in names}
+    before=snapshot();results={}
+    for design in ('wide','narrow'):
+        shapes=branch_fuses.native_shapes(design);results[design]=branch_fuses.native_check(shapes,design)
+        for name in ('BranchFuseCarrier','BranchFuseF_FIB','BranchFuseF_AUXAssembly','BranchFuseLacing9','BranchFuseMountNut0'):
+            broken=dict(shapes);del broken[name]
+            try:branch_fuses.native_check(broken,design)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing branch-fuse part/reference accepted: '+name)
+        broken=dict(shapes)
+        for name in branch_fuses.CHECK_NAMES-branch_fuses.HARDWARE_NAMES:
+            broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.2))
+        try:branch_fuses.native_check(broken,design)
+        except ValueError as error:
+            if 'full rear bearing' not in str(error):raise
+        else:raise ValueError('Floating branch-fuse carrier accepted')
+        broken=dict(shapes);broken['BranchFuseMountScrew0']=shapes['BranchFuseMountScrew0'].copy();broken['BranchFuseMountScrew0'].translate(App.Vector(0,0,-1))
+        try:branch_fuses.native_check(broken,design)
+        except ValueError as error:
+            if 'engagement' not in str(error):raise
+        else:raise ValueError('Branch-fuse short screw accepted')
+    if snapshot()!=before:raise ValueError('Branch-fuse inputs changed during native check')
+    record={'checks':results,'inputs':before,'freecad':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as out:json.dump(record,out,indent=2)
+    print('BRANCH FUSE COMPONENT CHECK PASS',flush=True)
+except Exception as error:
+    traceback.print_exc()
+    if result_path and not Path(result_path).exists():
+        with Path(result_path).open('x') as out:json.dump({'status':'fail','error':str(error),'inputs':locals().get('before',{})},out,indent=2)
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)
