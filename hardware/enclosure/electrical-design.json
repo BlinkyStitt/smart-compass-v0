@@ -878,6 +878,20 @@
     ],
     "SPARKLE.leave_open": [
       "X7.GNDBREAK"
+    ],
+    "RADIO.do_not_install": [
+      "JP1",
+      "JP2",
+      "JP3",
+      "X1"
+    ],
+    "RADIO.leave_open": [
+      "JP1.1",
+      "JP1.2",
+      "JP1.3",
+      "JP1.4",
+      "JP1.5",
+      "JP3.3"
     ]
   },
   "source_record": {

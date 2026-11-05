@@ -471,6 +471,20 @@ The component study checks the nominal PCB, component spaces, retention and
 assembly motion. Joints, cut lists and fitted wire routes remain incomplete.
 Physical qualification remains unmeasured.
 
+## Radio fixed-wire variant
+
+Leave radio JP1, JP2, JP3 header parts and optional X1 SMA/uFL parts uninstalled.
+Connect only the selected source pads. Leave JP1.1–JP1.5 and JP3.3 EN without
+external wires. Use JP2.1 ANT for the existing internal wire antenna. This
+preserves the circuit and firmware allocation.
+
+Use [the source-outline edge carrier](radio-mounts.md). It uses all 15 actual
+through-pads and the three rounded corners, with no invented screw holes.
+Adafruit states that its RFM69 and RFM9X products share this source board and
+schematic. The U1 RFM69 source label does not change the selected RFM95W part.
+Keep nominal footprint checks separate from supplied-part fit and RF tests.
+Final installed antenna, joints, routes and strain relief remain incomplete.
+
 ## Wire-mount cell contacts
 
 Use two Mill-Max0854-0-15-20-82-14-11-0 wire-mount contacts. The selected18AWG

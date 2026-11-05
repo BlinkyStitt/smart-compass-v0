@@ -1,0 +1,66 @@
+"""Check a source-based Radio cage; retain installed/physical proof limits."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_RADIO_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a fresh Radio result path')
+    import radio_mount
+    paths=[source/name for name in ('radio_mount.py','test_radio_mount.py','electrical_peripherals.py',
+           'electrical-design.json','electrical_board.py','hardware_spec.py','component-inventory.json','fastener_access.py','solid_clearance.py',
+           'radio-mounts.md','RadioMountCheck.FCMacro')]+sorted((source/'sources/rfm-lora').iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot();results={}
+    for design,z,rotation in (('wide',6,180),('narrow',8,0)):
+        shapes=radio_mount.native_shapes(z,rotation);results[design]=radio_mount.native_check(shapes,z,rotation)
+        for name in ('RadioPCB','RadioCarrier','RadioRetainer2','RadioNut0','RadioLoadedReservation'):
+            broken=dict(shapes);del broken[name]
+            try:radio_mount.native_check(broken,z,rotation)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing Radio product/reference accepted: '+name)
+        broken=dict(shapes)
+        for name in radio_mount.CHECK_NAMES-{'RadioNut'+str(i) for i in range(3)}:
+            broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.2))
+        try:radio_mount.native_check(broken,z,rotation)
+        except ValueError as error:
+            if 'full rear bearing' not in str(error):raise
+        else:raise ValueError('Floating Radio carrier accepted')
+        broken=dict(shapes)
+        for name in ('RadioRetainer0','RadioScrew0'):
+            broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.2))
+        try:radio_mount.native_check(broken,z,rotation)
+        except ValueError as error:
+            if 'hard stop' not in str(error):raise
+        else:raise ValueError('Unseated Radio retainer accepted')
+        broken=dict(shapes);broken['RadioScrew0']=shapes['RadioScrew0'].copy();broken['RadioScrew0'].translate(App.Vector(0,0,1))
+        try:radio_mount.native_check(broken,z,rotation)
+        except ValueError as error:
+            if 'screw lacks' not in str(error):raise
+        else:raise ValueError('Radio screw with insufficient engagement accepted')
+        try:radio_mount.native_service_check(shapes,z,rotation,{'RetainerStillInstalled':shapes['RadioRetainer0']})
+        except ValueError as error:
+            if 'path is blocked' not in str(error):raise
+        else:raise ValueError('Board removal with a retainer still fitted was accepted')
+    if before!=snapshot():raise ValueError('Radio source inputs changed during native checks')
+    record={'checks':results,'inputs':before,'freecad':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record));print('RADIO MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception as error:
+    traceback.print_exc()
+    if result_path and not Path(result_path).exists():
+        with Path(result_path).open('x') as output:
+            json.dump({'status':'fail','error':str(error),'inputs':locals().get('before',{}),
+                       'source_snapshot_completed':'before' in locals(),'freecad':App.Version()},output,indent=2)
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

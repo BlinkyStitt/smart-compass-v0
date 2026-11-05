@@ -249,6 +249,9 @@ def assess(design, directory=HERE):
             'blackpill-flash-conflict', 'Optional V3.1 U3 flash shares the PA4 battery-sense input; select the unpopulated variant.')
     require(rework.get('BLACKPILL.do_not_install') == ['U3','P1','P2','P3'],
             'blackpill-bare-pads', 'Leave optional flash and all header parts absent; fit fixed wires to the selected PCB pads.')
+    require(rework.get('RADIO.do_not_install') == ['JP1','JP2','JP3','X1']
+            and rework.get('RADIO.leave_open') == ['JP1.1','JP1.2','JP1.3','JP1.4','JP1.5','JP3.3'],
+            'radio-bare-pads', 'Use fixed source-pad wires and the internal wire antenna; leave unused headers and optional antenna connectors absent.')
     require(rework.get('SPARKLE.remove') == ['X7']
             and rework.get('SPARKLE.retain') == ['D2','PTC1']
             and rework.get('SPARKLE.leave_open') == ['X7.GNDBREAK'],
