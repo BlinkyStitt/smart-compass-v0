@@ -178,7 +178,22 @@
         28,
         12
       ],
-      "basis": "Maker board 33.4 x20.4 x3 mm; larger engineering reservation includes fixed soldered leads. Native pocket must use this reservation, not the old25x25 placeholder."
+      "basis": "Maker board 33.4 x20.4 x3 mm; larger engineering reservation includes fixed soldered leads. Native pocket must use this reservation, not the old25x25 placeholder. Select classic Rev A: its Eagle outline is33.02x20.32mm nominal. Rev C changes the outline and swaps DRDY/INT_M between JP2.4 and JP2.5; do not substitute its terminal map. The published33.4x20.4mm product dimensions and40x28x12mm loaded reservation remain conservative planning geometry, not measured tolerances.",
+      "board_revision": "A",
+      "source_revision": "Adafruit classic blue LSM9DS1 Rev A; upstream9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+      "source_record": "sources/lsm9ds1-classic/index.json",
+      "terminal_bindings": {
+        "VIN": "JP4.9",
+        "GND": "JP4.7",
+        "SCL": "JP4.6",
+        "SDA": "JP4.5",
+        "SDOAG": "JP4.2",
+        "SDOM": "JP4.1",
+        "CSAG": "JP4.4",
+        "CSM": "JP4.3",
+        "INT1": "JP2.3",
+        "DRDY": "JP2.4"
+      }
     },
     "RADIO": {
       "part": "Adafruit 3072 RFM95W, VIN=3.3 V",

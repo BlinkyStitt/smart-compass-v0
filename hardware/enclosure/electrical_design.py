@@ -9,6 +9,8 @@ import json
 import math
 from pathlib import Path
 
+import electrical_imu
+
 HERE = Path(__file__).resolve().parent
 
 # These are circuit connections, not success flags supplied by a JSON fixture.
@@ -159,6 +161,11 @@ def assess(design, directory=HERE):
     for name, selected in CRITICAL_PARTS.items():
         require(parts.get(name, {}).get('part') == selected, 'selected-part:' + name,
                 'Changed protection, cell or capacitor selection requires a circuit review.')
+    imu_terminals = {}
+    try:
+        imu_terminals = electrical_imu.terminals(parts.get('IMU', {}), directory)
+    except (ValueError, OSError) as error:
+        require(False, 'imu-terminal-binding', str(error))
     require(parts.get('BOOST', {}).get('part') == 'Adafruit PowerBoost 1000 Basic, PID 2030'
             and parts.get('LATCH', {}).get('part') == 'Pololu 2808 Mini Pushbutton Power Switch LV',
             'module-selection', 'Connection checks apply only to the reviewed boost/latch pair.')
@@ -253,5 +260,6 @@ def assess(design, directory=HERE):
         'operating_plan': operating,
         'service': design.get('service', {}),
         'off_positive_contact_isolation': isolation,
+        'imu_source_terminals': imu_terminals,
         'historical_recovery': design.get('historical_recovery'),
     }

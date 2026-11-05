@@ -142,6 +142,12 @@ class MovieTests(unittest.TestCase):
 class BuildInputTests(unittest.TestCase):
     def test_active_module_design_and_sources_are_required_hashed_inputs(self):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
+                     'electrical_imu.py',
+                     'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.brd',
+                     'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.sch',
+                     'sources/lsm9ds1-classic/index.json',
+                     'sources/lsm9ds1-classic/README.md',
+                     'sources/lsm9ds1-classic/license.txt',
                      'sources/powerboost-1000-basic/extracted-connectivity.json',
                      'sources/powerboost-1000-basic/index.json',
                      'sources/powerboost-1000-basic/README.md',

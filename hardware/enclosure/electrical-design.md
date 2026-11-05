@@ -66,6 +66,39 @@ supply/return. Do not connect 5 V LED terminals to the peripheral 3.3 V rail.
 Do not use the GPS FeatherWing as a 5 V load. The existing BlackPill PA4 sense
 divider connects to switched/protected B, not directly to the cell.
 
+### Selected IMU revision and header pads
+
+Use the **classic blue Adafruit LSM9DS1 Rev A**, PID3387. Its retained
+[manufacturer sources](sources/lsm9ds1-classic/README.md) come from upstream
+`9f6db79a66ae599aa410a2a14b161e26216e8bd4`. The source index retains the
+original URLs, revisions and hashes. The checker verifies both original Eagle
+files and derives the component-side pad coordinates from their header placements.
+
+| Assembly terminal | Rev A header pad | Use |
+| --- | --- | --- |
+| VIN | JP4.9 | Fused auxiliary3.3V supply |
+| GND | JP4.7 | Common return |
+| SCL | JP4.6 | SPI clock |
+| SDA | JP4.5 | SPI MOSI |
+| SDOAG | JP4.2 | SPI MISO, accelerometer/gyro |
+| SDOM | JP4.1 | SPI MISO, magnetometer |
+| CSAG | JP4.4 | Accelerometer/gyro select |
+| CSM | JP4.3 | Magnetometer select |
+| INT1 | JP2.3 | Accelerometer/gyro ready |
+| DRDY | JP2.4 | Magnetometer ready |
+
+Do not substitute JP4.8, the regulator output, for VIN. The source names
+`SCL_5V`, `SDA_5V` and `CS_*_5V` identify the board's external logic nets;
+this assembly supplies VIN with3.3V. They do not direct the builder to apply5V.
+Leave the unused header pads insulated and unconnected.
+
+Rev C has a25.4x17.78mm nominal outline and puts DRDY_M at **JP2.5**.
+Rev A has a33.02x20.32mm nominal outline and puts it at **JP2.4**. Thus the
+two source layouts cannot share a fitted wire map. Retain the larger40x28x12mm
+loaded reservation. Published nominal geometry and1mm source drills do not
+prove supplied-board tolerances or completed solder-joint fit. Installed wire
+routes, cut lengths and strain relief remain required work.
+
 ### Module changes
 
 Use **Adafruit PowerBoost 1000 Basic, PID 2030**, with no charger. The reviewed
