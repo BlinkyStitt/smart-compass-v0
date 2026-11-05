@@ -77,6 +77,12 @@ class BatteryAccessTests(unittest.TestCase):
             spec['cell']['quantity']=bad
             with self.assertRaises(ValueError): validate(spec,'narrow')
 
+    def test_mount_hardware_is_in_the_required_census(self):
+        from battery_access import PART_NAMES, MOUNT_PARTS
+        self.assertEqual(len(MOUNT_PARTS),12)
+        self.assertTrue(MOUNT_PARTS <= PART_NAMES)
+        self.assertEqual(definition()['cradle']['mount_bottom_z_mm'],2)
+
     def test_pull_tape_uses_stock_maximum_and_published_mass_limit(self):
         tape=definition()['ribbon']
         self.assertAlmostEqual(tape['thickness_mm'][1],.025*25.4)

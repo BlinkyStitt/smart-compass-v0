@@ -46,8 +46,14 @@
     ],
     "mount_x_mm": 58.0,
     "mount_y_offset_mm": 9.0,
-    "mount_bottom_z_mm": 2.2,
-    "mount_thickness_mm": 3.0
+    "mount_bottom_z_mm": 2.0,
+    "mount_thickness_mm": 3.0,
+    "upper_chamfer": {
+      "bottom_z_mm": 23.0,
+      "bottom_radius_mm": 82.5,
+      "top_radius_mm": 79.0,
+      "basis": "Common cradle corner clearance below the existing Wide tapered circle seat; keep the original board seat and optics. Native assembly check still required."
+    }
   },
   "door": {
     "length_mm": 108.0,
@@ -111,8 +117,8 @@
         -18.0
       ],
       "imu_centre_xy_mm": [
-        -62.0,
-        69.0
+        -46,
+        76
       ]
     },
     "narrow": {
@@ -152,7 +158,8 @@
     "hinge": "DIN 912 M3 x 100 A2 socket screw, finish under-head length to 97 mm; DIN 934 M3 A2 nut, retained threadlocker after assembly. No loose fastener during ordinary access. Two printed 3.95/0.75 mm axial spacers and two DIN 125 M3 washers leave 0.2 mm nominal axial play. Verify assembled play.",
     "keeper": "ISO 7380-1 M3 x 12 A2 button-head screw and two DIN 934 M3 A2 jammed nuts; set 0.25 mm lower and upper rotational play, then jam nuts without clamping bar. Verify supplied head envelope.",
     "contacts": "Four DIN 912 M2 x 16 A2 screws and four DIN 934 M2 A2 nuts; two screws per flange clamp. Set tip gap before locking. Each screw clamps through a printed compression tube, a nominal 0.25 mm PET shim washer and a DIN 125 M2 washer. Replace matched shim stacks during initial setup; ordinary cell swaps leave them fixed.",
-    "qualification": "Fastener strength, retention, print dimensions and compass disturbance remain unmeasured."
+    "qualification": "Fastener strength, retention, print dimensions and compass disturbance remain unmeasured.",
+    "case_mounts": "Four DIN912 M3x10 A2 screws, four DIN125 M3 washers and four DIN934 M3 A2 nuts. Screws bear on the2mm rear plate; flange bearing starts atZ2mm. Clamp flange/washer/nut without an unsupported gap. These remain fitted during cell service. Actual plate/rib relief and thread retention require complete assembly checks."
   },
   "ribbon": {
     "part": "Bally Ribbon Mills pattern 4462, MIL-DTL-5038K Type III Class 1A, 3/8 inch nylon tape, unfinished",

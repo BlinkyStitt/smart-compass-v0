@@ -15,7 +15,8 @@ PRINTED_PARTS = frozenset({'BatteryCradle','BatteryDoor','BatteryKeeper',
     'BatteryContact'+end+part for end in ('P','N')
     for part in ('Front','Back','Spacer0','Spacer1')})
 SHIM_PARTS = frozenset('BatteryContact'+end+'Shim'+str(i) for end in ('P','N') for i in (0,1))
-METAL_PARTS = frozenset({'BatteryHingePin','BatteryHingeNut','BatteryHingeWasher0','BatteryHingeWasher1',
+MOUNT_PARTS = frozenset('BatteryCaseMount'+part+str(i) for part in ('Screw','Washer','Nut') for i in range(4))
+METAL_PARTS = MOUNT_PARTS | frozenset({'BatteryHingePin','BatteryHingeNut','BatteryHingeWasher0','BatteryHingeWasher1',
                          'BatteryKeeperScrew','BatteryKeeperNut0','BatteryKeeperNut1'} | {
     'BatteryContact'+end+part for end in ('P','N')
     for part in ('','Screw0','Screw1','Nut0','Nut1','Washer0','Washer1')})
@@ -120,10 +121,10 @@ def native_shapes(spec, design):
     for side, end in itertools.product((-1, 1), repeat=2):
         x, y = cx+side*c['mount_x_mm'], cy+end*c['mount_y_offset_mm']
         flange = box(12, 8, c['mount_thickness_mm'], x-side*2, y, c['mount_bottom_z_mm'])
-        flange = flange.cut(cylinder(1.4, 8, x, y, 0))
+        flange = flange.cut(cylinder(1.7, 8, x, y, 0))
         frame = frame.fuse(flange)
         cutout = cutout.fuse(box(14, 10, 5, x-side*2, y, 2))
-        cutout = cutout.fuse(cylinder(1.4, 10, x, y, -5))
+        cutout = cutout.fuse(cylinder(1.7, 10, x, y, -5))
         mounts.append([x, y, c['mount_bottom_z_mm']])
     hy, hz = cy+door['hinge_y_offset_mm'], door['hinge_z_mm']
     hinge_parts = []
@@ -132,6 +133,7 @@ def native_shapes(spec, design):
         ear = ear.fuse(box(8, 8, 5, cx+x, hy+2, hz+.6))
         ear = ear.cut(cylinder(door['hinge_bore_radius_mm'], 10, cx+x-5, hy, hz, (1, 0, 0)))
         frame = frame.fuse(ear)
+        cutout=cutout.fuse(box(10,10,10,cx+x,hy+2,-5))
         hinge_parts.append(cylinder(door['hinge_radius_mm']+.3, 9, cx+x-4.5, hy, hz, (1, 0, 0)))
     lid = box(door['length_mm'], door['width_mm'], door['thickness_mm'], cx, cy, door['bottom_z_mm'])
     for relief in hinge_parts:
@@ -202,7 +204,16 @@ def native_shapes(spec, design):
     hood = hood.fuse(box(2, 10, 6.5, lx+13, ly, 0))
     hood = hood.fuse(box(18, 2, 6.5, lx+5, ly+4, 0))
     frame = frame.fuse(hood)
-    cutout = cutout.fuse(box(10, 7, 10, lx+5, ly-1, -5))
+    cutout = cutout.fuse(box(20,12,10,lx+5,ly+1,-5))
+    # Cover the keeper's outward rotation slot. The roof and three outer
+    # walls isolate unrelated electronics; the cell-facing side stays open.
+    kcx,kcy=px+15,py+1.5
+    keeper_hood=box(40,8.5,1.5,kcx,kcy,1.35)
+    keeper_hood=keeper_hood.fuse(box(40,1.5,2.85,kcx,py+5,0))
+    for end in (-19.5,19.5):
+        keeper_hood=keeper_hood.fuse(box(1,8.5,2.85,kcx+end,kcy,0))
+    frame=frame.fuse(keeper_hood).cut(cylinder(1.6,14,px,py,-3))
+    cutout=cutout.fuse(box(40.6,9.1,10,kcx,kcy,-5))
     # Engrave enduring polarity strokes on the insulating ceiling. They remain
     # visible in the empty bay and do not depend on colour or a font renderer.
     marks = [box(8, 1.2, .5, cx+30, cy, c['top_z_mm']-c['ceiling_mm']-.1),
@@ -259,6 +270,7 @@ def native_shapes(spec, design):
         # Roof stays inside the full Fibonacci board's unobstructed central bay.
         hood = hood.common(cylinder(82.4,28,0,0,0))
         frame=frame.fuse(hood)
+        cutout=cutout.fuse(box(16,42,10,cx+side*46.1,cy,2))
         # Remove plate seats after adding the surrounding terminal hoods.
         for start in (front_x,back_x):
             frame=frame.cut(box(2.3,36.5,18.5,cx+side*(start+.9),cy,c['cell_axis_z_mm']-9.25))
@@ -328,14 +340,32 @@ def native_shapes(spec, design):
     # remains continuous between the compartment and unrelated electronics.
     frame=frame.cut(box(tw+.5,4,7,cx,cy-15.8,1)).fuse(well).fuse(anchor_bar)
     cutout=cutout.fuse(box(tw+5,7,10,cx,cy-16.5,-5))
+    chamfer=c['upper_chamfer']
+    low=chamfer['bottom_z_mm']
+    height=c['top_z_mm']-low
+    keep=cylinder(200,low,0,0,0).fuse(Part.makeCone(
+        chamfer['bottom_radius_mm'],chamfer['top_radius_mm'],height,App.Vector(0,0,low)))
+    # Preserve the projecting hinge/lip belowZ0 while trimming only the high
+    # corners, where the existing Wide circle seat slopes inward.
+    keep=keep.fuse(cylinder(200,10,0,0,-10))
+    frame=frame.common(keep)
+    case_hardware={}
+    mt=c['mount_bottom_z_mm']+c['mount_thickness_mm']
+    washer=WASHERS['M3']
+    for i,(x,y,z) in enumerate(mounts):
+        case_hardware['BatteryCaseMountScrew'+str(i)]=cylinder(1.5,10,x,y,0).fuse(cylinder(2.75,3,x,y,-3))
+        case_hardware['BatteryCaseMountWasher'+str(i)]=cylinder(washer['od']/2,washer['thickness'],x,y,mt).cut(
+            cylinder(washer['id']/2,washer['thickness']+.2,x,y,mt-.1))
+        case_hardware['BatteryCaseMountNut'+str(i)]=m3_nut(x,y,mt+washer['thickness'],'Z')
+    rear_interface=cylinder(spec['designs'][design]['case_diameter_mm']/2,2,0,0,0).cut(cutout)
     length = spec['cell']['length_mm'][1]
     cell = cylinder(spec['cell']['diameter_mm'][1]/2, length,
                     cx-length/2, cy, c['cell_axis_z_mm'], (1, 0, 0))
-    return {**hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
+    return {**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
             'BatteryKeeper': bar.removeSplitter(), 'BatteryHingePin': pin,
             'BatteryHingeNut': hinge_nut, 'BatteryKeeperScrew': keeper_pin,
             'BatteryKeeperNut0': keeper_nuts[0], 'BatteryKeeperNut1': keeper_nuts[1],
-            'BatteryCell': cell, 'BatteryPullRibbon': ribbon.removeSplitter(), 'contact_sleeves': contact_sleeves, 'rear_cutout': cutout, 'mounts': mounts,
+            'BatteryCell': cell, 'BatteryPullRibbon': ribbon.removeSplitter(), 'contact_sleeves': contact_sleeves, 'rear_cutout': cutout, 'mounts': mounts, 'rear_interface': rear_interface,
             'hinge_axis': [cx, hy, hz], 'keeper_axis': [px, py, 0],
             'latch_hook': hook, 'latch_pad': pad, 'latch_axis': [-1, 0, 0]}
 
@@ -359,8 +389,14 @@ def native_check(spec, design, shapes):
         shape = shapes[name]
         if not shape.isValid() or len(shape.Solids) != 1 or shape.Volume <= 0:
             raise ValueError(name + ' must be one valid solid')
-    for a, b in itertools.combinations(names, 2):
-        volume = shapes[a].common(shapes[b]).Volume
+    checked={name:shapes[name] for name in names}
+    checked['rear_interface']=shapes['rear_interface']
+    for a, b in itertools.combinations(checked, 2):
+        ab,bb=checked[a].BoundBox,checked[b].BoundBox
+        if any(min(getattr(ab,axis+'Max'),getattr(bb,axis+'Max'))
+               -max(getattr(ab,axis+'Min'),getattr(bb,axis+'Min')) <= 1e-7 for axis in 'XYZ'):
+            continue
+        volume = checked[a].common(checked[b]).Volume
         if volume > 1e-5:
             raise ValueError(f'Battery closed-position interference: {a}/{b}: {volume:g} mm3')
 
@@ -392,13 +428,13 @@ def native_check(spec, design, shapes):
     released = shapes['latch_hook'].copy()
     released.translate(App.Vector(-spec['door']['latch_release_mm'], 0, 0))
     released_door = shapes['BatteryDoor'].cut(shapes['latch_hook']).fuse(released)
-    fixed_door=Part.makeCompound([shapes[name] for name in names if name not in {'BatteryDoor','BatteryPullRibbon'}])
+    fixed_door=Part.makeCompound([shapes['rear_interface']]+[shapes[name] for name in names if name not in {'BatteryDoor','BatteryPullRibbon'}])
     door_gap = rotation_clearance(released_door, fixed_door,
                                   shapes['hinge_axis'], (1, 0, 0),
-                                  -spec['door']['open_angle_deg'])
+                                  -spec['door']['open_angle_deg'],step=.25)
     opened_door = rotate(released_door, shapes['hinge_axis'], (1, 0, 0),
                          -spec['door']['open_angle_deg'])
-    fixed_keeper=Part.makeCompound([opened_door]+[shapes[name] for name in names
+    fixed_keeper=Part.makeCompound([opened_door,shapes['rear_interface']]+[shapes[name] for name in names
                                   if name not in {'BatteryDoor','BatteryKeeper','BatteryPullRibbon'}])
     keeper_gap = rotation_clearance(shapes['BatteryKeeper'], fixed_keeper,
                                     shapes['keeper_axis'], (0, 0, 1),
@@ -427,7 +463,7 @@ def native_check(spec, design, shapes):
                                      c['cell_axis_z_mm']-removal['withdrawal_mm']))
     sweep = Part.makeCompound([axial, middle, moved])
     gaps = {name:sweep.distToShape(shape)[0] for name,shape in (
-        ('cradle', shapes['BatteryCradle']), ('opened_door', opened_door),
+        ('cradle', shapes['BatteryCradle']), ('rear_interface',shapes['rear_interface']), ('opened_door', opened_door),
         ('opened_keeper', opened_keeper))}
     gaps.update({'contact_body_'+name:sweep.distToShape(shape)[0]
                  for name,shape in shapes['contact_sleeves'].items()})
@@ -436,7 +472,7 @@ def native_check(spec, design, shapes):
                                  'BatteryContactP','BatteryContactN','BatteryPullRibbon'}})
     finger=Part.makeCylinder(removal['finger_radius_mm'],45,
                               App.Vector(cx,cy,removal['finger_start_z_mm']-30))
-    finger_fixed=[shapes['BatteryCradle'],opened_door,opened_keeper]
+    finger_fixed=[shapes['rear_interface'],shapes['BatteryCradle'],opened_door,opened_keeper]
     finger_fixed += [shapes[name] for name in names if name not in
                     {'BatteryCell','BatteryCradle','BatteryDoor','BatteryKeeper','BatteryPullRibbon'}]
     finger_gap=min(finger.distToShape(shape)[0] for shape in finger_fixed)

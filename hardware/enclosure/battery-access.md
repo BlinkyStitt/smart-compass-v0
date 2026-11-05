@@ -59,7 +59,9 @@ figure does not rate the sewn joint or the installed mechanism.
 [Maker](https://www.ballyribbon.com/mil-spec/5038),
 [MIL-DTL-5038K, 22 June 2016, Table III, manufacturer mirror](https://acw1.com/wp-content/uploads/2024/08/ACW-MIL-DTL-5038K.pdf).
 
-The JSON selects the hinge, keeper and clamp fasteners. The hinge pin has a
+The JSON selects the hinge, keeper, clamp and four case-mount fastener sets.
+The case mounts useM3x10 screws, M3 washers and M3 nuts. Their clamp stack
+bears on a2mm rear interface without a floating flange. The hinge pin has a
 head and retained nut larger than its bore. Two printed spacers and two M3
 washers limit its nominal axial play to 0.2 mm. The keeper uses a button-head screw
 and jammed nuts with specified rotational play. These parts remain installed
@@ -81,7 +83,12 @@ the **BATTERY ACCESS COMPONENT CHECK PASS** marker and matching result hashes.
 FreeCAD exit zero alone does not confirm a pass. The macro preserves an existing
 result file and rejects changes to its inputs during the check.
 
-The native check verifies valid connected solids and closed-position interference.
+The native check verifies valid connected solids and closed-position interference,
+including the cut 2 mm rear interface and all case-mount fasteners. The interface
+check includes hinge-stem and latch-guard reliefs. An insulating hood covers
+the keeper rotation slot. Upper cradle corners slope inward below the existing
+Wide circle seat; the original board support and optics remain unchanged. It does not model the complete
+rear ribs or the other installed parts.
 It bounds continuous door/keeper rotation from sampled exact distances and the
 maximum displacement between samples. The extraction check uses a continuous
 axial/withdrawal volume, including the range of initial axial cell positions.
