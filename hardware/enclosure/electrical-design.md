@@ -137,7 +137,7 @@ native layout. They remain an explicit design error until that work is done.
 USB service is off-body with the cell removed and S1 OFF. Select only 5 V USB-PD.
 Do not connect another barrel supply or a live external interface at the same
 time. S1's second pole separates the USB-powered load rail from the boost output.
-Complete board-level signal and backfeed review remains part of the design work.
+Use only the Sparkle USB connector for powered service. Leave BlackPill USB and5V disconnected; use SWD with no probe target-power feed. Install no GPS backup coin cell or other sensor supply. The pin map retains the existing design-v2.md allocation and all shared signals use3.3V. Power-sequencing and injection measurements remain in the bench procedure.
 Charge the removed cell externally in a compatible 4.2 V Li-ion charger.
 
 ## Load and thermal planning
@@ -167,3 +167,29 @@ Every outcome is **unmeasured**. Record conditions, revision, instruments and
 observations before accepting a built unit. A digital release must retain these
 limits prominently. Manufacturing and physical testing do not become a human
 sign-off gate for this source delivery.
+
+## Selected peripheral and strip inputs
+
+Retain the existing classic **Adafruit LSM9DS1 PID3387**. Feed its VIN from3.3V;
+its3V3 pin is a regulator output. Its published33.4x20.4mm board does not fit the
+old25x25mm square placeholder. Reserve40x28x12mm with fixed soldered leads and
+change both native pockets accordingly. This is a loaded design reservation,
+not a measurement or permission to substitute the newer STEMMA board.
+[Maker](https://www.adafruit.com/product/3387),
+[pin definitions](https://learn.adafruit.com/adafruit-lsm9ds1-accelerometer-plus-gyro-plus-magnetometer-9-dof-breakout/pinouts).
+
+Use **Allcoola WTP-2812-2020-120-0405**, IP20 black FPC, for the cut rings.
+The maker identifies120 independent pixels/m, one pixel/cut,4mm width and1.5mm
+assembled thickness. The existing10mm-wide seat and2mm package reservation
+remain conservative envelopes; optical calibration/adhesive/fit stay unmeasured.
+The prior DreamLED page mixes2020 LEDs with a COB description and10mm cutting
+segments, so it is not the selected stock. Preserve ring counts and pitch;
+remove the stock plug leads and use the fused fixed harness.
+[Maker specification](https://www.sk6812.com/?p=2760).
+
+The3.3V external peak allocations are100mA BlackPill,50mA GPS,20mA IMU and150mA
+radio:320mA total against the maker's500mA peak external supply figure. These
+are engineering allocations to check on the bench, not guaranteed device maxima.
+The2W average and3W peak non-LED targets include the controller/logic allowance;
+radio duty cycles and actual current remain unmeasured. The checker rejects
+missing loads, non-finite allocations and an allocated peak above500mA.

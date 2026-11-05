@@ -77,8 +77,14 @@
       "source": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts"
     },
     "IMU": {
-      "part": "Existing 3.3 V IMU placeholder; exact board remains unresolved",
-      "source": "hardware/enclosure/component-inventory.json"
+      "part": "Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V",
+      "source": "https://www.adafruit.com/product/3387",
+      "loaded_envelope_mm": [
+        40,
+        28,
+        12
+      ],
+      "basis": "Maker board 33.4 x20.4 x3 mm; larger engineering reservation includes fixed soldered leads. Native pocket must use this reservation, not the old25x25 placeholder."
     },
     "RADIO": {
       "part": "Adafruit 3072 RFM95W, VIN=3.3 V",
@@ -89,16 +95,19 @@
       "source": "https://www.evilgeniuslabs.org/fibonacci256"
     },
     "RING1": {
-      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
-      "source": "hardware/enclosure/component-inventory.json"
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
     },
     "RING2": {
-      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
-      "source": "hardware/enclosure/component-inventory.json"
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
     },
     "RING3": {
-      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
-      "source": "hardware/enclosure/component-inventory.json"
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
     },
     "F_FIB": {
       "part": "Littelfuse 0459001.UR, 1 A",
@@ -202,7 +211,7 @@
       "F_AUX.2",
       "BLACKPILL.3V3",
       "GPS.3V",
-      "IMU.3V3",
+      "IMU.VIN",
       "RADIO.VIN"
     ],
     "LED_DATA1": [
@@ -241,6 +250,74 @@
       "RING1.GND",
       "RING2.GND",
       "RING3.GND"
+    ],
+    "SPARKLE_TX": [
+      "SPARKLE.JP3.3",
+      "BLACKPILL.PA10"
+    ],
+    "SPARKLE_RX": [
+      "SPARKLE.JP3.4",
+      "BLACKPILL.PB6"
+    ],
+    "GPS_TX": [
+      "GPS.TX",
+      "BLACKPILL.PA3"
+    ],
+    "GPS_RX": [
+      "GPS.RX",
+      "BLACKPILL.PA2"
+    ],
+    "SPI_CLOCK": [
+      "BLACKPILL.PA5",
+      "IMU.SCL",
+      "RADIO.SCK"
+    ],
+    "SPI_MOSI": [
+      "BLACKPILL.PA7",
+      "IMU.SDA",
+      "RADIO.MOSI"
+    ],
+    "SPI_MISO": [
+      "BLACKPILL.PA6",
+      "IMU.SDOAG",
+      "IMU.SDOM",
+      "RADIO.MISO"
+    ],
+    "IMU_AG_SELECT": [
+      "BLACKPILL.PA8",
+      "IMU.CSAG"
+    ],
+    "IMU_M_SELECT": [
+      "BLACKPILL.PA9",
+      "IMU.CSM"
+    ],
+    "RADIO_SELECT": [
+      "BLACKPILL.PB0",
+      "RADIO.CS"
+    ],
+    "RADIO_INTERRUPT": [
+      "BLACKPILL.PB5",
+      "RADIO.G0"
+    ],
+    "RADIO_RESET": [
+      "BLACKPILL.PB12",
+      "RADIO.RST"
+    ],
+    "IMU_AG_READY": [
+      "BLACKPILL.PB10",
+      "IMU.INT1"
+    ],
+    "IMU_M_READY": [
+      "BLACKPILL.PB1",
+      "IMU.DRDY"
+    ],
+    "GPS_PPS": [
+      "BLACKPILL.PA0",
+      "GPS.PPS"
+    ],
+    "GPS_ENABLE": [
+      "BLACKPILL.PB7",
+      "GPS.EN"
     ]
   },
   "switch_positions": {
@@ -324,14 +401,6 @@
   },
   "open_design_items": [
     {
-      "id": "exact-peripheral-and-strip-stock",
-      "detail": "Select the exact IMU and 120 pixel/m strip stock and verify input/pin limits, loaded envelopes and branch demand. Existing placeholders are not construction-ready parts."
-    },
-    {
-      "id": "communication-and-controller-budget",
-      "detail": "Complete the BlackPill/Sparkle/GPS/IMU/radio signal pin map, power order and radio duty-cycle budget; verify the 500 mA peak external 3.3 V limit. No new firmware or diagnostics are assumed."
-    },
-    {
       "id": "fitted-harness",
       "detail": "Derive both installed wire cut lists and strain relief/envelopes from the new compartment/module layout. Current wire gauges alone do not complete routing."
     }
@@ -339,7 +408,7 @@
   "physical_qualification": {
     "startup_and_pulses": {
       "status": "unmeasured",
-      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use.",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply.",
       "results": []
     },
     "latch_and_rebound": {
@@ -373,5 +442,29 @@
       "results": []
     }
   },
-  "historical_recovery": "electrical-review.md and the original electrical-*.json studies remain rejected custom-circuit evidence. Their counters/findings are not reset. They do not describe this module prototype."
+  "historical_recovery": "electrical-review.md and the original electrical-*.json studies remain rejected custom-circuit evidence. Their counters/findings are not reset. They do not describe this module prototype.",
+  "signal_basis": {
+    "allocation": "design-v2.md, STM32 pin allocation; all3.3V logic. This is a wiring plan, not delivered new firmware or working navigation.",
+    "sources": [
+      "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+      "https://learn.adafruit.com/adafruit-lsm9ds1-accelerometer-plus-gyro-plus-magnetometer-9-dof-breakout/pinouts",
+      "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts",
+      "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
+    ],
+    "unused": "No GPS backup coin cell. No external sensor power. BlackPill5V and USB remain disconnected. Program BlackPill through SWD with target power supplied by Sparkle; the probe does not supply target voltage."
+  },
+  "supply_allocation": {
+    "basis": "Engineering allocations for bench verification, not guaranteed component maxima or measurements. Verify concurrent radio/PWM peaks and average current before accepting the prototype operating plan.",
+    "external_3v3_peak_a": {
+      "BLACKPILL": 0.1,
+      "GPS": 0.05,
+      "IMU": 0.02,
+      "RADIO": 0.15
+    },
+    "external_3v3_published_peak_a": 0.5,
+    "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+    "non_led_average_budget_w": 2.0,
+    "non_led_peak_review_w": 3.0,
+    "duty_cycle": "Review the all-peripheral peak concurrently; no radio duty-cycle reduction is used to approve the3.3V allocation. The2W average and3W peak are test targets, not a measured waveform."
+  }
 }

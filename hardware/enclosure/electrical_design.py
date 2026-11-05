@@ -31,11 +31,27 @@ REQUIRED_CONNECTIONS = {
     'RING2_5V': {'F_RING2.2', 'RING2.5V'},
     'RING3_5V': {'F_RING3.2', 'RING3.5V'},
     'AUX_SOURCE': {'SPARKLE.JP3.2', 'F_AUX.1'},
-    'AUX_3V3': {'F_AUX.2', 'BLACKPILL.3V3', 'GPS.3V', 'IMU.3V3', 'RADIO.VIN'},
+    'AUX_3V3': {'F_AUX.2', 'BLACKPILL.3V3', 'GPS.3V', 'IMU.VIN', 'RADIO.VIN'},
     'LED_DATA1': {'SPARKLE.JP1.8', 'FIBONACCI.DIN'},
     'LED_DATA2': {'SPARKLE.JP1.5', 'RING1.DIN'},
     'LED_DATA3': {'SPARKLE.JP1.2', 'RING2.DIN'},
     'LED_DATA4': {'SPARKLE.JP3.6', 'RING3.DIN'},
+    'SPARKLE_TX': {'SPARKLE.JP3.3', 'BLACKPILL.PA10'},
+    'SPARKLE_RX': {'BLACKPILL.PB6', 'SPARKLE.JP3.4'},
+    'GPS_TX': {'BLACKPILL.PA3', 'GPS.TX'},
+    'GPS_RX': {'BLACKPILL.PA2', 'GPS.RX'},
+    'SPI_CLOCK': {'IMU.SCL', 'RADIO.SCK', 'BLACKPILL.PA5'},
+    'SPI_MOSI': {'IMU.SDA', 'BLACKPILL.PA7', 'RADIO.MOSI'},
+    'SPI_MISO': {'RADIO.MISO', 'IMU.SDOAG', 'IMU.SDOM', 'BLACKPILL.PA6'},
+    'IMU_AG_SELECT': {'BLACKPILL.PA8', 'IMU.CSAG'},
+    'IMU_M_SELECT': {'IMU.CSM', 'BLACKPILL.PA9'},
+    'RADIO_SELECT': {'BLACKPILL.PB0', 'RADIO.CS'},
+    'RADIO_INTERRUPT': {'BLACKPILL.PB5', 'RADIO.G0'},
+    'RADIO_RESET': {'RADIO.RST', 'BLACKPILL.PB12'},
+    'IMU_AG_READY': {'IMU.INT1', 'BLACKPILL.PB10'},
+    'IMU_M_READY': {'IMU.DRDY', 'BLACKPILL.PB1'},
+    'GPS_PPS': {'GPS.PPS', 'BLACKPILL.PA0'},
+    'GPS_ENABLE': {'BLACKPILL.PB7', 'GPS.EN'},
     'GND': {'CONTACT_N.tail', 'LATCH.GND', 'BOOST.JP1.2', 'C_OUT.N',
             'R_A.2', 'R_B.2', 'R_OUT.2', 'R_OFF.2', 'START.2',
             'R_SENSE_BOTTOM.2', 'SPARKLE.X7.GND', 'BLACKPILL.GND',
@@ -143,6 +159,15 @@ def assess(design, directory=HERE):
     require(len(cell_range) == 2 and all(finite(v) for v in cell_range)
             and 2.2 <= cell_range[0] < cell_range[1] <= 4.2,
             'cell-operating-range', 'Declare a one-cell range within both module input ratings.')
+    allocation = design.get('supply_allocation', {})
+    current = allocation.get('external_3v3_peak_a', {})
+    require(set(current) == {'BLACKPILL', 'GPS', 'IMU', 'RADIO'}
+            and all(finite(v) and v > 0 for v in current.values())
+            and sum(current.values()) <= 0.5
+            and allocation.get('external_3v3_published_peak_a') == 0.5,
+            'peripheral-current-budget', 'Declare all external loads within the published 500 mA peak supply.')
+    require(bool(allocation.get('basis')) and bool(design.get('signal_basis', {}).get('sources')),
+            'signal-and-budget-evidence', 'Retain pin-map sources and the estimation/test boundary.')
     for item in design.get('open_design_items', []):
         failures.append({'id': item['id'], 'detail': item['detail']})
     qualification = design.get('physical_qualification', {})

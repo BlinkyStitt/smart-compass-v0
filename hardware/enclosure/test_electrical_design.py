@@ -42,7 +42,9 @@ class PrototypeDesignTests(unittest.TestCase):
         report = assess(self.design)
         self.assertFalse(report['digital_design_pass'])
         self.assertIn('fitted-harness', self.failure_ids(self.design))
-        self.assertIn('exact-peripheral-and-strip-stock', self.failure_ids(self.design))
+        self.assertEqual(self.design['parts']['IMU']['part'],
+                         'Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V')
+        self.assertIn('WTP-2812-2020-120-0405', self.design['parts']['RING1']['part'])
 
     def test_direct_low_battery_to_enable_is_rejected(self):
         design = self.reviewed_fixture()
@@ -91,6 +93,16 @@ class PrototypeDesignTests(unittest.TestCase):
         design = self.reviewed_fixture()
         design['parts']['F1']['part'] = 'Unreviewed 20 A fuse'
         self.assertIn('selected-part:F1', self.failure_ids(design))
+
+    def test_peripheral_budget_and_crossed_sensor_signal_fail(self):
+        design = self.reviewed_fixture()
+        design['supply_allocation']['external_3v3_peak_a']['RADIO'] = 0.5
+        self.assertIn('peripheral-current-budget', self.failure_ids(design))
+        design = self.reviewed_fixture()
+        design['nets']['GPS_TX'].remove('BLACKPILL.PA3')
+        design['nets']['GPS_TX'].append('BLACKPILL.PA2')
+        self.assertIn('duplicate-pin', self.failure_ids(design))
+        self.assertIn('net:GPS_TX', self.failure_ids(design))
 
     def test_no_procedure_or_boolean_can_create_physical_evidence(self):
         design = self.reviewed_fixture()
