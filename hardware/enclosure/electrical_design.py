@@ -13,6 +13,7 @@ import electrical_imu
 import electrical_boost
 import electrical_latch
 import capacitor_mount
+import electrical_peripherals
 from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
@@ -196,6 +197,12 @@ def assess(design, directory=HERE):
         imu_terminals = electrical_imu.terminals(parts.get('IMU', {}), directory)
     except (ValueError, OSError) as error:
         require(False, 'imu-terminal-binding', str(error))
+    peripheral_terminals={}
+    for module in ('GPS','RADIO'):
+        try:
+            peripheral_terminals[module]=electrical_peripherals.terminals(module,parts.get(module,{}),directory)
+        except (ValueError,OSError) as error:
+            require(False,module.lower()+'-terminal-binding',str(error))
     boost_terminals = {}
     try:
         boost_terminals = electrical_boost.terminals(parts.get('BOOST', {}), directory)
@@ -306,6 +313,7 @@ def assess(design, directory=HERE):
         'service': design.get('service', {}),
         'off_positive_contact_isolation': isolation,
         'imu_source_terminals': imu_terminals,
+        'peripheral_source_terminals':peripheral_terminals,
         'boost_source_terminals': boost_terminals,
         'latch_source_terminals': latch_terminals,
         'bulk_capacitor_targets':capacitor_targets,

@@ -99,6 +99,47 @@ loaded reservation. Published nominal geometry and1mm source drills do not
 prove supplied-board tolerances or completed solder-joint fit. Installed wire
 routes, cut lengths and strain relief remain required work.
 
+### GPS and radio source pads
+
+The GPS uses the pinned Adafruit Ultimate GPS FeatherWing source at
+`1b15a4f782c555903c0cfd7174d0616d2e128887`. The radio uses the common RFM/LoRa
+breakout layout at `3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1`, selected for
+PID3072 RFM95W. Original Eagle files, upstream attribution and licenses are
+retained in [GPS sources](sources/gps-featherwing/README.md) and
+[radio sources](sources/rfm-lora/README.md). The checker verifies source bytes,
+board/schematic agreement, actual header rotations and all selected pad names.
+
+| GPS terminal | Physical pad | Radio terminal | Physical pad |
+| --- | --- | --- | --- |
+| 3V | JP4.9 | VIN | JP3.1 |
+| GND | JP4.7 | GND | JP3.2 |
+| RX | JP3.1 | G0 / DIO0 | JP3.4 |
+| TX | JP3.2 | SCK | JP3.5 |
+| PPS | JP1.3 | MISO | JP3.6 |
+| EN | JP1.4 | MOSI | JP3.7 |
+| | | CS | JP3.8 |
+| | | RST | JP3.9 |
+| | | ANT | JP2.1 |
+
+GPS TX connects to BlackPill PA3; GPS RX connects to PA2. Do not reverse the
+UART by following the MCU pin label instead of the GPS terminal label. Keep
+the existing PB7 enable control and leave the backup coin absent. Leave all
+unused external GPS header connections open.
+
+Coordinates use the component-side outline lower-left. The GPS source board
+is50.8mm along X and22.86mm along Y. Its installed long-Y pose requires a
+90degree rotation. The radio outline starts at CAD X0.254mm, not zero;
+subtract that offset before locating its pads on the25.4mm-wide board.
+ANT is thus at outline-relative(21.336,24.511)mm. Retain the existing78mm
+internal wire at JP2.1; leave other RF connector footprints without external
+connections. Leave JP1 DIO1..5 and JP3.3 EN externally unconnected.
+
+Source names such as `SCK_5V` identify the radio board's logic-input nets.
+This assembly supplies VIN with3.3V and uses the existing3.3V MCU signals.
+The map does not direct a builder to supply5V. Nominal1mm drills do not prove
+finished-wire fit, joints, strain relief, supplied dimensions or electrical
+performance. Both installed harnesses and all physical outcomes remain open.
+
 ### Module changes
 
 Keep the factory JP1 LED screw terminals on Sparkle Motion Rev D. Adafruit

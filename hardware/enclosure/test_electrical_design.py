@@ -61,6 +61,12 @@ class PrototypeDesignTests(unittest.TestCase):
             with self.subTest(key=key):
                 self.assertIn('capacitor-source-and-fit',self.failure_ids(design))
 
+    def test_gps_and_radio_pad_swaps_or_unreviewed_sources_fail(self):
+        for module,pin,pad in [('GPS','TX','JP3.1'),('GPS','3V','JP4.7'),('RADIO','G0','JP1.1'),('RADIO','ANT','X1.P')]:
+            design=self.reviewed_fixture();design['parts'][module]['terminal_bindings'][pin]=pad
+            with self.subTest(module=module,pin=pin):
+                self.assertIn(module.lower()+'-terminal-binding',self.failure_ids(design))
+
     def test_calculator_and_bench_scenario_cannot_drift(self):
         design = self.reviewed_fixture()
         design['operating_plan']['path_estimate_ohm'] = .085

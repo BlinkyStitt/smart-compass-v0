@@ -1,0 +1,34 @@
+[
+  {
+    "file": "Adafruit Ultimate GPS FeatherWing.brd",
+    "original_file": "Adafruit Ultimate GPS FeatherWing.brd",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Ultimate-GPS-FeatherWing-PCB/1b15a4f782c555903c0cfd7174d0616d2e128887/Adafruit%20Ultimate%20GPS%20FeatherWing.brd",
+    "sha256": "596f8011123a17f05256addc81aab901ea85b127cf3f73de2bf59c3f5e743894",
+    "revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+    "bytes": 448593
+  },
+  {
+    "file": "Adafruit Ultimate GPS FeatherWing.sch",
+    "original_file": "Adafruit Ultimate GPS FeatherWing.sch",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Ultimate-GPS-FeatherWing-PCB/1b15a4f782c555903c0cfd7174d0616d2e128887/Adafruit%20Ultimate%20GPS%20FeatherWing.sch",
+    "sha256": "e963167e65d1e0a404e20a6e7bfd678c3e19ad0f3bd6d557e4e7eb7f52a7ffac",
+    "revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+    "bytes": 457427
+  },
+  {
+    "file": "upstream-README.md",
+    "original_file": "README.md",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Ultimate-GPS-FeatherWing-PCB/1b15a4f782c555903c0cfd7174d0616d2e128887/README.md",
+    "sha256": "f33472f95e648324da3281e9f7c154c399211ab13035565cf460bc35a421adee",
+    "revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+    "bytes": 1242
+  },
+  {
+    "file": "license.txt",
+    "original_file": "license.txt",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Ultimate-GPS-FeatherWing-PCB/1b15a4f782c555903c0cfd7174d0616d2e128887/license.txt",
+    "sha256": "1f63e1f4676a433423b2c2ff1ccd9e80093f341f10b81f0ac0106342bc7bbe89",
+    "revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+    "bytes": 22597
+  }
+]

@@ -344,7 +344,17 @@
     },
     "GPS": {
       "part": "Adafruit Ultimate GPS FeatherWing, 3V input",
-      "source": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts"
+      "source": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts",
+      "board_revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+      "source_record": "sources/gps-featherwing/index.json",
+      "terminal_bindings": {
+        "3V": "JP4.9",
+        "GND": "JP4.7",
+        "RX": "JP3.1",
+        "TX": "JP3.2",
+        "PPS": "JP1.3",
+        "EN": "JP1.4"
+      }
     },
     "IMU": {
       "part": "Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V",
@@ -373,7 +383,20 @@
     },
     "RADIO": {
       "part": "Adafruit 3072 RFM95W, VIN=3.3 V",
-      "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
+      "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts",
+      "board_revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+      "source_record": "sources/rfm-lora/index.json",
+      "terminal_bindings": {
+        "VIN": "JP3.1",
+        "GND": "JP3.2",
+        "G0": "JP3.4",
+        "SCK": "JP3.5",
+        "MISO": "JP3.6",
+        "MOSI": "JP3.7",
+        "CS": "JP3.8",
+        "RST": "JP3.9",
+        "ANT": "JP2.1"
+      }
     },
     "FIBONACCI": {
       "part": "Original Evil Genius Labs Fibonacci256",
