@@ -68,6 +68,7 @@ REQUIRED_BENCH_TESTS = frozenset({
 })
 CRITICAL_PARTS = {
     'CELL': 'XTAR protected 21700 6000 mAh button-top',
+    'SPARKLE': 'Adafruit Sparkle Motion, board revision D',
     'BLACKPILL': 'WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input',
     'CONTACT_P': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
@@ -161,6 +162,19 @@ def assess(design, directory=HERE):
     for name, selected in CRITICAL_PARTS.items():
         require(parts.get(name, {}).get('part') == selected, 'selected-part:' + name,
                 'Changed protection, cell or capacitor selection requires a circuit review.')
+    terminals = parts.get('SPARKLE', {}).get('led_terminals', {})
+    require(terminals.get('assembly') == 'Factory-installed JP1 nine-position 2.54mm screw terminal strip on Sparkle Motion Rev D'
+            and terminals.get('wire_group') == 'branches'
+            and terminals.get('signal_wire_group') == 'signals'
+            and type(terminals.get('wires_per_clamp')) is int and terminals['wires_per_clamp'] == 1
+            and terminals.get('wire_awg_range') == [20,26]
+            and terminals.get('published_current_a') == 5
+            and terminals.get('strip_target_mm') == 3.2
+            and design.get('wiring', {}).get('stock_limits', {}).get('branches', {}).get('stock') == 'M22759/16-22'
+            and design.get('wiring', {}).get('stock_limits', {}).get('signals', {}).get('stock') == 'M22759/18-26'
+            and bool(terminals.get('source')) and bool(terminals.get('assembly_source'))
+            and bool(terminals.get('current_basis')) and bool(terminals.get('retention')),
+            'sparkle-led-terminations', 'Use the stock JP1 clamps with one supported22AWG power or26AWG data lead; retain strain relief and the unmeasured pulse/thermal boundary.')
     imu_terminals = {}
     try:
         imu_terminals = electrical_imu.terminals(parts.get('IMU', {}), directory)

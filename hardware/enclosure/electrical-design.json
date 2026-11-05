@@ -157,7 +157,25 @@
     },
     "SPARKLE": {
       "part": "Adafruit Sparkle Motion, board revision D",
-      "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts"
+      "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+      "led_terminals": {
+        "assembly": "Factory-installed JP1 nine-position 2.54mm screw terminal strip on Sparkle Motion Rev D",
+        "wire_group": "branches",
+        "signal_wire_group": "signals",
+        "wires_per_clamp": 1,
+        "wire_awg_range": [
+          20,
+          26
+        ],
+        "published_current_a": 5,
+        "current_basis": "Published board/terminal rating; does not qualify coherent PWM peaks, installed wire heating or enclosed temperatures.",
+        "strip_target_mm": 3.2,
+        "strip_basis": "Assembly target from maker approximately 1/8 inch instruction; inspect actual insertion/insulation and clamp retention.",
+        "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+        "assembly_source": "https://learn.adafruit.com/adafruit-sparkle-motion/connecting-leds",
+        "source_review": "2026-11-05, guide/RevD source7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+        "retention": "One fixed 22 AWG positive pigtail from JP1.9 to the insulated LED fuse/distribution carrier; one 26 AWG data lead per used data clamp. Do not put four fuse leads under one screw or replace the stock connector with an assumed 18 AWG part. Restrain the insulated leads near the board; screws and clamp pull-out remain physical tests."
+      }
     },
     "BLACKPILL": {
       "part": "WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input",

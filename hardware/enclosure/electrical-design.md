@@ -101,6 +101,23 @@ routes, cut lengths and strain relief remain required work.
 
 ### Module changes
 
+Keep the factory JP1 LED screw terminals on Sparkle Motion Rev D. Adafruit
+specifies 20–26 AWG wire and a 5 A rating for these connections. Use the selected
+22 AWG branch wire for the positive distribution feed and 26 AWG for data. Put
+one lead in each used clamp. A fixed 22 AWG pigtail from JP1.9 supplies the
+separate insulated fuse/distribution carrier; do not put four branch leads
+under one screw. The pin names in the circuit identify the stock terminal
+positions, not bare PCB holes that need oversized wire soldered through them.
+[Maker pinouts](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+
+Strip to a 3.2 mm assembly target, from the maker's approximate 1/8 inch guidance.
+Inspect insertion and insulation, tighten gently, and restrain the insulated
+leads near the board. The maker's current rating does not establish our PWM
+peak, wire temperature, screw retention or enclosed thermal performance. Keep
+those physical tests unmeasured. The fitted carrier, cuts and complete wire
+routes remain required design work.
+[Maker assembly instructions](https://learn.adafruit.com/adafruit-sparkle-motion/connecting-leds).
+
 Use **Adafruit PowerBoost 1000 Basic, PID 2030**, with no charger. The reviewed
 [Eagle source](https://github.com/adafruit/Adafruit-PowerBoost-1000-PCB/tree/493d06d70537ce418355b395bb251a661d683150)
 is pinned at `493d06d70537ce418355b395bb251a661d683150`. Retained connectivity,

@@ -136,6 +136,21 @@ class PrototypeDesignTests(unittest.TestCase):
         design=self.reviewed_fixture();design['parts']['BLACKPILL']['part']='WeAct board with U3 flash fitted'
         self.assertIn('selected-part:BLACKPILL',self.failure_ids(design))
 
+    def test_factory_led_clamps_require_supported_wire_and_single_leads(self):
+        for key,value in [('wire_group','main'),('signal_wire_group','main'),
+                          ('wires_per_clamp',4),('wires_per_clamp',True),('wire_awg_range',[18,26]),
+                          ('published_current_a',6),('retention','')]:
+            design=self.reviewed_fixture()
+            design['parts']['SPARKLE']['led_terminals'][key]=value
+            with self.subTest(key=key):
+                self.assertIn('sparkle-led-terminations',self.failure_ids(design))
+        design=self.reviewed_fixture()
+        design['wiring']['stock_limits']['branches']['stock']='M22759/16-18'
+        self.assertIn('sparkle-led-terminations',self.failure_ids(design))
+        design=self.reviewed_fixture()
+        design['parts']['SPARKLE']['part']='A different controller or terminal assembly'
+        self.assertIn('selected-part:SPARKLE',self.failure_ids(design))
+
     def test_source_controls_and_unused_inputs_remain_checked(self):
         for key, value in [('BOOST.remove', []), ('LATCH.leave_open', []),
                            ('BOOST.do_not_install', []), ('SPARKLE.usb_pd_v', 20),
