@@ -5,8 +5,8 @@
   "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
   "parts": {
     "CELL": {
-      "part": "XTAR protected INR21700-50E 5000 mAh",
-      "source": "https://www.xtar.cc/product/xtar-21700-5000mah-battery-50e.html"
+      "part": "XTAR protected 21700 6000 mAh button-top",
+      "source": "https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight"
     },
     "CONTACT_P": {
       "part": "Mill-Max 0850-0-15-20-83-14-11-0",

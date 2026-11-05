@@ -63,7 +63,7 @@ REQUIRED_BENCH_TESTS = frozenset({
     'short_and_reversal', 'thermal', 'runtime', 'fit_and_worn_mass',
 })
 CRITICAL_PARTS = {
-    'CELL': 'XTAR protected INR21700-50E 5000 mAh',
+    'CELL': 'XTAR protected 21700 6000 mAh button-top',
     'CONTACT_P': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'F1': 'Littelfuse 0459004.UR, 4 A',

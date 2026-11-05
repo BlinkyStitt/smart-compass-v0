@@ -37,7 +37,7 @@ available to its regression tests and still rejects that circuit.
 ## Circuit
 
 ```text
-one protected XTAR INR21700-50E
+one protected XTAR 21700 6000 mAh button-top
   + contact -- F1 4 A -- S1 pole A -- Pololu 2808 VIN
   - contact ----------------------------------------------- GND
                              Pololu VOUT -- PowerBoost BAT
@@ -122,7 +122,7 @@ an accessible cause; repeated trips, damage or abnormal heat require service.
 
 ### Protection, routing and USB
 
-Use one protected XTAR INR21700-50E, not its unprotected or USB-equipped variants.
+Use one XTAR protected 21700 6000 mAh button-top, not its unprotected or USB-equipped variants.
 Its protection is a manufacturer feature, not a published system fault-current
 or fuse-clearing bound. F1 remains contact-adjacent. Insulate its unfused tail
 and both contact backs. Preserve individual branch protection and the physical

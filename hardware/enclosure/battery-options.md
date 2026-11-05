@@ -1,51 +1,46 @@
 # Single removable protected cell: decision and qualification
 
-Engineering decision: 2026-11-03, SKI-1230. Use one **XTAR protected
-INR21700-50E 5000 mAh / 3.6 V / 10 A button-top**, with charged spares carried
-separately. Bryan authorized replacing the Efest with a safer battery and using
-assembled power modules. The protected cell adds overcharge, over-discharge
-and short-circuit protection to each cell and spare. It does not establish
-complete device safety or an inherently safer chemistry.
+Engineering decision, revised 2026-11-04 for SKI-1230: use one **XTAR protected
+21700 6000 mAh / 3.6 V / 10 A button-top**, with charged spares carried separately.
+Bryan authorized a safer cell and a module-based prototype. This selection replaces
+the earlier XTAR 50E 5000 mAh candidate because the maker publishes a maximum
+cell mass. It retains a protected single-cell architecture and external charging.
+The existing CAD and mass ledger still describe the legacy pouch until rebuilt.
+The historical custom-circuit review and recovery counters remain unchanged.
 
 **Neither enclosure implements this selection yet.** Complete worn mass,
 including the installed cell and necklace, must be at most
-**2.5 lb = 1,133.980925 g**, with a separate 50 g margin target. Electrical and
-loaded-holder qualification has not passed. CAD, inventory and release work
-remain pending. The [electrical review](electrical-review.md) and its original
-Efest calculations remain rejection evidence for the earlier custom circuit;
-they do not describe a qualified XTAR/module circuit.
+**2.5 lb = 1,133.980925 g**, with a separate 50 g margin target. The active
+[module design](electrical-design.md) still requires fitted integration. CAD,
+inventory and publication remain pending. Physical acceptance stays unmeasured.
 
-This decision replaces the Efest cell selection and earlier pouch, belt-pack,
-two-bay and four-hour-per-pack proposals. Use a dedicated holder for the
-protected button-top cell. Do not use an adapter, second installed cell,
-selector, parallel/series connection, hot swap or onboard charging. Firmware
-voltage reporting is not cell protection.
+Use a dedicated holder for this exact protected button-top cell. Exclude adapters,
+a second installed cell, selectors, series/parallel connections, hot swap and
+onboard charging. Charge the removed cell externally. Firmware voltage reporting
+is not cell protection. The protected product adds manufacturer protection;
+it does not establish inherently safer chemistry or complete device safety.
 
 ## Energy and cell evidence
 
-The [XTAR product page](https://www.xtar.cc/product/xtar-21700-5000mah-battery-50e.html)
-identifies the protected INR21700-50E button-top, 3.6 V nominal, 5000 mAh and
-constant 10 A discharge. Select this product, not an unprotected 21700/21700HP
-or a USB-equipped variant. A 10 A discharge rating does not bound short-circuit
-current or qualify the holder, fuse, wires or enclosed temperature.
+The [XTAR official-store specification](https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight) lists
+6000 mAh, 3.6 V, 10 A continuous discharge, a button top and integrated protection.
+It gives diameter 21.8 +/-0.3 mm, length 74.8 +/-0.5 mm and net weight **<=76 g**.
+Use **22.1 x 75.3 mm** cell-only maxima before holder, contact travel, insulation,
+clearance and removal space. The source has no numbered revision; retrieved
+2026-11-04. These data apply to this exact product, not the 50E, unprotected,
+high-current or USB-equipped variants.
 
-The [maker comparison table](https://www.xtar.cc/21700-battery.html) and
-[maker brochure, page 2](https://www.tme.com/Document/521a53995197f524da9632d69c941ea9/XTAR-21700-5AH-10A.pdf)
-give diameter 21.5 ±0.3 mm and length 74.5 ±0.5 mm: cell-only maxima
-**21.8 × 75.0 mm**. Add holder/contact travel, insulation, manufacturing
-clearance and the full removal sweep. The protected cell is longer than the
-old Efest reference. Existing 26650/pouch geometry is not compatible evidence.
-Exact upper cell mass and protection thresholds, delays and recovery remain
-unsupported. The brochure's 2.5 V end-of-discharge value is not a guaranteed
-protection trip or release threshold. Do not use it to certify the retained
-Pololu regulator's 2.9 V input requirement.
+The maker does not publish this product's exact protection thresholds, delays,
+short-current let-through or recovery sequence. Keep those physical outcomes
+unmeasured. Its 10 A label does not qualify the installed contacts, fuse, harness
+or enclosed temperature. The <=76 g cell bound does not establish complete worn
+mass or a finished-assembly measurement.
 
-Retain the **5 V / 6.25 W total output reference** and assumed 85% conversion
-for the unqualified energy study:
+Retain the 6.25 W / 85% nominal energy reference:
 
 ```text
-5.0 Ah × 3.6 V = 18.0 Wh
-18.0 Wh × 0.85 / 6.25 W = 2.448 h ≈ 2.45 calculated hours per cell
+6.0 Ah x 3.6 V = 21.6 Wh
+21.6 Wh x 0.85 / 6.25 W = 2.9376 h (display 2.94 h)
 ```
 
 The shared [electrical input record](../../site/electrical-inputs.json) owns this
@@ -58,7 +53,7 @@ Adafruit's NeoPixel channel/idle estimates and samples the real shared pattern.
 This estimate does not require replacing Fibonacci256 or obtaining supplier
 data. At the current 5% calculator brightness, all Wide pixels average about
 1.245 A at 5 V; Narrow averages 1.174 A. With the documented reserve and other
-loss assumptions, calculated runtime is about 1.83 h / 1.94 h respectively.
+loss assumptions, calculated runtime is about 2.19 h / 2.32 h respectively.
 Five percent is not a firmware-enforced limit. Physical brightness and runtime
 remain unmeasured; fault, inrush and thermal checks remain separate.
 

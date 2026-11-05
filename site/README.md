@@ -156,8 +156,8 @@ qualified electrical model and complete Pages release remain undelivered.
 The calculator and browser verifier operate as a separate, explicitly
 unqualified parameter study. Existing rendered geometry and the 37 Wh site
 calculation remain explicitly legacy pouch evidence. The selected one-cell
-reference is **2.448 h (display 2.45 h)** from the selected protected XTAR
-INR21700-50E: 3.6 V × 5.0 Ah = 18 Wh, at 6.25 W and assumed 85% efficiency,
+reference is **2.9376 h (display 2.94 h)** from the selected protected XTAR
+21700 6000 mAh: 3.6 V × 6.0 Ah = 21.6 Wh, at 6.25 W and assumed 85% efficiency,
 before reserve/other losses. This replaces the historical Efest reference,
 not the legacy geometry or mass model. See the
 [battery decision](../hardware/enclosure/battery-options.md).
@@ -226,9 +226,9 @@ At the current 5% default, 1024 samples over eight seconds give:
 
 With the current additional assumptions (0.5 W controller/sensors/radio,
 85% conversion, 0.085 ohm battery path, 0.002 W input quiescent loss, nominal
-3.6 V/5 Ah cell and 15% reserve), calculated rainbow runtime is about
-**1.83 h Wide / 1.94 h Narrow**. These include more load and loss than the
-separate 2.448 h reference arithmetic. They are unmeasured estimates, not
+3.6 V/6 Ah cell and 15% reserve), calculated rainbow runtime is about
+**2.19 h Wide / 2.32 h Narrow**. These include more load and loss than the
+separate 2.9376 h reference arithmetic. They are unmeasured estimates, not
 guaranteed usable runtime. Regenerate samples after changing any model input.
 
 Brightness matters: Fibonacci256 alone averages about 1.034 A at 10% and

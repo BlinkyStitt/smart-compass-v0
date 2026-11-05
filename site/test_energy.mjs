@@ -10,8 +10,8 @@ export async function check() {
   // Retain the historical Efest arithmetic as a regression, separate from the
   // selected cell consumed by the CLI and browser.
   near(runtime(usableEnergy(5.2, 3.7, 0), 6.25 / .85).hours, 2.61664);
-  near(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), 18);
-  near(runtime(18, model.reference.output_w / model.reference.efficiency).hours, 2.448);
+  near(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), 21.6);
+  near(runtime(21.6, model.reference.output_w / model.reference.efficiency).hours, 2.9376);
   assert.equal(model.defaults.capacity_ah, model.cell.capacity_ah);
   assert.equal(model.defaults.cell_v, model.cell.nominal_v);
   assert.equal(runtime(1, 0).state, 'unbounded');
@@ -45,7 +45,7 @@ export async function check() {
   near(evaluate(rainbow, neopixel, {...settings, brightness: 0}).average_led_a, .001);
   near(evaluate(sample, groups, {...settings, reserve: 1}).runtime.hours, 0);
   near(evaluate(sample, groups, {...settings, capacity_ah: 0}).runtime.hours, 0);
-  near(evaluate(sample, groups, {...settings, reserve: .5}).usable_wh, 9);
+  near(evaluate(sample, groups, {...settings, reserve: .5}).usable_wh, 10.8);
   near(evaluate(sample, groups, {...settings, capacity_ah: 2 * settings.capacity_ah}).runtime.hours,
        2 * evaluate(sample, groups, settings).runtime.hours);
   for (const key of Object.keys(settings)) {
