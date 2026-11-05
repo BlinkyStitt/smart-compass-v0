@@ -245,8 +245,10 @@ def assess(design, directory=HERE):
             and rework.get('BOOST.install') == {'X1':'Pololu2444','X2':'Pololu2444'}
             and rework.get('SPARKLE.usb_pd_v') == 5,
             'external-power-paths', 'Keep unused connectors absent and USB service at 5 V.')
-    require(rework.get('BLACKPILL.do_not_install') == ['U3'],
+    require(isinstance(rework.get('BLACKPILL.do_not_install'),list) and 'U3' in rework['BLACKPILL.do_not_install'],
             'blackpill-flash-conflict', 'Optional V3.1 U3 flash shares the PA4 battery-sense input; select the unpopulated variant.')
+    require(rework.get('BLACKPILL.do_not_install') == ['U3','P1','P2','P3'],
+            'blackpill-bare-pads', 'Leave optional flash and all header parts absent; fit fixed wires to the selected PCB pads.')
     require(rework.get('SPARKLE.remove') == ['X7']
             and rework.get('SPARKLE.retain') == ['D2','PTC1']
             and rework.get('SPARKLE.leave_open') == ['X7.GNDBREAK'],

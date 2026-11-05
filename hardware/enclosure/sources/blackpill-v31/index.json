@@ -29,6 +29,16 @@
       "file": "ports.json",
       "bytes": 1816,
       "sha256": "f412530ba182d36083a792e03667292f4576e4128875d5b734321f23f772b571"
+    },
+    {
+      "file": "pcb.brep",
+      "bytes": 62952,
+      "sha256": "24b1aef5b969a0a8a2b03491b2eaba8fa2e6533922863d2106bb0596e83b8795"
+    },
+    {
+      "file": "component-bounds.json",
+      "bytes": 32063,
+      "sha256": "2f84a70df823aed90209feca71a26f412dc26cffc8dd5bd973a4cb8fbb9c70ca"
     }
   ]
 }

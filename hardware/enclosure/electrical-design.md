@@ -464,8 +464,12 @@ transform to the board and every pad. No circuit or firmware pin is reassigned.
 These are nominal source coordinates. The STEP's PCB thickness is about
 1.49144 mm; the release notes state 1.6 mm nominal. Neither gives a guaranteed
 supplied-part tolerance. Keep the discrepancy visible and inspect actual parts
-before fitting. This source record does not complete a fixture, joint, cut list
-or fitted wire route. Physical qualification remains unmeasured.
+before fitting. Leave P1, P2 and P3 header parts uninstalled and connect fixed
+wires directly to the selected pads. Use the source-based perimeter carrier
+and four removable edge retainers in [the carrier instructions](blackpill-mounts.md).
+The component study checks the nominal PCB, component spaces, retention and
+assembly motion. Joints, cut lists and fitted wire routes remain incomplete.
+Physical qualification remains unmeasured.
 
 ## Wire-mount cell contacts
 

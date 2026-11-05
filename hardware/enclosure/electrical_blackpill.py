@@ -8,6 +8,9 @@ HERE=Path(__file__).resolve().parent
 SOURCE='sources/blackpill-v31'
 REVISION='6a7f7d434a9d6361f91590d4cdd16b4a70ce7513'
 FACTS_SHA256='f412530ba182d36083a792e03667292f4576e4128875d5b734321f23f772b571'
+FILES={'ports.json':(FACTS_SHA256,1816),
+       'pcb.brep':('24b1aef5b969a0a8a2b03491b2eaba8fa2e6533922863d2106bb0596e83b8795',62952),
+       'component-bounds.json':('2f84a70df823aed90209feca71a26f412dc26cffc8dd5bd973a4cb8fbb9c70ca',32063)}
 PART='WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input'
 UPSTREAM={'mechanical':'e713074f681a8ee3d1c54ae5419c8165c01b16e5abb54afae9252521651cb594',
           'schematic':'4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565',
@@ -30,10 +33,13 @@ def source_facts(directory=HERE):
     if not isinstance(index,dict):raise ValueError('BlackPill source index must be an object')
     records=index.get('files',[])
     if (index.get('schema_version')!=1 or index.get('revision')!=REVISION or not isinstance(records,list)
-            or len(records)!=1 or not isinstance(records[0],dict)
-            or records[0].get('file')!='ports.json' or records[0].get('bytes')!=len(raw)
-            or records[0].get('sha256')!=FACTS_SHA256 or hashlib.sha256(raw).hexdigest()!=FACTS_SHA256):
+            or len(records)!=len(FILES) or any(not isinstance(row,dict) for row in records)
+            or {row.get('file') for row in records}!=set(FILES)):
         raise ValueError('BlackPill original-source coordinate facts differ')
+    for row in records:
+        digest,size=FILES[row['file']];data=(folder/row['file']).read_bytes()
+        if row.get('bytes')!=size or len(data)!=size or row.get('sha256')!=digest or hashlib.sha256(data).hexdigest()!=digest:
+            raise ValueError('BlackPill original-source coordinate facts differ: '+row['file'])
     sources=index.get('sources',{})
     base='https://raw.githubusercontent.com/WeActStudio/WeActStudio.MiniSTM32F4x1/'+REVISION+'/'
     if (not isinstance(sources,dict) or set(sources)!=set(UPSTREAM)

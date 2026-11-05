@@ -1,0 +1,66 @@
+"""Check a source-based BlackPill cage; retain installed/physical proof limits."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_BLACKPILL_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a fresh BlackPill result path')
+    import blackpill_mount
+    paths=[source/name for name in ('blackpill_mount.py','test_blackpill_mount.py','electrical_blackpill.py',
+           'electrical-design.json','hardware_spec.py','component-inventory.json','fastener_access.py','solid_clearance.py',
+           'blackpill-mounts.md','BlackPillMountCheck.FCMacro')]+sorted((source/'sources/blackpill-v31').iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot();results={}
+    for design,z in (('wide',6),('narrow',8)):
+        shapes=blackpill_mount.native_shapes(z);results[design]=blackpill_mount.native_check(shapes,z)
+        for name in ('BlackPillPCB','BlackPillCarrier','BlackPillRetainer2','BlackPillNut0','BlackPillLoadedReservation'):
+            broken=dict(shapes);del broken[name]
+            try:blackpill_mount.native_check(broken,z)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing BlackPill product/reference accepted: '+name)
+        broken=dict(shapes)
+        for name in blackpill_mount.CHECK_NAMES-{'BlackPillNut'+str(i) for i in range(4)}:
+            broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.2))
+        try:blackpill_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'full rear bearing' not in str(error):raise
+        else:raise ValueError('Floating BlackPill carrier accepted')
+        broken=dict(shapes)
+        for name in ('BlackPillRetainer0','BlackPillScrew0'):
+            broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.2))
+        try:blackpill_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'hard stop' not in str(error):raise
+        else:raise ValueError('Unseated BlackPill retainer accepted')
+        broken=dict(shapes);broken['BlackPillScrew0']=shapes['BlackPillScrew0'].copy();broken['BlackPillScrew0'].translate(App.Vector(0,0,1))
+        try:blackpill_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'screw lacks' not in str(error):raise
+        else:raise ValueError('BlackPill screw with insufficient engagement accepted')
+        try:blackpill_mount.native_service_check(shapes,z,{'RetainerStillInstalled':shapes['BlackPillRetainer0']})
+        except ValueError as error:
+            if 'path is blocked' not in str(error):raise
+        else:raise ValueError('Board removal with a retainer still fitted was accepted')
+    if before!=snapshot():raise ValueError('BlackPill source inputs changed during native checks')
+    record={'checks':results,'inputs':before,'freecad':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record));print('BLACKPILL MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception as error:
+    traceback.print_exc()
+    if result_path and not Path(result_path).exists():
+        with Path(result_path).open('x') as output:
+            json.dump({'status':'fail','error':str(error),'inputs':locals().get('before',{}),
+                       'source_snapshot_completed':'before' in locals(),'freecad':App.Version()},output,indent=2)
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

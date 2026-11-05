@@ -3,9 +3,13 @@
 `ports.json` records functional coordinates and pin identities from the pinned
 WeAct V3.1 manufacturer STEP and schematic. `index.json` identifies the original
 files by URL, revision, SHA-256 and byte count. It also checks the local facts.
-The original component models and drawings are not redistributed here. No
-license is assigned to the publisher's files. Their source links remain in the
-index. This pin record does not use the later contributed KiCad carrier map.
+`pcb.brep` retains only the functional PCB boundary and through-holes.
+`component-bounds.json` records nominal bounding coordinates for all 130 other
+source bodies. The native fixture uses them as conservative clearance inputs.
+They are not material volumes or additional BOM parts. The original complete
+component models and drawings are not redistributed here. No license is assigned
+to the publisher's files. Their source links remain in the index. This pin
+record does not use the later contributed KiCad carrier map.
 
 The recovery inspection read the original STEP in FreeCAD 1.1.4 and checked all
 40 side-header holes. The X coordinates start at 1.397 mm and increase by
