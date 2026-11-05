@@ -213,10 +213,10 @@ Use a2A Fibonacci fuse and1A for each ring. The previous1A Fibonacci fuse
 did not allow enough for PWM heating. Using the adopted approximate20mA per
 channel and1mA idle model, a saturated rainbow at2% gives about1.31Arms
 under a conservative coherent-PWM estimate for256 pixels. This estimate is
-not a guaranteed current bound. The459 series requires25% continuous-current
+not a guaranteed current bound. The selected251 series requires25% continuous-current
 derating, plus temperature derating. Its nominal cold resistance and melting
 I²t do not prove assembly fault withstand.
-[Littelfuse459,11-Nov-2015, pp1-2](https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05).
+[Littelfuse251,26-Sep-2024, pp1-3](https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688).
 
 Retain the Panasonic EEUFR1A1021000uF/10V bulk capacitor. Its source body
 maxima are10.5x17.5mm. The12x31x14mm horizontal loaded reservation includes
@@ -231,3 +231,26 @@ path omitted too much of the selected contacts, switch, fuse and latch. The25%
 reserve is an engineering allowance, not a measured cutoff-capacity result.
 `site/electrical-inputs.json` owns these assumptions and their loss basis; the
 electrical check rejects drift from the shared planning scenario.
+
+## Fixed leaded passives for the module prototype
+
+Use the selected axial251 fuses and axial Vishay MRS16 resistors. This removes
+the need for small SMD adapter boards. Keep their insulated soldered joints
+fixed and strain-relieved. An opened fuse requires electronics service; it is
+not part of ordinary cell replacement. The JSON lists each exact part and its
+loaded reservation. These reservations do not establish the fitted harness.
+
+The251 source specifies300A DC interruption at125V and opening within1s
+at twice the rating for the selected currents. Its continuous rating needs25%
+derating and temperature correction. Do not reuse the459 series'300% opening
+time or nominal I²t for these parts. The new4A fuse has20.4mohm nominal cold
+resistance; this is not a guaranteed maximum. Fault/thermal tests remain
+unmeasured. Preserve the2A Fibonacci,1A ring and0.5A auxiliary protection.
+
+The MRS16 source gives maximum3.6mm length and1.6mm diameter. Its0.4W P70
+rating depends on film and joint temperature; it does not rate the completed
+wire assembly. Use1%1kohm parts for the five drain positions and1%100kohm
+parts for OFF and the two sense-divider positions. The12x3.5x3.5mm loaded
+reservation includes formed/sleeved leads. The source125mg mass is a
+published value without a maximum tolerance.
+[Vishay28724,07-Mar-2016](https://www.vishay.com/docs/28724/mrs16m25.pdf).

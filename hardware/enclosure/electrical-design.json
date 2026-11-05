@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-module-prototype-2",
+  "revision": "ski-1230-module-prototype-3",
   "acceptance": "Digital prototype design review. Physical electrical, thermal, runtime and wearing qualification is unmeasured; this record is not physical acceptance for wearing an untested assembly.",
   "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
   "parts": {
@@ -17,8 +17,15 @@
       "source": "https://www.mill-max.com/products/spring-loaded/pcb-solder-tail-spring-loaded-pin/0850"
     },
     "F1": {
-      "part": "Littelfuse 0459004.UR, 4 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251004.NRT1L, 4 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "S1": {
       "part": "C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC",
@@ -47,28 +54,94 @@
       "basis": "Source nominal10x16mm; FR-A 01-Sep-2025 drawing gives diameter +/-0.5mm and length +/-1.5mm. Lay horizontally in12x31x14mm engineering reservation including leads. Published1.79Arms is at100kHz/+105C; apply the source frequency correction to the measured waveform, not to its frame average."
     },
     "R_A": {
-      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_B": {
-      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_OUT": {
-      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_OFF": {
-      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_SENSE_TOP": {
-      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_SENSE_BOTTOM": {
-      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "SPARKLE": {
       "part": "Adafruit Sparkle Motion, board revision D",
@@ -116,32 +189,89 @@
       "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
     },
     "F_FIB": {
-      "part": "Littelfuse 0459002.UR, 2 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251002.NRT1L, 2 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "F_RING1": {
-      "part": "Littelfuse 0459001.UR, 1 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "F_RING2": {
-      "part": "Littelfuse 0459001.UR, 1 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "F_RING3": {
-      "part": "Littelfuse 0459001.UR, 1 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "F_AUX": {
-      "part": "Littelfuse 0459.500UR, 0.5 A",
-      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+      "part": "Littelfuse 0251.500NRT1L, 0.5 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, VL 26-Sep-2024",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
     },
     "R_BOOST": {
-      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     },
     "R_LOAD": {
-      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
-      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
     }
   },
   "nets": {
@@ -488,8 +618,8 @@
     "duty_cycle": "Review the all-peripheral peak concurrently; no radio duty-cycle reduction is used to approve the3.3V allocation. The2W average and3W peak are test targets, not a measured waveform."
   },
   "fuse_basis": {
-    "source_revision": "Littelfuse459 datasheet,11-Nov-2015, pp1-2",
+    "source_revision": "Littelfuse251 datasheet,26-Sep-2024,pp1-3",
     "continuous_derating": 0.75,
-    "basis": "Engineering selection using the adopted approximate20mA/channel and1mA idle NeoPixel model. A saturated rainbow has at most two active channels per pixel. At2% brightness the conservative coherent-PWM heating estimate is about1.31Arms for256 pixels, above the old1A fuse continuous allowance. Select2A Fibonacci and retain1A ring fuses. These approximate LED coefficients are not guaranteed silicon peaks; verify the real waveform and temperature before physical acceptance. Fuse nominal cold resistance and nominal melting I2t are not guaranteed fault or withstand bounds."
+    "basis": "Engineering selection using the adopted approximate20mA/channel and1mA idle NeoPixel model. A saturated rainbow has at most two active channels per pixel. At2% brightness the conservative coherent-PWM heating estimate is about1.31Arms for256 pixels, above the old1A fuse continuous allowance. Select2A Fibonacci and retain1A ring fuses. These approximate LED coefficients are not guaranteed silicon peaks; verify the real waveform and temperature before physical acceptance. Use axial251 fuses to avoid a custom SMD fuse carrier. Fuse nominal cold resistance and nominal melting I2t are not guaranteed fault or withstand bounds."
   }
 }

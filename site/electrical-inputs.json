@@ -185,7 +185,7 @@
   "loss_basis": {
     "kind": "Engineering estimates; no measured or guaranteed assembly loss/usable capacity",
     "quiescent_w": "0.045W input planning allowance: enabled PowerBoost maker5mA plus input-side1kohm drain, Pololu indicator/current and sense divider at up to4.2V. This is not a guaranteed maximum. Output-side drains are inside the2W non-LED allowance.",
-    "path_ohm": "0.12ohm estimated cell-to-boost path. Two20mohm reference contacts + Pololu26mohm specified at1.8V + switch below10mohm typical + fuse19.7mohm nominal already total about95.7mohm before wiring/joints. No guaranteed or measured assembly bound is claimed.",
+    "path_ohm": "0.12ohm estimated cell-to-boost path. Two20mohm reference contacts + Pololu26mohm specified at1.8V + switch below10mohm typical + axial fuse20.4mohm nominal already total about96.4mohm before wiring/joints. No guaranteed or measured assembly bound is claimed.",
     "reserve": "25% engineering allowance for cutoff, aging, temperature and usable-capacity uncertainty; not derived from a published XTAR discharge/cutoff curve. Count once in usable energy.",
     "non_led_w": "2W average planning allowance includes controllers/sensors/radio, Sparkle barrel/PTC/3.3V distribution and three output bleed resistors. Conversion efficiency remains a separate constant85% estimate."
   }

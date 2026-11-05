@@ -66,13 +66,17 @@ CRITICAL_PARTS = {
     'CELL': 'XTAR protected 21700 6000 mAh button-top',
     'CONTACT_P': 'Mill-Max 0850-0-15-20-83-14-11-0',
     'CONTACT_N': 'Mill-Max 0850-0-15-20-83-14-11-0',
-    'F1': 'Littelfuse 0459004.UR, 4 A',
+    'F1': 'Littelfuse 0251004.NRT1L, 4 A, axial',
     'S1': 'C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC',
     'C_OUT': 'Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body',
-    'F_AUX': 'Littelfuse 0459.500UR, 0.5 A',
-    'F_FIB': 'Littelfuse 0459002.UR, 2 A',
-    **{name: 'Littelfuse 0459001.UR, 1 A'
+    'F_AUX': 'Littelfuse 0251.500NRT1L, 0.5 A, axial',
+    'F_FIB': 'Littelfuse 0251002.NRT1L, 2 A, axial',
+    **{name: 'Littelfuse 0251001.NRT1L, 1 A, axial'
        for name in ('F_RING1', 'F_RING2', 'F_RING3')},
+    **{name: 'Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial'
+       for name in ('R_A','R_B','R_OUT','R_BOOST','R_LOAD')},
+    **{name: 'Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial'
+       for name in ('R_OFF','R_SENSE_TOP','R_SENSE_BOTTOM')},
 }
 
 
