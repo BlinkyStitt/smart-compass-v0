@@ -193,6 +193,8 @@ def source_snapshot(*, include_samples=True):
         "hardware/enclosure/electrical-design.md",
         "hardware/enclosure/electrical_imu.py",
         "hardware/enclosure/imu_mount.py", "hardware/enclosure/imu-mounts.md",
+        "hardware/enclosure/boost_mount.py", "hardware/enclosure/boost-mounts.md",
+        "hardware/enclosure/BoostMountCheck.FCMacro",
         "hardware/enclosure/electrical_boost.py",
         "hardware/enclosure/electrical_latch.py", "hardware/enclosure/latch_mount.py",
         "hardware/enclosure/latch-mounts.md",

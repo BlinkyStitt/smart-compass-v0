@@ -144,6 +144,7 @@ class BuildInputTests(unittest.TestCase):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
                      'electrical_imu.py',
                      'imu_mount.py', 'imu-mounts.md',
+                     'boost_mount.py', 'boost-mounts.md', 'BoostMountCheck.FCMacro',
                      'electrical_boost.py',
                      'electrical_latch.py', 'latch_mount.py', 'latch-mounts.md',
                      'sources/latch-2808/index.json', 'sources/latch-2808/pololu-2808.step',
