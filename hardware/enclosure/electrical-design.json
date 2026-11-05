@@ -355,7 +355,32 @@
       "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf",
       "source_revision": "WeAct V3.1 schematic,4/17/2021; pinned upstream6a7f7d434a9d6361f91590d4cdd16b4a70ce7513, sheet1 zonesB/C headers andD1 optional flash",
       "basis": "Select the F411CEU6 board without optional U3 flash. In the actual V3.1 schematic, U3 shares PA4 chip-select, PA5 clock, PA6 MISO, PA7 MOSI. PA4 is the external battery divider input here. Do not use the newer KiCad README claim of SPI2/PB12-PB15 for this board. No new firmware or pin reassignment.",
-      "source_sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565"
+      "source_sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565",
+      "board_revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+      "source_record": "sources/blackpill-v31/index.json",
+      "terminal_bindings": {
+        "3V3": "P1.3",
+        "GND": "P1.2",
+        "PA0": "P1.15",
+        "PA10": "P2.7",
+        "PA2": "P1.13",
+        "PA3": "P1.12",
+        "PA4": "P1.11",
+        "PA5": "P1.10",
+        "PA6": "P1.9",
+        "PA7": "P1.8",
+        "PA8": "P2.5",
+        "PA9": "P2.6",
+        "PB0": "P1.7",
+        "PB1": "P1.6",
+        "PB10": "P1.4",
+        "PB12": "P2.1",
+        "PB13": "P2.2",
+        "PB14": "P2.3",
+        "PB5": "P2.13",
+        "PB6": "P2.14",
+        "PB7": "P2.15"
+      }
     },
     "GPS": {
       "part": "Adafruit Ultimate GPS FeatherWing, 3V input",

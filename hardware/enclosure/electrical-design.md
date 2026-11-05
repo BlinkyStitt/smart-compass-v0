@@ -454,6 +454,19 @@ upstream KiCad README describes different SPI2 pins; use the original V3.1
 schematic for this board. Preserve the existing firmware pin allocation.
 [WeAct schematic, 17 April 2021, pinned revision](https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf).
 
+Use manufacturer **P1.3** for 3.3 V and **P1.2** for GND. Battery sense PA4 is
+**P1.11**. The selected 21 header pads and their original source coordinates
+are in [the V3.1 pin record](sources/blackpill-v31/README.md). The original STEP
+has P1 at Y = 18.009 mm and P2 at Y = 2.794 mm, with 2.54 mm X pitch. Do not
+replace those positions with the later carrier footprint. Apply one assembly
+transform to the board and every pad. No circuit or firmware pin is reassigned.
+
+These are nominal source coordinates. The STEP's PCB thickness is about
+1.49144 mm; the release notes state 1.6 mm nominal. Neither gives a guaranteed
+supplied-part tolerance. Keep the discrepancy visible and inspect actual parts
+before fitting. This source record does not complete a fixture, joint, cut list
+or fitted wire route. Physical qualification remains unmeasured.
+
 ## Wire-mount cell contacts
 
 Use two Mill-Max0854-0-15-20-82-14-11-0 wire-mount contacts. The selected18AWG
