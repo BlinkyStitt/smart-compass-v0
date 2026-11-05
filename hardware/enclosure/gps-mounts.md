@@ -4,10 +4,11 @@ Use the selected Adafruit Ultimate GPS FeatherWing at its four MS1 outline
 mounts. Do not use the GPS antenna's internal hole as a board mount. The right
 holes are nominal 2.54 mm unplated holes. The left holes are nominal 2.5 mm
 plated holes. The source datum is [25.4, 11.43] mm from the outline lower-left,
-viewed from the component side. Turn the module 90 degrees in both designs.
+viewed from the component side. Keep the source X axis across the Wide case.
+Turn the module 90 degrees in Narrow, where the long board axis runs up the case.
 
 The factory extracts the actual PCB from the original 55-solid Adafruit STEP.
-It retains the full 22.86 × 50.8 × 8 mm installed reservation above that PCB.
+It retains the full 50.8 × 22.86 × 8 mm loaded reservation, turned with the PCB.
 The conservative loaded space is a reference, not an additional purchased part
 or a homogeneous mass estimate. The source component bodies overlap each
 other and the PCB. Do not use their compound as a regular solid to subtract
@@ -26,7 +27,7 @@ tip extends 0.43 mm past the nut. Check the supplied board and screw lengths
 before assembly. Do not force a screw or clamp components against a post.
 
 Insert the nuts before the board and screws. Each nut entry faces outward in
-source Y, which becomes installed X after the 90-degree turn. The native test
+source Y, which becomes installed X in Narrow. The native test
 checks the complete hex nut's horizontal insertion and vertical drop path.
 The component study uses board bottom Z = 6 mm for Wide and 9 mm for Narrow.
 

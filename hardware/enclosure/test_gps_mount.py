@@ -15,6 +15,7 @@ class GpsMountTests(unittest.TestCase):
         self.assertNotIn([37.123,11.93],[row['xy'] for row in data['mounts']])
         self.assertEqual(len(gps_mount.PRODUCT_NAMES),9)
         self.assertEqual(gps_mount.envelope(9),{'size':[22.86,50.8,8],'z':9})
+        self.assertEqual(gps_mount.envelope(6),{'size':[50.8,22.86,8],'z':6})
 
     def test_wrong_mechanical_data_and_pcb_bindings_fail(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -32,7 +33,7 @@ class GpsMountTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'mechanical source hash/revision'):gps_mount.geometry(directory=directory)
 
     def test_unreviewed_height_and_rotation_fail(self):
-        for height,rotation in ((6,0),(9,180),(7,90)):
+        for height,rotation in ((6,90),(9,180),(7,90)):
             with self.assertRaisesRegex(ValueError,'post height'):gps_mount.envelope(height,rotation)
 
 

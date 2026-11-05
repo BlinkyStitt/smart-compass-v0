@@ -43,16 +43,18 @@ def geometry(part=None,directory=HERE):
             'pcb_thickness_mm':1.57,'source_solids':55,'loaded_reservation_mm':[50.8,22.86,8]}
 
 
-def envelope(pcb_bottom_z=6,rotation_deg=90):
-    if pcb_bottom_z not in (6,9) or rotation_deg!=90:raise ValueError('Review GPS post height and installed orientation')
-    return {'size':[22.86,50.8,8],'z':pcb_bottom_z}
+def envelope(pcb_bottom_z=6,rotation_deg=None):
+    rotation_deg=(0 if pcb_bottom_z==6 else 90) if rotation_deg is None else rotation_deg
+    if (pcb_bottom_z,rotation_deg) not in ((6,0),(9,90)):raise ValueError('Review GPS post height and installed orientation')
+    return {'size':[50.8,22.86,8] if rotation_deg==0 else [22.86,50.8,8],'z':pcb_bottom_z}
 
 
-def native_shapes(pcb_bottom_z=6,rotation_deg=90,part=None):
+def native_shapes(pcb_bottom_z=6,rotation_deg=None,part=None):
     import FreeCAD as App
     import Part
     from fastener_access import native_tools
     from hardware_spec import hexagon,nut_dimensions
+    rotation_deg=(0 if pcb_bottom_z==6 else 90) if rotation_deg is None else rotation_deg
     data=geometry(part);envelope(pcb_bottom_z,rotation_deg);z=pcb_bottom_z
     module=Part.read(str(HERE/SOURCE/'3133.step'))
     if not module.isValid() or len(module.Solids)!=data['source_solids']:raise ValueError('GPS source assembly is invalid/incomplete')
@@ -91,11 +93,12 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=90,part=None):
     return result
 
 
-def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
+def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
     import FreeCAD as App
     import Part
     from fastener_access import native_check_paths
     from solid_clearance import box_distance
+    rotation_deg=(0 if pcb_bottom_z==6 else 90) if rotation_deg is None else rotation_deg
     envelope(pcb_bottom_z,rotation_deg)
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('GPS fixture census is incomplete')
     for name in CHECK_NAMES:
