@@ -59,6 +59,7 @@ def envelope(pcb_bottom_z=6,rotation_deg=0):
 def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
     import FreeCAD as App
     import Part
+    from fastener_access import native_tools
     from hardware_spec import nut_dimensions,hexagon
     part=definition() if part is None else part;data=geometry(part)
     envelope(pcb_bottom_z,rotation_deg);z=pcb_bottom_z
@@ -87,21 +88,22 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
         for y in ys:body=body.fuse(cylinder(.4,4,x,y,z+1.6-4))
         products['BoostTerminal'+name]=body.removeSplitter()
         component=component.cut(body)
-    additions=[];cuts=[];probes=[]
+    additions=[];cuts=[];probes=[];nut_paths=[]
     flat,nh=nut_dimensions('M2');pflat,ph=nut_dimensions('M2',pocket=True)
     for i,row in enumerate(data['mounts']):
         sx,sy=row['xy'];x,y=sx-14.605,sy-11.43;nz=z-4.8
         additions.append(cylinder(3.1,z-1.5,x,y,0).fuse(cylinder(1.95,1.5,x,y,z-1.5)))
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,ph))
-        cuts.extend((pocket,box(4,pflat,ph,x-2,y,nz),cylinder(1.1,z+.2,x,y,-.1)))
+        entry,path=native_tools(x,y,nz,(-1,0));nut_paths.append(path)
+        cuts.extend((pocket,entry,cylinder(1.1,z+.2,x,y,-.1)))
         products['BoostScrew'+str(i)]=cylinder(1,6.8,x,y,z+1.6-6.8).fuse(cylinder(1.9,2,x,y,z+1.6))
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,flat)]
         products['BoostNut'+str(i)]=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,nh)).cut(cylinder(1.1,nh+.2,x,y,nz-.1))
         component=component.cut(cylinder(data['keepout_radius_mm'],14,x,y,z+1.5))
         probes.append(cylinder(1.95,.05,x,y,z-.05).cut(cylinder(1.25,.1,x,y,z-.075)))
     products.update(BoostPCB=pcb.removeSplitter(),BoostComponents=component.removeSplitter())
-    result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),'mount_probes':probes}
+    result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),'mount_probes':probes,'nut_paths':nut_paths}
     for value in result.values():
         for shape in value if isinstance(value,list) else [value]:shape.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
     return result
@@ -111,7 +113,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=0):
     import FreeCAD as App
     import Part
     from solid_clearance import box_distance
-    if set(shapes)-{'rear_addition','rear_cutout','mount_probes'}!=CHECK_NAMES:raise ValueError('PowerBoost fixture census is incomplete')
+    if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('PowerBoost fixture census is incomplete')
     for name in CHECK_NAMES:
         if not shapes[name].isValid() or len(shapes[name].Solids)!=1:raise ValueError('PowerBoost fixture is invalid or detached: '+name)
     rear=Part.makeBox(55,55,2,App.Vector(-27.5,-27.5,0)).fuse(shapes['rear_addition']).cut(shapes['rear_cutout']).removeSplitter()
@@ -124,6 +126,8 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=0):
     if any(probe.cut(rear).Volume>1e-6 for probe in shapes['mount_probes']):raise ValueError('Actual PowerBoost PCB mounting annulus lacks full bearing')
     tips=[shapes['BoostNut'+str(i)].BoundBox.ZMin-shapes['BoostScrew'+str(i)].BoundBox.ZMin for i in range(2)]
     if any(not .2<=tip<=.8 for tip in tips):raise ValueError('PowerBoost screw must engage the full nut with0.2..0.8mm tip projection')
+    from fastener_access import native_check_paths
+    native_check_paths(shapes.get('nut_paths'),rear,2)
     return {'scope':'source PCB and terminal component study','physical_products':len(PRODUCT_NAMES),'references':len(REFERENCE_NAMES),
             'source_holes':2,'full_loaded_reservation':envelope(pcb_bottom_z,rotation_deg),
             'screw_tip_projection_mm':tips,'terminal_pin_below_pcb_mm':2.4,'physical_acceptance':'unmeasured','installed_assembly':'not checked'}

@@ -50,3 +50,9 @@ reference, a connected rear/post interface, closed interference, PCB-annulus
 bearing and screw projection. Missing board/hardware/reference inputs and
 posts lowered clear of the PCB must fail. Complete enclosure clearance,
 wire cuts/strain relief and physical qualification remain separate work.
+
+The captive-nut slot has8mm entry length and clears the nut corners, not only
+the flats. Before fitting boards or screws, lower each nut into the open end
+of its slot and slide it under the pocket roof. The native check sweeps the
+actual outer nut profile through both motions against the rear interface.
+Supplied nut dimensions, print fit and insertion force remain unmeasured.

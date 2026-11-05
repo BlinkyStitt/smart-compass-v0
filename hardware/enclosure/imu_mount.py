@@ -58,6 +58,7 @@ def geometry(part=None):
 def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
     import FreeCAD as App
     import Part
+    from fastener_access import native_tools
     from hardware_spec import nut_dimensions,hexagon
     data=geometry(part);part=definition() if part is None else part
     if pcb_bottom_z not in (6,9) or rotation_deg not in (0,90):
@@ -81,7 +82,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
     for row in data['through_pads']:
         x,y=row['xy'];holes.append(cylinder(row['drill']/2,1.8,x-16.51,y-10.16,z-.1))
     pcb=pcb.cut(Part.makeCompound(holes))
-    additions=[];cuts=[];products={};mount_probes=[]
+    additions=[];cuts=[];products={};mount_probes=[];nut_paths=[]
     flat,nh=nut_dimensions('M2');pflat,pheight=nut_dimensions('M2',pocket=True)
     component=box(40,28,12-1.6,0,0,z+1.6)
     for i,(sx,sy) in enumerate(data['mount_xy_mm']):
@@ -95,7 +96,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
         vertices=[App.Vector(x+a,y+b,nz) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(vertices+[vertices[0]])).extrude(App.Vector(0,0,pheight))
         direction=-1 if x<0 else 1
-        entry=box(4,pflat,pheight,x+direction*2,y,nz)
+        entry,path=native_tools(x,y,nz,(direction,0));nut_paths.append(path)
         bore=cylinder(1.1,z+.2,x,y,-.1)
         additions.append(pod);cuts.extend((pocket,entry,bore))
         products['IMUScrew'+str(i)]=cylinder(1,6.8,x,y,z+1.6-6.8).fuse(cylinder(1.9,2,x,y,z+1.6))
@@ -109,7 +110,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
         pcb=pcb.cut(cylinder(row['drill_mm']/2,1.8,x,y,z-.1))
         component=component.cut(cylinder(1.1,12,x,y,z+1.5))
     products.update(IMUPCB=pcb.removeSplitter(),IMUComponents=component.removeSplitter())
-    result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),'mount_probes':mount_probes}
+    result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),'mount_probes':mount_probes,'nut_paths':nut_paths}
     for value in result.values():
         for shape in value if isinstance(value,list) else [value]:shape.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
     return result
@@ -118,7 +119,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
 def native_check(shapes,pcb_bottom_z):
     import FreeCAD as App
     import Part
-    if set(shapes)-{'rear_addition','rear_cutout','mount_probes'}!=CHECK_NAMES:
+    if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:
         raise ValueError('IMU fixture census is incomplete')
     for name in CHECK_NAMES:
         shape=shapes[name]
@@ -133,6 +134,8 @@ def native_check(shapes,pcb_bottom_z):
     if any(value>1e-6 for value in missing):raise ValueError('An actual PCB mounting annulus lacks full bearing')
     projections=[shapes['IMUNut'+str(i)].BoundBox.ZMin-shapes['IMUScrew'+str(i)].BoundBox.ZMin for i in range(4)]
     if any(not .2<=tip<=.8 for tip in projections):raise ValueError('IMU screw must engage the full nut with0.2..0.8mm tip projection')
+    from fastener_access import native_check_paths
+    native_check_paths(shapes.get('nut_paths'),rear,4)
     return {'scope':'actual source PCB mount component study','physical_product_count':len(PRODUCT_NAMES),'reference_count':len(REFERENCE_NAMES),
             'mounts':4,'nominal_head_keepout_gap_mm':geometry()['keepout_radius_mm']-1.9,
             'screw_tip_projection_mm':projections,'physical_acceptance':'unmeasured','installed_assembly':'not checked'}

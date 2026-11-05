@@ -145,6 +145,7 @@ class BuildInputTests(unittest.TestCase):
                      'electrical_imu.py',
                      'imu_mount.py', 'imu-mounts.md',
                      'boost_mount.py', 'boost-mounts.md', 'BoostMountCheck.FCMacro',
+                     'fastener_access.py', 'FastenerAccessCheck.FCMacro',
                      'capacitor_mount.py',
                      'capacitor-mounts.md',
                      'CapacitorMountCheck.FCMacro',

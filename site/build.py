@@ -195,6 +195,8 @@ def source_snapshot(*, include_samples=True):
         "hardware/enclosure/imu_mount.py", "hardware/enclosure/imu-mounts.md",
         "hardware/enclosure/boost_mount.py", "hardware/enclosure/boost-mounts.md",
         "hardware/enclosure/BoostMountCheck.FCMacro",
+        "hardware/enclosure/fastener_access.py",
+        "hardware/enclosure/FastenerAccessCheck.FCMacro",
         "hardware/enclosure/capacitor_mount.py",
         "hardware/enclosure/capacitor-mounts.md",
         "hardware/enclosure/CapacitorMountCheck.FCMacro",

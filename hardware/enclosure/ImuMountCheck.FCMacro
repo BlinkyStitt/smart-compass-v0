@@ -14,7 +14,7 @@ result_path=os.environ.get('SC_IMU_CHECK_RESULT')
 try:
     if result_path and Path(result_path).exists():raise ValueError('Choose a new IMU result path; preserve existing evidence')
     import imu_mount
-    paths=[source/name for name in ('imu_mount.py','test_imu_mount.py','electrical_imu.py','electrical_board.py','electrical-design.json','component-inventory.json','hardware_spec.py','imu-mounts.md','ImuMountCheck.FCMacro')]
+    paths=[source/name for name in ('imu_mount.py','test_imu_mount.py','electrical_imu.py','electrical_board.py','electrical-design.json','component-inventory.json','hardware_spec.py','fastener_access.py','test_fastener_access.py','imu-mounts.md','ImuMountCheck.FCMacro')]
     paths+=sorted((source/'sources/lsm9ds1-classic').iterdir())
     def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     before=snapshot();results={}
