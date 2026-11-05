@@ -5,14 +5,15 @@ No dimensions, insulation, knot retention or temperature have been measured.
 """
 import json
 import math
+import blackpill_drains
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
 PASSIVES=frozenset({'BlackPillSenseTop','BlackPillSenseBottom','BlackPillSenseCapacitor'})
 LACING=frozenset('BlackPillSenseLacing'+str(i) for i in range(7))
-PRINTED=frozenset({'BlackPillSenseBridge'})
-PRODUCT_NAMES=PASSIVES|LACING|PRINTED
-REFERENCE_NAMES=frozenset(name+'Assembly' for name in PASSIVES)
+PRINTED=frozenset({'BlackPillSenseBridge'})|blackpill_drains.PRINTED
+PRODUCT_NAMES=PASSIVES|LACING|PRINTED|blackpill_drains.PRODUCT_NAMES
+REFERENCE_NAMES=frozenset(name+'Assembly' for name in PASSIVES)|blackpill_drains.REFERENCE_NAMES
 CHECK_NAMES=PRODUCT_NAMES|REFERENCE_NAMES
 
 
@@ -101,6 +102,7 @@ def augment(products,z,width,body_rows,design=None):
         for a,b in ((low-.65,low+.15),(high-.15,high+.65)):
             bridge=bridge.cut(box(x-1.05,x+1.05,a,b,z+5.4,z+6.95))
     added['BlackPillSenseBridge']=bridge.removeSplitter()
+    blackpill_drains.augment(products,added,z,width,design)
     old=products['BlackPillLoadedReservation'].copy()
     for key,shape in added.items():
         if not shape.isValid() or len(shape.Solids)!=1:raise ValueError('Invalid/disconnected sense loom part: '+key)
@@ -130,7 +132,8 @@ def native_check(shapes,z):
         contact=sum(f.common(bridge).Area for f in faces)
         expected=math.pi*(3.1**2-1.1**2)
         if contact<expected-1e-6:raise ValueError('Sense bridge lacks full bearing on existing retainer '+str(i))
-    return {**geometry(),'physical_products':11,'assembly_space_references':3,
+    return {**geometry(),'physical_products':len(PRODUCT_NAMES),'assembly_space_references':len(REFERENCE_NAMES),
+            'discharge_loom':blackpill_drains.native_check(shapes,z),
             'source_component_spaces_preserved':130,
-            'bridge_screws':'Only2/3: stockM2x16; finish '+str(z+6.4)+'mm;0/1 unchanged',
+            'bridge_screws':'Only2/3: stockM2x25; finish '+str(z+13.7)+'mm;0/1 unchanged',
             'physical_acceptance':'unmeasured; no assembled insulation, retention or thermal qualification'}

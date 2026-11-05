@@ -199,5 +199,5 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
     service=native_service_check(shapes,z,{**remaining,'RearInterface':rear})
     return {'scope':'source-based BlackPill carrier component study','physical_products':len(PRODUCT_NAMES),'references':len(REFERENCE_NAMES),'sense_loom':sense_result,
             'nominal_source_component_boxes':130,'source_body_fixture_clearance':'pass','pcb_bearing_area_mm2':bearing,
-            'capture_cases':captures,'screw_tip_projection_mm':tips,'stock_screws':{'0/1':'M2x12; finish '+str(z+2.75)+'mm','2/3':'M2x16; finish '+str(z+6.4)+'mm'},
+            'capture_cases':captures,'screw_tip_projection_mm':tips,'stock_screws':{'0/1':'M2x12; finish '+str(z+2.75)+'mm','2/3':'M2x25; finish '+str(z+13.7)+'mm'},
             'service':service,'installed_assembly':'not checked','physical_acceptance':'unmeasured'}

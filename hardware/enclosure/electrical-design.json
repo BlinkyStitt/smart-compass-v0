@@ -236,7 +236,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_B": {
       "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
@@ -251,7 +255,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_OUT": {
       "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
@@ -266,7 +274,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_OFF": {
       "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
@@ -281,7 +293,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_SENSE_TOP": {
       "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
@@ -533,7 +549,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "R_LOAD": {
       "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
@@ -548,7 +568,11 @@
         3.5,
         3.5
       ],
-      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured."
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
     },
     "S1_NUT": {
       "part": "C&K 700201201, 1/4-40 UNS open hex mounting nut, nickel-plated brass",

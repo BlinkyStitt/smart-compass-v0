@@ -14,7 +14,7 @@ result_path=os.environ.get('SC_BLACKPILL_CHECK_RESULT')
 try:
     if result_path and Path(result_path).exists():raise ValueError('Choose a fresh BlackPill result path')
     import blackpill_mount
-    paths=[source/name for name in ('blackpill_mount.py','blackpill_sense.py','test_blackpill_mount.py','electrical_blackpill.py',
+    paths=[source/name for name in ('blackpill_mount.py','blackpill_sense.py','blackpill_drains.py','test_blackpill_drains.py','test_blackpill_mount.py','electrical_blackpill.py',
            'electrical-design.json','hardware_spec.py','component-inventory.json','fastener_access.py','solid_clearance.py',
            'blackpill-mounts.md','BlackPillMountCheck.FCMacro')]+sorted((source/'sources/blackpill-v31').iterdir())
     def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
@@ -26,7 +26,12 @@ try:
         except ValueError as error:
             if 'full bearing on existing retainer' not in str(error):raise
         else:raise ValueError('Floating sense bridge accepted')
-        for name in ('BlackPillPCB','BlackPillCarrier','BlackPillRetainer2','BlackPillNut0','BlackPillLoadedReservation','BlackPillSenseBridge','BlackPillSenseTop','BlackPillSenseCapacitorAssembly','BlackPillSenseLacing6'):
+        broken=dict(shapes);broken['BlackPillDrainBridge']=shapes['BlackPillDrainBridge'].copy();broken['BlackPillDrainBridge'].translate(App.Vector(0,0,.2))
+        try:blackpill_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'full bearing on the sense bridge' not in str(error):raise
+        else:raise ValueError('Floating discharge bridge accepted')
+        for name in ('BlackPillPCB','BlackPillCarrier','BlackPillRetainer2','BlackPillNut0','BlackPillLoadedReservation','BlackPillSenseBridge','BlackPillSenseTop','BlackPillSenseCapacitorAssembly','BlackPillSenseLacing6','BlackPillDrainBridge','BlackPillDrainR_A','BlackPillDrainR_LOADAssembly','BlackPillDrainLacing11'):
             broken=dict(shapes);del broken[name]
             try:blackpill_mount.native_check(broken,z)
             except ValueError as error:
