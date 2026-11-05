@@ -19,14 +19,14 @@ REQUIRED_CONNECTIONS = {
     'A': {'S1.2', 'LATCH.VIN'},
     'A_DRAIN': {'S1.3', 'R_A.1'},
     'B': {'LATCH.VOUT', 'BOOST.JP1.1', 'R_B.1', 'R_SENSE_TOP.1'},
-    'BOOST_OUT': {'BOOST.JP1.6', 'S1.4'},
-    'LOAD_5V': {'S1.5', 'C_OUT.P', 'R_OUT.1', 'SPARKLE.X7.PWR'},
+    'BOOST_OUT': {'BOOST.JP1.6', 'S1.4', 'R_BOOST.1'},
+    'LOAD_5V': {'S1.5', 'R_LOAD.1', 'SPARKLE.X7.PWR'},
     'OUTPUT_OFF': {'S1.6'},
     'LATCH_OFF': {'BOOST.R20.2', 'LATCH.OFF', 'R_OFF.1'},
     'START': {'LATCH.A', 'START.1'},
     'SENSE': {'R_SENSE_TOP.2', 'R_SENSE_BOTTOM.1', 'BLACKPILL.PA4'},
     'LED_DISTRIBUTION': {'SPARKLE.JP1.9', 'F_FIB.1', 'F_RING1.1', 'F_RING2.1', 'F_RING3.1'},
-    'FIB_5V': {'F_FIB.2', 'FIBONACCI.5V'},
+    'FIB_5V': {'F_FIB.2', 'FIBONACCI.5V', 'C_OUT.P', 'R_OUT.1'},
     'RING1_5V': {'F_RING1.2', 'RING1.5V'},
     'RING2_5V': {'F_RING2.2', 'RING2.5V'},
     'RING3_5V': {'F_RING3.2', 'RING3.5V'},
@@ -53,7 +53,7 @@ REQUIRED_CONNECTIONS = {
     'GPS_PPS': {'GPS.PPS', 'BLACKPILL.PA0'},
     'GPS_ENABLE': {'BLACKPILL.PB7', 'GPS.EN'},
     'GND': {'CONTACT_N.tail', 'LATCH.GND', 'BOOST.JP1.2', 'C_OUT.N',
-            'R_A.2', 'R_B.2', 'R_OUT.2', 'R_OFF.2', 'START.2',
+            'R_A.2', 'R_B.2', 'R_OUT.2', 'R_BOOST.2', 'R_LOAD.2', 'R_OFF.2', 'START.2',
             'R_SENSE_BOTTOM.2', 'SPARKLE.X7.GND', 'BLACKPILL.GND',
             'GPS.GND', 'IMU.GND', 'RADIO.GND', 'FIBONACCI.GND',
             'RING1.GND', 'RING2.GND', 'RING3.GND'},
@@ -70,8 +70,9 @@ CRITICAL_PARTS = {
     'S1': 'C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC',
     'C_OUT': 'Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body',
     'F_AUX': 'Littelfuse 0459.500UR, 0.5 A',
+    'F_FIB': 'Littelfuse 0459002.UR, 2 A',
     **{name: 'Littelfuse 0459001.UR, 1 A'
-       for name in ('F_FIB', 'F_RING1', 'F_RING2', 'F_RING3')},
+       for name in ('F_RING1', 'F_RING2', 'F_RING3')},
 }
 
 

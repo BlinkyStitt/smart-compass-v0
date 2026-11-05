@@ -74,6 +74,17 @@ class PrototypeDesignTests(unittest.TestCase):
         design['nets']['FIB_5V'].append('F_FIB.1')
         self.assertIn('duplicate-pin', self.failure_ids(design))
 
+    def test_each_isolated_rail_has_its_own_drain(self):
+        for net, pin in [('BOOST_OUT','R_BOOST.1'), ('LOAD_5V','R_LOAD.1'),
+                         ('FIB_5V','R_OUT.1'), ('FIB_5V','C_OUT.P')]:
+            with self.subTest(net=net, pin=pin):
+                design = self.reviewed_fixture()
+                design['nets'][net].remove(pin)
+                self.assertIn('net:'+net, self.failure_ids(design))
+        design = self.reviewed_fixture()
+        design['parts']['F_FIB']['part'] = 'Littelfuse 0459001.UR, 1 A'
+        self.assertIn('selected-part:F_FIB', self.failure_ids(design))
+
     def test_source_controls_and_unused_inputs_remain_checked(self):
         for key, value in [('BOOST.remove', []), ('LATCH.leave_open', []),
                            ('BOOST.do_not_install', []), ('SPARKLE.usb_pd_v', 20),

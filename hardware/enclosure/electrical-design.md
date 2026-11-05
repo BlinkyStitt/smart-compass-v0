@@ -45,10 +45,13 @@ one protected XTAR 21700 6000 mAh button-top
 
 PowerBoost output -- S1 pole B -- LOAD_5V -- Sparkle barrel PWR pad
                               |             barrel GND ---- GND
-                              +-- 1000 uF -- GND
-                              +-- 1 kohm --- GND
+                              +-- R_LOAD 1 kohm -- GND
+PowerBoost output -------------- R_BOOST 1 kohm -- GND
 
-Sparkle JP1 positive --> individual 1 A fuses --> Fibonacci + three ring groups
+Sparkle JP1 positive --> F_FIB 2 A --> Fibonacci
+                                 +-- C_OUT 1000 uF -- GND
+                                 +-- R_OUT 1 kohm ---- GND
+Sparkle JP1 positive --> three individual 1 A fuses --> three ring groups
 Sparkle JP3.2 3.3 V --> 0.5 A fuse --> BlackPill + GPS + IMU + RFM95W
 all returns ------------------------------------------------ GND
 
@@ -109,7 +112,9 @@ In OFF, terminal 2 connects to terminal 3 and a 1 kohm drain to ground; terminal
 and continuity against the delivered switch before wiring.
 
 Thus OFF disconnects the cell's positive feed **and** the converter output from
-the loads. R_B drains the boost input; R_OUT drains the load's 1000 uF capacitor.
+the loads. R_B drains the boost input. R_BOOST drains its isolated output.
+R_LOAD drains the load rail; R_OUT drains C_OUT after the Fibonacci fuse, even
+when that fuse opens. Place C_OUT at the Fibonacci feed with short paired leads.
 Other board capacitors and signal paths still affect decay. There is no qualified
 five-second or ten-second wait. `off_dwell_s` remains unset until measured.
 
@@ -193,3 +198,21 @@ are engineering allocations to check on the bench, not guaranteed device maxima.
 The2W average and3W peak non-LED targets include the controller/logic allowance;
 radio duty cycles and actual current remain unmeasured. The checker rejects
 missing loads, non-finite allocations and an allocated peak above500mA.
+
+## PWM fuse and bulk-capacitor selection
+
+Use a2A Fibonacci fuse and1A for each ring. The previous1A Fibonacci fuse
+did not allow enough for PWM heating. Using the adopted approximate20mA per
+channel and1mA idle model, a saturated rainbow at2% gives about1.31Arms
+under a conservative coherent-PWM estimate for256 pixels. This estimate is
+not a guaranteed current bound. The459 series requires25% continuous-current
+derating, plus temperature derating. Its nominal cold resistance and melting
+I²t do not prove assembly fault withstand.
+[Littelfuse459,11-Nov-2015, pp1-2](https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05).
+
+Retain the Panasonic EEUFR1A1021000uF/10V bulk capacitor. Its source body
+maxima are10.5x17.5mm. The12x31x14mm horizontal loaded reservation includes
+lead space. The1.79Arms rating applies at100kHz/+105C. Apply the maker's
+frequency factors to the measured waveform before physical acceptance.
+Do not treat its100kHz impedance as a broadband maximum ESR.
+[Panasonic FR-A,01-Sep-2025](https://industrial.panasonic.com/cdbs/www-data/pdf/RDF0000/ABA0000C1259.pdf).

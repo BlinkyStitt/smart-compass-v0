@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "ski-1230-module-prototype-1",
+  "revision": "ski-1230-module-prototype-2",
   "acceptance": "Digital prototype design review. Physical electrical, thermal, runtime and wearing qualification is unmeasured; this record is not physical acceptance for wearing an untested assembly.",
   "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
   "parts": {
@@ -38,7 +38,13 @@
     },
     "C_OUT": {
       "part": "Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body",
-      "source": "https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102"
+      "source": "https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102",
+      "loaded_envelope_mm": [
+        12,
+        31,
+        14
+      ],
+      "basis": "Source nominal10x16mm; FR-A 01-Sep-2025 drawing gives diameter +/-0.5mm and length +/-1.5mm. Lay horizontally in12x31x14mm engineering reservation including leads. Published1.79Arms is at100kHz/+105C; apply the source frequency correction to the measured waveform, not to its frame average."
     },
     "R_A": {
       "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
@@ -110,7 +116,7 @@
       "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
     },
     "F_FIB": {
-      "part": "Littelfuse 0459001.UR, 1 A",
+      "part": "Littelfuse 0459002.UR, 2 A",
       "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
     },
     "F_RING1": {
@@ -128,6 +134,14 @@
     "F_AUX": {
       "part": "Littelfuse 0459.500UR, 0.5 A",
       "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "R_BOOST": {
+      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_LOAD": {
+      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
     }
   },
   "nets": {
@@ -155,12 +169,12 @@
     ],
     "BOOST_OUT": [
       "BOOST.JP1.6",
-      "S1.4"
+      "S1.4",
+      "R_BOOST.1"
     ],
     "LOAD_5V": [
       "S1.5",
-      "C_OUT.P",
-      "R_OUT.1",
+      "R_LOAD.1",
       "SPARKLE.X7.PWR"
     ],
     "OUTPUT_OFF": [
@@ -189,7 +203,9 @@
     ],
     "FIB_5V": [
       "F_FIB.2",
-      "FIBONACCI.5V"
+      "FIBONACCI.5V",
+      "C_OUT.P",
+      "R_OUT.1"
     ],
     "RING1_5V": [
       "F_RING1.2",
@@ -249,7 +265,9 @@
       "FIBONACCI.GND",
       "RING1.GND",
       "RING2.GND",
-      "RING3.GND"
+      "RING3.GND",
+      "R_BOOST.2",
+      "R_LOAD.2"
     ],
     "SPARKLE_TX": [
       "SPARKLE.JP3.3",
@@ -372,7 +390,7 @@
   },
   "wiring": {
     "main": "M22759/16-18-2 and M22759/16-18-0, 18 AWG; fixed soldered joints, insulated and strain-relieved",
-    "branches": "M22759/16-22-2 and M22759/16-22-0, 22 AWG; individual LED 1 A and auxiliary 0.5 A branch fuses",
+    "branches": "M22759/16-22-2 and M22759/16-22-0, 22 AWG; Fibonacci2A, each ring1A, auxiliary0.5A branch fuses",
     "sense": "100 kohm/100 kohm divider from B to PA4; no raw-cell reporting bypass",
     "source": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf",
     "routing": "Place F1 at positive contact; insulate the unfused tail and both contact backs. Route paired supply/return; protect every fuse and solder joint. No raw-cell plug or external battery entry."
@@ -408,7 +426,7 @@
   "physical_qualification": {
     "startup_and_pulses": {
       "status": "unmeasured",
-      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply.",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current.",
       "results": []
     },
     "latch_and_rebound": {
@@ -418,7 +436,7 @@
     },
     "off_and_replacement": {
       "status": "unmeasured",
-      "procedure": "With S1 OFF and USB absent, verify both switch poles disconnect, all load/control rails decay and START has no effect. Measure decay before accepting any service dwell; repeat warm/rapid replacement.",
+      "procedure": "With S1 OFF and USB absent, verify both switch poles disconnect, all load/control rails decay and START has no effect. Measure decay before accepting any service dwell; repeat warm/rapid replacement. Repeat with F_FIB open: R_BOOST drains the isolated boost output, R_LOAD drains LOAD_5V, and R_OUT drains the isolated Fibonacci bulk capacitor.",
       "results": []
     },
     "short_and_reversal": {
@@ -466,5 +484,10 @@
     "non_led_average_budget_w": 2.0,
     "non_led_peak_review_w": 3.0,
     "duty_cycle": "Review the all-peripheral peak concurrently; no radio duty-cycle reduction is used to approve the3.3V allocation. The2W average and3W peak are test targets, not a measured waveform."
+  },
+  "fuse_basis": {
+    "source_revision": "Littelfuse459 datasheet,11-Nov-2015, pp1-2",
+    "continuous_derating": 0.75,
+    "basis": "Engineering selection using the adopted approximate20mA/channel and1mA idle NeoPixel model. A saturated rainbow has at most two active channels per pixel. At2% brightness the conservative coherent-PWM heating estimate is about1.31Arms for256 pixels, above the old1A fuse continuous allowance. Select2A Fibonacci and retain1A ring fuses. These approximate LED coefficients are not guaranteed silicon peaks; verify the real waveform and temperature before physical acceptance. Fuse nominal cold resistance and nominal melting I2t are not guaranteed fault or withstand bounds."
   }
 }
