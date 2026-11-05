@@ -539,24 +539,27 @@
     "signals": "M22759/18-26-* colour-coded 26 AWG thin-wall ETFE; fixed soldered signal/control leads, insulated and strain-relieved",
     "stock_limits": {
       "source_revision": "Thermax/Amphenol M22759 catalog, header 2012-09-07, printed pages41-42",
-      "temperature_basis": "Resistance maximum at20C; all listed masses are nominal, not maximum. Select tin-plated copper, ETFE stock to the stated slash-sheet.",
+      "temperature_basis": "Resistance maximum at20C, converted from the unrounded ohm/1000ft source column using exact304.8m/1000ft. The metric column is rounded. Listed masses are nominal, not maximum. Select tin-plated copper, ETFE stock to the stated slash-sheet.",
       "main": {
         "stock": "M22759/16-18",
         "maximum_od_mm": 1.8542,
         "nominal_mass_g_m": 11.4,
-        "maximum_resistance_ohm_m_at_20c": 0.0204
+        "maximum_resistance_ohm_m_at_20c": 0.02043963254593176,
+        "maximum_resistance_ohm_1000ft_at_20c": 6.23
       },
       "branches": {
         "stock": "M22759/16-22",
         "maximum_od_mm": 1.3716,
         "nominal_mass_g_m": 5.24,
-        "maximum_resistance_ohm_m_at_20c": 0.0531
+        "maximum_resistance_ohm_m_at_20c": 0.053149606299212594,
+        "maximum_resistance_ohm_1000ft_at_20c": 16.2
       },
       "signals": {
         "stock": "M22759/18-26",
         "maximum_od_mm": 0.8636,
         "nominal_mass_g_m": 2.26,
-        "maximum_resistance_ohm_m_at_20c": 0.135
+        "maximum_resistance_ohm_m_at_20c": 0.13549868766404197,
+        "maximum_resistance_ohm_1000ft_at_20c": 41.3
       }
     }
   },

@@ -275,7 +275,9 @@ Use M22759/16-18 for the main paths, /16-22 for protected power branches and
 **M22759/18-26** for signals and control. The selected catalog does not list
 26 AWG in /16. The [Thermax/Amphenol catalog](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf)
 (header 2012-09-07, printed pages 41–42) supplies maximum outer diameters and
-20 °C resistance values. Its wire masses are nominal. The JSON retains this
+20 °C resistance values. Convert the imperial maximum resistance column
+with exactly 304.8 m per 1000 ft; the printed metric column is rounded.
+Its wire masses are nominal. The JSON retains this
 distinction. Actual route lengths, joints and strain relief remain open.
 
 The 3.2–4.2 V bench sweep includes depletion. PowerBoost senses its own input,
