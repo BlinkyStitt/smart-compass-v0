@@ -143,6 +143,7 @@ class BuildInputTests(unittest.TestCase):
     def test_active_module_design_and_sources_are_required_hashed_inputs(self):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
                      'electrical_imu.py',
+                     'imu_mount.py', 'imu-mounts.md',
                      'electrical_boost.py',
                      'electrical_latch.py', 'latch_mount.py', 'latch-mounts.md',
                      'sources/latch-2808/index.json', 'sources/latch-2808/pololu-2808.step',
