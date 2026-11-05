@@ -189,6 +189,12 @@ def source_snapshot(*, include_samples=True):
                  and not set(path.relative_to(SITE).parts) & {"__pycache__", ".build", "node_modules"})
     paths.update(ROOT / name for name in (
         "hardware/enclosure/battery-options.md", "hardware/enclosure/electrical-review.json",
+        "hardware/enclosure/electrical-design.json", "hardware/enclosure/electrical_design.py",
+        "hardware/enclosure/electrical-design.md",
+        "hardware/enclosure/sources/powerboost-1000-basic/extracted-connectivity.json",
+        "hardware/enclosure/sources/powerboost-1000-basic/index.json",
+        "hardware/enclosure/sources/powerboost-1000-basic/README.md",
+        "hardware/enclosure/sources/powerboost-1000-basic/license.txt",
         "hardware/enclosure/electrical-control-study.json",
         "hardware/enclosure/electrical-control-revision.json",
         "hardware/enclosure/electrical_control.py",

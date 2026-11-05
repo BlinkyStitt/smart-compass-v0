@@ -8,7 +8,8 @@ import unittest
 
 from electrical import (boost_interlock_study, control_study, discharge_time, divider_thresholds,
                         driven_divider_edges, interlock_netlist, loaded_voltage, resistor_bounds,
-                        review, schmitt_control_study, supervisor_dc_state, unpowered_interlock_state)
+                        review, rejected_candidate_report, schmitt_control_study,
+                        supervisor_dc_state, unpowered_interlock_state)
 
 
 class ElectricalReviewTests(unittest.TestCase):
@@ -70,13 +71,9 @@ class ElectricalReviewTests(unittest.TestCase):
         self.assertEqual(result['status'], 'rejected-before-compartment-freeze')
         self.assertIn('state-and-thermal-qualification', {r['id'] for r in result['failures']})
 
-    def test_cli_rejects_candidate_even_when_calculations_run(self):
-        result = subprocess.run([sys.executable, str(Path(__file__).with_name('electrical.py')), 'check'],
-                                capture_output=True, text=True)
-        self.assertEqual(result.returncode, 1)
-        self.assertIn('ELECTRICAL CHECK FAILED', result.stdout)
-        self.assertNotIn('NaN', result.stdout)
-        report, _ = json.JSONDecoder().raw_decode(result.stdout)
+    def test_rejected_candidate_retains_all_historical_studies(self):
+        report = rejected_candidate_report()
+        self.assertTrue(report['failures'])
         thermal = report['thermal_state_envelope']
         self.assertFalse(thermal['conditional_pass'])
         self.assertEqual(set(thermal['designs']), {'wide', 'narrow'})

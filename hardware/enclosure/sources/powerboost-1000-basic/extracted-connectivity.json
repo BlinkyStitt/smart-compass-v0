@@ -1,0 +1,432 @@
+{
+  "revision": "493d06d70537ce418355b395bb251a661d683150",
+  "parts": {
+    "U1": {
+      "library": "microbuilder",
+      "deviceset": "VREG_TPS6103X",
+      "device": "",
+      "value": "TPS61030RSAR"
+    },
+    "L1": {
+      "library": "microbuilder",
+      "deviceset": "INDUCTOR",
+      "device": "-8X8",
+      "value": "6.8uH"
+    },
+    "U$1": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$2": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "C1": {
+      "library": "microbuilder",
+      "deviceset": "CAP_CERAMIC",
+      "device": "0805-NOOUTLINE",
+      "value": "10uF"
+    },
+    "U$4": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "B1": {
+      "library": "microbuilder",
+      "deviceset": "BATTERY",
+      "device": "",
+      "value": "1.8-5V"
+    },
+    "U$5": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "C2": {
+      "library": "microbuilder",
+      "deviceset": "CAP_CERAMIC",
+      "device": "0805-NOOUTLINE",
+      "value": "2.2uF"
+    },
+    "U$7": {
+      "library": "microbuilder",
+      "deviceset": "5.0V",
+      "device": ""
+    },
+    "FID2": {
+      "library": "microbuilder",
+      "deviceset": "FIDUCIAL",
+      "device": "\"\""
+    },
+    "U$10": {
+      "library": "microbuilder",
+      "deviceset": "MOUNTINGHOLE",
+      "device": "2.5",
+      "value": "MOUNTINGHOLE2.5"
+    },
+    "U$11": {
+      "library": "microbuilder",
+      "deviceset": "MOUNTINGHOLE",
+      "device": "2.5",
+      "value": "MOUNTINGHOLE2.5"
+    },
+    "X1": {
+      "library": "microbuilder",
+      "deviceset": "TERMBLOCK_1X2",
+      "device": ""
+    },
+    "R9": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "43K 1%"
+    },
+    "R10": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "49.9K 1%"
+    },
+    "R11": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "75K 1%"
+    },
+    "R12": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "49.9K 1%"
+    },
+    "CN1": {
+      "library": "microbuilder",
+      "deviceset": "USB_TYPEA",
+      "device": "PTHFML",
+      "value": "USBA_FEMALE"
+    },
+    "U$15": {
+      "library": "microbuilder",
+      "deviceset": "5.0V",
+      "device": ""
+    },
+    "U$16": {
+      "library": "microbuilder",
+      "deviceset": "5.0V",
+      "device": ""
+    },
+    "U$17": {
+      "library": "microbuilder",
+      "deviceset": "5.0V",
+      "device": ""
+    },
+    "U$19": {
+      "library": "microbuilder",
+      "deviceset": "VBAT",
+      "device": ""
+    },
+    "LED1": {
+      "library": "microbuilder",
+      "deviceset": "LED",
+      "device": "0805_NOOUTLINE",
+      "value": "RED"
+    },
+    "R20": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "1K"
+    },
+    "LED2": {
+      "library": "microbuilder",
+      "deviceset": "LED",
+      "device": "0805_NOOUTLINE",
+      "value": "GREEN"
+    },
+    "R5": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "1K"
+    },
+    "R13": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "200K"
+    },
+    "U$27": {
+      "library": "microbuilder",
+      "deviceset": "VBAT",
+      "device": ""
+    },
+    "U$24": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "C4": {
+      "library": "microbuilder",
+      "deviceset": "CAP_CERAMIC",
+      "device": "0805-NOOUTLINE",
+      "value": "0.1uF"
+    },
+    "R3": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "_0805MP",
+      "value": "1.87M"
+    },
+    "R4": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "0805_NOOUTLINE",
+      "value": "200K"
+    },
+    "U$3": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$6": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$8": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$9": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$14": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$18": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$21": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$22": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "R2": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "_0805MP",
+      "value": "340K"
+    },
+    "R1": {
+      "library": "microbuilder",
+      "deviceset": "RESISTOR",
+      "device": "_0805MP",
+      "value": "1.87M"
+    },
+    "U$20": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$23": {
+      "library": "microbuilder",
+      "deviceset": "VBAT",
+      "device": ""
+    },
+    "T1": {
+      "library": "transistor",
+      "deviceset": "*-PNP_DRIVER-",
+      "device": "SC59-BEC",
+      "technology": "MUN2114T1",
+      "value": "MMUN2133LT1G"
+    },
+    "JP1": {
+      "library": "adafruit",
+      "deviceset": "PINHD-1X6",
+      "device": "CB"
+    },
+    "U$29": {
+      "library": "microbuilder",
+      "deviceset": "VBAT",
+      "device": ""
+    },
+    "U$30": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$31": {
+      "library": "microbuilder",
+      "deviceset": "GND",
+      "device": ""
+    },
+    "U$32": {
+      "library": "microbuilder",
+      "deviceset": "5.0V",
+      "device": ""
+    },
+    "C3": {
+      "library": "rcl",
+      "deviceset": "C-US",
+      "device": "C1210",
+      "value": "100uF"
+    },
+    "C6": {
+      "library": "rcl",
+      "deviceset": "C-US",
+      "device": "C1210",
+      "value": "100uF"
+    },
+    "X2": {
+      "library": "microbuilder",
+      "deviceset": "TERMBLOCK_1X2",
+      "device": "",
+      "value": "3.5mm"
+    },
+    "FID1": {
+      "library": "microbuilder",
+      "deviceset": "FIDUCIAL",
+      "device": "\"\""
+    },
+    "FID3": {
+      "library": "microbuilder",
+      "deviceset": "FIDUCIAL",
+      "device": "\"\""
+    }
+  },
+  "nets": {
+    "GND": [
+      "U1.GND",
+      "U$2.GND",
+      "U1.SYNC",
+      "C1.2",
+      "U$4.GND",
+      "B1.-",
+      "U$5.GND",
+      "X2.1",
+      "U$24.GND",
+      "C4.2",
+      "U1.PGND",
+      "R4.1",
+      "U$3.GND",
+      "C2.2",
+      "U$6.GND",
+      "U$8.GND",
+      "C6.2",
+      "C3.2",
+      "X1.1",
+      "U$9.GND",
+      "U$14.GND",
+      "LED2.C",
+      "R10.2",
+      "U$18.GND",
+      "R12.2",
+      "U$21.GND",
+      "CN1.GND",
+      "U$22.GND",
+      "U$1.GND",
+      "R2.1",
+      "LED1.C",
+      "U$20.GND",
+      "JP1.2",
+      "U$30.GND",
+      "JP1.5",
+      "U$31.GND"
+    ],
+    "N$1": [
+      "U1.SW",
+      "L1.2"
+    ],
+    "N$3": [
+      "U1.LBI",
+      "R2.2",
+      "R1.1"
+    ],
+    "5.0V": [
+      "U1.VOUT",
+      "U$7.5.0V",
+      "C2.1",
+      "X1.2",
+      "R3.2",
+      "R5.1",
+      "C3.1",
+      "C6.1",
+      "R9.2",
+      "U$15.5.0V",
+      "R11.2",
+      "U$16.5.0V",
+      "CN1.VBUS",
+      "U$17.5.0V",
+      "JP1.6",
+      "U$32.5.0V"
+    ],
+    "D+": [
+      "R11.1",
+      "R12.1",
+      "CN1.D+"
+    ],
+    "D-": [
+      "R9.1",
+      "R10.1",
+      "CN1.D-"
+    ],
+    "VBAT": [
+      "R13.1",
+      "U$27.VBAT",
+      "U1.VBAT",
+      "C1.1",
+      "L1.1",
+      "U$19.VBAT",
+      "C4.1",
+      "R1.2",
+      "B1.+",
+      "X2.2",
+      "U$23.VBAT",
+      "T1.E",
+      "JP1.1",
+      "U$29.VBAT"
+    ],
+    "N$2": [
+      "LED1.A",
+      "R20.1"
+    ],
+    "ENABLE": [
+      "U1.EN",
+      "R13.2",
+      "JP1.3"
+    ],
+    "N$5": [
+      "R4.2",
+      "R3.1",
+      "U1.FB"
+    ],
+    "N$6": [
+      "R20.2",
+      "T1.C"
+    ],
+    "LBO": [
+      "U1.LBO",
+      "T1.B",
+      "JP1.4"
+    ],
+    "N$4": [
+      "R5.2",
+      "LED2.A"
+    ]
+  }
+}

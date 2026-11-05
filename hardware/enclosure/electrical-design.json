@@ -1,0 +1,377 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-module-prototype-1",
+  "acceptance": "Digital prototype design review. Physical electrical, thermal, runtime and wearing qualification is unmeasured; this record is not physical acceptance for wearing an untested assembly.",
+  "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
+  "parts": {
+    "CELL": {
+      "part": "XTAR protected INR21700-50E 5000 mAh",
+      "source": "https://www.xtar.cc/product/xtar-21700-5000mah-battery-50e.html"
+    },
+    "CONTACT_P": {
+      "part": "Mill-Max 0850-0-15-20-83-14-11-0",
+      "source": "https://www.mill-max.com/products/spring-loaded/pcb-solder-tail-spring-loaded-pin/0850"
+    },
+    "CONTACT_N": {
+      "part": "Mill-Max 0850-0-15-20-83-14-11-0",
+      "source": "https://www.mill-max.com/products/spring-loaded/pcb-solder-tail-spring-loaded-pin/0850"
+    },
+    "F1": {
+      "part": "Littelfuse 0459004.UR, 4 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "S1": {
+      "part": "C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC",
+      "source": "https://www.ckswitches.com/media/1394/7000toggle.pdf"
+    },
+    "LATCH": {
+      "part": "Pololu 2808 Mini Pushbutton Power Switch LV",
+      "source": "https://www.pololu.com/product/2808"
+    },
+    "BOOST": {
+      "part": "Adafruit PowerBoost 1000 Basic, PID 2030",
+      "source": "https://www.adafruit.com/product/2030"
+    },
+    "START": {
+      "part": "Pololu 1400, normally-open SPST 12 V / 50 mA",
+      "source": "https://www.pololu.com/product/1400"
+    },
+    "C_OUT": {
+      "part": "Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body",
+      "source": "https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102"
+    },
+    "R_A": {
+      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_B": {
+      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_OUT": {
+      "part": "Vishay CRCW06031K00FKEA, 1 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_OFF": {
+      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_SENSE_TOP": {
+      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "R_SENSE_BOTTOM": {
+      "part": "Vishay CRCW0603100KFKEA, 100 kohm 1% 0.1 W",
+      "source": "https://www.vishay.com/docs/20035/dcrcwe3.pdf"
+    },
+    "SPARKLE": {
+      "part": "Adafruit Sparkle Motion, board revision D",
+      "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts"
+    },
+    "BLACKPILL": {
+      "part": "WeAct BlackPill STM32F411, 3.3 V input",
+      "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1"
+    },
+    "GPS": {
+      "part": "Adafruit Ultimate GPS FeatherWing, 3V input",
+      "source": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts"
+    },
+    "IMU": {
+      "part": "Existing 3.3 V IMU placeholder; exact board remains unresolved",
+      "source": "hardware/enclosure/component-inventory.json"
+    },
+    "RADIO": {
+      "part": "Adafruit 3072 RFM95W, VIN=3.3 V",
+      "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
+    },
+    "FIBONACCI": {
+      "part": "Original Evil Genius Labs Fibonacci256",
+      "source": "https://www.evilgeniuslabs.org/fibonacci256"
+    },
+    "RING1": {
+      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
+      "source": "hardware/enclosure/component-inventory.json"
+    },
+    "RING2": {
+      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
+      "source": "hardware/enclosure/component-inventory.json"
+    },
+    "RING3": {
+      "part": "Existing 120 pixel/m strip; exact stock remains unresolved",
+      "source": "hardware/enclosure/component-inventory.json"
+    },
+    "F_FIB": {
+      "part": "Littelfuse 0459001.UR, 1 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "F_RING1": {
+      "part": "Littelfuse 0459001.UR, 1 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "F_RING2": {
+      "part": "Littelfuse 0459001.UR, 1 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "F_RING3": {
+      "part": "Littelfuse 0459001.UR, 1 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    },
+    "F_AUX": {
+      "part": "Littelfuse 0459.500UR, 0.5 A",
+      "source": "https://www.littelfuse.com/assetdocs/fuse-459-pico-smf-datasheet?assetguid=7f1922af-54f5-4bfd-8da8-a247513a6a05"
+    }
+  },
+  "nets": {
+    "CONTACT_P": [
+      "CONTACT_P.tail",
+      "F1.1"
+    ],
+    "FUSED_CELL": [
+      "F1.2",
+      "S1.1"
+    ],
+    "A": [
+      "S1.2",
+      "LATCH.VIN"
+    ],
+    "A_DRAIN": [
+      "S1.3",
+      "R_A.1"
+    ],
+    "B": [
+      "LATCH.VOUT",
+      "BOOST.JP1.1",
+      "R_B.1",
+      "R_SENSE_TOP.1"
+    ],
+    "BOOST_OUT": [
+      "BOOST.JP1.6",
+      "S1.4"
+    ],
+    "LOAD_5V": [
+      "S1.5",
+      "C_OUT.P",
+      "R_OUT.1",
+      "SPARKLE.X7.PWR"
+    ],
+    "OUTPUT_OFF": [
+      "S1.6"
+    ],
+    "LATCH_OFF": [
+      "BOOST.R20.2",
+      "LATCH.OFF",
+      "R_OFF.1"
+    ],
+    "START": [
+      "LATCH.A",
+      "START.1"
+    ],
+    "SENSE": [
+      "R_SENSE_TOP.2",
+      "R_SENSE_BOTTOM.1",
+      "BLACKPILL.PA4"
+    ],
+    "LED_DISTRIBUTION": [
+      "SPARKLE.JP1.9",
+      "F_FIB.1",
+      "F_RING1.1",
+      "F_RING2.1",
+      "F_RING3.1"
+    ],
+    "FIB_5V": [
+      "F_FIB.2",
+      "FIBONACCI.5V"
+    ],
+    "RING1_5V": [
+      "F_RING1.2",
+      "RING1.5V"
+    ],
+    "RING2_5V": [
+      "F_RING2.2",
+      "RING2.5V"
+    ],
+    "RING3_5V": [
+      "F_RING3.2",
+      "RING3.5V"
+    ],
+    "AUX_SOURCE": [
+      "SPARKLE.JP3.2",
+      "F_AUX.1"
+    ],
+    "AUX_3V3": [
+      "F_AUX.2",
+      "BLACKPILL.3V3",
+      "GPS.3V",
+      "IMU.3V3",
+      "RADIO.VIN"
+    ],
+    "LED_DATA1": [
+      "SPARKLE.JP1.8",
+      "FIBONACCI.DIN"
+    ],
+    "LED_DATA2": [
+      "SPARKLE.JP1.5",
+      "RING1.DIN"
+    ],
+    "LED_DATA3": [
+      "SPARKLE.JP1.2",
+      "RING2.DIN"
+    ],
+    "LED_DATA4": [
+      "SPARKLE.JP3.6",
+      "RING3.DIN"
+    ],
+    "GND": [
+      "CONTACT_N.tail",
+      "LATCH.GND",
+      "BOOST.JP1.2",
+      "C_OUT.N",
+      "R_A.2",
+      "R_B.2",
+      "R_OUT.2",
+      "R_OFF.2",
+      "START.2",
+      "R_SENSE_BOTTOM.2",
+      "SPARKLE.X7.GND",
+      "BLACKPILL.GND",
+      "GPS.GND",
+      "IMU.GND",
+      "RADIO.GND",
+      "FIBONACCI.GND",
+      "RING1.GND",
+      "RING2.GND",
+      "RING3.GND"
+    ]
+  },
+  "switch_positions": {
+    "OFF": [
+      [
+        "S1.2",
+        "S1.3"
+      ],
+      [
+        "S1.5",
+        "S1.6"
+      ]
+    ],
+    "ON": [
+      [
+        "S1.2",
+        "S1.1"
+      ],
+      [
+        "S1.5",
+        "S1.4"
+      ]
+    ]
+  },
+  "module_rework": {
+    "BOOST.remove": [
+      "R20"
+    ],
+    "BOOST.tap": "R20.2",
+    "BOOST.leave_open": [
+      "JP1.3",
+      "JP1.4"
+    ],
+    "LATCH.leave_open": [
+      "B",
+      "ON",
+      "CTRL"
+    ],
+    "BOOST.do_not_install": [
+      "B1",
+      "CN1",
+      "X1",
+      "X2"
+    ],
+    "SPARKLE.usb_pd_v": 5,
+    "BOOST.nominal_output_v": 5.2
+  },
+  "source_record": {
+    "path": "sources/powerboost-1000-basic/extracted-connectivity.json",
+    "sha256": "cc5e696ac1de8cd90d187bff2f5a0d75d1d8ee12ab3e9e113eb375c7eeb23af3",
+    "upstream_commit": "493d06d70537ce418355b395bb251a661d683150"
+  },
+  "wiring": {
+    "main": "M22759/16-18-2 and M22759/16-18-0, 18 AWG; fixed soldered joints, insulated and strain-relieved",
+    "branches": "M22759/16-22-2 and M22759/16-22-0, 22 AWG; individual LED 1 A and auxiliary 0.5 A branch fuses",
+    "sense": "100 kohm/100 kohm divider from B to PA4; no raw-cell reporting bypass",
+    "source": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf",
+    "routing": "Place F1 at positive contact; insulate the unfused tail and both contact backs. Route paired supply/return; protect every fuse and solder joint. No raw-cell plug or external battery entry."
+  },
+  "operating_plan": {
+    "cell_v": [
+      3.2,
+      4.2
+    ],
+    "cell_v_kind": "Declared normal operating range; nominal module LBI trip is about 3.2 V, not a guaranteed trip envelope.",
+    "brightness": 0.02,
+    "non_led_budget_w": 2.0,
+    "efficiency_estimate": 0.85,
+    "path_estimate_ohm": 0.085,
+    "battery_current_review_a": 3.0,
+    "ambient_c": [
+      10,
+      30
+    ],
+    "basis": "Initial bench configuration only. Verify 2% electrical brightness and the 2 W non-LED allowance before operation. No firmware ceiling or safe current limit is claimed; higher brightness needs another load review. Enclosed temperatures and current transients are unmeasured."
+  },
+  "service": {
+    "off_dwell_s": null,
+    "instruction": "Support, physical OFF, disconnect USB, then wait for the measured service dwell before opening. The dwell remains unset until a decay test. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. Navigation/radio readiness is not established by light output.",
+    "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant."
+  },
+  "open_design_items": [
+    {
+      "id": "exact-peripheral-and-strip-stock",
+      "detail": "Select the exact IMU and 120 pixel/m strip stock and verify input/pin limits, loaded envelopes and branch demand. Existing placeholders are not construction-ready parts."
+    },
+    {
+      "id": "communication-and-controller-budget",
+      "detail": "Complete the BlackPill/Sparkle/GPS/IMU/radio signal pin map, power order and radio duty-cycle budget; verify the 500 mA peak external 3.3 V limit. No new firmware or diagnostics are assumed."
+    },
+    {
+      "id": "fitted-harness",
+      "detail": "Derive both installed wire cut lists and strain relief/envelopes from the new compartment/module layout. Current wire gauges alone do not complete routing."
+    }
+  ],
+  "physical_qualification": {
+    "startup_and_pulses": {
+      "status": "unmeasured",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use.",
+      "results": []
+    },
+    "latch_and_rebound": {
+      "status": "unmeasured",
+      "procedure": "Measure BOOST.R20.2 and LATCH.OFF amplitude/duration. Low battery must switch B off; voltage rebound must not restart it. Repeat with bounce, slow depletion and a fast supply drop. Record power-loss defaults separately.",
+      "results": []
+    },
+    "off_and_replacement": {
+      "status": "unmeasured",
+      "procedure": "With S1 OFF and USB absent, verify both switch poles disconnect, all load/control rails decay and START has no effect. Measure decay before accepting any service dwell; repeat warm/rapid replacement.",
+      "results": []
+    },
+    "short_and_reversal": {
+      "status": "unmeasured",
+      "procedure": "Use controlled laboratory fault testing to verify reversal, overload/short interruption, cell PCM recovery and fuse/harness/contact withstand. Do not deliberately short an unprotected loose cell.",
+      "results": []
+    },
+    "thermal": {
+      "status": "unmeasured",
+      "procedure": "Measure cell, boost, latch, contacts, wires and front/rear touch temperatures in both closed enclosures at the stated ambient/load and wearing conditions, including warm recovery.",
+      "results": []
+    },
+    "runtime": {
+      "status": "unmeasured",
+      "procedure": "Measure usable energy and runtime at the named rainbow settings; compare with the model. No four-hour guarantee.",
+      "results": []
+    },
+    "fit_and_worn_mass": {
+      "status": "unmeasured",
+      "procedure": "Measure cell/holder contacts, retention/access and complete installed cell plus necklace mass. Digital geometry and estimated mass do not establish physical acceptance.",
+      "results": []
+    }
+  },
+  "historical_recovery": "electrical-review.md and the original electrical-*.json studies remain rejected custom-circuit evidence. Their counters/findings are not reset. They do not describe this module prototype."
+}

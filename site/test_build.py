@@ -140,6 +140,15 @@ class MovieTests(unittest.TestCase):
 
 
 class BuildInputTests(unittest.TestCase):
+    def test_active_module_design_and_sources_are_required_hashed_inputs(self):
+        for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
+                     'sources/powerboost-1000-basic/extracted-connectivity.json',
+                     'sources/powerboost-1000-basic/index.json',
+                     'sources/powerboost-1000-basic/README.md',
+                     'sources/powerboost-1000-basic/license.txt'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
     def test_headroom_definition_and_model_are_required_hashed_release_inputs(self):
         for path in ('electrical-headroom.json', 'electrical_headroom.py'):
             with self.subTest(path=path):

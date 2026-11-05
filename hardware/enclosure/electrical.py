@@ -1,7 +1,8 @@
-"""Reproduce electrical candidate counterexamples; reject an unqualified path.
+"""Check the active prototype design and retain rejected-circuit calculations.
 
-This is a corner audit, not a transient simulator. A passing unit test proves the
-calculation/rejection behavior, never the safety of the proposed assembly.
+The CLI reviews electrical-design.json. Historical calculations remain available
+to regression tests; they cannot approve or reject a different module circuit.
+A passing digital check never establishes physical electrical or thermal safety.
 """
 
 import argparse
@@ -883,10 +884,8 @@ def review(spec):
     return result
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['check', 'report'])
-    args = parser.parse_args()
+def rejected_candidate_report():
+    """Retain the original circuit's rejection evidence for regression tests."""
     try:
         spec = json.loads((HERE/'electrical-review.json').read_text())
         result = review(spec)
@@ -916,11 +915,26 @@ def main():
             harness)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print('ELECTRICAL INPUT ERROR: ' + str(exc))
+        raise ValueError('Cannot read historical electrical studies') from exc
+    return result
+
+
+def main():
+    from electrical_design import assess
+
+    parser = argparse.ArgumentParser(description='Check the selected digital prototype design; physical acceptance is separate.')
+    parser.add_argument('command', choices=['check', 'report'])
+    args = parser.parse_args()
+    try:
+        result = assess(json.loads((HERE/'electrical-design.json').read_text()))
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print('ELECTRICAL INPUT ERROR: ' + str(exc))
         return 1
     print(json.dumps(result, indent=2, allow_nan=False))
-    if args.command == 'check' and result['failures']:
-        print('ELECTRICAL CHECK FAILED: candidate is not qualified; do not freeze compartment.')
+    if args.command == 'check' and not result['digital_design_pass']:
+        print('ELECTRICAL DESIGN CHECK FAILED: resolve the listed design errors. Physical acceptance remains unmeasured.')
         return 1
+    print('Digital design review only. Physical electrical/thermal acceptance remains unmeasured.')
     return 0
 
 

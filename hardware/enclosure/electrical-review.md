@@ -1,12 +1,17 @@
 # SKI-1230 electrical candidate review — 2026-10-31
 
+Historical rejected custom circuit. The active module prototype and revised
+digital/physical acceptance boundary are in
+[electrical-design.md](electrical-design.md). The CLI now checks that design;
+the original calculations and their rejection tests remain preserved below.
+
 **The proposed path fails the pre-compartment electrical gate.** This checkpoint
 adds reproducible rejection evidence; it does not select a qualified assembly.
 The enclosure geometry, inventory and published media still describe the legacy
 pouch design. No fitted 26650, mass-limit, recovery or runtime acceptance is claimed.
 
-Run `python3 hardware/enclosure/electrical.py check`. It returns **1** for this
-candidate. `report` prints the same findings with exit 0 for inspection. The
+The `rejected_candidate_report()` function in `electrical.py` retains this
+candidate's failures for regression tests. The
 unit tests validate the arithmetic and rejection behavior, not a physical
 circuit or a completed transient model. Inputs, source revisions and the proposed
 netlist are in [electrical-review.json](electrical-review.json).
