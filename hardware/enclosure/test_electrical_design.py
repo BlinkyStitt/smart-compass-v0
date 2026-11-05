@@ -7,7 +7,7 @@ import subprocess
 import sys
 import unittest
 
-from electrical_design import assess
+from electrical_design import assess, off_service_isolation
 
 HERE = Path(__file__).resolve().parent
 
@@ -78,6 +78,13 @@ class PrototypeDesignTests(unittest.TestCase):
         design['nets']['FIB_5V'].remove('F_FIB.2')
         design['nets']['FIB_5V'].append('F_FIB.1')
         self.assertIn('duplicate-pin', self.failure_ids(design))
+
+    def test_off_contact_isolation_is_separate_from_reset_timing(self):
+        design=self.reviewed_fixture()
+        self.assertTrue(all(off_service_isolation(design).values()))
+        design['nets']['LOAD_5V'].append('S1.1')
+        self.assertFalse(off_service_isolation(design)['LOAD_5V'])
+        self.assertIn('off-contact-isolation',self.failure_ids(design))
 
     def test_each_isolated_rail_has_its_own_drain(self):
         for net, pin in [('BOOST_OUT','R_BOOST.1'), ('LOAD_5V','R_LOAD.1'),

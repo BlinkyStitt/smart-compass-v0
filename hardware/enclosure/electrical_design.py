@@ -80,6 +80,38 @@ def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
+def off_service_isolation(design):
+    """Conservative OFF topology, with every module internally conductive.
+
+    This does not certify a supplied switch, insulation or a faulted assembly.
+    It separates ordinary contact isolation from an unknown reset/decay time.
+    """
+    graph = {}
+    def join(pins):
+        for a in pins:
+            graph.setdefault(a, set()).update(set(pins)-{a})
+    for pins in design.get('nets', {}).values():
+        join(pins)
+    for name in ('F1','F_FIB','F_RING1','F_RING2','F_RING3','F_AUX'):
+        join([name+'.1',name+'.2'])
+    for name in ('BOOST','LATCH','SPARKLE','BLACKPILL','GPS','IMU','RADIO',
+                 'FIBONACCI','RING1','RING2','RING3'):
+        join([pin for pin in graph if pin.startswith(name+'.')])
+    for name in ('R_A','R_B','R_OUT','R_BOOST','R_LOAD','R_OFF','R_SENSE_TOP','R_SENSE_BOTTOM'):
+        join([name+'.1',name+'.2'])
+    for pins in design.get('switch_positions', {}).get('OFF', []):
+        join(pins)
+    reached, pending = set(), ['CONTACT_P.tail']
+    while pending:
+        pin=pending.pop()
+        if pin not in reached:
+            reached.add(pin)
+            pending.extend(graph.get(pin, set())-reached)
+    rails=('A','B','BOOST_OUT','LOAD_5V','FIB_5V')
+    return {name: not bool(set(design.get('nets',{}).get(name,[])) & reached)
+            for name in rails}
+
+
 def assess(design, directory=HERE):
     """Return actual design errors separately from unexecuted physical tests."""
     if design.get('schema_version') != 1:
@@ -121,6 +153,9 @@ def assess(design, directory=HERE):
         'OFF': [['S1.2', 'S1.3'], ['S1.5', 'S1.6']],
         'ON': [['S1.2', 'S1.1'], ['S1.5', 'S1.4']],
     }, 'physical-off', 'OFF must disconnect both cell feed and boost-to-load output.')
+    isolation = off_service_isolation(design)
+    require(all(isolation.values()), 'off-contact-isolation',
+            'Stored-charge rails must have no conducting OFF path to the positive cell contact.')
     rework = design.get('module_rework', {})
     require(rework.get('BOOST.remove') == ['R20'] and rework.get('BOOST.tap') == 'R20.2',
             'low-battery-inversion', 'Remove the LED resistor and use its T1-collector pad, not LBO or EN.')
@@ -202,5 +237,6 @@ def assess(design, directory=HERE):
         'failures': failures,
         'operating_plan': operating,
         'service': design.get('service', {}),
+        'off_positive_contact_isolation': isolation,
         'historical_recovery': design.get('historical_recovery'),
     }

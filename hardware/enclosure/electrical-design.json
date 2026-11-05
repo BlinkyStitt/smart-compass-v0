@@ -415,8 +415,9 @@
   },
   "service": {
     "off_dwell_s": null,
-    "instruction": "Support, physical OFF, disconnect USB, then wait for the measured service dwell before opening. The dwell remains unset until a decay test. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. Navigation/radio readiness is not established by light output.",
-    "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant."
+    "instruction": "Support the assembly, put physical S1 fully OFF and disconnect USB before opening. The reviewed topology isolates the positive cell contact from all downstream stored-charge rails; it does not require a timed electronic reset for mechanical removal. Physical switch operation/insulation and all decay/reset times remain unmeasured. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. A rapid swap may retain electronic state; do not promise a full reset or navigation/radio readiness from light output.",
+    "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant.",
+    "removal_basis": "Ordinary OFF topology only, with no external power. All downstream module terminals are treated as conducting in the digital contact-isolation check. A failed switch, damaged insulation or an untested assembly is not physically qualified by this graph."
   },
   "open_design_items": [
     {

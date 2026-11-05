@@ -116,7 +116,15 @@ the loads. R_B drains the boost input. R_BOOST drains its isolated output.
 R_LOAD drains the load rail; R_OUT drains C_OUT after the Fibonacci fuse, even
 when that fuse opens. Place C_OUT at the Fibonacci feed with short paired leads.
 Other board capacitors and signal paths still affect decay. There is no qualified
-five-second or ten-second wait. `off_dwell_s` remains unset until measured.
+five-second or ten-second reset wait. `off_dwell_s` remains unset until measured.
+
+For ordinary cell removal, S1 OFF separates the positive contact from all those
+stored-charge rails. The digital check conservatively treats every module's
+internal terminals as conducting and still requires that separation. Thus a
+timed electronic reset does not gate mechanical removal in this prototype plan.
+Support the assembly, put S1 fully OFF and remove USB before opening. Actual
+switch operation, insulation and assembly safety remain unmeasured. A rapid swap
+can retain electronic state; do not claim that all boards reset.
 
 After a supported cell swap, select ON and press START. Connect START from the
 Pololu **A** pad to ground for **on-only** operation; the standard A-to-B toggle
