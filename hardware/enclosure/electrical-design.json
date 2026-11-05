@@ -23,7 +23,7 @@
     "F1": {
       "part": "Littelfuse 0251004.NRT1L, 4 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -460,7 +460,7 @@
     "F_FIB": {
       "part": "Littelfuse 0251002.NRT1L, 2 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -471,7 +471,7 @@
     "F_RING1": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -482,7 +482,7 @@
     "F_RING2": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -493,7 +493,7 @@
     "F_RING3": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -504,7 +504,7 @@
     "F_AUX": {
       "part": "Littelfuse 0251.500NRT1L, 0.5 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
-      "source_revision": "251 series, VL 26-Sep-2024",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
         20,
         5,
@@ -1028,7 +1028,7 @@
     "duty_cycle": "Review the all-peripheral peak concurrently; no radio duty-cycle reduction is used to approve the3.3V allocation. The2W average and3W peak are test targets, not a measured waveform."
   },
   "fuse_basis": {
-    "source_revision": "Littelfuse251 datasheet,26-Sep-2024,pp1-3",
+    "source_revision": "Littelfuse251 datasheet,GK18-Aug-2026,pp1-3",
     "continuous_derating": 0.75,
     "basis": "Engineering selection using the adopted approximate20mA/channel and1mA idle NeoPixel model. A saturated rainbow has at most two active channels per pixel. At2% brightness the conservative coherent-PWM heating estimate is about1.31Arms for256 pixels, above the old1A fuse continuous allowance. Select2A Fibonacci and retain1A ring fuses. These approximate LED coefficients are not guaranteed silicon peaks; verify the real waveform and temperature before physical acceptance. Use axial251 fuses to avoid a custom SMD fuse carrier. Fuse nominal cold resistance and nominal melting I2t are not guaranteed fault or withstand bounds."
   }

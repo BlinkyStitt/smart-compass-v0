@@ -353,7 +353,7 @@ under a conservative coherent-PWM estimate for256 pixels. This estimate is
 not a guaranteed current bound. The selected251 series requires25% continuous-current
 derating, plus temperature derating. Its nominal cold resistance and melting
 I²t do not prove assembly fault withstand.
-[Littelfuse251,26-Sep-2024, pp1-3](https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688).
+[Littelfuse251,GK18-Aug-2026, pp1-3](https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688).
 
 Retain the Panasonic EEUFR1A1021000uF/10V bulk capacitor. Its source body
 maxima are10.5x17.5mm. The12x31x14mm horizontal loaded reservation includes
@@ -377,7 +377,7 @@ fixed and strain-relieved. An opened fuse requires electronics service; it is
 not part of ordinary cell replacement. The JSON lists each exact part and its
 loaded reservation. These reservations do not establish the fitted harness.
 
-The251 source specifies300A DC interruption at125V and opening within1s
+The current GK18-Aug-2026 source specifies300A DC interruption at125V and opening within1s
 at twice the rating for the selected currents. Its continuous rating needs25%
 derating and temperature correction. Do not reuse the459 series'300% opening
 time or nominal I²t for these parts. The new4A fuse has20.4mohm nominal cold
