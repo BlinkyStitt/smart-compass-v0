@@ -198,7 +198,7 @@ def assess(design, directory=HERE):
     except (ValueError, OSError) as error:
         require(False, 'imu-terminal-binding', str(error))
     peripheral_terminals={}
-    for module in ('GPS','RADIO'):
+    for module in ('GPS','RADIO','SPARKLE'):
         try:
             peripheral_terminals[module]=electrical_peripherals.terminals(module,parts.get(module,{}),directory)
         except (ValueError,OSError) as error:
@@ -241,6 +241,10 @@ def assess(design, directory=HERE):
             'external-power-paths', 'Keep unused connectors absent and USB service at 5 V.')
     require(rework.get('BLACKPILL.do_not_install') == ['U3'],
             'blackpill-flash-conflict', 'Optional V3.1 U3 flash shares the PA4 battery-sense input; select the unpopulated variant.')
+    require(rework.get('SPARKLE.remove') == ['X7']
+            and rework.get('SPARKLE.retain') == ['D2','PTC1']
+            and rework.get('SPARKLE.leave_open') == ['X7.GNDBREAK'],
+            'sparkle-input-termination', 'Remove only the barrel jack for the fixed X7 PWR/GND wires; retain D2/PTC1 and leave GNDBREAK open.')
     record = design.get('source_record', {})
     source_path = Path(record.get('path', ''))
     if source_path.is_absolute() or '..' in source_path.parts:

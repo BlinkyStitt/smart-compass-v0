@@ -1,0 +1,18 @@
+[
+  {
+    "file": "Adafruit Sparkle Motion WLED Friend_Rev D.brd",
+    "original_file": "Adafruit Sparkle Motion WLED Friend_Rev D.brd",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Sparkle-Motion-PCB/7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a/Adafruit%20Sparkle%20Motion%20WLED%20Friend_Rev%20D.brd",
+    "sha256": "38dd7dbc182fa0d136f87b39efe2fd845c5315e6c0a1825695544d2f3e890612",
+    "revision": "7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+    "bytes": 2528290
+  },
+  {
+    "file": "Adafruit Sparkle Motion WLED Friend_Rev D.sch",
+    "original_file": "Adafruit Sparkle Motion WLED Friend_Rev D.sch",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-Sparkle-Motion-PCB/7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a/Adafruit%20Sparkle%20Motion%20WLED%20Friend_Rev%20D.sch",
+    "sha256": "63245b5f0b24baffc181f28b3735ccd80d124e612f0d36b782db7d4a76d69c35",
+    "revision": "7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+    "bytes": 688806
+  }
+]

@@ -174,6 +174,17 @@ load is a stated planning assumption. It is not the measured module output.
 Do not rework the feedback divider to 5.0 V while retaining this drop budget.
 [TPS61030 SLUS534G](https://www.ti.com/lit/ds/symlink/tps61030.pdf).
 
+Remove only the stock Sparkle **X7 barrel jack** to expose its fixed-wire input
+holes. Fit the paired 22 AWG supply and return at **X7.PWR** and **X7.GND**.
+Leave **X7.GNDBREAK** open. Keep **D2 and PTC1** installed. This preserves the
+reviewed diode/PTC input path. Do not feed an output power clamp instead. The
+retained Rev D source gives nominal 0.9 mm holes at [10.239, 10.922] and
+[4.339, 10.922] mm from the lower-left PCB corner, viewed from the component
+side. Verify actual wire/hole fit, inspect the reworked pads, and restrain the
+insulated wires near the board. Final joint envelopes and fitted restraint
+locations remain part of the open harness work. Removal of the connector does
+not qualify the electrical or thermal limits.
+
 Remove **R20**, the red low-battery LED's series resistor. Connect its **R20.2**
 pad, on net N$6, to Pololu OFF. That pad connects to the existing PNP transistor
 T1 collector. Add the specified 100 kohm pull-down. The opposite R20 pad goes to

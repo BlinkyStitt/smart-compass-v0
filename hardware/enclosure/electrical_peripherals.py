@@ -1,4 +1,4 @@
-"""Pinned GPS/LoRa source pads. Nominal coordinates do not qualify joints."""
+"""Pinned module source pads. Nominal coordinates do not qualify joints."""
 import hashlib
 import json
 import math
@@ -31,11 +31,20 @@ BOARDS={'GPS': {'part':'Adafruit Ultimate GPS FeatherWing, 3V input', 'source': 
                         'MOSI': ['JP3.7', 'MOSI_5V'],
                         'CS': ['JP3.8', 'CS_5V'],
                         'RST': ['JP3.9', 'RST_5V'],
-                        'ANT': ['JP2.1', 'N$1']}}}
+                        'ANT': ['JP2.1', 'N$1']}},
+ 'SPARKLE': {'part':'Adafruit Sparkle Motion, board revision D','source':'sources/sparkle-motion',
+             'revision':'7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a','origin_mm':[0,0],
+             'files':{'Adafruit Sparkle Motion WLED Friend_Rev D.brd':'38dd7dbc182fa0d136f87b39efe2fd845c5315e6c0a1825695544d2f3e890612',
+                      'Adafruit Sparkle Motion WLED Friend_Rev D.sch':'63245b5f0b24baffc181f28b3735ccd80d124e612f0d36b782db7d4a76d69c35'},
+             'bindings':{'INPUT':['X7.PWR','N$9'],'INPUT_GND':['X7.GND','GND'],
+                         'AUX':['JP3.2','3.3V'],'AUX_GND':['JP3.1','GND'],
+                         'TX':['JP3.3','IO9'],'RX':['JP3.4','IO10'],
+                         'DATA1':['JP1.8','S1'],'DATA2':['JP1.5','S2'],'DATA3':['JP1.2','S3'],
+                         'DATA4':['JP3.6','S4'],'LED_RAIL':['JP1.9','+24V']}}}
 
 
 def terminals(module,part,directory=HERE):
-    if module not in BOARDS:raise ValueError('Select the reviewed GPS or RADIO source')
+    if module not in BOARDS:raise ValueError('Select a reviewed module source')
     selected=BOARDS[module];expected={name:row[0] for name,row in selected['bindings'].items()}
     if (part.get('part')!=selected['part'] or part.get('board_revision')!=selected['revision'] or part.get('source_record')!=selected['source']+'/index.json'
             or part.get('terminal_bindings')!=expected):raise ValueError('Select the pinned '+module+' layout and its complete source pad map')

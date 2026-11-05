@@ -1,0 +1,52 @@
+"""Verify the selected fixed-input Sparkle source-hole mounting component."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_SPARKLE_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a new Sparkle result path; preserve existing evidence')
+    import sparkle_mount
+    paths=[source/name for name in ('sparkle_mount.py','test_sparkle_mount.py','electrical_peripherals.py','electrical_board.py',
+           'electrical-design.json','component-inventory.json','hardware_spec.py','fastener_access.py','solid_clearance.py',
+           'sparkle-mounts.md','SparkleMountCheck.FCMacro')]
+    for name in ('sparkle-motion','sparkle-motion-mechanical'):paths+=sorted((source/'sources'/name).iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot();results={}
+    for design,z in (('wide',6),('narrow',8)):
+        shapes=sparkle_mount.native_shapes(z);results[design]=sparkle_mount.native_check(shapes,z)
+        for name in ('SparklePCB','SparkleScrew0','SparkleNut3','SparkleComponents','SparkleUnderboard'):
+            broken=dict(shapes);del broken[name]
+            try:sparkle_mount.native_check(broken,z)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing Sparkle product/reference accepted: '+name)
+        broken=dict(shapes);broken['rear_addition']=shapes['rear_addition'].copy()
+        broken['rear_addition'].translate(App.Vector(0,0,-.2))
+        try:sparkle_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'lacks full bearing' not in str(error):raise
+        else:raise ValueError('Floating Sparkle mounting annuli accepted')
+        broken=dict(shapes);broken['SparkleScrew0']=shapes['SparkleScrew0'].copy()
+        broken['SparkleScrew0'].translate(App.Vector(0,0,1))
+        try:sparkle_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'engage the full nut' not in str(error):raise
+        else:raise ValueError('A Sparkle screw that misses full nut engagement was accepted')
+    if before!=snapshot():raise ValueError('Sparkle inputs changed during native checks')
+    record={'checks':results,'inputs':before,'freecad_version':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record));print('SPARKLE MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception:
+    traceback.print_exc()
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

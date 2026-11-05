@@ -333,6 +333,21 @@
         "assembly_source": "https://learn.adafruit.com/adafruit-sparkle-motion/connecting-leds",
         "source_review": "2026-11-05, guide/RevD source7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
         "retention": "One fixed 22 AWG positive pigtail from JP1.9 to the insulated LED fuse/distribution carrier; one 26 AWG data lead per used data clamp. Do not put four fuse leads under one screw or replace the stock connector with an assumed 18 AWG part. Restrain the insulated leads near the board; screws and clamp pull-out remain physical tests."
+      },
+      "board_revision": "7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+      "source_record": "sources/sparkle-motion/index.json",
+      "terminal_bindings": {
+        "INPUT": "X7.PWR",
+        "INPUT_GND": "X7.GND",
+        "AUX": "JP3.2",
+        "AUX_GND": "JP3.1",
+        "TX": "JP3.3",
+        "RX": "JP3.4",
+        "DATA1": "JP1.8",
+        "DATA2": "JP1.5",
+        "DATA3": "JP1.2",
+        "DATA4": "JP3.6",
+        "LED_RAIL": "JP1.9"
       }
     },
     "BLACKPILL": {
@@ -825,7 +840,17 @@
     "BOOST.install": {
       "X1": "Pololu2444",
       "X2": "Pololu2444"
-    }
+    },
+    "SPARKLE.remove": [
+      "X7"
+    ],
+    "SPARKLE.retain": [
+      "D2",
+      "PTC1"
+    ],
+    "SPARKLE.leave_open": [
+      "X7.GNDBREAK"
+    ]
   },
   "source_record": {
     "path": "sources/powerboost-1000-basic/extracted-connectivity.json",

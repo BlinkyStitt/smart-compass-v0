@@ -1,0 +1,28 @@
+[
+  {
+    "part": "6100",
+    "file": "6100.step",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6c5cd9e3e65252bb5d5339608cf8d3cdabcef251/6100%20Sparkle%20Motion/6100%20Sparkle%20Motion.step",
+    "repository_revision": "6c5cd9e3e65252bb5d5339608cf8d3cdabcef251",
+    "git_blob": "a18051c03e32194ed34aad46871bf02777ead819",
+    "bytes": 6161874,
+    "sha256": "ffa766ad93ef673a9cdd4d3d720250465180d765b05f07b30a11b8449fb8407f",
+    "original_file": "6100.step"
+  },
+  {
+    "file": "LICENSE",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6c5cd9e3e65252bb5d5339608cf8d3cdabcef251/LICENSE",
+    "repository_revision": "6c5cd9e3e65252bb5d5339608cf8d3cdabcef251",
+    "sha256": "f60436644e066301d4c2e8f1f0674a157b1f60e4fd5586717b99dde255cc18cd",
+    "bytes": 1076,
+    "original_file": "LICENSE"
+  },
+  {
+    "file": "upstream-README.md",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6c5cd9e3e65252bb5d5339608cf8d3cdabcef251/README.md",
+    "repository_revision": "6c5cd9e3e65252bb5d5339608cf8d3cdabcef251",
+    "sha256": "9ed9beac7600623b7b9bd0d02e1fdcd86610ce22966723179e6c6b618e399dce",
+    "bytes": 94,
+    "original_file": "README.md"
+  }
+]
