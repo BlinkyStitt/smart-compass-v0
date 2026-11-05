@@ -183,6 +183,12 @@ no stated maximum qualifier, so it cannot supply a worst-case loss bound.
 
 ### OFF and restart
 
+Use the source-based [latch carrier and clamp map](latch-mounts.md). The maker
+component-side pinout places A at13.97/3.81mm, below B. Two underside
+CamdenBoss CTBP2054/4 blocks accept the18AWG feed and output leads. A separate
+26AWG ground lead carries control current. The retained source model and
+component check do not replace either installed harness check.
+
 S1 is C&K **7201SYZQE**, DPDT ON-ON. Terminal 2 is the cell-feed pole common;
 terminal 5 is the output pole common. The selected RUN contacts are 1 and 4.
 In OFF, terminal 2 connects to terminal 3 and a 1 kohm drain to ground; terminal

@@ -1,0 +1,57 @@
+"""Check the source-based latch carrier in an isolated FreeCAD process.
+
+SC_LATCH_CHECK_RESULT selects a NEW result path and exits this process. A pass
+covers this component study. It does not qualify either installed enclosure.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_LATCH_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():
+        raise ValueError('Choose a new latch-check result path; preserve existing evidence')
+    import latch_mount
+    names=('latch_mount.py','electrical_latch.py','electrical-design.json','hardware_spec.py',
+           'component-inventory.json','solid_clearance.py','test_latch_mount.py','latch-mounts.md','LatchMountCheck.FCMacro')
+    paths=[source/name for name in names]+sorted((source/'sources/latch-2808').iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot()
+    shapes=latch_mount.native_shapes();result=latch_mount.native_check(shapes)
+    for missing in ('LatchModule','LatchTerminalVIN','LatchClamp0','LatchMountScrew0'):
+        broken=dict(shapes);del broken[missing]
+        try:latch_mount.native_check(broken)
+        except ValueError as error:
+            if 'census' not in str(error):raise
+        else:raise ValueError('Missing actual latch product was accepted: '+missing)
+    broken=dict(shapes);broken['LatchClamp0']=shapes['LatchClamp0'].copy()
+    broken['LatchClamp0'].translate(App.Vector(0,0,.1))
+    try:latch_mount.native_check(broken)
+    except ValueError as error:
+        if 'Latch interference' not in str(error):raise
+    else:raise ValueError('A clamp moved into its washer was accepted')
+    broken=dict(shapes)
+    for name in ('LatchClamp0','LatchMountUpperWasher0','LatchMountNut0'):
+        broken[name]=shapes[name].copy();broken[name].translate(App.Vector(0,0,.1))
+    try:latch_mount.native_check(broken)
+    except ValueError as error:
+        if 'do not bear' not in str(error):raise
+    else:raise ValueError('A floating PCB clamp stack was accepted')
+    if before!=snapshot():raise ValueError('Latch inputs changed during native checks')
+    record={**result,'inputs':before,'freecad_version':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record))
+    print('LATCH MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception:
+    traceback.print_exc()
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

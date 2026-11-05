@@ -11,6 +11,7 @@ from pathlib import Path
 
 import electrical_imu
 import electrical_boost
+import electrical_latch
 from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
@@ -198,6 +199,11 @@ def assess(design, directory=HERE):
                 'boost-wire-gauges', 'Use18AWG input and22AWG output wires in the selected clamps.')
     except (ValueError, OSError) as error:
         require(False, 'boost-terminal-binding', str(error))
+    latch_terminals = {}
+    try:
+        latch_terminals = electrical_latch.terminals(parts.get('LATCH', {}), directory)
+    except (ValueError, OSError) as error:
+        require(False, 'latch-terminal-binding', str(error))
     require(parts.get('BOOST', {}).get('part') == 'Adafruit PowerBoost 1000 Basic, PID 2030'
             and parts.get('LATCH', {}).get('part') == 'Pololu 2808 Mini Pushbutton Power Switch LV',
             'module-selection', 'Connection checks apply only to the reviewed boost/latch pair.')
@@ -295,5 +301,6 @@ def assess(design, directory=HERE):
         'off_positive_contact_isolation': isolation,
         'imu_source_terminals': imu_terminals,
         'boost_source_terminals': boost_terminals,
+        'latch_source_terminals': latch_terminals,
         'historical_recovery': design.get('historical_recovery'),
     }

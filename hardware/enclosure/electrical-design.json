@@ -37,7 +37,88 @@
     },
     "LATCH": {
       "part": "Pololu 2808 Mini Pushbutton Power Switch LV",
-      "source": "https://www.pololu.com/product/2808"
+      "source": "https://www.pololu.com/product/2808",
+      "board_revision": "psw03a",
+      "source_record": "sources/latch-2808/index.json",
+      "terminal_bindings": {
+        "VIN": [
+          1.27,
+          16.51
+        ],
+        "VOUT": [
+          13.97,
+          16.51
+        ],
+        "GND": [
+          1.27,
+          8.89
+        ],
+        "A": [
+          13.97,
+          3.81
+        ],
+        "OFF": [
+          1.27,
+          3.81
+        ]
+      },
+      "wire_terminals": {
+        "part": "CamdenBoss CTBP2054/4, four-position2.54mm rising-clamp PCB terminal block",
+        "quantity": 2,
+        "mount_side": "underside",
+        "wire_awg_range": [
+          26,
+          18
+        ],
+        "published_ul_current_a": 6,
+        "published_iec_current_a": 8,
+        "maximum_contact_resistance_ohm": 0.02,
+        "nominal_body_mm": [
+          10.62,
+          6.2,
+          8.5
+        ],
+        "nominal_pin_section_mm": [
+          0.8,
+          0.5
+        ],
+        "pin_length_mm": [
+          3.2,
+          3.8
+        ],
+        "published_torque_nm": 0.1,
+        "wires_per_clamp": 1,
+        "strip_target_mm": 4.5,
+        "strip_basis": "Specified assembly target, not a published strip limit. Verify full conductor capture with insulation outside the clamp; no bare conductor outside its entry.",
+        "connections": {
+          "VIN.upper": "18AWG",
+          "VOUT.upper": "18AWG",
+          "VIN.lower_GND": "26AWG"
+        },
+        "unused": "Other five clamp positions remain empty and insulated; B,ON,CTRL have no external lead.",
+        "source": "https://www.camdenboss.com/media/1546/camblock-plus-catalogue-15a.pdf",
+        "limits": "Published UL6A/150V and IEC8A/130V;20mohm max. Pin/body sizes nominal except3.5+/-0.3mm pin length. Pololu +/-0.1mm is hole LOCATION; hole diameter1.02mm nominal. These records do not guarantee supplied pin/hole fit, soldering, fault withstand or enclosed heat. Do not force pins or drill plated holes."
+      },
+      "mount": {
+        "pcb_bottom_z_mm": 12.2,
+        "floor_bottom_z_mm": 2,
+        "floor_thickness_mm": 1.35,
+        "floor_size_mm": [
+          32,
+          24
+        ],
+        "post_x_mm": 13,
+        "post_y_mm": [
+          3.5,
+          -7.8
+        ],
+        "post_radius_mm": 2.75,
+        "lip_inner_x_mm": 7.1,
+        "lip_y_length_mm": 3,
+        "clamp_thickness_mm": 1.2,
+        "finished_screw_length_mm": 17,
+        "hardware": "Four DIN912 M2x20 A2 stock screws finished to17mm, eight DIN125 M2 washers, four DIN934 M2 A4 nuts. Four screws fasten carrier and clamps through the full2mm case bearing lands. No guessed PCB mounting holes."
+      }
     },
     "BOOST": {
       "part": "Adafruit PowerBoost 1000 Basic, PID 2030",

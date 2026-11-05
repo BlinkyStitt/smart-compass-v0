@@ -185,6 +185,14 @@ class PrototypeDesignTests(unittest.TestCase):
         design=self.reviewed_fixture();design['wiring']['stock_limits']['main']['stock']='M22759/16-22'
         self.assertIn('boost-wire-gauges',self.failure_ids(design))
 
+    def test_latch_upper_b_and_unreviewed_clamps_cannot_reuse_the_review(self):
+        design=self.reviewed_fixture()
+        design['parts']['LATCH']['terminal_bindings']['A']=[13.97,6.35]
+        self.assertIn('latch-terminal-binding',self.failure_ids(design))
+        design=self.reviewed_fixture()
+        design['parts']['LATCH']['wire_terminals']['part']='Unreviewed smaller clamp'
+        self.assertIn('latch-terminal-binding',self.failure_ids(design))
+
     def test_unsupported_part_substitution_cannot_reuse_wiring_checks(self):
         design = self.reviewed_fixture()
         design['parts']['LATCH']['part'] = 'Pololu SV switch, minimum 4.5 V'

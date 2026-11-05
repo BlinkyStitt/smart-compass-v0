@@ -1,0 +1,30 @@
+[
+  {
+    "file": "pololu-2808.step",
+    "source": "https://www.pololu.com/file/0J1308/mini-pushbutton-power-switch-with-reverse-voltage-protection.step",
+    "revision": "STEP AP214, SolidWorks2016; file timestamp2017-06-20T18:19:41",
+    "bytes": 4235087,
+    "sha256": "9e3718142701cf853fd2b2be9e70452a1d4ef040858a043e921c965aeca33707"
+  },
+  {
+    "file": "pololu-2808-pinout.jpg",
+    "source": "https://a.pololu-files.com/picture/0J6761.1200.jpg?a49cd139840f29608e58b4b0a77dd58f",
+    "revision": "Maker component-side pinout, retrieved2026-11-05",
+    "bytes": 431459,
+    "sha256": "e7d8ff74be20e5cac0f734d9c3780224d812232379ca8bedf3d481a17a17ddec"
+  },
+  {
+    "file": "pololu-2808-dimensions.pdf",
+    "source": "https://www.pololu.com/file/0J1101/mini-pushbutton-power-switch-with-reverse-voltage-protection-dimension-diagram.pdf",
+    "revision": "12January2016; psw03a; location+/-0.1mm, edge+/-0.3mm",
+    "bytes": 282677,
+    "sha256": "979a919222b689527ba594015811845a753c71a5a14d5a52ba62a4192eb1ddbc"
+  },
+  {
+    "file": "camblock-plus-catalogue-15a.pdf",
+    "source": "https://www.camdenboss.com/media/1546/camblock-plus-catalogue-15a.pdf",
+    "revision": "CamblockPlus catalogue15A; printedpage6/PDFpage8, CTBP2054,Ver1",
+    "bytes": 6425307,
+    "sha256": "65aa67b64623952918f0ee75f9af6ac8fdcc90fd7bfd035ff3c9084c4fe5f1d3"
+  }
+]
