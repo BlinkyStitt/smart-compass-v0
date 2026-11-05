@@ -32,13 +32,13 @@ not qualify these finished joints, wires, ties or the printed carrier.
 The [TE part page and A2 drawing](https://www.te.com/en/product-5052994073.html)
 give the tubing conditions; do not shrink tubing inside the case.
 
-The carrier has one 1.35 mm floor at Z = 16.75..18.1 mm. Two integral posts
+The carrier has one 1.35 mm floor at Z = 16.95..18.3 mm. Two integral posts
 stand on rear bosses at source XY [9,4] and [9,15] mm. Fit the two M2 nuts
 before the fuses or other electronics. Insert the first from source −X through an 18 mm entry and
 the second from source +Y through a 12 mm entry. The native check covers
 the complete nut lowering/entry paths and full pocket-roof bearing.
 
-Fit two M2 × 20 screws finished to 17.5 mm under head and two 0.35 mm M2
+Fit two M2 × 20 screws finished to 17.7 mm under head and two 0.35 mm M2
 washers from the rear. Deburr and gauge the finished lengths. The nominal
 tip extends 0.4 mm beyond the nut. The screw bores stop below the floor top;
 0.95 mm of nominal printed material covers each finished tip. The nut roof
@@ -48,7 +48,7 @@ bearing, full engagement and valid connected printed geometry.
 In Narrow, the source coordinates are case coordinates. F_FIB, F_RING1 and
 F_RING2 run from X = 0 to20 mm at Y = −3, 5 and13 mm. F_RING3 and F_AUX
 run from Y = −7 to13 mm at X = 24.5 and32.5 mm. Each joint centre is at
-Z = 20.6 mm. Pin1 is at the lower coordinate; pin2 is at the higher one.
+Z = 20.8 mm. Pin1 is at the lower coordinate; pin2 is at the higher one.
 In Wide, turn the whole carrier 90 degrees, then add [11,25] mm. Transform
 both ends and every support together. `branch_fuses.ports()` supplies these
 specified joint exits. Final wire cut lengths and fitted routes remain open.
@@ -74,3 +74,8 @@ battery access, all fixed routes and service states still require installed
 checks. Count each selected fuse, tie and hardware item once. Do not use
 reference volumes as purchased parts or mass. Physical fit, joints, insulation,
 fault interruption, vibration, temperature and wearing remain unmeasured.
+
+The carrier floor gives 0.45 mm nominal clearance below its tie loops to the
+Narrow radio loaded-space top. This exceeds the selected 0.25 mm service gap.
+Keep that margin; the first placement gave only the minimum at an exact
+geometry boundary. Physical clearance and assembly variation remain unmeasured.

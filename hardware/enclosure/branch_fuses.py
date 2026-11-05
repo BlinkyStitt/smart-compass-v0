@@ -32,12 +32,12 @@ def geometry(design='narrow',electrical=None):
     return {'design':design,'rotation_deg':90 if design=='wide' else 0,
             'translation_xy_mm':[11,25] if design=='wide' else [0,0],
             'stations_mm':[[9,4],[9,15]],'nut_entry_axes':[[-1,0],[0,1]],'nut_entry_lengths_mm':[18,12],
-            'floor_bottom_z_mm':16.75,'floor_thickness_mm':1.35,
+            'floor_bottom_z_mm':16.95,'floor_thickness_mm':1.35,
             'fuses':{'F_FIB':[0,-3,0],'F_RING1':[0,5,0],'F_RING2':[0,13,0],
                      'F_RING3':[24.5,-7,90],'F_AUX':[32.5,-7,90]},
             'fuse_body_diameter_max_mm':2.8,'fuse_body_length_nominal_mm':7.11,
             'fuse_lead_diameter_nominal_mm':.64,'assembly_target_mm':[20,5,5],
-            'stock_screw':'M2x20; finish17.5mm under head','stock_screw_tip_projection_mm':.4,
+            'stock_screw':'M2x20; finish17.7mm under head','stock_screw_tip_projection_mm':.4,
             'lacing':'Alpha Wire LC134 BK088; ten70mm blanks; separate square-knot spot ties',
             'insulation':'TE Raychem RNF-100-1/8-0-SP; recover before fitting PETG',
             'physical_acceptance':'unmeasured'}
@@ -57,7 +57,7 @@ def ports(design='narrow'):
         a=math.radians(rotation)
         for pin,t in (('1',0),('2',20)):
             px,py=x+t*math.cos(a),y+t*math.sin(a)
-            out[name+'.'+pin]=[dx+c*px-s*py,dy+s*px+c*py,20.6]
+            out[name+'.'+pin]=[dx+c*px-s*py,dy+s*px+c*py,20.8]
     return out
 
 
@@ -69,43 +69,43 @@ def native_shapes(design='narrow'):
     data=geometry(design)
     def box(x0,x1,y0,y1,z0,z1):return Part.makeBox(x1-x0,y1-y0,z1-z0,App.Vector(x0,y0,z0))
     def cylinder(r,h,x,y,z):return Part.makeCylinder(r,h,App.Vector(x,y,z))
-    floor=box(-2.25,36.35,-8.35,16.85,16.75,18.1)
+    floor=box(-2.25,36.35,-8.35,16.85,16.95,18.3)
     products={};additions=[];cuts=[];paths=[];probes=[]
     flat,nh=nut_dimensions('M2');pflat,ph=nut_dimensions('M2',pocket=True)
     for i,(x,y) in enumerate(data['stations_mm']):
-        floor=floor.fuse(cylinder(3.1,16.1,x,y,2))
-        points=[App.Vector(x+a,y+b,14.85) for a,b in hexagon(0,0,pflat)]
+        floor=floor.fuse(cylinder(3.1,16.3,x,y,2))
+        points=[App.Vector(x+a,y+b,15.05) for a,b in hexagon(0,0,pflat)]
         pocket=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,ph))
-        entry,path=native_tools(x,y,14.85,data['nut_entry_axes'][i],length=data['nut_entry_lengths_mm'][i]);paths.append(path)
+        entry,path=native_tools(x,y,15.05,data['nut_entry_axes'][i],length=data['nut_entry_lengths_mm'][i]);paths.append(path)
         # Stop the shaft bore below the floor top: retain the insulating roof
         # above the finished screw, rather than expose its tip to a fuse.
-        floor=floor.cut(pocket.fuse(entry)).cut(cylinder(1.1,15.35,x,y,1.9))
+        floor=floor.cut(pocket.fuse(entry)).cut(cylinder(1.1,15.55,x,y,1.9))
         additions.append(cylinder(3.1,2,x,y,0));cuts.append(cylinder(1.1,2.2,x,y,-.1))
         w=WASHERS['M2'];wz=-w['thickness']
         if abs(wz+.35)>1e-8:raise ValueError('Review changed M2 rear washer stack')
-        products['BranchFuseMountScrew'+str(i)]=cylinder(1,17.5,x,y,wz).fuse(cylinder(1.9,2,x,y,wz-2))
+        products['BranchFuseMountScrew'+str(i)]=cylinder(1,17.7,x,y,wz).fuse(cylinder(1.9,2,x,y,wz-2))
         products['BranchFuseMountWasher'+str(i)]=cylinder(w['od']/2,w['thickness'],x,y,wz).cut(cylinder(w['id']/2,w['thickness'],x,y,wz))
-        points=[App.Vector(x+a,y+b,15.15) for a,b in hexagon(0,0,flat)]
-        products['BranchFuseMountNut'+str(i)]=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,nh)).cut(cylinder(1.1,nh+.2,x,y,15.05))
+        points=[App.Vector(x+a,y+b,15.35) for a,b in hexagon(0,0,flat)]
+        products['BranchFuseMountNut'+str(i)]=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,nh)).cut(cylinder(1.1,nh+.2,x,y,15.25))
         probes.append(cylinder(3.1,.05,x,y,1.95).cut(cylinder(1.1,.1,x,y,1.925)))
     for index,(name,(x,y,rotation)) in enumerate(data['fuses'].items()):
-        body=Part.makeCylinder(1.4,7.11,App.Vector(6.445,0,20.6),App.Vector(1,0,0))
-        body=body.fuse(Part.makeCylinder(.32,20,App.Vector(0,0,20.6),App.Vector(1,0,0))).removeSplitter()
-        target=box(0,20,-2.5,2.5,18.1,23.1)
+        body=Part.makeCylinder(1.4,7.11,App.Vector(6.445,0,20.8),App.Vector(1,0,0))
+        body=body.fuse(Part.makeCylinder(.32,20,App.Vector(0,0,20.8),App.Vector(1,0,0))).removeSplitter()
+        target=box(0,20,-2.5,2.5,18.3,23.3)
         ref=target.cut(body).removeSplitter()
         for shape in (body,ref):shape.rotate(App.Vector(),App.Vector(0,0,1),rotation);shape.translate(App.Vector(x,y,0))
         products['BranchFuse'+name]=body;products['BranchFuse'+name+'Assembly']=ref
         for j,t in enumerate((2,18)):
-            outer=box(t-.85,t+.85,-3,3,16.25,23.6);inner=box(t-1,t+1,-2.5,2.5,16.75,23.1)
+            outer=box(t-.85,t+.85,-3,3,16.45,23.8);inner=box(t-1,t+1,-2.5,2.5,16.95,23.3)
             loop=outer.cut(inner)
             # Each row's knot stays on its positive side. Its2.2mm side
             # space is checked against adjacent rows and neighbouring fuses.
-            knot=(box(t-2,t+2,2.6,4.8,20,22) if rotation==0 else box(t-2,t+2,-4.8,-2.6,20,22))
+            knot=(box(t-2,t+2,2.6,4.8,20.2,22.2) if rotation==0 else box(t-2,t+2,-4.8,-2.6,20.2,22.2))
             tie=loop.fuse(knot).removeSplitter()
             tie.rotate(App.Vector(),App.Vector(0,0,1),rotation);tie.translate(App.Vector(x,y,0))
             products['BranchFuseLacing'+str(2*index+j)]=tie
             for a,b in ((-3.15,-2.35),(2.35,3.15)):
-                slot=box(t-1.05,t+1.05,a,b,16.65,18.2)
+                slot=box(t-1.05,t+1.05,a,b,16.85,18.4)
                 slot.rotate(App.Vector(),App.Vector(0,0,1),rotation);slot.translate(App.Vector(x,y,0));floor=floor.cut(slot)
     products['BranchFuseCarrier']=floor.removeSplitter()
     result={**products,'rear_addition':Part.makeCompound(additions),'rear_cutout':Part.makeCompound(cuts),'mount_probes':probes,'nut_paths':paths}
@@ -141,13 +141,13 @@ def native_check(shapes,design='narrow'):
         # This carrier uses +Z screws. The nut must reach the floor underside.
         tip=screw.BoundBox.ZMax-nut.BoundBox.ZMax;tips.append(tip)
         if not .2<=tip<=.8:raise ValueError('Branch-fuse screw lacks nut engagement or short projection')
-        if abs(nut.BoundBox.ZMax-16.75)>1e-7:raise ValueError('Branch-fuse nut is not seated against its pocket roof')
-        faces=[f for f in nut.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMax-16.75)<1e-7]
+        if abs(nut.BoundBox.ZMax-16.95)>1e-7:raise ValueError('Branch-fuse nut is not seated against its pocket roof')
+        faces=[f for f in nut.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMax-16.95)<1e-7]
         if sum(f.Area-f.common(shapes['BranchFuseCarrier']).Area for f in faces)>1e-6:
             raise ValueError('Branch-fuse nut lacks full pocket-roof bearing')
     native_check_paths(shapes['nut_paths'],shapes['BranchFuseCarrier'],2)
     native_check_paths(shapes['nut_paths'],rear,2)
     return {'scope':'branch-fuse carrier component study','design':design,'physical_products':len(PRODUCT_NAMES),'references':len(REFERENCE_NAMES),
             'selected_fuses':dict(PARTS),'ports_mm':ports(design),'screw_tip_projection_mm':tips,
-            'roof_above_screw_tip_mm':18.1-max(shapes['BranchFuseMountScrew'+str(i)].BoundBox.ZMax for i in range(2)),
+            'roof_above_screw_tip_mm':18.3-max(shapes['BranchFuseMountScrew'+str(i)].BoundBox.ZMax for i in range(2)),
             'full_installed_harness':'not checked','physical_acceptance':'unmeasured'}
