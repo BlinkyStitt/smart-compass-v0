@@ -310,6 +310,10 @@ PWM, radio bursts, inrush and faults. Do not claim that the 85% efficiency or
 
 ## Physical qualification
 
+Use the [built-prototype qualification procedure](qualification-plan.md) for
+the test conditions, separate records and expected observations. It covers the
+intended rainbow workload, service, optics, balance and compass interference.
+
 The JSON retains procedures and empty result lists for startup/current pulses;
 low-battery shutdown/rebound; OFF/decay/replacement; controlled fault/reversal;
 both closed-enclosure temperatures; runtime; fit and complete worn mass.
