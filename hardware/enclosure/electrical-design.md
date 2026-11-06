@@ -251,8 +251,17 @@ Thus OFF disconnects the cell's positive feed **and** the converter output from
 the loads. R_B drains the boost input. R_BOOST drains its isolated output.
 R_LOAD drains the load rail; R_OUT drains C_OUT after the Fibonacci fuse, even
 when that fuse opens. Place C_OUT at the Fibonacci feed with short paired leads.
+
 Other board capacitors and signal paths still affect decay. There is no qualified
 five-second or ten-second reset wait. `off_dwell_s` remains unset until measured.
+
+The original 166 mm Fibonacci256 input pads are visible in the retained
+[maker rear photograph and terminal map](sources/fibonacci256-166/README.md).
+With DI at the bottom, the rear order is GND, DI, 5V. The front-view routing
+order is 5V, DI, GND. Use the input DI pad; leave the opposite DO row unused.
+The map supplies photo-estimated nominal endpoints for flexible wires. It does
+not supply manufacturing tolerances or prove the installed harness, joint
+clearance, strain relief or board-to-stencil registration.
 
 For ordinary cell removal, S1 OFF separates the positive contact from all those
 stored-charge rails. The digital check conservatively treats every module's

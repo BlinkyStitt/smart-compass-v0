@@ -464,7 +464,14 @@
     },
     "FIBONACCI": {
       "part": "Original Evil Genius Labs Fibonacci256",
-      "source": "https://www.evilgeniuslabs.org/fibonacci256"
+      "source": "https://www.evilgeniuslabs.org/fibonacci256",
+      "board_revision": "v0.1-166mm",
+      "source_record": "sources/fibonacci256-166/index.json",
+      "terminal_bindings": {
+        "5V": "IN.5V",
+        "DIN": "IN.DI",
+        "GND": "IN.GND"
+      }
     },
     "RING1": {
       "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",

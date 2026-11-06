@@ -1,0 +1,80 @@
+{
+  "product": "Original Fibonacci256,166mm,v0.1",
+  "coordinate_kind": "photo-estimated nominal",
+  "frame": "PCB centre origin; LED-side front view; +X right,+Y up,+Z toward LEDs; rotate the board so input DI is at -Y. Rear labels therefore read GND,DI,5V from left to right.",
+  "published_diameter_mm": 166,
+  "published_pcb_thickness_mm": 1.6,
+  "photo": "fnqNrNl.png",
+  "working_image_px": [
+    1824,
+    1368
+  ],
+  "method": "Six manually inspected pad centres; parallel equal-pitch opposite rows give projective rectification, then the green board boundary is fitted to the published166mm circle. Image measurements are nominal estimates, with no manufacturer tolerance claim.",
+  "manual_pad_order": [
+    "IN.GND",
+    "IN.DIN",
+    "IN.5V",
+    "OUT.GND",
+    "OUT.DO",
+    "OUT.5V"
+  ],
+  "manual_pad_centres_px": [
+    [
+      876.0,
+      1326.0
+    ],
+    [
+      899.0,
+      1326.0
+    ],
+    [
+      922.0,
+      1325.0
+    ],
+    [
+      878.0,
+      32.0
+    ],
+    [
+      897.0,
+      32.0
+    ],
+    [
+      917.0,
+      32.0
+    ]
+  ],
+  "circle_radial_residual_rms_mm": 0.5592482050132711,
+  "measurement_note": "The image fit residual is not a pad-position error bound. The circle, planar equal-pitch parallel row assumptions and manual landmarks do not establish manufacturing tolerances. Coordinates are rounded to0.1mm for nominal routing; this does not imply0.1mm accuracy.",
+  "pads": {
+    "IN.5V": {
+      "net": "5V",
+      "front_xy_mm": [
+        -2.6,
+        -81.8
+      ]
+    },
+    "IN.DI": {
+      "net": "DIN",
+      "front_xy_mm": [
+        0,
+        -81.9
+      ]
+    },
+    "IN.GND": {
+      "net": "GND",
+      "front_xy_mm": [
+        2.6,
+        -82.0
+      ]
+    }
+  },
+  "unused_pads": [
+    "OUT.5V",
+    "OUT.DO",
+    "OUT.GND"
+  ],
+  "assembly": "Fixed rear-side soldered wires to the labelled input pads. No new PCB holes, pin headers, Dupont plugs or connection to DO. Verify labels and actual pad positions before soldering; fit the wires to the supplied board. Complete external routes and restraints are checked separately.",
+  "stencil_registration": "This local terminal frame does not change the published pixel map or original stencil. Installed board-to-stencil rotation must be set with their common physical pattern; the terminal frame alone does not prove it.",
+  "physical_acceptance": "unmeasured"
+}

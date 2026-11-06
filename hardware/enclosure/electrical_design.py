@@ -15,6 +15,7 @@ import electrical_latch
 import capacitor_mount
 import electrical_peripherals
 import electrical_blackpill
+import fibonacci_board
 from battery_access import contact_source
 
 HERE = Path(__file__).resolve().parent
@@ -193,6 +194,11 @@ def assess(design, directory=HERE):
             and bool(terminals.get('source')) and bool(terminals.get('assembly_source'))
             and bool(terminals.get('current_basis')) and bool(terminals.get('retention')),
             'sparkle-led-terminations', 'Use the stock JP1 clamps with one supported22AWG power or26AWG data lead; retain strain relief and the unmeasured pulse/thermal boundary.')
+    fibonacci_terminals = {}
+    try:
+        fibonacci_terminals = fibonacci_board.terminals(parts.get('FIBONACCI', {}), directory)
+    except (ValueError, OSError) as error:
+        require(False, 'fibonacci-terminal-binding', str(error))
     imu_terminals = {}
     try:
         imu_terminals = electrical_imu.terminals(parts.get('IMU', {}), directory)
@@ -328,6 +334,7 @@ def assess(design, directory=HERE):
         'service': design.get('service', {}),
         'off_positive_contact_isolation': isolation,
         'imu_source_terminals': imu_terminals,
+        'fibonacci_source_terminals': fibonacci_terminals,
         'peripheral_source_terminals':peripheral_terminals,
         'blackpill_source_terminals':blackpill_terminals,
         'boost_source_terminals': boost_terminals,
