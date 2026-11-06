@@ -8,6 +8,7 @@ import hashlib
 import itertools
 import json
 import math
+import battery_leads
 from pathlib import Path
 
 
@@ -22,7 +23,7 @@ METAL_PARTS = MOUNT_PARTS | frozenset({'BatteryHingePin','BatteryHingeNut','Batt
     'BatteryContact'+end+part for end in ('P','N')
     for part in ('','Screw0','Screw1','Nut0','Nut1','Washer0','Washer1')})
 WIRE_PARTS=frozenset({'BatteryLeadP','BatteryLeadN'})
-PROTECTION_PARTS=frozenset({'BatteryMainFuse'})
+PROTECTION_PARTS=frozenset({'BatteryMainFuse'})|battery_leads.FUSE_TIE_NAMES
 PART_NAMES = PRINTED_PARTS | SHIM_PARTS | METAL_PARTS | WIRE_PARTS | PROTECTION_PARTS | {'BatteryCell','BatteryPullRibbon'}
 
 
@@ -426,7 +427,7 @@ def native_shapes(spec, design):
     length = spec['cell']['length_mm'][1]
     cell = cylinder(spec['cell']['diameter_mm'][1]/2, length,
                     cx-length/2, cy, c['cell_axis_z_mm'], (1, 0, 0))
-    return {**{name:leads[name] for name in WIRE_PARTS|PROTECTION_PARTS},'wire_cuts':leads['wire_cuts'],**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
+    return {**{name:leads[name] for name in WIRE_PARTS|PROTECTION_PARTS},'wire_cuts':leads['wire_cuts'],'main_fuse_lacing':leads['main_fuse_lacing'],'main_fuse_ports_mm':leads['main_fuse_ports_mm'],**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
             'BatteryKeeper': bar.removeSplitter(), 'BatteryHingePin': pin,
             'BatteryHingeNut': hinge_nut, 'BatteryKeeperScrew': keeper_pin,
             'BatteryKeeperNut0': keeper_nuts[0], 'BatteryKeeperNut1': keeper_nuts[1],
@@ -587,7 +588,7 @@ def native_check(spec, design, shapes, *, surroundings=()):
         raise ValueError('A 1 mm unseated cell clears the closed seating saddles')
     if min(gaps.values()) < removal['noncontact_clearance_mm']-1e-6:
         raise ValueError('Cell removal clearance failed: ' + str(gaps))
-    return {'contact_wire_cuts':shapes['wire_cuts'],'mount_bearing':bearing,'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
+    return {'main_fuse_lacing':shapes['main_fuse_lacing'],'main_fuse_ports_mm':shapes['main_fuse_ports_mm'],'physical_products':len(PART_NAMES),'contact_wire_cuts':shapes['wire_cuts'],'mount_bearing':bearing,'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
             'keeper_continuous_clearance_mm': keeper_gap,
             'cell_continuous_clearance_mm': gaps,
             'intended_insulating_stop_contact_mm3': sweep.common(stop_part).Volume,

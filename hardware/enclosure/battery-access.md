@@ -158,9 +158,10 @@ outside bends.
 
 The positive lead ends at the 20 x 5 x 5 mm main-fuse reservation. Its integral
 insulating holder opens toward the rear, outside the cell opening. Fit it
-before bolting down the cradle. Two lacing slots reserve joint restraint.
-Lacing selection, joint insulation, downstream wiring, actual strain relief,
-fault withstand and both full installed checks remain incomplete.
+before bolting down the cradle. Four side-wall slots carry two joint restraints.
+The two selected main-fuse ties and joint gauge are specified below. Downstream
+wiring, actual strain relief, fault withstand and both complete wired assemblies
+remain incomplete.
 The electrical `fitted-harness` failure stays active.
 
 The rear opening is 106 mm long. The end walls stay 2 mm thick. The long side
@@ -176,3 +177,52 @@ fuse outlet while you slide the cup into its collar. Fit and gauge the clamps
 and shims. Solder the fuse end last. Keep the wire insulation outside the cup;
 the printed collar supplies secondary insulation. This sequence is a specified
 process. Joint quality, retention and physical assembly remain unmeasured.
+
+## Main-fuse joint restraints
+
+Use the selected Littelfuse 0251004.NRT1L 4 A axial fuse. The native
+BatteryMainFuse shape reserves the complete insulated fuse and lap-joint
+assembly. Its overall gauge is 20 × 5 × 5 mm. The central body gauge is
+9 × 5 × 5 mm. Each end has a 5.5 × 3.5 × 3.5 mm joint gauge. These are
+finished assembly requirements. They are not supplied size guarantees or
+material volumes for the mass ledger. Count one fuse. The retained source is
+Littelfuse 251, GK 18-Aug-2026, pages 1–3. Keep the nominal lead/body lengths
+separate from the 2.80 mm maximum body diameter.
+See the [current fuse source and joint process](branch-fuses.md).
+
+Pin 1 is the right end at X51 mm in both designs. It connects to the fixed
+positive contact lead. Pin 2 is the left end at X31 mm and goes to FUSED_CELL
+and S1.1. Both joint axes are Y−69.5 mm/Z8.3814132935 mm. These are assembly
+coordinates. The fixed contact lead includes its existing 3.5 mm stripped-end
+allowance. Keep each lap joint inside its end region. Use one 18 AWG wire at
+each fuse end. Keep insulation beyond the joint. Use the selected TE
+RNF-100-1/8 sleeves. Recover and inspect them outside PETG. Gauge the central
+body and both completed joints against their separate limits. In particular,
+3.5 mm is a finished joint target, not a vendor guarantee for a soldered lap
+joint. Joint quality, actual fit and insulation remain unmeasured.
+
+Use two Alpha Wire LC134 BK088 square-knot spot ties, at X33 and X49 mm.
+Cut 70 mm blanks. Each tie captures its sleeved lead and the negative-Y
+housing wall. Pass its two crossing bands through the two slots in that wall.
+Keep the loop below the roof. Put the knot and trimmed tails on the negative-Y
+side, inside the modeled 4 × 2.2 × 2 mm space. Centre the left knot at
+X33 mm and the right knot at X50 mm. The right knot sits 1 mm along X from
+its band centre to clear the Narrow rear fastener post. Keep both knots
+clear of the cell-bay wall. Seat each tie without crushing the joint. Do not put a tie
+on the epoxy fuse body.
+
+The stock maximum width/thickness is 1.6764/0.4318 mm. The native loop reserves
+1.7 mm width and 0.5 mm thickness. Each 0.8 mm high wall slot gives 0.15 mm
+clearance above and below its band. The slots extend from −2.4 to −1.6 mm
+and from +1.6 to +2.4 mm relative to the fuse axis. The housing keeps 1.7 mm
+of side wall below and above those slots. Its roof remains 1.35 mm thick.
+The rear-bearing brace remains unchanged. These are geometry targets, not
+knot shape, force, retention or printed-strength ratings.
+
+Use the [Alpha specification](https://www.alphawire.com/products/accessories/fit-wire-management/lacing-tape/lc134),
+printed 13-May-2024, and its [square-knot instructions](https://www.alphawire.com/-/media/project/alphawire/alphawire/files/other/lacing-cord-installation-instructions.pdf?rev=4c0c10ce440d4bdfbef409fef7b4e7d7).
+Its 25 lb minimum tape breaking strength does not rate an installed knot or
+holder. Gauge every completed knot and trimmed-tail space. The component
+check requires both ties and rejects a tie that intrudes into the joint or
+housing. Physical fit, retention, temperature, insulation and fault withstand
+remain unmeasured.

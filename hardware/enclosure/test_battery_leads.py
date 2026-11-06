@@ -64,12 +64,29 @@ class BatteryLeadTests(unittest.TestCase):
             spec=copy.deepcopy(self.spec);spec['contact_leads']['route_descent_deg']=value
             with self.subTest(value=value),self.assertRaises(ValueError):layout(spec,'narrow',self.electrical)
 
-    def test_three_new_parts_are_required_in_the_compartment_census(self):
+    def test_contact_leads_fuse_and_both_ties_are_required_in_the_compartment_census(self):
         from battery_access import PART_NAMES, WIRE_PARTS, PROTECTION_PARTS
-        self.assertEqual(len(PART_NAMES),55)
+        self.assertEqual(len(PART_NAMES),57)
         self.assertEqual(WIRE_PARTS,{'BatteryLeadP','BatteryLeadN'})
-        self.assertEqual(PROTECTION_PARTS,{'BatteryMainFuse'})
+        self.assertEqual(PROTECTION_PARTS,{'BatteryMainFuse','BatteryMainFuseLacing0','BatteryMainFuseLacing1'})
         self.assertTrue(WIRE_PARTS|PROTECTION_PARTS <= PART_NAMES)
+
+    def test_missing_loop_or_changed_stock_space_fails(self):
+        for key,value in [('quantity',1),('quantity',True),('part','Another tape'),
+                          ('finished_loop_section_mm',[1.5,.4]),('knot_side','positiveY'),
+                          ('source','Another source'),('knot_x_offsets_mm',[0,2]),
+                          ('knot_x_offsets_mm',[0,True])]:
+            spec=copy.deepcopy(self.spec);spec['contact_leads']['main_fuse_lacing'][key]=value
+            with self.subTest(key=key,value=value),self.assertRaisesRegex(ValueError,'both selected main-fuse'):
+                layout(spec,'wide',self.electrical)
+
+
+    def test_ties_cannot_bear_on_the_body_or_leave_the_end_gauges(self):
+        for stations in ([-3,8],[-8,10],[-8,-6],[-8,True],[8],[-8,float('nan')]):
+            spec=copy.deepcopy(self.spec);spec['contact_leads']['main_fuse_lacing']['stations_from_fuse_centre_mm']=stations
+            with self.subTest(stations=stations),self.assertRaisesRegex(ValueError,'insulated lead regions'):
+                layout(spec,'narrow',self.electrical)
+
 
 
 if __name__=='__main__':unittest.main()

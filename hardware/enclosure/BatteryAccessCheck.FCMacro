@@ -52,7 +52,7 @@ try:
                     raise
             else:
                 raise ValueError('A thin obstruction in the service motion was ignored')
-        for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1','BatteryLeadP','BatteryMainFuse'):
+        for missing in ('BatteryCell','BatteryContactN','BatteryKeeperNut1','BatteryLeadP','BatteryMainFuse','BatteryMainFuseLacing0','BatteryMainFuseLacing1'):
             broken=dict(shapes)
             del broken[missing]
             try:
@@ -61,6 +61,11 @@ try:
                 if 'component census' not in str(error): raise
             else:
                 raise ValueError('Missing component accepted: '+missing)
+        broken=dict(shapes);broken['BatteryMainFuseLacing0']=shapes['BatteryMainFuseLacing0'].copy();broken['BatteryMainFuseLacing0'].translate(App.Vector(0,0,.2))
+        try:battery_access.native_check(spec,design,broken)
+        except ValueError as error:
+            if 'closed-position interference' not in str(error):raise
+        else:raise ValueError('A main-fuse tie intruding into its housing was accepted')
         broken={**shapes,'BatteryCell2':shapes['BatteryCell']}
         try:
             battery_access.native_check(spec,design,broken)
@@ -79,8 +84,12 @@ try:
             output.write('\n')
     print(json.dumps(record), flush=True)
     print('BATTERY ACCESS COMPONENT CHECK PASS', flush=True)
-except Exception:
+except Exception as error:
     traceback.print_exc()
+    if result_path and not Path(result_path).exists():
+        with Path(result_path).open('x') as output:
+            json.dump({'status':'fail','error':str(error),'inputs':locals().get('before',{}),
+                       'freecad_version':App.Version()},output,indent=2)
 finally:
     if result_path:
         QtCore.QTimer.singleShot(0, QtCore.QCoreApplication.quit)

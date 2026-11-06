@@ -201,12 +201,53 @@
     "main_fuse_centre_x_from_cell_mm": 41.0,
     "bend_basis": "Specified individual-wire routing target. NASA-STD-8739.4A Change4 Table7-1, p30:3x outside diameter minimum for AWG10-or-smaller non-coax/non-polyimide harness. This does not qualify the wire, bends, solder joints or a thicker bundle.",
     "bend_source": "https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf",
-    "limits": "Two fixed insulated main leads and a main-fuse reservation only. Joint insulation, fuse lacing, downstream wiring and both installed assemblies remain incomplete; no physical acceptance.",
+    "limits": "Two fixed insulated main leads, one selected main fuse in a20x5x5mm finished assembly gauge and two specified lacing loops. Downstream fixed wiring and physical joint/insulation/retention/fault qualification remain incomplete.",
     "final_return_straight_mm": 5,
     "route_descent_deg": 11.6,
     "cup_collar_start_x_from_cell_mm": 49.8,
     "cup_collar_end_x_from_cell_mm": 54.5,
     "cup_collar_inner_radius_mm": 1.6,
-    "cup_collar_outer_radius_mm": 2.95
+    "cup_collar_outer_radius_mm": 2.95,
+    "main_fuse_lacing": {
+      "part": "Alpha Wire LC134 BK088",
+      "quantity": 2,
+      "blank_length_mm": 70,
+      "stock_section_max_mm": [
+        1.6764,
+        0.4318
+      ],
+      "finished_loop_section_mm": [
+        1.7,
+        0.5
+      ],
+      "knot_space_mm": [
+        4,
+        2.2,
+        2
+      ],
+      "knot_side": "negativeY",
+      "source": "https://www.alphawire.com/products/accessories/fit-wire-management/lacing-tape/lc134",
+      "source_revision": "Alpha specification printed13May2024; .060\u00b1.006in width/.014\u00b1.003in thickness;25lb tape breaking strength,not knot retention",
+      "insulation": "TE Raychem RNF-100-1/8-0-SP; recover outside PETG; finish each fuse/joint assembly within20x5x5mm gauge",
+      "physical_acceptance": "unmeasured",
+      "stations_from_fuse_centre_mm": [
+        -8,
+        8
+      ],
+      "body_gauge_mm": [
+        9,
+        5,
+        5
+      ],
+      "joint_gauge_mm": [
+        5.5,
+        3.5,
+        3.5
+      ],
+      "knot_x_offsets_mm": [
+        0,
+        1
+      ]
+    }
   }
 }
