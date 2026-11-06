@@ -226,6 +226,9 @@ class BuildInputTests(unittest.TestCase):
         self.check_hashed_input('hardware/enclosure/electrical-control-revision.json')
         self.check_hashed_input('hardware/enclosure/electrical_control.py')
 
+    def test_physical_procedure_changes_and_omissions_change_or_block_provenance(self):
+        self.check_hashed_input('hardware/enclosure/qualification-plan.md')
+
     def check_hashed_input(self, relative):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

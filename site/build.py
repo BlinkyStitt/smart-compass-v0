@@ -190,7 +190,7 @@ def source_snapshot(*, include_samples=True):
     paths.update(ROOT / name for name in (
         "hardware/enclosure/battery-options.md", "hardware/enclosure/electrical-review.json",
         "hardware/enclosure/electrical-design.json", "hardware/enclosure/electrical_design.py",
-        "hardware/enclosure/electrical-design.md",
+        "hardware/enclosure/electrical-design.md", "hardware/enclosure/qualification-plan.md",
         "hardware/enclosure/electrical_imu.py",
         "hardware/enclosure/electrical_peripherals.py",
         "hardware/enclosure/sources/gps-featherwing/Adafruit Ultimate GPS FeatherWing.brd",
