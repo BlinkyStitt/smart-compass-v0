@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-schmitt-driven-divider-3-ramp-audit",
+  "status": "partial control repair; complete electrical qualification remains open",
+  "topology": "push-pull-schmitt-before-divider",
+  "controller": "LTC2955ITS8-1#TRMPBF",
+  "buffer": "SN74LVC1G17DBVR",
+  "replaces": "Replace the original R_EN_TOP/R_EN_BOTTOM divider and its direct U3.EN connection. Replace the KILL divider values. This supersedes the 74LVC1G07 trial only for control; the main power, PG/ENABLE and discharge paths are still unqualified.",
+  "nets": {
+    "C": ["U3.VIN", "U3.ON", "U5.5", "R_EN_PULLUP.1", "R_KILL_TOP.1", "C_U5.1"],
+    "CONTROLLER_EN": ["U3.EN", "U5.2", "R_EN_PULLUP.2"],
+    "BUFFER_OUT": ["U5.4", "R_UV_TOP.1"],
+    "EFUSE_EN": ["R_UV_TOP.2", "R_UV_BOTTOM.1", "U1.EN_UVLO"],
+    "KILL": ["R_KILL_TOP.2", "R_KILL_BOTTOM.1", "U3.KILL", "C_KILL.1"],
+    "GND": ["U5.3", "R_UV_BOTTOM.2", "R_KILL_BOTTOM.2", "C_U5.2", "C_KILL.2"]
+  },
+  "open_pins": ["U5.1"],
+  "capacitors": {
+    "C_U5": {"nominal_f": 1e-7, "status": "Required local bypass; exact part and effective capacitance remain unqualified"},
+    "C_KILL": {"nominal_f": 1e-8, "status": "Retained original filter; exact part and transient response remain unqualified"}
+  },
+  "resistors": {
+    "R_UV_TOP": {"part": "TNPW060351K1BEEA", "ohm": 51100},
+    "R_UV_BOTTOM": {"part": "TNPW060325K5BEEA", "ohm": 25500},
+    "R_EN_PULLUP": {"part": "TNPW060310K0BEEA", "ohm": 10000},
+    "R_KILL_TOP": {"part": "TNPW060336K5BEEA", "ohm": 36500},
+    "R_KILL_BOTTOM": {"part": "TNPW060310K0BEEA", "ohm": 10000}
+  },
+  "resistor_model": {
+    "source": "resistors",
+    "initial_tolerance": 0.001,
+    "tcr_per_k": 0.000025,
+    "reference_c": 20,
+    "film_temperature_c": [-40, 85],
+    "endurance_relative": 0.001,
+    "endurance_absolute_ohm": 0.02,
+    "solder_relative": 0.0002,
+    "solder_absolute_ohm": 0.01,
+    "humidity_relative": 0.001,
+    "humidity_absolute_ohm": 0.01,
+    "conditions": "Sum initial tolerance, TCR, 8000 h general-mode endurance, one solder-heat test, and one 1000 h biased 85 C/85% RH test independently. This bounded sensitivity envelope is not a guarantee for simultaneous stresses, arbitrary lifetime or enclosure temperature."
+  },
+  "buffer_limits": {
+    "source": "buffer",
+    "supply_v": [1.65, 5.5],
+    "high_drop_max_v": 0.1,
+    "low_max_v": 0.1,
+    "output_test_current_a": 0.0001,
+    "input_leakage_abs_a": 0.000005,
+    "input_leakage_conditions": "VI=5.5 V or GND, VCC=0 to 5.5 V; applying this bound to intermediate input voltages is a conditional DC sensitivity calculation.",
+    "threshold_table": [
+      {"supply_v": 1.65, "rising_max_v": 1.13, "falling_min_v": 0.35},
+      {"supply_v": 2.3, "rising_max_v": 1.56, "falling_min_v": 0.56},
+      {"supply_v": 3.0, "rising_max_v": 1.92, "falling_min_v": 0.89},
+      {"supply_v": 4.5, "rising_max_v": 2.74, "falling_min_v": 1.51},
+      {"supply_v": 5.5, "rising_max_v": 3.33, "falling_min_v": 1.88}
+    ],
+    "slow_inputs": "True Schmitt input; no input transition-rate limit in section 5.3. This removes the old 10 ns/V restriction, not the need to bound shutdown delay or supply ramps."
+  },
+  "controller_limits": {
+    "source": "controller",
+    "low_max_v": 0.4,
+    "sink_test_current_a": 0.001,
+    "external_pullup_rule": "At EN=0 V, the external pull-up must source less than 1 mA. Do not use the internal pull-up current at zero volts as a divider-edge leakage bound."
+  },
+  "conditional_path": {
+    "post_sense_resistance_ohm": 0.1,
+    "basis": "Sensitivity input from the previous control study, NOT a measured or sourced full-path resistance. C is assumed no greater than A while the controller branch is forward supplied. Excludes reverse/backfeed, droop and ramp states."
+  },
+  "ramp_study": {
+    "scope": "Conditional KILL RC response to a linear falling C rail followed by an indefinite hold. Initially at equilibrium, constant leakage, nominal capacitance, zero subsequent buffer/eFuse delay. Not a complete circuit or a bound for contact bounce, reversal, arbitrary stored charge or the actual assembly.",
+    "controller_timing": {
+      "source": "controller",
+      "kill_propagation_max_s": 0.000060,
+      "kill_minimum_pulse_s": 0.000060,
+      "conditions": "2955fa p. 4: full operating-temperature table, VIN=7 V unless otherwise noted. The 60 us minimum pulse is retained separately from 60 us maximum propagation. Applicability to this varying 1S supply and actual EN load is not established. The prose's 30 us pulse is not used in place of the table."
+    },
+    "profiles": {
+      "slow_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 1.0, "blanking_remaining_s": 0},
+      "fast_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 0.001, "blanking_remaining_s": 0},
+      "startup_decline": {"initial_v": 4.3, "final_v": 3.0, "fall_s": 0.001, "blanking_remaining_s": 0.72}
+    },
+    "designs": {
+      "wide": {"kill_capacitance_max_f": null, "slew_max_v_per_s": null, "initial_excess_v": null, "response_max_s": null, "blanking_remaining_s": null},
+      "narrow": {"kill_capacitance_max_f": null, "slew_max_v_per_s": null, "initial_excess_v": null, "response_max_s": null, "blanking_remaining_s": null}
+    },
+    "remaining_evidence": [
+      "Effective C_KILL including tolerance/parasitics, constant leakage applicability and initial charge; a nominal 10 nF is not an upper bound.",
+      "Continuous falling-slew bound at C, or a complete response for steps, bounce and rebound; preserve KILL blanking and low-pulse persistence.",
+      "Controller timing applicability to the 1S ramp and EN load, buffer input/leakage across supplies, and end-to-end delay through eFuse EN including parasitics. No inferred interpolation between tabulated buffer supplies.",
+      "Complete circuit states, reverse/backfeed pin conditions and latch behavior remain required. A conditional ordering pass is not qualification."
+    ]
+  },
+  "unqualified": [
+    "Intermediate-voltage input leakage, logic thresholds between tabulated supplies, unpowered/ramping buffer and complete reverse/backfeed states",
+    "Controller EN, filter and buffer propagation with actual parasitic capacitances; no maximum end-to-end shutdown time is established",
+    "Post-sense conductor resistance, peak/inrush demand and capacitor hold-up during the 720 ms KILL blanking interval",
+    "PG-to-boost shutdown, fuse coordination, complete PCB/BOM/branches, reset dwell and thermal bounds"
+  ],
+  "sources": {
+    "buffer": {
+      "url": "https://www.ti.com/lit/ds/symlink/sn74lvc1g17.pdf",
+      "revision": "SCES351Y, October 2025",
+      "sections": "4 pin map; 5.3 recommended conditions; 5.5 DC limits; 7.4 function table",
+      "retrieved_pdf_sha256": "74ff979da5dcaf2b3695cf9a500b46962bb8489033db989b5537ec5cef88c61d",
+      "reviewed": "2026-10-31"
+    },
+    "resistors": {
+      "url": "https://www.vishay.com/docs/28758/tnpw_e3.pdf",
+      "revision": "28758, 10-Apr-2026",
+      "sections": "pp. 2-4 general mode, values and part coding; pp. 12-14 endurance, TCR, humidity and solder heat",
+      "retrieved_pdf_sha256": "6f0508c568cb355aaf2accdd33fe3a780d3ea5ef207c4c9a71839a8acadc33a5",
+      "reviewed": "2026-10-31"
+    },
+    "controller": {
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/2955fa.pdf",
+      "revision": "2955fa",
+      "sections": "p. 3 EN low; p. 4 KILL propagation/pulse/blanking and VIN=7 V test conditions; pp. 13 and 17 external pull-up operation",
+      "reviewed": "2026-10-31"
+    }
+  }
+}

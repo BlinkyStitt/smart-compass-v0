@@ -1,0 +1,3207 @@
+{
+  "scope": "Complete selected narrow loom; actual source parts, max stock wire diameters, fabrication joint/fixture targets and exact rounded paths",
+  "contract": {
+    "route_count": 92,
+    "splice_count": 12,
+    "finished_wire_m": 11.114591139042027,
+    "physical_acceptance": "unmeasured"
+  },
+  "cut_list": [
+    {
+      "id": "W001",
+      "net": "FUSED_CELL",
+      "stock": "M22759/16-18-2",
+      "ends": [
+        "F1.2",
+        "S1.1"
+      ],
+      "strip_ends_mm": [
+        3.5,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        3.5,
+        3.5
+      ],
+      "insulated_length_mm": 145.03367988590193,
+      "finished_cut_target_mm": 152.03367988590193,
+      "blank_cut_target_mm": 172.03367988590193
+    },
+    {
+      "id": "W002",
+      "net": "A",
+      "stock": "M22759/16-18-2",
+      "ends": [
+        "S1.2",
+        "LATCH.VIN"
+      ],
+      "strip_ends_mm": [
+        3.5,
+        4.5
+      ],
+      "insertion_ends_mm": [
+        3.5,
+        4.5
+      ],
+      "insulated_length_mm": 191.43526988457577,
+      "finished_cut_target_mm": 199.43526988457577,
+      "blank_cut_target_mm": 219.43526988457577
+    },
+    {
+      "id": "W003",
+      "net": "A_DRAIN",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "S1.3",
+        "R_A.1"
+      ],
+      "strip_ends_mm": [
+        3.5,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        3.5,
+        3.5
+      ],
+      "insulated_length_mm": 116.98912944503284,
+      "finished_cut_target_mm": 123.98912944503284,
+      "blank_cut_target_mm": 143.98912944503286
+    },
+    {
+      "id": "W004",
+      "net": "B",
+      "stock": "M22759/16-18-2",
+      "ends": [
+        "SPLICE.B.-1.0",
+        "LATCH.VOUT"
+      ],
+      "strip_ends_mm": [
+        4,
+        4.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        4.5
+      ],
+      "insulated_length_mm": 198.62687598844204,
+      "finished_cut_target_mm": 209.12687598844204,
+      "blank_cut_target_mm": 229.12687598844204
+    },
+    {
+      "id": "W005",
+      "net": "B",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.B.-1.1",
+        "R_B.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 62.38769281430923,
+      "finished_cut_target_mm": 71.88769281430923,
+      "blank_cut_target_mm": 91.88769281430923
+    },
+    {
+      "id": "W006",
+      "net": "B",
+      "stock": "M22759/16-18-2",
+      "ends": [
+        "SPLICE.B.1.0",
+        "BOOST.X2.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        5
+      ],
+      "insertion_ends_mm": [
+        6,
+        5
+      ],
+      "insulated_length_mm": 101.11294207283564,
+      "finished_cut_target_mm": 112.11294207283564,
+      "blank_cut_target_mm": 132.11294207283564
+    },
+    {
+      "id": "W007",
+      "net": "B",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.B.1.1",
+        "R_SENSE_TOP.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 62.530463175109475,
+      "finished_cut_target_mm": 72.03046317510947,
+      "blank_cut_target_mm": 92.03046317510947
+    },
+    {
+      "id": "W008",
+      "net": "BOOST_OUT",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.BOOST_OUT.-1.0",
+        "BOOST.X1.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        5
+      ],
+      "insertion_ends_mm": [
+        6,
+        5
+      ],
+      "insulated_length_mm": 66.89115712242204,
+      "finished_cut_target_mm": 77.89115712242204,
+      "blank_cut_target_mm": 97.89115712242204
+    },
+    {
+      "id": "W009",
+      "net": "BOOST_OUT",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.BOOST_OUT.-1.1",
+        "R_BOOST.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 83.08007142700643,
+      "finished_cut_target_mm": 92.58007142700643,
+      "blank_cut_target_mm": 112.58007142700643
+    },
+    {
+      "id": "W010",
+      "net": "BOOST_OUT",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.BOOST_OUT.1.0",
+        "S1.4"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 135.78103093922124,
+      "finished_cut_target_mm": 145.28103093922124,
+      "blank_cut_target_mm": 165.28103093922124
+    },
+    {
+      "id": "W011",
+      "net": "LOAD_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LOAD_5V.-1.0",
+        "S1.5"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 106.345502578135,
+      "finished_cut_target_mm": 115.845502578135,
+      "blank_cut_target_mm": 135.84550257813498
+    },
+    {
+      "id": "W012",
+      "net": "LOAD_5V",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.LOAD_5V.-1.1",
+        "R_LOAD.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 99.59969707324716,
+      "finished_cut_target_mm": 109.09969707324716,
+      "blank_cut_target_mm": 129.09969707324717
+    },
+    {
+      "id": "W013",
+      "net": "LOAD_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LOAD_5V.1.0",
+        "SPARKLE.X7.PWR"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 88.29263023978778,
+      "finished_cut_target_mm": 96.79263023978778,
+      "blank_cut_target_mm": 116.79263023978778
+    },
+    {
+      "id": "W014",
+      "net": "LATCH_OFF",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.LATCH_OFF.-1.0",
+        "BOOST.R20.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 62.405993910881485,
+      "finished_cut_target_mm": 70.90599391088148,
+      "blank_cut_target_mm": 90.90599391088148
+    },
+    {
+      "id": "W015",
+      "net": "LATCH_OFF",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.LATCH_OFF.-1.1",
+        "R_OFF.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 110.82432781716548,
+      "finished_cut_target_mm": 120.32432781716548,
+      "blank_cut_target_mm": 140.32432781716548
+    },
+    {
+      "id": "W016",
+      "net": "LATCH_OFF",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.LATCH_OFF.1.0",
+        "LATCH.OFF"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 140.3147940970037,
+      "finished_cut_target_mm": 148.8147940970037,
+      "blank_cut_target_mm": 168.8147940970037
+    },
+    {
+      "id": "W017",
+      "net": "START",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "LATCH.A",
+        "START.1"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 202.74646981835457,
+      "finished_cut_target_mm": 207.74646981835457,
+      "blank_cut_target_mm": 227.74646981835457
+    },
+    {
+      "id": "W018",
+      "net": "SENSE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SENSE.-1.0",
+        "R_SENSE_TOP.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 48.94057650550863,
+      "finished_cut_target_mm": 58.44057650550863,
+      "blank_cut_target_mm": 78.44057650550863
+    },
+    {
+      "id": "W019",
+      "net": "SENSE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SENSE.-1.1",
+        "BLACKPILL.PA4"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 76.94183232486442,
+      "finished_cut_target_mm": 85.44183232486442,
+      "blank_cut_target_mm": 105.44183232486442
+    },
+    {
+      "id": "W020",
+      "net": "SENSE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SENSE.1.0",
+        "R_SENSE_BOTTOM.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 74.10176551785102,
+      "finished_cut_target_mm": 83.60176551785102,
+      "blank_cut_target_mm": 103.60176551785102
+    },
+    {
+      "id": "W021",
+      "net": "SENSE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SENSE.1.1",
+        "C_SENSE.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 48.318154979273906,
+      "finished_cut_target_mm": 57.818154979273906,
+      "blank_cut_target_mm": 77.81815497927391
+    },
+    {
+      "id": "W022",
+      "net": "LED_DISTRIBUTION",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LED_DISTRIBUTION.-1.0",
+        "SPARKLE.JP1.9"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.2
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.2
+      ],
+      "insulated_length_mm": 64.69611493842143,
+      "finished_cut_target_mm": 73.89611493842143,
+      "blank_cut_target_mm": 93.89611493842143
+    },
+    {
+      "id": "W023",
+      "net": "LED_DISTRIBUTION",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LED_DISTRIBUTION.-1.1",
+        "F_RING1.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 54.81523118190214,
+      "finished_cut_target_mm": 63.615231181902146,
+      "blank_cut_target_mm": 83.61523118190215
+    },
+    {
+      "id": "W024",
+      "net": "LED_DISTRIBUTION",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LED_DISTRIBUTION.-1.2",
+        "F_RING3.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 82.8913531103434,
+      "finished_cut_target_mm": 91.6913531103434,
+      "blank_cut_target_mm": 111.6913531103434
+    },
+    {
+      "id": "W025",
+      "net": "LED_DISTRIBUTION",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LED_DISTRIBUTION.1.0",
+        "F_FIB.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 86.31598033567872,
+      "finished_cut_target_mm": 95.11598033567871,
+      "blank_cut_target_mm": 115.11598033567871
+    },
+    {
+      "id": "W026",
+      "net": "LED_DISTRIBUTION",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.LED_DISTRIBUTION.1.1",
+        "F_RING2.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 126.2142234494089,
+      "finished_cut_target_mm": 135.01422344940892,
+      "blank_cut_target_mm": 155.01422344940892
+    },
+    {
+      "id": "W027",
+      "net": "FIB_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.FIB_5V.-1.0",
+        "F_FIB.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 61.63324141502775,
+      "finished_cut_target_mm": 70.43324141502775,
+      "blank_cut_target_mm": 90.43324141502775
+    },
+    {
+      "id": "W028",
+      "net": "FIB_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.FIB_5V.-1.1",
+        "C_OUT.P"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 48.46178850720805,
+      "finished_cut_target_mm": 57.96178850720805,
+      "blank_cut_target_mm": 77.96178850720804
+    },
+    {
+      "id": "W029",
+      "net": "FIB_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.FIB_5V.1.0",
+        "FIBONACCI.5V"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 109.58637530820174,
+      "finished_cut_target_mm": 118.08637530820174,
+      "blank_cut_target_mm": 138.08637530820175
+    },
+    {
+      "id": "W030",
+      "net": "FIB_5V",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.FIB_5V.1.1",
+        "R_OUT.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 68.00767448844097,
+      "finished_cut_target_mm": 77.50767448844097,
+      "blank_cut_target_mm": 97.50767448844097
+    },
+    {
+      "id": "W031",
+      "net": "RING1_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "F_RING1.2",
+        "RING1.5V"
+      ],
+      "strip_ends_mm": [
+        2.8,
+        5.243121903127665
+      ],
+      "insertion_ends_mm": [
+        2.8,
+        5.243121903127665
+      ],
+      "insulated_length_mm": 263.3891272549564,
+      "finished_cut_target_mm": 271.43224915808406,
+      "blank_cut_target_mm": 291.43224915808406
+    },
+    {
+      "id": "W032",
+      "net": "RING2_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "F_RING2.2",
+        "RING2.5V"
+      ],
+      "strip_ends_mm": [
+        2.8,
+        10.196091412251059
+      ],
+      "insertion_ends_mm": [
+        2.8,
+        10.196091412251059
+      ],
+      "insulated_length_mm": 157.31164656487513,
+      "finished_cut_target_mm": 170.30773797712618,
+      "blank_cut_target_mm": 190.30773797712618
+    },
+    {
+      "id": "W033",
+      "net": "RING3_5V",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "F_RING3.2",
+        "RING3.5V"
+      ],
+      "strip_ends_mm": [
+        2.8,
+        10.796091412251059
+      ],
+      "insertion_ends_mm": [
+        2.8,
+        10.796091412251059
+      ],
+      "insulated_length_mm": 133.93565090198257,
+      "finished_cut_target_mm": 147.53174231423364,
+      "blank_cut_target_mm": 167.53174231423364
+    },
+    {
+      "id": "W034",
+      "net": "AUX_SOURCE",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPARKLE.JP3.2",
+        "F_AUX.1"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.8
+      ],
+      "insulated_length_mm": 64.01731383298034,
+      "finished_cut_target_mm": 69.31731383298033,
+      "blank_cut_target_mm": 89.31731383298033
+    },
+    {
+      "id": "W035",
+      "net": "AUX_3V3",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.AUX_3V3.-1.0",
+        "F_AUX.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.8
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.8
+      ],
+      "insulated_length_mm": 95.05675750160277,
+      "finished_cut_target_mm": 103.85675750160277,
+      "blank_cut_target_mm": 123.85675750160277
+    },
+    {
+      "id": "W036",
+      "net": "AUX_3V3",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.AUX_3V3.-1.1",
+        "GPS.3V"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 74.0812595767901,
+      "finished_cut_target_mm": 82.5812595767901,
+      "blank_cut_target_mm": 102.5812595767901
+    },
+    {
+      "id": "W037",
+      "net": "AUX_3V3",
+      "stock": "M22759/18-26-2",
+      "ends": [
+        "SPLICE.AUX_3V3.-1.2",
+        "IMU.VIN"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 92.02041618955683,
+      "finished_cut_target_mm": 100.52041618955683,
+      "blank_cut_target_mm": 120.52041618955683
+    },
+    {
+      "id": "W038",
+      "net": "AUX_3V3",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.AUX_3V3.1.0",
+        "BLACKPILL.3V3"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 92.69242982442461,
+      "finished_cut_target_mm": 101.19242982442461,
+      "blank_cut_target_mm": 121.19242982442461
+    },
+    {
+      "id": "W039",
+      "net": "AUX_3V3",
+      "stock": "M22759/16-22-2",
+      "ends": [
+        "SPLICE.AUX_3V3.1.1",
+        "RADIO.VIN"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 111.70819479625,
+      "finished_cut_target_mm": 120.20819479625,
+      "blank_cut_target_mm": 140.20819479624998
+    },
+    {
+      "id": "W040",
+      "net": "LED_DATA1",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP1.8",
+        "FIBONACCI.DIN"
+      ],
+      "strip_ends_mm": [
+        3.2,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        3.2,
+        2.5
+      ],
+      "insulated_length_mm": 207.97692854724946,
+      "finished_cut_target_mm": 213.67692854724945,
+      "blank_cut_target_mm": 233.67692854724945
+    },
+    {
+      "id": "W041",
+      "net": "LED_DATA2",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP1.5",
+        "RING1.DIN"
+      ],
+      "strip_ends_mm": [
+        3.2,
+        5.693121903127665
+      ],
+      "insertion_ends_mm": [
+        3.2,
+        5.693121903127665
+      ],
+      "insulated_length_mm": 168.7607270196513,
+      "finished_cut_target_mm": 177.653848922779,
+      "blank_cut_target_mm": 197.653848922779
+    },
+    {
+      "id": "W042",
+      "net": "LED_DATA3",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP1.2",
+        "RING2.DIN"
+      ],
+      "strip_ends_mm": [
+        3.2,
+        8.59609141225106
+      ],
+      "insertion_ends_mm": [
+        3.2,
+        8.59609141225106
+      ],
+      "insulated_length_mm": 177.82885317947833,
+      "finished_cut_target_mm": 189.6249445917294,
+      "blank_cut_target_mm": 209.6249445917294
+    },
+    {
+      "id": "W043",
+      "net": "LED_DATA4",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP3.6",
+        "RING3.DIN"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        9.196091412251059
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        9.196091412251059
+      ],
+      "insulated_length_mm": 195.81583405601813,
+      "finished_cut_target_mm": 207.5119254682692,
+      "blank_cut_target_mm": 227.5119254682692
+    },
+    {
+      "id": "W044",
+      "net": "GND",
+      "stock": "M22759/16-18-0",
+      "ends": [
+        "CONTACT_N.tail",
+        "BOOST.X2.1"
+      ],
+      "strip_ends_mm": [
+        0,
+        5
+      ],
+      "insertion_ends_mm": [
+        0,
+        5
+      ],
+      "insulated_length_mm": 145.11839153333125,
+      "finished_cut_target_mm": 192.27248638442413,
+      "blank_cut_target_mm": 212.27248638442413,
+      "continuous_existing_part": "BatteryLeadN",
+      "existing_segment_cut_mm": 42.154094851092886,
+      "cut_basis": "One continuous negative lead: contact cup strip, fixed conduit segment, routed external segment and boost clamp strip; no tail strip or splice."
+    },
+    {
+      "id": "W045",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.-1.0",
+        "C_OUT.N"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 130.97449155861676,
+      "finished_cut_target_mm": 140.47449155861676,
+      "blank_cut_target_mm": 160.47449155861676
+    },
+    {
+      "id": "W046",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.-1.1",
+        "BLACKPILL.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 114.1338980849426,
+      "finished_cut_target_mm": 122.6338980849426,
+      "blank_cut_target_mm": 142.6338980849426
+    },
+    {
+      "id": "W047",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.-1.2",
+        "RADIO.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 137.1416610982913,
+      "finished_cut_target_mm": 145.6416610982913,
+      "blank_cut_target_mm": 165.6416610982913
+    },
+    {
+      "id": "W048",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.-1.3",
+        "RING1.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.643121903127664
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.643121903127664
+      ],
+      "insulated_length_mm": 291.7684320063806,
+      "finished_cut_target_mm": 301.41155390950826,
+      "blank_cut_target_mm": 321.41155390950826
+    },
+    {
+      "id": "W049",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.-1.4",
+        "RING3.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        7.596091412251059
+      ],
+      "insertion_ends_mm": [
+        6,
+        7.596091412251059
+      ],
+      "insulated_length_mm": 170.82749726843284,
+      "finished_cut_target_mm": 184.4235886806839,
+      "blank_cut_target_mm": 204.4235886806839
+    },
+    {
+      "id": "W050",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.5",
+        "LATCH.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        4.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        4.5
+      ],
+      "insulated_length_mm": 156.12245238154918,
+      "finished_cut_target_mm": 166.62245238154918,
+      "blank_cut_target_mm": 186.62245238154918
+    },
+    {
+      "id": "W051",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.6",
+        "R_B.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 45.44059910396098,
+      "finished_cut_target_mm": 54.94059910396098,
+      "blank_cut_target_mm": 74.94059910396098
+    },
+    {
+      "id": "W052",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.7",
+        "R_OFF.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 39.06429994238521,
+      "finished_cut_target_mm": 48.56429994238521,
+      "blank_cut_target_mm": 68.56429994238522
+    },
+    {
+      "id": "W053",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.8",
+        "R_SENSE_BOTTOM.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 43.511016539182805,
+      "finished_cut_target_mm": 53.011016539182805,
+      "blank_cut_target_mm": 73.0110165391828
+    },
+    {
+      "id": "W054",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.9",
+        "R_BOOST.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 124.79934438225833,
+      "finished_cut_target_mm": 134.2993443822583,
+      "blank_cut_target_mm": 154.2993443822583
+    },
+    {
+      "id": "W055",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.10",
+        "C_SENSE.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 31.107056637958777,
+      "finished_cut_target_mm": 40.60705663795878,
+      "blank_cut_target_mm": 60.60705663795878
+    },
+    {
+      "id": "W056",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.-1.11",
+        "ACTION.3"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 132.14758125918547,
+      "finished_cut_target_mm": 140.64758125918547,
+      "blank_cut_target_mm": 160.64758125918547
+    },
+    {
+      "id": "W057",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.1.0",
+        "SPARKLE.X7.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 91.05533022823201,
+      "finished_cut_target_mm": 99.55533022823201,
+      "blank_cut_target_mm": 119.55533022823201
+    },
+    {
+      "id": "W058",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.1.1",
+        "GPS.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 64.68394472621934,
+      "finished_cut_target_mm": 73.18394472621934,
+      "blank_cut_target_mm": 93.18394472621934
+    },
+    {
+      "id": "W059",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.1.2",
+        "FIBONACCI.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 262.3430656993594,
+      "finished_cut_target_mm": 270.8430656993594,
+      "blank_cut_target_mm": 290.8430656993594
+    },
+    {
+      "id": "W060",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.1.3",
+        "RING2.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        6.99609141225106
+      ],
+      "insertion_ends_mm": [
+        6,
+        6.99609141225106
+      ],
+      "insulated_length_mm": 108.76908204360915,
+      "finished_cut_target_mm": 121.76517345586021,
+      "blank_cut_target_mm": 141.7651734558602
+    },
+    {
+      "id": "W061",
+      "net": "GND",
+      "stock": "M22759/16-22-0",
+      "ends": [
+        "SPLICE.GND.1.4",
+        "BOOST.X1.1"
+      ],
+      "strip_ends_mm": [
+        4,
+        5
+      ],
+      "insertion_ends_mm": [
+        6,
+        5
+      ],
+      "insulated_length_mm": 189.90811641648517,
+      "finished_cut_target_mm": 200.90811641648517,
+      "blank_cut_target_mm": 220.90811641648517
+    },
+    {
+      "id": "W062",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.5",
+        "R_A.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 109.19511015518476,
+      "finished_cut_target_mm": 118.69511015518476,
+      "blank_cut_target_mm": 138.69511015518475
+    },
+    {
+      "id": "W063",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.6",
+        "R_OUT.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 125.32664185851772,
+      "finished_cut_target_mm": 134.82664185851772,
+      "blank_cut_target_mm": 154.82664185851772
+    },
+    {
+      "id": "W064",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.7",
+        "START.3"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 134.44814342231223,
+      "finished_cut_target_mm": 142.94814342231223,
+      "blank_cut_target_mm": 162.94814342231223
+    },
+    {
+      "id": "W065",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.8",
+        "IMU.GND"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 78.55732124526983,
+      "finished_cut_target_mm": 87.05732124526983,
+      "blank_cut_target_mm": 107.05732124526983
+    },
+    {
+      "id": "W066",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.9",
+        "R_LOAD.2"
+      ],
+      "strip_ends_mm": [
+        4,
+        3.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        3.5
+      ],
+      "insulated_length_mm": 62.43778547429236,
+      "finished_cut_target_mm": 71.93778547429235,
+      "blank_cut_target_mm": 91.93778547429235
+    },
+    {
+      "id": "W067",
+      "net": "GND",
+      "stock": "M22759/18-26-0",
+      "ends": [
+        "SPLICE.GND.1.10",
+        "MODE.3"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 131.28744174653187,
+      "finished_cut_target_mm": 139.78744174653187,
+      "blank_cut_target_mm": 159.78744174653187
+    },
+    {
+      "id": "W068",
+      "net": "SPARKLE_TX",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP3.3",
+        "BLACKPILL.PA10"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 154.41119117356706,
+      "finished_cut_target_mm": 159.41119117356706,
+      "blank_cut_target_mm": 179.41119117356706
+    },
+    {
+      "id": "W069",
+      "net": "SPARKLE_RX",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPARKLE.JP3.4",
+        "BLACKPILL.PB6"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 157.71819196702407,
+      "finished_cut_target_mm": 162.71819196702407,
+      "blank_cut_target_mm": 182.71819196702407
+    },
+    {
+      "id": "W070",
+      "net": "GPS_TX",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "GPS.TX",
+        "BLACKPILL.PA3"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 97.00888058357376,
+      "finished_cut_target_mm": 102.00888058357376,
+      "blank_cut_target_mm": 122.00888058357376
+    },
+    {
+      "id": "W071",
+      "net": "GPS_RX",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "GPS.RX",
+        "BLACKPILL.PA2"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 111.11369091042573,
+      "finished_cut_target_mm": 116.11369091042573,
+      "blank_cut_target_mm": 136.11369091042573
+    },
+    {
+      "id": "W072",
+      "net": "SPI_CLOCK",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_CLOCK.-1.0",
+        "BLACKPILL.PA5"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 46.7740442501292,
+      "finished_cut_target_mm": 55.2740442501292,
+      "blank_cut_target_mm": 75.27404425012921
+    },
+    {
+      "id": "W073",
+      "net": "SPI_CLOCK",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_CLOCK.-1.1",
+        "RADIO.SCK"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 138.3747017036071,
+      "finished_cut_target_mm": 146.8747017036071,
+      "blank_cut_target_mm": 166.8747017036071
+    },
+    {
+      "id": "W074",
+      "net": "SPI_CLOCK",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_CLOCK.1.0",
+        "IMU.SCL"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 60.58867250831505,
+      "finished_cut_target_mm": 69.08867250831506,
+      "blank_cut_target_mm": 89.08867250831506
+    },
+    {
+      "id": "W075",
+      "net": "SPI_MOSI",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MOSI.-1.0",
+        "BLACKPILL.PA7"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 93.06982627320178,
+      "finished_cut_target_mm": 101.56982627320178,
+      "blank_cut_target_mm": 121.56982627320178
+    },
+    {
+      "id": "W076",
+      "net": "SPI_MOSI",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MOSI.-1.1",
+        "RADIO.MOSI"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 141.67393462552792,
+      "finished_cut_target_mm": 150.17393462552792,
+      "blank_cut_target_mm": 170.17393462552792
+    },
+    {
+      "id": "W077",
+      "net": "SPI_MOSI",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MOSI.1.0",
+        "IMU.SDA"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 108.94868105193315,
+      "finished_cut_target_mm": 117.44868105193315,
+      "blank_cut_target_mm": 137.44868105193314
+    },
+    {
+      "id": "W078",
+      "net": "SPI_MISO",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MISO.-1.0",
+        "BLACKPILL.PA6"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 72.29387177589317,
+      "finished_cut_target_mm": 80.79387177589317,
+      "blank_cut_target_mm": 100.79387177589317
+    },
+    {
+      "id": "W079",
+      "net": "SPI_MISO",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MISO.-1.1",
+        "IMU.SDOM"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 76.90869915303288,
+      "finished_cut_target_mm": 85.40869915303288,
+      "blank_cut_target_mm": 105.40869915303288
+    },
+    {
+      "id": "W080",
+      "net": "SPI_MISO",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MISO.1.0",
+        "IMU.SDOAG"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 93.2618572703106,
+      "finished_cut_target_mm": 101.7618572703106,
+      "blank_cut_target_mm": 121.7618572703106
+    },
+    {
+      "id": "W081",
+      "net": "SPI_MISO",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "SPLICE.SPI_MISO.1.1",
+        "RADIO.MISO"
+      ],
+      "strip_ends_mm": [
+        4,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        6,
+        2.5
+      ],
+      "insulated_length_mm": 145.90039898940773,
+      "finished_cut_target_mm": 154.40039898940773,
+      "blank_cut_target_mm": 174.40039898940773
+    },
+    {
+      "id": "W082",
+      "net": "IMU_AG_SELECT",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PA8",
+        "IMU.CSAG"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 85.93884149274183,
+      "finished_cut_target_mm": 90.93884149274183,
+      "blank_cut_target_mm": 110.93884149274183
+    },
+    {
+      "id": "W083",
+      "net": "IMU_M_SELECT",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PA9",
+        "IMU.CSM"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 128.5170669609197,
+      "finished_cut_target_mm": 133.5170669609197,
+      "blank_cut_target_mm": 153.5170669609197
+    },
+    {
+      "id": "W084",
+      "net": "RADIO_SELECT",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB0",
+        "RADIO.CS"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 132.13355112948938,
+      "finished_cut_target_mm": 137.13355112948938,
+      "blank_cut_target_mm": 157.13355112948938
+    },
+    {
+      "id": "W085",
+      "net": "RADIO_INTERRUPT",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB5",
+        "RADIO.G0"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 109.25980068256122,
+      "finished_cut_target_mm": 114.25980068256122,
+      "blank_cut_target_mm": 134.2598006825612
+    },
+    {
+      "id": "W086",
+      "net": "RADIO_RESET",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB12",
+        "RADIO.RST"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 191.07267722626273,
+      "finished_cut_target_mm": 196.07267722626273,
+      "blank_cut_target_mm": 216.07267722626273
+    },
+    {
+      "id": "W087",
+      "net": "IMU_AG_READY",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB10",
+        "IMU.INT1"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 94.09138969688539,
+      "finished_cut_target_mm": 99.09138969688539,
+      "blank_cut_target_mm": 119.09138969688539
+    },
+    {
+      "id": "W088",
+      "net": "IMU_M_READY",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB1",
+        "IMU.DRDY"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 95.78709488487922,
+      "finished_cut_target_mm": 100.78709488487922,
+      "blank_cut_target_mm": 120.78709488487922
+    },
+    {
+      "id": "W089",
+      "net": "GPS_PPS",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PA0",
+        "GPS.PPS"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 61.1113209455307,
+      "finished_cut_target_mm": 66.11132094553071,
+      "blank_cut_target_mm": 86.11132094553071
+    },
+    {
+      "id": "W090",
+      "net": "GPS_ENABLE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB7",
+        "GPS.EN"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 80.2171146797262,
+      "finished_cut_target_mm": 85.2171146797262,
+      "blank_cut_target_mm": 105.2171146797262
+    },
+    {
+      "id": "W091",
+      "net": "MODE",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB13",
+        "MODE.1"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 87.80390310281383,
+      "finished_cut_target_mm": 92.80390310281383,
+      "blank_cut_target_mm": 112.80390310281383
+    },
+    {
+      "id": "W092",
+      "net": "ACTION",
+      "stock": "M22759/18-26-9",
+      "ends": [
+        "BLACKPILL.PB14",
+        "ACTION.1"
+      ],
+      "strip_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insertion_ends_mm": [
+        2.5,
+        2.5
+      ],
+      "insulated_length_mm": 53.61584256041634,
+      "finished_cut_target_mm": 58.61584256041634,
+      "blank_cut_target_mm": 78.61584256041634
+    }
+  ],
+  "source_protection": {
+    "source_bodies": 452,
+    "exact_body_pairs": 2933,
+    "allocations": [
+      {
+        "reservation": "BlackPillUnderboardReservation",
+        "source_bodies_preserved": 130,
+        "removed_empty_volume_mm3": 0.0
+      },
+      {
+        "reservation": "BlackPillLoadedReservation",
+        "source_bodies_preserved": 130,
+        "removed_empty_volume_mm3": 443.0845093593425
+      },
+      {
+        "reservation": "RadioUnderboardReservation",
+        "source_bodies_preserved": 9,
+        "removed_empty_volume_mm3": 0.0
+      },
+      {
+        "reservation": "RadioLoadedReservation",
+        "source_bodies_preserved": 9,
+        "removed_empty_volume_mm3": 41.789507298925855
+      },
+      {
+        "reservation": "GPSComponents",
+        "source_bodies_preserved": 55,
+        "removed_empty_volume_mm3": 74.8133806880096
+      },
+      {
+        "reservation": "BoostComponents",
+        "source_bodies_preserved": 20,
+        "removed_empty_volume_mm3": 322.69637331626654
+      },
+      {
+        "reservation": "SparkleComponents",
+        "source_bodies_preserved": 238,
+        "removed_empty_volume_mm3": 437.51918101410047
+      }
+    ]
+  },
+  "joint_allocations": [
+    {
+      "reservation": "BlackPillUnderboardReservation",
+      "source_bodies_preserved": 130,
+      "allocated_joint_count": 21
+    },
+    {
+      "reservation": "BlackPillLoadedReservation",
+      "source_bodies_preserved": 130,
+      "allocated_joint_count": 21
+    },
+    {
+      "reservation": "RadioUnderboardReservation",
+      "source_bodies_preserved": 9,
+      "allocated_joint_count": 8
+    },
+    {
+      "reservation": "RadioLoadedReservation",
+      "source_bodies_preserved": 9,
+      "allocated_joint_count": 8
+    },
+    {
+      "reservation": "GPSComponents",
+      "source_bodies_preserved": 55,
+      "allocated_joint_count": 6
+    },
+    {
+      "reservation": "BoostComponents",
+      "source_bodies_preserved": 20,
+      "allocated_joint_count": 1
+    },
+    {
+      "reservation": "SparkleComponents",
+      "source_bodies_preserved": 238,
+      "allocated_joint_count": 6
+    }
+  ],
+  "wire_end_insulation": [
+    {
+      "wire": "W001",
+      "terminal": "F1.2",
+      "part": "HarnessFinishW001_0",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W001",
+      "terminal": "S1.1",
+      "part": "SwitchLugBoot1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W002",
+      "terminal": "S1.2",
+      "part": "SwitchLugBoot2",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W003",
+      "terminal": "S1.3",
+      "part": "SwitchLugBoot3",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W003",
+      "terminal": "R_A.1",
+      "part": "HarnessFinishW003_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W005",
+      "terminal": "R_B.1",
+      "part": "HarnessFinishW005_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W007",
+      "terminal": "R_SENSE_TOP.1",
+      "part": "HarnessFinishW007_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W009",
+      "terminal": "R_BOOST.1",
+      "part": "HarnessFinishW009_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W010",
+      "terminal": "S1.4",
+      "part": "SwitchLugBoot4",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W011",
+      "terminal": "S1.5",
+      "part": "SwitchLugBoot5",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W012",
+      "terminal": "R_LOAD.1",
+      "part": "HarnessFinishW012_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W013",
+      "terminal": "SPARKLE.X7.PWR",
+      "part": "HarnessJointSPARKLE_X7_PWR",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W014",
+      "terminal": "BOOST.R20.2",
+      "part": "HarnessJointBOOST_R20_2",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W015",
+      "terminal": "R_OFF.1",
+      "part": "HarnessFinishW015_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W016",
+      "terminal": "LATCH.OFF",
+      "part": "HarnessJointLATCH_OFF",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W017",
+      "terminal": "LATCH.A",
+      "part": "HarnessJointLATCH_A",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W017",
+      "terminal": "START.1",
+      "part": "HarnessJointSTART_1",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W018",
+      "terminal": "R_SENSE_TOP.2",
+      "part": "HarnessFinishW018_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W019",
+      "terminal": "BLACKPILL.PA4",
+      "part": "HarnessJointBLACKPILL_PA4",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W020",
+      "terminal": "R_SENSE_BOTTOM.1",
+      "part": "HarnessFinishW020_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W021",
+      "terminal": "C_SENSE.1",
+      "part": "HarnessFinishW021_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W023",
+      "terminal": "F_RING1.1",
+      "part": "HarnessFinishW023_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W024",
+      "terminal": "F_RING3.1",
+      "part": "HarnessFinishW024_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W025",
+      "terminal": "F_FIB.1",
+      "part": "HarnessFinishW025_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W026",
+      "terminal": "F_RING2.1",
+      "part": "HarnessFinishW026_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W027",
+      "terminal": "F_FIB.2",
+      "part": "HarnessFinishW027_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W028",
+      "terminal": "C_OUT.P",
+      "part": "HarnessFinishW028_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W029",
+      "terminal": "FIBONACCI.5V",
+      "part": "HarnessJointFIBONACCI_5V",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W030",
+      "terminal": "R_OUT.1",
+      "part": "HarnessFinishW030_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W031",
+      "terminal": "F_RING1.2",
+      "part": "HarnessFinishW031_0",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W031",
+      "terminal": "RING1.5V",
+      "part": "HarnessJointRING1_5V",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W032",
+      "terminal": "F_RING2.2",
+      "part": "HarnessFinishW032_0",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W032",
+      "terminal": "RING2.5V",
+      "part": "HarnessJointRING2_5V",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W033",
+      "terminal": "F_RING3.2",
+      "part": "HarnessFinishW033_0",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W033",
+      "terminal": "RING3.5V",
+      "part": "HarnessJointRING3_5V",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W034",
+      "terminal": "SPARKLE.JP3.2",
+      "part": "HarnessJointSPARKLE_JP3_2",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W034",
+      "terminal": "F_AUX.1",
+      "part": "HarnessFinishW034_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W035",
+      "terminal": "F_AUX.2",
+      "part": "HarnessFinishW035_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W036",
+      "terminal": "GPS.3V",
+      "part": "HarnessJointGPS_3V",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W037",
+      "terminal": "IMU.VIN",
+      "part": "HarnessJointIMU_VIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W038",
+      "terminal": "BLACKPILL.3V3",
+      "part": "HarnessJointBLACKPILL_3V3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W039",
+      "terminal": "RADIO.VIN",
+      "part": "HarnessJointRADIO_VIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W040",
+      "terminal": "FIBONACCI.DIN",
+      "part": "HarnessJointFIBONACCI_DIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W041",
+      "terminal": "RING1.DIN",
+      "part": "HarnessJointRING1_DIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W042",
+      "terminal": "RING2.DIN",
+      "part": "HarnessJointRING2_DIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W043",
+      "terminal": "SPARKLE.JP3.6",
+      "part": "HarnessJointSPARKLE_JP3_6",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W043",
+      "terminal": "RING3.DIN",
+      "part": "HarnessJointRING3_DIN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W045",
+      "terminal": "C_OUT.N",
+      "part": "HarnessFinishW045_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W046",
+      "terminal": "BLACKPILL.GND",
+      "part": "HarnessJointBLACKPILL_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W047",
+      "terminal": "RADIO.GND",
+      "part": "HarnessJointRADIO_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W048",
+      "terminal": "RING1.GND",
+      "part": "HarnessJointRING1_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W049",
+      "terminal": "RING3.GND",
+      "part": "HarnessJointRING3_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W051",
+      "terminal": "R_B.2",
+      "part": "HarnessFinishW051_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W052",
+      "terminal": "R_OFF.2",
+      "part": "HarnessFinishW052_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W053",
+      "terminal": "R_SENSE_BOTTOM.2",
+      "part": "HarnessFinishW053_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W054",
+      "terminal": "R_BOOST.2",
+      "part": "HarnessFinishW054_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W055",
+      "terminal": "C_SENSE.2",
+      "part": "HarnessFinishW055_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W056",
+      "terminal": "ACTION.3",
+      "part": "HarnessJointACTION_3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W057",
+      "terminal": "SPARKLE.X7.GND",
+      "part": "HarnessJointSPARKLE_X7_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W058",
+      "terminal": "GPS.GND",
+      "part": "HarnessJointGPS_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W059",
+      "terminal": "FIBONACCI.GND",
+      "part": "HarnessJointFIBONACCI_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W060",
+      "terminal": "RING2.GND",
+      "part": "HarnessJointRING2_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.7,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W062",
+      "terminal": "R_A.2",
+      "part": "HarnessFinishW062_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W063",
+      "terminal": "R_OUT.2",
+      "part": "HarnessFinishW063_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W064",
+      "terminal": "START.3",
+      "part": "HarnessJointSTART_3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W065",
+      "terminal": "IMU.GND",
+      "part": "HarnessJointIMU_GND",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W066",
+      "terminal": "R_LOAD.2",
+      "part": "HarnessFinishW066_1",
+      "jacket_overlap_target_mm": 2,
+      "finished_diameter_target_mm": 3,
+      "finish": "Selected RNF100 sleeve over the declared solder lap and intact jacket; finish to gauge",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W067",
+      "terminal": "MODE.3",
+      "part": "HarnessJointMODE_3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W068",
+      "terminal": "SPARKLE.JP3.3",
+      "part": "HarnessJointSPARKLE_JP3_3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W068",
+      "terminal": "BLACKPILL.PA10",
+      "part": "HarnessJointBLACKPILL_PA10",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W069",
+      "terminal": "SPARKLE.JP3.4",
+      "part": "HarnessJointSPARKLE_JP3_4",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W069",
+      "terminal": "BLACKPILL.PB6",
+      "part": "HarnessJointBLACKPILL_PB6",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W070",
+      "terminal": "GPS.TX",
+      "part": "HarnessJointGPS_TX",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W070",
+      "terminal": "BLACKPILL.PA3",
+      "part": "HarnessJointBLACKPILL_PA3",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W071",
+      "terminal": "GPS.RX",
+      "part": "HarnessJointGPS_RX",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W071",
+      "terminal": "BLACKPILL.PA2",
+      "part": "HarnessJointBLACKPILL_PA2",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W072",
+      "terminal": "BLACKPILL.PA5",
+      "part": "HarnessJointBLACKPILL_PA5",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W073",
+      "terminal": "RADIO.SCK",
+      "part": "HarnessJointRADIO_SCK",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W074",
+      "terminal": "IMU.SCL",
+      "part": "HarnessJointIMU_SCL",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W075",
+      "terminal": "BLACKPILL.PA7",
+      "part": "HarnessJointBLACKPILL_PA7",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W076",
+      "terminal": "RADIO.MOSI",
+      "part": "HarnessJointRADIO_MOSI",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W077",
+      "terminal": "IMU.SDA",
+      "part": "HarnessJointIMU_SDA",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W078",
+      "terminal": "BLACKPILL.PA6",
+      "part": "HarnessJointBLACKPILL_PA6",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W079",
+      "terminal": "IMU.SDOM",
+      "part": "HarnessJointIMU_SDOM",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W080",
+      "terminal": "IMU.SDOAG",
+      "part": "HarnessJointIMU_SDOAG",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W081",
+      "terminal": "RADIO.MISO",
+      "part": "HarnessJointRADIO_MISO",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W082",
+      "terminal": "BLACKPILL.PA8",
+      "part": "HarnessJointBLACKPILL_PA8",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W082",
+      "terminal": "IMU.CSAG",
+      "part": "HarnessJointIMU_CSAG",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W083",
+      "terminal": "BLACKPILL.PA9",
+      "part": "HarnessJointBLACKPILL_PA9",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W083",
+      "terminal": "IMU.CSM",
+      "part": "HarnessJointIMU_CSM",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W084",
+      "terminal": "BLACKPILL.PB0",
+      "part": "HarnessJointBLACKPILL_PB0",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W084",
+      "terminal": "RADIO.CS",
+      "part": "HarnessJointRADIO_CS",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W085",
+      "terminal": "BLACKPILL.PB5",
+      "part": "HarnessJointBLACKPILL_PB5",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W085",
+      "terminal": "RADIO.G0",
+      "part": "HarnessJointRADIO_G0",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W086",
+      "terminal": "BLACKPILL.PB12",
+      "part": "HarnessJointBLACKPILL_PB12",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W086",
+      "terminal": "RADIO.RST",
+      "part": "HarnessJointRADIO_RST",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W087",
+      "terminal": "BLACKPILL.PB10",
+      "part": "HarnessJointBLACKPILL_PB10",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W087",
+      "terminal": "IMU.INT1",
+      "part": "HarnessJointIMU_INT1",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W088",
+      "terminal": "BLACKPILL.PB1",
+      "part": "HarnessJointBLACKPILL_PB1",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W088",
+      "terminal": "IMU.DRDY",
+      "part": "HarnessJointIMU_DRDY",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W089",
+      "terminal": "BLACKPILL.PA0",
+      "part": "HarnessJointBLACKPILL_PA0",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W089",
+      "terminal": "GPS.PPS",
+      "part": "HarnessJointGPS_PPS",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W090",
+      "terminal": "BLACKPILL.PB7",
+      "part": "HarnessJointBLACKPILL_PB7",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W090",
+      "terminal": "GPS.EN",
+      "part": "HarnessJointGPS_EN",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W091",
+      "terminal": "BLACKPILL.PB13",
+      "part": "HarnessJointBLACKPILL_PB13",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W091",
+      "terminal": "MODE.1",
+      "part": "HarnessJointMODE_1",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W092",
+      "terminal": "BLACKPILL.PB14",
+      "part": "HarnessJointBLACKPILL_PB14",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W092",
+      "terminal": "ACTION.1",
+      "part": "HarnessJointACTION_1",
+      "jacket_overlap_target_mm": 1,
+      "finished_diameter_target_mm": 1.2,
+      "finish": "Two-wrap3M5413 tape with a tapered transition",
+      "physical_acceptance": "unmeasured"
+    }
+  ],
+  "end_relief_captures": [
+    {
+      "wire": "W006",
+      "gate_x_mm": -78.2,
+      "inside_y_mm": [
+        -13.7,
+        -7.1
+      ],
+      "inside_z_mm": [
+        11.9,
+        16.6
+      ],
+      "checked_section_volume_mm3": 0.057382678211440635,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "wire": "W044",
+      "gate_x_mm": -78.2,
+      "inside_y_mm": [
+        -13.7,
+        -7.1
+      ],
+      "inside_z_mm": [
+        11.9,
+        16.6
+      ],
+      "checked_section_volume_mm3": 0.05738269394107654,
+      "physical_acceptance": "unmeasured"
+    }
+  ],
+  "exact_pairs": 7946,
+  "interference_threshold_mm3": 1e-06,
+  "conflicts": [],
+  "parts": [
+    "HarnessFinishW001_0",
+    "HarnessFinishW003_1",
+    "HarnessFinishW005_1",
+    "HarnessFinishW007_1",
+    "HarnessFinishW009_1",
+    "HarnessFinishW012_1",
+    "HarnessFinishW015_1",
+    "HarnessFinishW018_1",
+    "HarnessFinishW020_1",
+    "HarnessFinishW021_1",
+    "HarnessFinishW023_1",
+    "HarnessFinishW024_1",
+    "HarnessFinishW025_1",
+    "HarnessFinishW026_1",
+    "HarnessFinishW027_1",
+    "HarnessFinishW028_1",
+    "HarnessFinishW030_1",
+    "HarnessFinishW031_0",
+    "HarnessFinishW032_0",
+    "HarnessFinishW033_0",
+    "HarnessFinishW034_1",
+    "HarnessFinishW035_1",
+    "HarnessFinishW045_1",
+    "HarnessFinishW051_1",
+    "HarnessFinishW052_1",
+    "HarnessFinishW053_1",
+    "HarnessFinishW054_1",
+    "HarnessFinishW055_1",
+    "HarnessFinishW062_1",
+    "HarnessFinishW063_1",
+    "HarnessFinishW066_1",
+    "HarnessJointACTION_1",
+    "HarnessJointACTION_3",
+    "HarnessJointBLACKPILL_3V3",
+    "HarnessJointBLACKPILL_GND",
+    "HarnessJointBLACKPILL_PA0",
+    "HarnessJointBLACKPILL_PA10",
+    "HarnessJointBLACKPILL_PA2",
+    "HarnessJointBLACKPILL_PA3",
+    "HarnessJointBLACKPILL_PA4",
+    "HarnessJointBLACKPILL_PA5",
+    "HarnessJointBLACKPILL_PA6",
+    "HarnessJointBLACKPILL_PA7",
+    "HarnessJointBLACKPILL_PA8",
+    "HarnessJointBLACKPILL_PA9",
+    "HarnessJointBLACKPILL_PB0",
+    "HarnessJointBLACKPILL_PB1",
+    "HarnessJointBLACKPILL_PB10",
+    "HarnessJointBLACKPILL_PB12",
+    "HarnessJointBLACKPILL_PB13",
+    "HarnessJointBLACKPILL_PB14",
+    "HarnessJointBLACKPILL_PB5",
+    "HarnessJointBLACKPILL_PB6",
+    "HarnessJointBLACKPILL_PB7",
+    "HarnessJointBOOST_R20_2",
+    "HarnessJointFIBONACCI_5V",
+    "HarnessJointFIBONACCI_DIN",
+    "HarnessJointFIBONACCI_GND",
+    "HarnessJointGPS_3V",
+    "HarnessJointGPS_EN",
+    "HarnessJointGPS_GND",
+    "HarnessJointGPS_PPS",
+    "HarnessJointGPS_RX",
+    "HarnessJointGPS_TX",
+    "HarnessJointIMU_CSAG",
+    "HarnessJointIMU_CSM",
+    "HarnessJointIMU_DRDY",
+    "HarnessJointIMU_GND",
+    "HarnessJointIMU_INT1",
+    "HarnessJointIMU_SCL",
+    "HarnessJointIMU_SDA",
+    "HarnessJointIMU_SDOAG",
+    "HarnessJointIMU_SDOM",
+    "HarnessJointIMU_VIN",
+    "HarnessJointLATCH_A",
+    "HarnessJointLATCH_OFF",
+    "HarnessJointMODE_1",
+    "HarnessJointMODE_3",
+    "HarnessJointRADIO_CS",
+    "HarnessJointRADIO_G0",
+    "HarnessJointRADIO_GND",
+    "HarnessJointRADIO_MISO",
+    "HarnessJointRADIO_MOSI",
+    "HarnessJointRADIO_RST",
+    "HarnessJointRADIO_SCK",
+    "HarnessJointRADIO_VIN",
+    "HarnessJointRING1_5V",
+    "HarnessJointRING1_DIN",
+    "HarnessJointRING1_GND",
+    "HarnessJointRING2_5V",
+    "HarnessJointRING2_DIN",
+    "HarnessJointRING2_GND",
+    "HarnessJointRING3_5V",
+    "HarnessJointRING3_DIN",
+    "HarnessJointRING3_GND",
+    "HarnessJointSPARKLE_JP3_2",
+    "HarnessJointSPARKLE_JP3_3",
+    "HarnessJointSPARKLE_JP3_4",
+    "HarnessJointSPARKLE_JP3_6",
+    "HarnessJointSPARKLE_X7_GND",
+    "HarnessJointSPARKLE_X7_PWR",
+    "HarnessJointSTART_1",
+    "HarnessJointSTART_3",
+    "HarnessSpliceAUX_3V3",
+    "HarnessSpliceB",
+    "HarnessSpliceBOOST_OUT",
+    "HarnessSpliceCarrierAUX_3V3",
+    "HarnessSpliceCarrierB",
+    "HarnessSpliceCarrierBOOST_OUT",
+    "HarnessSpliceCarrierFIB_5V",
+    "HarnessSpliceCarrierGND",
+    "HarnessSpliceCarrierLATCH_OFF",
+    "HarnessSpliceCarrierLED_DISTRIBUTION",
+    "HarnessSpliceCarrierLOAD_5V",
+    "HarnessSpliceCarrierSENSE",
+    "HarnessSpliceCarrierSPI_CLOCK",
+    "HarnessSpliceCarrierSPI_MISO",
+    "HarnessSpliceCarrierSPI_MOSI",
+    "HarnessSpliceFIB_5V",
+    "HarnessSpliceGND",
+    "HarnessSpliceLATCH_OFF",
+    "HarnessSpliceLED_DISTRIBUTION",
+    "HarnessSpliceLOAD_5V",
+    "HarnessSpliceSENSE",
+    "HarnessSpliceSPI_CLOCK",
+    "HarnessSpliceSPI_MISO",
+    "HarnessSpliceSPI_MOSI",
+    "HarnessSpliceTapeAUX_3V3",
+    "HarnessSpliceTapeB",
+    "HarnessSpliceTapeBOOST_OUT",
+    "HarnessSpliceTapeFIB_5V",
+    "HarnessSpliceTapeGND",
+    "HarnessSpliceTapeLATCH_OFF",
+    "HarnessSpliceTapeLED_DISTRIBUTION",
+    "HarnessSpliceTapeLOAD_5V",
+    "HarnessSpliceTapeSENSE",
+    "HarnessSpliceTapeSPI_CLOCK",
+    "HarnessSpliceTapeSPI_MISO",
+    "HarnessSpliceTapeSPI_MOSI",
+    "HarnessSpliceTieAUX_3V30",
+    "HarnessSpliceTieAUX_3V31",
+    "HarnessSpliceTieB0",
+    "HarnessSpliceTieB1",
+    "HarnessSpliceTieBOOST_OUT0",
+    "HarnessSpliceTieBOOST_OUT1",
+    "HarnessSpliceTieFIB_5V0",
+    "HarnessSpliceTieFIB_5V1",
+    "HarnessSpliceTieGND0",
+    "HarnessSpliceTieGND1",
+    "HarnessSpliceTieLATCH_OFF0",
+    "HarnessSpliceTieLATCH_OFF1",
+    "HarnessSpliceTieLED_DISTRIBUTION0",
+    "HarnessSpliceTieLED_DISTRIBUTION1",
+    "HarnessSpliceTieLOAD_5V0",
+    "HarnessSpliceTieLOAD_5V1",
+    "HarnessSpliceTieSENSE0",
+    "HarnessSpliceTieSENSE1",
+    "HarnessSpliceTieSPI_CLOCK0",
+    "HarnessSpliceTieSPI_CLOCK1",
+    "HarnessSpliceTieSPI_MISO0",
+    "HarnessSpliceTieSPI_MISO1",
+    "HarnessSpliceTieSPI_MOSI0",
+    "HarnessSpliceTieSPI_MOSI1",
+    "RingInnerLacing10",
+    "RingInnerLacing42",
+    "RingSideLacing12",
+    "RingSideLacing24",
+    "SwitchLugBoot1",
+    "SwitchLugBoot2",
+    "SwitchLugBoot3",
+    "SwitchLugBoot4",
+    "SwitchLugBoot5",
+    "SwitchLugBoot6",
+    "W001",
+    "W002",
+    "W003",
+    "W004",
+    "W005",
+    "W006",
+    "W007",
+    "W008",
+    "W009",
+    "W010",
+    "W011",
+    "W012",
+    "W013",
+    "W014",
+    "W015",
+    "W016",
+    "W017",
+    "W018",
+    "W019",
+    "W020",
+    "W021",
+    "W022",
+    "W023",
+    "W024",
+    "W025",
+    "W026",
+    "W027",
+    "W028",
+    "W029",
+    "W030",
+    "W031",
+    "W032",
+    "W033",
+    "W034",
+    "W035",
+    "W036",
+    "W037",
+    "W038",
+    "W039",
+    "W040",
+    "W041",
+    "W042",
+    "W043",
+    "W044",
+    "W045",
+    "W046",
+    "W047",
+    "W048",
+    "W049",
+    "W050",
+    "W051",
+    "W052",
+    "W053",
+    "W054",
+    "W055",
+    "W056",
+    "W057",
+    "W058",
+    "W059",
+    "W060",
+    "W061",
+    "W062",
+    "W063",
+    "W064",
+    "W065",
+    "W066",
+    "W067",
+    "W068",
+    "W069",
+    "W070",
+    "W071",
+    "W072",
+    "W073",
+    "W074",
+    "W075",
+    "W076",
+    "W077",
+    "W078",
+    "W079",
+    "W080",
+    "W081",
+    "W082",
+    "W083",
+    "W084",
+    "W085",
+    "W086",
+    "W087",
+    "W088",
+    "W089",
+    "W090",
+    "W091",
+    "W092"
+  ],
+  "physical_acceptance": "unmeasured"
+}

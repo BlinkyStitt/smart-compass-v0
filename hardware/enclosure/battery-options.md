@@ -1,127 +1,237 @@
-# Battery fit and power options
+# Single removable protected cell: decision and qualification
 
-Research date: 2026-10-11. Target **four hours of bright animated patterns** with all four displays, GPS and radio active. Prefer Adafruit parts. Use protected raw LiPo or Li-ion cells with a separate regulator. USB power banks are excluded from the baseline because Bryan has experienced flicker and protection trips with changing LED loads.
+Engineering decision, revised 2026-11-04 for SKI-1230: use one **XTAR protected
+21700 6000 mAh / 3.6 V / 10 A button-top**, with charged spares carried separately.
+Bryan authorized a safer cell and a module-based prototype. This selection replaces
+the earlier XTAR 50E 5000 mAh candidate because the maker publishes a maximum
+cell mass. It retains a protected single-cell architecture and external charging.
+The narrow source, generated installed census and full loom own the active assembly.
+The earlier wide/pouch design remains an inactive archive.
+The historical custom-circuit review and recovery counters remain unchanged.
 
-## Field replacement requirement
+The active scope is the narrow prototype. Complete worn mass, including the
+installed cell and necklace, must be at most**2.5lb =1133.980925g**. The separate
+50g margin is a target. Read the generated [complete inventory](../../designs/stacked/exports/inventory.md)
+and [raw bounds](../../designs/stacked/exports/parts.json). Digital source and
+geometry checks do not establish physical electrical, thermal or wearing acceptance.
 
-The current CAD battery is a **provisional fit candidate**, not a purchase.
-Its screw-fastened rear and two pack straps do not provide the quick cell changes
-required for the field design. Bryan selected **one removable 26650 plus charged spares** for the next revision.
-Battery replacement must use a dedicated, captive,
-tool-free cover or removable cartridge, without opening the optical stack or
-exposing the other electronics. Keep the current CAD weights and runtime tied
-to its actual 190 g / 37 Wh pack until a replacement layout is built and checked.
+Use a dedicated holder for this exact protected button-top cell. Exclude adapters,
+a second installed cell, selectors, series/parallel connections, hot swap and
+onboard charging. Charge the removed cell externally. Firmware voltage reporting
+is not cell protection. The protected product adds manufacturer protection;
+it does not establish inherently safer chemistry or complete device safety.
 
-Bryan already uses **Efest Purple IMR26650 5200 mAh flat-top, 15 A / 40 A** cells.
-The [original tester's report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
-lists nominal 3.7 V and about 26.2 mm diameter; the
-[supplier identifies this variant as unprotected](https://www.batteryjunction.com/products/efest-imr26650-4335).
-The report is for a 2016 sample, not a measurement of Bryan's cells. Do not use
-the pulse rating to rate the holder or power path. His approximately 3 Ah 18650s
-are another possible source; their exact model is not yet known.
+## Energy and cell evidence
 
-At the existing assumed 6.25 W total load and 85% conversion efficiency:
+The [XTAR official-store specification](https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight) lists
+6000 mAh, 3.6 V, 10 A continuous discharge, a button top and integrated protection.
+It gives diameter 21.8 +/-0.3 mm, length 74.8 +/-0.5 mm and net weight **<=76 g**.
+Use **22.1 x 75.3 mm** cell-only maxima before holder, contact travel, insulation,
+clearance and removal space. The source has no numbered revision; retrieved
+2026-11-04. These data apply to this exact product, not the 50E, unprotected,
+high-current or USB-equipped variants.
 
-| Arrangement to evaluate | Nominal energy | Calculated hours before reserve and extra losses | Access and circuit tradeoff |
-| --- | ---: | ---: | --- |
-| One 5200 mAh / 3.7 V 26650 | 19.24 Wh | 2.62 h | Simplest removable-cell bay; carry charged spares. Needs a rated holder and hardware cell protection. Does not meet four hours without a swap. |
-| Two independently protected 26650 bays | 38.48 Wh total | 5.23 h total | Source selector draws from one bay at a time and blocks reverse current. Adds a second holder and selection/protection electronics. Can be designed for individual cell replacement. |
-| Existing factory protected LiPo pack | 37 Wh | 5.03 h | Current geometry and mass basis. A dedicated pack cartridge/cover and keyed disconnect could allow a whole-pack swap. The present rear does not. |
+The maker does not publish this product's exact protection thresholds, delays,
+short-current let-through or recovery sequence. Keep those physical outcomes
+unmeasured. Its 10 A label does not qualify the installed contacts, fuse, harness
+or enclosed temperature. The <=76 g cell bound does not establish complete worn
+mass or a finished-assembly measurement.
 
-Do not wire removable cells directly in parallel. A charged spare can drive
-current into a depleted cell. [Adafruit's pack guidance](https://learn.adafruit.com/li-ion-and-lipoly-batteries/multi-battery-packs)
-explains the difference between loose cells and a matched factory pack.
-A factory pack is one solution, not the only possible architecture. A correctly
-designed source selector can keep two cell bays electrically separate.
-[TI's TPS2121](https://www.ti.com/lit/ds/symlink/tps2121.pdf) supports reverse-current
-blocking and input selection at single-cell voltages. It is an IC design candidate,
-not a selected or tested battery module. It does not replace each cell's
-undervoltage/short-circuit protection, fuse or reverse-insertion protection.
-Charge removable cells separately in the appropriate external charger; the
-proposed selector does not charge or balance them.
-
-A 26650 needs about 26 mm of depth before holder walls and clearance, compared
-with the current 20 mm pack. Do not claim that either current case will accept
-it unchanged. The single-cell arrangement is selected. Check the holder, protection
-boards, door, removal path and wiring in both native layouts. A two-cell series
-pack would also need a different regulator: the current boost accepts 1S only.
-No alternative here has a completed layout or a verified runtime.
-
-## Selected fit candidate
-
-The CAD uses one [BatterySpace CU-MM109 / item 4816](https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx): a factory **1S 10 Ah LiPo pack**, nominal **3.7 V / 37 Wh**, **80 × 65 × 20 mm**, **190 g**. The supplier lists an 8 A protection board, 7.3 A polyswitch, 7 A maximum discharge, and 18 AWG open leads. It supplies the matched cells and protection as one assembly. Do not build a pack by joining separate pouches. This is a provisional fit candidate, not a purchase or a measured runtime result. Confirm the supplied pack drawing, protection thresholds and lead arrangement before manufacture.
-
-A [Pololu U3V70F5, item 2891](https://www.pololu.com/product/2891) supplies fixed 5 V. The published bare-board envelope is **40.6 × 15.2 × 4.6 mm**. Its input range is 2.9–5 V; current and efficiency depend on input voltage, load and temperature. Its 10 A switch limit is not an output-current rating. Use a **1.25 A total 5 V cap** provisionally, including all electronics and LED idle current. This requires about **2.45 A from a 3.0 V pack at assumed 85% efficiency**, below the candidate pack's stated discharge limit. Confirm continuous operation and transients in the enclosed pendant. Do not use the regulator's undervoltage lockout as the pack's protection circuit.
-
-**1 A can be useful for wearable light.** The current 494-pixel idle estimate and 500 mA electronics reserve consume 994 mA before encoded light, so the unmeasured model leaves only 6 mA at a 1 A cap. That is a conservative calculation, not a measured brightness result. Measure LED idle, controller average/peaks, the intended sparse animations and radio/GPS together. Reconsider a 1 A supply if those measurements support a lower bounded current model. Do not reject a useful wearable brightness level from theoretical full-white ratings alone.
-
-The Adafruit parts reviewed below do not provide both the required energy and a suitable discharge path for this baseline. The battery and regulator are therefore exceptions to the sourcing preference. Keep Adafruit for suitable sensors, controls and charging parts.
-
-## Compartment and wiring
-
-The body is **250 mm diameter × 38.5 mm deep**. One pack sits at **(0,-33) mm**, with its lower face at **Z=3.5 mm** and nominal top at **Z=23.5 mm**. The cradle has an **82 × 67 mm clear pocket** and **84 × 69 mm outside footprint**. Allow 0.5 mm insulating padding below it. Two independent **10 mm hook-and-loop straps** use four retention slots. Keep **2 mm free top clearance plus 0.5 mm strap allowance**, up to Z=26. The circle underside starts at Z=27. This allowance is for normal fit; replace a swollen or damaged pouch. Do not tighten straps to restrain swelling.
-
-The regulator sits at **(72,-28) mm** with its long dimension along Y. Rails leave both ends open. A left-side pack lead exit routes wires around the lower bay to the regulator. Restrain the leads without pulling on the pouch tabs. The removable rear carries the cradle, board rails and service hatch. Exact connectors, fuse, switch, capacitors, lead bends and restraint points remain measured-part fit work.
-
-Use this single power path:
+Retain the 6.25 W / 85% nominal energy reference:
 
 ```text
-Factory protected 1S pack
-  -> keyed power connector -> fuse -> physical latching switch
-  -> Pololu fixed 5 V boost -> Sparkle Motion power input / LED VOUT
-  -> Sparkle 3.3 V -> BlackPill, GPS, radio and sensors
-
-Protected/switched pack voltage before boost -> divider -> BlackPill PA4
+6.0 Ah x 3.6 V = 21.6 Wh
+21.6 Wh x 0.85 / 6.25 W = 2.9376 h (display 2.94 h)
 ```
 
-Use short paired supply/return wires and connectors rated above the complete input load. Keep the main pack-to-boost path free of JST-PH adapters with a 2 A limit. Fit bulk decoupling close to the regulator and LED distribution; select values from the regulator guidance and measured startup/LED transients. A frame's calculated average current does not bound every PWM pulse or capacitor inrush. Validate cold start, black-to-bright transitions, radio TX and low-pack operation without repeated protection trips. Record oscilloscope rail minima, input/output peaks and capacitor heating. These physical checks remain deferred.
+The shared [electrical input record](../../site/electrical-inputs.json) owns this
+reference and the calculator defaults. This is nominal arithmetic before
+reserve, efficiency variation, aging, temperature, contact/wire loss, cutoff
+and swap downtime. It is not measured runtime, guaranteed usable energy or a
+peak-load rating. The
+[rainbow demand basis](../../site/README.md#rainbow-demand-basis) uses
+Adafruit's NeoPixel channel/idle estimates and samples the real shared pattern.
+This estimate does not require replacing Fibonacci256 or obtaining supplier
+data. Use the calculator's active narrow design and stated electrical settings
+for its sampled LED demand and runtime. Two percent is not a firmware-enforced
+limit. Physical brightness and runtime remain unmeasured; fault, inrush and
+thermal checks remain separate.
 
-Sparkle does not charge a raw LiPo or boost it to 5 V. Feed it regulated 5 V and keep its PD selection at 5 V. Sparkle's LED VOUT follows the input. Keep external 3.3 V demand within its published 500 mA peak limit. The battery divider measures the protected/switched raw pack before the boost; both sense and logic must turn off together. Keep battery profile 0 / Unknown until the actual divider and calibrated profile are installed. [Sparkle power pins](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+Historical Efest evidence remains in the original electrical review:
+[HKJ's 2016 report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
+reproduced 26.22 ±0.15 × 66.2 ±0.15 mm and 92 ±1 g for the reviewed variant.
+Its 19.24 Wh nominal reference gave 2.61664 h at the same output/efficiency.
+Do not transfer that cell's mass, dimensions or current labels to the XTAR.
 
-For the MVP, **disconnect and remove the pack for external charging**. An [Adafruit 259 single-cell Li-ion/LiPo charger](https://www.adafruit.com/product/259), configured for the selected 4.2 V chemistry and at most 1 A, is a charging candidate. A charge-only adapter may use its connector within that charge current; never reuse that adapter in the higher-current discharge path. Confirm the supplied charger settings and pack compatibility. Do not run the pendant through the charger's load output. An onboard charger is outside the current model. Charge off-body and outside the sealed case. Turn power off before exchanging a spare; connect one factory pack at a time. Do not parallel separate packs or regulator outputs. [Adafruit multi-pack guidance](https://learn.adafruit.com/li-ion-and-lipoly-batteries/multi-battery-packs).
+## Historical candidate investigations
 
-## External belt-pack option
+The following table records earlier candidate investigations. These parts do not
+define the active module prototype. Use [electrical-design.json](electrical-design.json)
+and its [design review](electrical-design.md) for the selected circuit, open
+design items and physical test procedures. The full narrow loom is specified in its generated cut/fit record.
 
-Support the same protected **1S raw-pack input** from a belt carrier. Keep the 5 V boost in the pendant. Use a fused, switched pack in a closed, padded belt carrier, then run a flexible paired cable up the necklace and down the body. The native rear has a **12 mm provisional gland bore at (43,84) mm**, a reinforced sealing land, and a blanking-plug envelope. Fit a selected gland for external use; leave the entry capped for internal use. [Adafruit PG-7 gland 762](https://www.adafruit.com/product/762) is the fit reference, with listed 11.5 mm screw end and a 3.0–4.3 mm cable-jacket range. Its full dimensions and actual cable fit remain TODOs. The belt carrier is not yet modeled.
+| Element | Evidence | Decision / missing qualification |
+| --- | --- | --- |
+| Fixed holder: Keystone 1107 | [Manufacturer product](https://www.keyelco.com/product.cfm/product_id/14077) and [drawing](https://www.keyelco.com/product-pdf.cfm?p=14077) identify a one-cell 26650 solder-lug holder; the [catalog, page 30](https://beta.keyelco.com/userAssets/file/M70p23-33.pdf) specifies PBT and nickel-plated stainless-steel lugs. | Candidate only. Reviewed evidence does not establish continuous/pulse current, contact resistance, or allowable loaded contact travel for the 66.35 mm flat-top reference. Do not infer loaded height, terminal clearance or removal travel from an empty-holder outline. |
+| Pack protector: Tenergy 32195 | [Manufacturer specification](https://power.tenergy.com/tenergy-1s-li-ion-8-5a-18a-pcb-discharging-cut-off-voltage-2-8v/) lists 28.8 × 7 × 2.5 mm, 8.5 A operation, 2.80 ± 0.10 V undervoltage detection and 18.5 ± 4 A overcurrent detection; overcurrent release requires removing the load. | Not selected. Reverse insertion is unspecified. The undervoltage delay mixes seconds and milliseconds, and the release tolerance needs clarification. Removal/reinsertion startup and charger-reset requirements are unspecified. Its trip range cannot be assumed to protect an unrated holder or harness. |
+| Integrated circuit alternative: TI TPS25947 | [TI datasheet, sections 4, 7 and 8](https://www.ti.com/lit/ds/symlink/tps25947.pdf) specifies 2.7–23 V operation, negative-input tolerance, adjustable UVLO/current limit/inrush, and distinct auto-retry/latch-off variants. | Plausible custom circuit, not a selected module. Requires an exact variant, schematic, tolerance analysis, upstream fuse coordination, PCB/thermal design, loaded envelope and depletion/restart analysis. A 2 × 2 mm IC package is not a board envelope. |
+| Retained boost: Pololu U3V70F5, item 2891 | [Manufacturer specification](https://www.pololu.com/product/2891): 2.9–5 V input, 40.6 × 15.2 × 4.6 mm bare board, reverse-voltage protection and short-circuit hiccup recovery. | Historical regulator assumption; an assembled replacement is permitted. Its protection applies at the regulator, not to upstream contacts, wires or protection electronics. Its typical 2.4 V falling UVLO and 10 A switch limit do not replace cell/path protection. |
 
-Use a keyed disconnect and strain relief at the belt, secure the lead to the necklace independently from its load-bearing loops, and leave slack at the shoulder and pendant. The cable must not tighten around the neck or pull a board connector during a snag. Select and test the disconnect's release behavior with the actual harness. Keep the pendant's physical switch and a belt master disconnect; fuse close to the pack so the whole cable has protection. Keep the cable away from the IMU and move the battery mass and magnetic material to the belt.
+The earlier [TI BQ2970 recovery discussion](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/818910/bq2970-removable-batteries)
+shows why a different pack protector can need a wake-up intervention. It does
+not establish the selected XTAR cell's recovery behavior. Its exact protection
+thresholds, delays and fault recovery remain unpublished and physically unmeasured.
+Do not transfer another protector's settings or test results to this cell.
 
-Start cable sizing with flexible **18 AWG paired conductors**, then choose the jacket/gland from its actual outside diameter. A 1.5 m one-way run has about 3 m conductor length. Using nominal copper resistance of 0.021 ohm/m gives about **0.063 ohm** before connectors: **0.15 V drop and 0.38 W loss at 2.45 A**. The [Belden 5300UE specification](https://www.belden.com/products/cable/audio-cable/speaker-cable/5300ue) provides an 18 AWG resistance reference of 6.5 ohm/1000 ft; it is not the selected wearable cable. This is an engineering estimate; strand construction, temperature and connections change it. Near pack depletion the drop can put the boost below its 2.9 V operating range. Measure the loaded pendant input and exclude that unusable energy from runtime. Shorten the route or increase conductor size if needed; select a larger gland when the jacket requires it. Do not raise the raw input above 4.2 V to compensate.
+## Active module design
 
-High-discharge 18650 or 26650 cells are possible pack ingredients, but a cell's current rating does not rate a holder, springs, connector, cable or BMS. Record the exact cell model and use a protected factory pack, or a separately designed protected assembly before installing loose cells. Cell chemistry/capacity and a suitable charger remain part-specific. This baseline accepts **1S only**; a 2S pack requires a different regulator and battery profile. Never feed 2S voltage into the selected boost or 5 V pixels.
+The selected topology is:
 
-An external regulated 5 V supply is another valid future packaging choice, with the regulator at the belt. It requires a separately keyed 5 V harness, no connection to the raw input, and a defined battery measurement route. It is not interchangeable with the modeled 1S input. The current handoff uses one raw-pack interface to avoid that ambiguity.
+```text
+cell+ → fixed contact → adjacent F1 → S1 pole A → Pololu 2808 → PowerBoost
+PowerBoost output → S1 pole B → Sparkle Motion → separately fused displays
+                                             → fused 3.3 V peripherals
+cell− → fixed return/star → all required returns
+```
 
-Sparkle's published input path and resettable fuse are **5 A total**, and its 3.3 V pin provides **500 mA peak**. If later measured demand needs LED power injection, branch a suitable regulated 5 V supply through separately fused LED feeds and share ground with Sparkle. Keep those feeds out of its logic regulator and do not parallel independent supplies. Keep aggregate and branch current limiting over all four displays. Raw 1S cells range below 5 V; do not assume direct battery wiring meets the Fibonacci256 or strip voltage requirements. Direct raw-cell LED operation is outside this baseline. [Sparkle ratings](https://learn.adafruit.com/adafruit-sparkle-motion/pinouts).
+The [complete netlist](electrical-design.json) owns the individual terminals,
+branch fuses, drains, sense filter, START and existing controls. Use its selected
+wire gauges and terminations. The boost input return goes directly to the
+negative star; it does not carry boost current through the latch ground trace.
+The battery sense divider connects to switched B. Keep the selected USB policy:
+remove the cell, leave S1 OFF and use only Sparkle USB at 5 V, off-body. Do not
+connect a powered BlackPill USB cable or a probe target supply at the same time.
+Do not charge a cell inside the pendant.
 
-The current CAD supports both battery locations with the same 38.5 mm body. External use removes the **190 g pack** from the pendant; the empty cradle remains. The generated [parts manifest](exports/parts.json) and [complete build parts list](../../design-v2.md#complete-build-parts-list-and-mass-estimate) give the complete pendant, necklace, belt/lead and total-worn estimates, with explicit uncertainty allowances. See the [installed mass basis](README.md#current-weight-estimate). A later rear/layout revision can remove unused walls and investigate a thinner electronics-only body. Keep that reduction unclaimed until a rebuilt model and connectors fit. Record pendant mass separately from belt-carried mass and total carried mass.
+The digital review checks concrete parts, connections, supply interfaces,
+physical OFF topology, source records and the complete 92-wire narrow loom.
+The [routing record](harness-routing.json) owns each stock cut and formed path.
+The native pipeline separately checks the installed joints, insulation, strain
+relief, source bodies and service clearances. Use its generated inventory,
+worn-mass and balance ledgers, CAD, service illustrations and media from one
+complete generation. The wide design remains an inactive archive.
 
-## Adafruit comparison
+The old 2.9 V boost calculation belongs to the superseded Pololu design. It is
+not the PowerBoost's minimum input rating or a measured shutdown point. The
+active bench plan uses 2% electrical brightness and a 2 W non-LED allowance;
+these are planning settings, not firmware limits or guaranteed peak bounds.
+The loss/runtime model and electrical review retain their stated approximations.
+Measure PWM/radio/inrush behavior, depletion/rebound, OFF decay, fault withstand
+and temperatures on the actual narrow assembly. Keep those physical outcomes
+unmeasured until results exist. Physical manufacturing and qualification are
+outside this digital delivery and do not require a human sign-off to finish it.
 
-| Item | Published size and mass | Nominal energy | Decision |
-| --- | --- | --- | --- |
-| [328, flat 2500 mAh LiPo](https://www.adafruit.com/product/328) | Page: 50 × 60 × 7.3 mm, 50 g. Linked [datasheet](https://cdn-shop.adafruit.com/datasheets/785060-2500mAh_specification_sheet.pdf): maximum 50.5 × 60.5 × 7.9 mm including protection. | 9.25 Wh at 3.7 V | Too little energy for the full four-output target. Two used in sequence also fall short under the conservative idle model. |
-| [258, flat 1200 mAh LiPo](https://www.adafruit.com/product/258) | 34 × 62 × 5 mm, 23 g | 4.44 Wh | Less energy again; useful for smaller projects. |
-| [5035, factory 10050 mAh 18650 pack](https://www.adafruit.com/product/5035) | 66.6 × 55.3 × 18.7 mm, 148 g | About 37 Wh | Good energy and size. The pack is rated for 3 A continuous, but the supplied cable is limited to 2 A. At 3 V and 85% efficiency that permits only about 1.02 A at 5 V, before margin. Do not select it for the 1.25 A cap or modify it by bypassing its protection. |
-| [1566, 10000 mAh USB bank](https://www.adafruit.com/product/1566) | 90.3 × 63 × 23 mm, 212 g | About 37 Wh only if the rating refers to 3.7 V cells | Excluded. Adafruit describes general 5 V loads and links LED projects, but gives no LED-transient/no-trip guarantee. The page also describes output interruption when charging starts/stops and possible sleep below 100 mA. This does not resolve Bryan's observed failure. |
-| [2465, PowerBoost 1000C](https://www.adafruit.com/product/2465) / [4654, MiniBoost](https://www.adafruit.com/product/4654) | Small single-cell boost boards | Not batteries | Approximately 1 A-class output cannot supply the present complete-display budget with useful margin. Neither is the selected regulator. |
+## Specified replacement sequence
 
-Raw packs still have overcurrent protection. A separate regulator removes the consumer USB bank's sleep/load-detection behavior; it does not prove flicker-free operation. Preserve the pack protection and measure the actual changing LED load.
+This is the specified sequence for the unbuilt removable-cell assembly. It is
+not an instruction to put a loose cell into the existing pouch cradle. The
+narrow service guide illustrates it with the rear, optics and necklace fitted.
 
-## Four-hour energy budget
+1. Support the pendant by hand or on a padded surface. Use the case as support.
+   Do not hang it from wires or the door.
+2. Put physical S1 fully OFF. Disconnect USB, SWD and every other live interface.
+   A dark display does not prove that S1 is OFF.
+3. Release the door catch and open the captive door. The separate keeper still
+   retains the cell. Release the keeper only when you have control of the cell.
+4. Press the cell towards the fixed negative insulating stop. Lift the positive
+   end clear and use the ribbon to remove the cell deliberately. Keep it clear
+   of the contacts and protect the wrapper and end insulator.
+5. Check the accessible contacts, wrapper, end insulator and polarity marks.
+   Insert one compatible, externally charged XTAR cell to the durable +/− marks.
+   Put the ribbon in its specified path. Close the keeper, then latch the door.
+   Do not force a partly seated cell or trapped ribbon into closure.
+6. Select ON and press the on-only START button. A swap interrupts operation.
+   Power restoration does not prove GPS acquisition, radio synchronization or
+   pattern readiness. No new diagnostic indication is delivered by this task.
 
-For initial sizing, use `output_Wh = nominal_cell_Wh × efficiency`. Assume 85% efficiency only until measured. The following values exclude capacity reserve, aging, temperatures, unusable energy below the regulator's operating range, and swap downtime.
+With S1 OFF and external power absent, the reviewed topology disconnects the
+positive cell contact from the downstream stored-charge rails. Mechanical removal
+does not depend on a timed electronic reset. **No qualified OFF/reset dwell is
+available.** Residual charge and all decay/reset times remain unmeasured. A rapid
+replacement can retain electronic state. Do not promise a full reset from this
+sequence or use blank LEDs as evidence that stored charge has disappeared.
 
-| Supply | Nominal cell energy | Average output power allowed for four hours | Average total 5 V current |
-| --- | --- | --- | --- |
-| One Adafruit 328 | 9.25 Wh | 1.97 W | 0.393 A |
-| Two 328 packs, used in sequence | 18.50 Wh | 3.93 W | 0.786 A |
-| Selected 10 Ah LiPo fit candidate | 37 Wh | 7.86 W | 1.573 A energy allowance; provisional operating cap is lower |
+| Event | Specified action and evidence limit |
+| --- | --- |
+| Depletion | Support, OFF and remove the depleted cell. This separates it from residual downstream drain. Insert a compatible charged spare, latch, ON and START. Verify actual latch/rebound and startup behavior during physical qualification. |
+| Reverse insertion | OFF before correcting orientation. Inspect the wrapper, end insulator and contacts. Stop if damaged, hot, contaminated or abnormal. The selected protection does not establish whole-assembly fault acceptance. |
+| Short, overload or repeated trip | OFF first. Remove the known cause before a reset. Persistent or unexplained trips need service. Do not repeatedly cycle power, bridge a fuse or bypass protection. |
+| Darkness, cause unknown | Support and OFF. Check the latch, marked polarity and accessible cell/contact condition. If normal, permit one compatible charged-spare restart. If it stays dark or trips again, stop and service it. Darkness does not diagnose depletion. |
+| Cell protection will not recover | Remove the cell for inspection and follow the cell maker's limits. Do not apply a charger across the pendant contacts or bypass protection to wake it. A blown fuse needs service. |
 
-The current unmeasured model reserves **0.5 A for controllers/services** and **0.494 A of LED idle current** for 494 pixels. It leaves **0.256 A for encoded light above idle** at the provisional 1.25 A total cap. This supports initial sparse-pattern planning; it does not establish the desired apparent brightness. Keep the conservative current model until measured replacements bound the actual current.
+Charge off-body, outside the enclosure, in a charger explicitly supporting
+3.6 V nominal, 4.2 V charge-termination Li-ion protected button-top 21700 cells
+up to the selected cell length. Follow
+the cell and charger current/temperature limits. The
+[XTAR VC4SL manufacturer manual](https://www.xtar.cc/companyfile/vc4sl-user-manual-88.html)
+is a candidate reference, not an owned or qualified charger. Do not use a 4.35 V
+or LiFePO4 charge setting, force-charge a damaged/deeply discharged cell, or use
+a charger's recovery function to conceal repeated protection faults. Carry each
+spare in its own insulating terminal-covering case; distinguish charged and
+depleted cases with text or shape, not colour alone. Spares and charger are not
+installed worn mass.
 
-At 5 V × 1.25 A, four hours needs **25 Wh output**. A nominal 37 Wh pack at assumed 85% efficiency provides **31.45 Wh**, or **5.03 calculated hours** at that load before further losses and reserve. The four-hour run leaves **6.45 Wh of calculated output reserve** under those assumptions. At 1.5 A the estimate falls to 4.19 hours before reserve. At sustained 2.5 A, four hours needs 50 Wh output / 58.8 Wh cell energy, which this pack cannot provide. The protocol's 2.5 A fixture remains an illustration, not this pendant's operating setting.
+## Existing geometry and mass are legacy evidence
 
-Provisional commissioning settings in mA are **total/reserve/circle/halo/inner/outer = 1250/500/400/80/120/150**. The four branch caps total 750 mA and each covers its modeled idle load. Battery factors and user brightness still apply. Keep the initial drive cap and Unknown battery factor until measurements permit otherwise. Measure intended pattern mix, useful brightness, actual input watts, usable Wh, regulator/pack temperatures and low-voltage behavior before claiming four hours.
+At baseline `7449b57648bb006e8d53136469745242bf09b43c`, both parameter JSON files
+and generated inventories still represent the **190 g / 37 Wh,
+80 × 65 × 20 mm CU-MM109 pouch candidate**. Its two-strap wide cradle and
+screw-fastened rear access do not satisfy field replacement. The old 5.03-hour
+calculation on Pages describes that pack, not the selected protected XTAR. Historical
+belt/pouch guidance in `design-v2.md` and generated tables is not an alternative
+approved architecture for SKI-1230. Do not relabel existing CAD, clips or mass
+numbers as the removable-cell design.
 
-**TODO: SC-BATTERY-THRESHOLDS — Confirm the supplied protected LiPo and regulator, pack/lead/connector/protection limits, fuse/switch/decoupling, charger settings, loaded cutoff/startup behavior, PA4 divider and calibrated gain, valid measurement range, and reduction/recovery thresholds. Confirm usable output energy and four-hour brightness with the intended patterns. Physical fit, transient, thermal, charge and runtime tests remain deferred.**
+The wide scene records a 38.0048 mm body depth; its assembly bounds span
+47.2048 mm including screw projections. The narrow body is 200 mm diameter ×
+57.6 mm deep. Future comparisons must distinguish body dimensions from complete
+occupied bounds and include the open-door/removal envelope. Evaluate widening
+against depth and mass after the complete fitted layout review.
+
+Legacy complete-worn estimates from the regenerated inventory and site resolver
+(2026-11-03):
+
+| Legacy design | Nominal | Summed allowance bounds | Margin to 1,133.980925 g at upper bound |
+| --- | ---: | ---: | ---: |
+| Wide | 1,082.9 g | 834.6–1,347.3 g | −213.3 g |
+| Narrow | 1,123.6 g | 862.3–1,388.1 g | −254.1 g |
+
+These bounds are not confidence intervals; neither establishes weight acceptance.
+The narrow result still transfers wide fittings/harness allowances. Replacing
+only the pouch mass with the dated cell mass would not close either upper-bound
+deficit, even before adding a holder and protection. Do not shrink allowances
+just to pass the ceiling.
+
+After layout review, give the narrow design its own complete inventory and unrounded
+upper-bound comparison. Count the cell, holder, protection, door, latch, seal,
+fasteners, wiring and necklace once; exclude stock, samples, spares and charger.
+Publish nominal mass, summed bounds, installed cell mass, upper-bound margin and
+unresolved allowances prominently. Derive the narrow pendant's mass-weighted centre of
+gravity and bounded uncertainty from its installed parts relative to its own
+suspension points. Assess fore/aft tilt and lateral imbalance; reposition parts
+before adding counterweights. Current renders establish neither balance nor
+walking comfort.
+
+## Build and evidence boundary
+
+Run `just validate` for the serial narrow contract. It includes host/source tests,
+electrical topology and fixed-loom checks, native continuous fitted service,
+complete raw mass and balance, exact print projects/slicing, Godot CPU/GPU/media,
+repeatable pattern sampling and Pages/browser checks. A failed gate stops
+publication. Require full LFS contents and matching source/export hashes.
+The wide exports remain an integrity-checked archive; no new wide build is required.
+
+The native build generates the design document inventory with the same installed
+census and publishes both in one transaction. It preserves the unscaled166mm
+board and original stencil, whole circles, configurable mirror gap, optical
+coefficients,2mm outside diffuser, pattern functions and night-glare repair.
+Media retains the matched384frame/24fps figure-eight, stationary mannequin/field,
+zero night sun and the sky/amber/blue lights. Separate archived wide clips retain
+their original provenance and do not claim current removable-cell acceptance.
+
+Manufacturing and physical qualification are outside digital closure. Keep fit,
+repeated low-light swaps, partial seating, wrapper wear, retention, protection/
+recovery, transients, enclosed/skin heat, optics, runtime, magnetic interference,
+hanging angle/twist, comfort and actual worn mass explicitly unmeasured until
+real revision-specific results exist. No human sign-off gates the source delivery.
+The orchestrator handles resumption separately; recovery history and counters stay intact.

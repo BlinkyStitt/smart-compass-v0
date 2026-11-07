@@ -1,0 +1,42 @@
+[
+  {
+    "file": "accu-m2-8-datasheet.pdf",
+    "url": "https://accu-components.com/us/api/product-datasheet?id=652610",
+    "revision_and_conditions": "Accu SSCF-M2-8-TI5; retrieved2026-11-06; technical sheet has no revision date",
+    "sha256": "25f0d7baf7302436a0448fef665fce99561794015071af8455c8d92700bef65a",
+    "bytes": 507767,
+    "retrieved": "2026-11-06"
+  },
+  {
+    "file": "accu-m2-16-datasheet.pdf",
+    "url": "https://accu-components.com/us/api/product-datasheet?id=652614",
+    "revision_and_conditions": "Accu SSCF-M2-16-TI5; retrieved2026-11-06; technical sheet has no revision date",
+    "sha256": "ee8929c940ac03f0616418a37b66562db8ecc70fc04313e60b0a9d4d7e75b96e",
+    "bytes": 565815,
+    "retrieved": "2026-11-06"
+  },
+  {
+    "file": "accu-m2-20-datasheet.pdf",
+    "url": "https://accu-components.com/us/api/product-datasheet?id=652616",
+    "revision_and_conditions": "Accu SSC-M2-20-TI5; retrieved2026-11-06; technical sheet has no revision date",
+    "sha256": "d8d187cbf7a8086dfbd0e0b6c75a703209a7935f7d49551ff54da41fd39278e2",
+    "bytes": 482606,
+    "retrieved": "2026-11-06"
+  },
+  {
+    "file": "ampg.pdf",
+    "url": "https://ampg.com/public/assets/imgs/uploads/2024-AMPG-Screws-and-Bolts.pdf",
+    "revision_and_conditions": "AMPG2024ScrewsandBolts, catalogueC-7dimensions/C-9Ti5M3partnumbers; published values are nominal",
+    "sha256": "edd73cdb08452be9152d2b76fd8f0640a4a8a2a54e453f8ee2de2b4127893d8c",
+    "bytes": 2141538,
+    "retrieved": "2026-11-06"
+  },
+  {
+    "file": "timet.pdf",
+    "url": "https://www.timet.com/documents/datasheets/alpha-and-beta-alloys/timetal-6-4.pdf",
+    "revision_and_conditions": "TIMETTMC-0150, copyright2000,Table2 at22C; density4.42g/cm3 is nominal material data, not a measured fastener mass",
+    "sha256": "824684f7d5603af19e0d0862e1af1289f4ea64ae7fac7f54e649ae0f80040822",
+    "bytes": 176123,
+    "retrieved": "2026-11-06"
+  }
+]

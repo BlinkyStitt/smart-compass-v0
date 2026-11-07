@@ -1,0 +1,50 @@
+"""Verify source-hole BOOST mounts; retain physical and installed-assembly limits."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_BOOST_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a new BOOST result path; preserve existing evidence')
+    import boost_mount
+    paths=[source/name for name in ('boost_mount.py','test_boost_mount.py','electrical_boost.py','electrical_board.py','solid_clearance.py','electrical-design.json','component-inventory.json','hardware_spec.py','fastener_access.py','test_fastener_access.py','boost-mounts.md','BoostMountCheck.FCMacro')]
+    paths+=sorted((source/'sources/powerboost-1000-basic').iterdir())+sorted((source/'sources/powerboost-terminals').iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot();results={}
+    for design,z,rotation in (('wide',6,90),('narrow',9,0)):
+        shapes=boost_mount.native_shapes(z,rotation);results[design]=boost_mount.native_check(shapes,z,rotation)
+        for name in ('BoostPCB','BoostScrew0','BoostNut1','BoostComponents'):
+            broken=dict(shapes);del broken[name]
+            try:boost_mount.native_check(broken,z,rotation)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing BOOST product/reference accepted: '+name)
+        broken=dict(shapes);broken['rear_addition']=shapes['rear_addition'].copy()
+        broken['rear_addition'].translate(App.Vector(0,0,-.2))
+        try:boost_mount.native_check(broken,z,rotation)
+        except ValueError as error:
+            if 'lacks full bearing' not in str(error):raise
+        else:raise ValueError('Floating BOOST mounting annuli accepted')
+        broken=dict(shapes);broken['BoostScrew0']=shapes['BoostScrew0'].copy()
+        broken['BoostScrew0'].translate(App.Vector(0,0,1))
+        try:boost_mount.native_check(broken,z,rotation)
+        except ValueError as error:
+            if 'engage the full nut' not in str(error):raise
+        else:raise ValueError('An BOOST screw that misses full nut engagement was accepted')
+    if before!=snapshot():raise ValueError('BOOST inputs changed during native checks')
+    record={'checks':results,'inputs':before,'freecad_version':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record));print('BOOST MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception:
+    traceback.print_exc()
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

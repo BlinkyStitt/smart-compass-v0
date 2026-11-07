@@ -1,12 +1,15 @@
 """Keep assembly and rainbow media validation distinct and strict."""
 
+import hashlib
 import json
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from build import MEDIA, NARROW, WIDE, Movie, build, verify_movie
+import build
+from build import MEDIA, NARROW, WIDE, Movie, verify_movie
 
 
 class MovieTests(unittest.TestCase):
@@ -83,12 +86,229 @@ class MovieTests(unittest.TestCase):
             source = Path(directory) / "missing.mp4"
             with patch("build.MEDIA", {"wide_dark_sectors_movie": Movie(source, 16)}):
                 with self.assertRaises(FileNotFoundError):
-                    build(Path(directory) / "pages")
+                    build.render_media(Path(directory), {})
                 source.write_bytes(b"version https://git-lfs.github.com/spec/v1\noid sha256:missing\n")
                 with patch("build.ROOT", Path(directory)):
                     with self.assertRaisesRegex(RuntimeError, "Git LFS media is missing"):
-                        build(Path(directory) / "pages")
+                        build.render_media(Path(directory), {})
+
+    def test_movie_rules_and_posters_use_captured_media_and_scene(self):
+        for seconds, poster_time, scene_name, style in (
+            (24, 12, None, None),
+            (16, 0, 'native/scene.json', None),
+            (16, 0, 'native/scene.json', 'sectors'),
+        ):
+            with self.subTest(seconds=seconds, style=style), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = root / 'site-assets/clip.mp4'
+                source.parent.mkdir()
+                source.write_bytes(b'captured movie')
+                scene = root / scene_name if scene_name else None
+                if scene:
+                    scene.parent.mkdir()
+                    scene.write_bytes(b'captured scene')
+                provenance = {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                              for path in (source, scene) if path}
+                output = root / 'stage'
+                output.mkdir()
+                movie = Movie(source, seconds, poster_time, scene, style)
+
+                def inspect(captured):
+                    self.assertNotEqual(captured.source, source)
+                    self.assertEqual((captured.seconds, captured.poster_time, captured.masked_style),
+                                     (seconds, poster_time, style))
+                    source.write_bytes(b'concurrent source edit')
+                    self.assertEqual(captured.source.read_bytes(), b'captured movie')
+                    if scene:
+                        self.assertNotEqual(captured.rainbow_scene, scene)
+                        scene.write_bytes(b'concurrent scene edit')
+                        self.assertEqual(captured.rainbow_scene.read_bytes(), b'captured scene')
+                    else:
+                        self.assertIsNone(captured.rainbow_scene)
+
+                with patch.object(build, 'ROOT', root), patch.object(build, 'MEDIA', {'clip_movie': movie}), \
+                        patch.object(build, 'verify_movie', side_effect=inspect) as verify, \
+                        patch.object(build.subprocess, 'run') as run:
+                    values, records = build.render_media(output, provenance)
+                captured = verify.call_args.args[0]
+                command = run.call_args.args[0]
+                self.assertEqual(command[command.index('-i') + 1], str(captured.source))
+                self.assertEqual(command[command.index('-ss') + 1], str(poster_time))
+                self.assertEqual(records['clip_movie']['sha256'], provenance['site-assets/clip.mp4'])
+                self.assertEqual(output / values['clip_movie'], captured.source)
+                self.assertFalse(list(output.glob('.*-scene.json')))
 
 
-if __name__ == "__main__":
+class BuildInputTests(unittest.TestCase):
+    def test_active_module_design_and_sources_are_required_hashed_inputs(self):
+        for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',
+                     'electrical_imu.py',
+                     'electrical_peripherals.py',
+                     'sources/gps-featherwing/Adafruit Ultimate GPS FeatherWing.brd',
+                     'sources/gps-featherwing/Adafruit Ultimate GPS FeatherWing.sch',
+                     'sources/gps-featherwing/README.md',
+                     'sources/gps-featherwing/index.json',
+                     'sources/gps-featherwing/license.txt',
+                     'sources/gps-featherwing/upstream-README.md',
+                     'sources/rfm-lora/Adafruit RFM+LoRa Breakout.brd',
+                     'sources/rfm-lora/Adafruit RFM+LoRa Breakout.sch',
+                     'sources/rfm-lora/README.md',
+                     'sources/rfm-lora/index.json',
+                     'sources/rfm-lora/license.txt',
+                     'sources/rfm-lora/upstream-README.md',
+                     'imu_mount.py', 'imu-mounts.md',
+                     'boost_mount.py', 'boost-mounts.md', 'BoostMountCheck.FCMacro',
+                     'fastener_access.py', 'FastenerAccessCheck.FCMacro',
+                     'capacitor_mount.py',
+                     'capacitor-mounts.md',
+                     'CapacitorMountCheck.FCMacro',
+                     'sources/capacitor-fr-a/index.json',
+                     'sources/capacitor-fr-a/README.md',
+                     'sources/capacitor-fr-a/panasonic-fr-a-2025.pdf',
+                     'sources/capacitor-fr-a/panasonic-safety-2025.pdf',
+                     'sources/capacitor-fr-a/rs-pro-770787.pdf',
+                     'electrical_boost.py',
+                     'electrical_latch.py', 'latch_mount.py', 'latch-mounts.md',
+                     'sources/latch-2808/index.json', 'sources/latch-2808/pololu-2808.step',
+                     'sources/latch-2808/pololu-2808-pinout.jpg',
+                     'sources/latch-2808/pololu-2808-dimensions.pdf',
+                     'sources/latch-2808/camblock-plus-catalogue-15a.pdf',
+                     'sources/powerboost-1000-basic/Adafruit PowerBoost 1000 Basic.brd',
+                     'sources/powerboost-1000-basic/Adafruit PowerBoost 1000 Basic.sch',
+                     'sources/powerboost-terminals/index.json',
+                     'sources/powerboost-terminals/README.md',
+                     'sources/powerboost-terminals/2444.html',
+                     'sources/powerboost-terminals/2444-dimension.jpg',
+                     'battery_access.py', 'battery_leads.py', 'battery-compartment.json', 'battery-access.md',
+                     'sources/battery-contact-0854/index.json',
+                     'sources/battery-contact-0854/mill-max-0854-2024.pdf',
+                     'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.brd',
+                     'sources/lsm9ds1-classic/Adafruit LSM9DS1 Rev A.sch',
+                     'sources/lsm9ds1-classic/index.json',
+                     'sources/lsm9ds1-classic/README.md',
+                     'sources/lsm9ds1-classic/license.txt',
+                     'sources/powerboost-1000-basic/extracted-connectivity.json',
+                     'sources/powerboost-1000-basic/index.json',
+                     'sources/powerboost-1000-basic/README.md',
+                     'sources/powerboost-1000-basic/license.txt'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_headroom_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-headroom.json', 'electrical_headroom.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_thermal_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-thermal.json', 'electrical_thermal.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_fault_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-fault-coordination.json', 'electrical_fault.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_harness_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-harness.json', 'electrical_path.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_reset_definition_and_model_are_required_hashed_release_inputs(self):
+        for path in ('electrical-reset-revision.json', 'electrical_reset.py'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def test_boost_interlock_is_a_required_hashed_release_input(self):
+        self.check_hashed_input('hardware/enclosure/electrical-boost-interlock.json')
+
+    def test_control_revision_is_a_required_hashed_release_input(self):
+        self.check_hashed_input('hardware/enclosure/electrical-control-revision.json')
+        self.check_hashed_input('hardware/enclosure/electrical_control.py')
+
+    def test_physical_procedure_changes_and_omissions_change_or_block_provenance(self):
+        self.check_hashed_input('hardware/enclosure/qualification-plan.md')
+
+    def test_fibonacci_terminal_sources_change_or_block_provenance(self):
+        for path in ('fibonacci_board.py', 'sources/fibonacci256-166/index.json',
+                     'sources/fibonacci256-166/nominal-terminals.json',
+                     'sources/fibonacci256-166/README.md',
+                     'sources/fibonacci256-166/fnqNrNl.png',
+                     'sources/fibonacci256-166/ISnaLBD.png'):
+            with self.subTest(path=path):
+                self.check_hashed_input('hardware/enclosure/' + path)
+
+    def check_hashed_input(self, relative):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            revision = root / relative
+            revision.parent.mkdir(parents=True)
+            revision.write_bytes(b'first control revision')
+
+            def read(path):
+                if path == revision:
+                    return path.read_bytes()
+                if path.name == 'exports-manifest.json':
+                    return b'{"inputs": {}, "exports": {}}'
+                return b'other input'
+
+            with patch.object(build, 'ROOT', root), patch.object(build, 'SITE', root/'site'), \
+                    patch.object(build, 'checked_bytes', side_effect=read):
+                first = build.source_snapshot(include_samples=False)
+                self.assertEqual(first[relative], hashlib.sha256(revision.read_bytes()).hexdigest())
+                revision.write_bytes(b'changed control revision')
+                self.assertNotEqual(first[relative], build.source_snapshot(include_samples=False)[relative])
+                revision.unlink()
+                with self.assertRaises(FileNotFoundError):
+                    build.source_snapshot(include_samples=False)
+
+    def test_changed_input_is_rejected_at_read_time(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'ROOT', Path(directory)):
+            path = Path(directory)/'source.json'
+            path.write_bytes(b'old')
+            provenance = {'source.json': hashlib.sha256(b'old').hexdigest()}
+            self.assertEqual(build.read_input(path, provenance), b'old')
+            path.write_bytes(b'new')
+            with self.assertRaisesRegex(RuntimeError, 'Input changed before use'):
+                build.read_input(path, provenance)
+
+    def test_missing_lfs_input_fails(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'ROOT', Path(directory)):
+            path = Path(directory)/'asset.mp4'
+            path.write_text('version https://git-lfs.github.com/spec/v1\n')
+            with self.assertRaisesRegex(RuntimeError, 'Git LFS media is missing'):
+                build.checked_bytes(path)
+
+    def test_both_native_checks_precede_publication(self):
+        with patch.object(build, 'source_snapshot', return_value={'generation': 'a'}), \
+                patch.object(build.subprocess, 'run') as run, patch.object(build, 'publish') as publish, patch('builtins.print'):
+            build.build(Path('/unused-pages-fixture'))
+        self.assertEqual([Path(call.args[0][1]).relative_to(build.ROOT).as_posix()
+                          for call in run.call_args_list],
+                         ['hardware/enclosure/electrical.py', 'hardware/enclosure/cad.py', 'designs/stacked/run.py', 'site/sample.py', 'site/energy.mjs'])
+        self.assertTrue(all(call.kwargs['check'] for call in run.call_args_list))
+        publish.assert_called_once()
+
+    def test_failed_native_freshness_never_reaches_publication(self):
+        with patch.object(build, 'source_snapshot', return_value={'generation': 'a'}), \
+                patch.object(build.subprocess, 'run', side_effect=subprocess.CalledProcessError(1, 'native check')), \
+                patch.object(build, 'publish') as publish:
+            with self.assertRaises(subprocess.CalledProcessError):
+                build.build(Path('/unused-pages-fixture'))
+        publish.assert_not_called()
+
+    def test_source_change_across_native_checks_is_rejected(self):
+        with patch.object(build, 'source_snapshot', side_effect=[{'generation': 'a'}, {'generation': 'b'}]), \
+                patch.object(build.subprocess, 'run'), patch.object(build, 'publish') as publish:
+            with self.assertRaisesRegex(RuntimeError, 'Sources changed'):
+                build.build(Path('/unused-pages-fixture'))
+        publish.assert_not_called()
+
+    def test_output_cannot_replace_source(self):
+        for output in (build.ROOT, build.SITE, build.SITE/'generated', build.SITE/'../site/generated'):
+            with self.subTest(output=output), self.assertRaisesRegex(RuntimeError, 'outside the site source'):
+                build.build(output)
+
+
+if __name__ == '__main__':
     unittest.main()

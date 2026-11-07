@@ -1,0 +1,18 @@
+[
+  {
+    "file": "2444.html",
+    "source": "https://www.pololu.com/product/2444",
+    "sha256": "864d5a3227d249ccab1f3b02d749b3d1fab56c196b3f779193042d48b9703ef8",
+    "bytes": 48621,
+    "revision": "Retrieved2026-11-05; product specifications, no electrical revision stated",
+    "raw_source_sha256": "44467982ca684a821e35f30757e3a3ee07325d2ad230ef78d357bbc63f3ce553",
+    "transformation": "Anonymous form session fields replaced byREDACTED. Product specification text and source links are unchanged. Original source hash retained; original bytes remain in private research records."
+  },
+  {
+    "file": "2444-dimension.jpg",
+    "source": "https://a.pololu-files.com/picture/0J11226.600x480.jpg?eeb27fb643b1a9d499907013b3862524",
+    "sha256": "dc31713da9cc1360727748d06752e70a156697b7643cccbeccf1dd9350d366ef",
+    "bytes": 44816,
+    "revision": "Seller dimension figure; no drawing revision or unspecified tolerance inferred"
+  }
+]

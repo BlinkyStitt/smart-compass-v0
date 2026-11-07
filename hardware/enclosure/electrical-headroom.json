@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-local-b-uvlo-1",
+  "defect_id": "a6507265-7fb3-4da2-bae4-5116c461cd48",
+  "status": "Additional regulator-input clamp candidate; assembly headroom remains unqualified",
+  "supervisor": "TPS3840DL35DBVR",
+  "nets": {"B": ["U7.2"], "GND": ["U7.3"], "BOOST_ENABLE": ["U7.1"]},
+  "open_pins": ["U7.4", "U7.5"],
+  "placement": "U7 senses B at U4 VIN/GND. Its open-drain output shares BOOST_ENABLE with U6; retain U6 and the LTC depletion latch. MR and CT are open. Use the existing local C_U6 bypass beside both supervisors; effective capacitance, layout and loaded envelope remain undesigned. This adds one U7, not another assumed reservoir capacitor.",
+  "limits": {
+    "threshold_nominal_v": 3.5,
+    "threshold_error_fraction": 0.015,
+    "hysteresis_min_v": 0.175,
+    "hysteresis_max_v": 0.225,
+    "timing_overdrive_fraction": 0.1,
+    "falling_delay_max_s": 0.000030,
+    "reset_low_max_v": 0.2,
+    "reset_sink_test_a": 0.002
+  },
+  "source_conditions": {
+    "temperature_c": [-40, 125],
+    "low_output": "1.5 V < VDD < 5 V and VDD < VIT-, 2 mA sink. Does not cover unknown ENABLE sources or every power-up state.",
+    "falling_delay": "VDD transitions from VIT+ to VIT- minus 10%; slew below 100 mV/us; MR/CT open; output 100 kohm pull-up to VDD and 10 pF. These are test conditions, not established assembly values. The 30 us value is MAX; 15 us is typical.",
+    "startup": "350 us maximum startup with CT open does not prove no premature boost enable. Output is undefined below POR; the output-load-dependent POR conditions do not establish the complete module state.",
+    "availability": "TPS3840DL35DBVR is listed as a released production part in the datasheet orderable addendum and active on the TI product page. Other possible threshold codes are not presumed released. No purchase requested."
+  },
+  "assembly_bounds": {
+    "wide": {
+      "capacitance_min_f": null, "deficit_max_a": null, "series_max_ohm": null,
+      "boost_shutdown_max_s": null, "additional_drop_max_v": null, "enable_source_max_a": null,
+      "premises": {"timing_test_conditions_covered": null, "all_current_paths_covered": null,
+                   "local_voltage_and_temperature_covered": null, "startup_rebound_covered": null}
+    },
+    "narrow": {
+      "capacitance_min_f": null, "deficit_max_a": null, "series_max_ohm": null,
+      "boost_shutdown_max_s": null, "additional_drop_max_v": null, "enable_source_max_a": null,
+      "premises": {"timing_test_conditions_covered": null, "all_current_paths_covered": null,
+                   "local_voltage_and_temperature_covered": null, "startup_rebound_covered": null}
+    }
+  },
+  "reference_case": {
+    "capacitance_f": 0.000047,
+    "series_ohm": 0.01,
+    "scope": "Sensitivity calculation only: nominal 47 uF B reservoir, illustrative 10 milliohm total series path, 6.25 W/85% reference current at 2.9 V, zero extra boost shutdown time and zero inductive drop. These are not assembly bounds; the 47 uF excludes other capacitances and does not include tolerance. The calculation cannot establish real failure or success for the proposed circuit."
+  },
+  "remaining_evidence": [
+    "Minimum effective B capacitance, maximum ESR and both local conductors, load-step/inductive drops and all capacitor discharge paths for both designs",
+    "Coincident converter PWM/radio/inrush current plus bleeders/leakage/reverse escape; input eFuse current limit does not limit capacitor discharge current",
+    "Total ENABLE source current/capacitance, U6 interactions, actual VDD waveform/temperature and applicability of the supervisor timing test conditions",
+    "Maximum U4 delay from ENABLE low to load cessation; Pololu's true-shutdown description supplies no delay maximum",
+    "Startup ramps, retained rails, depleted-cell rebound and no cycling; U7 is an additional UVLO, not a depletion latch or reset proof",
+    "Backfeed/reversal, short-to-ground collapse and common-return faults need their own circuit-state bounds; a hold-up equation cannot protect a directly shorted input"
+  ],
+  "sources": {
+    "supervisor": {
+      "url": "https://www.ti.com/lit/ds/symlink/tps3840.pdf",
+      "revision": "SNVSB03E, May 2026",
+      "sections": "5 pins; 6.5 electrical limits; 6.6 timing and test conditions; 8.3 bypass; orderable addendum",
+      "retrieved_pdf_sha256": "d9dce2c9177327d414db98bc46e170b9c9478fb6fe42170f3053dccf08cd2f4c",
+      "reviewed": "2026-10-31"
+    },
+    "orderable": {
+      "url": "https://www.ti.com/product/TPS3840/part-details/TPS3840DL35DBVR",
+      "reviewed": "2026-10-31"
+    },
+    "boost": {
+      "url": "https://www.pololu.com/product/2891",
+      "sections": "Connections: at least 2.9 V input; ENABLE below 0.4 V; nominal 100 kohm pull-up. No shutdown-delay maximum or pull-up tolerance.",
+      "reviewed": "2026-10-31"
+    }
+  }
+}

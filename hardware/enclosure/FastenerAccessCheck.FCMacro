@@ -1,0 +1,43 @@
+"""Regression fixtures for nut-entry failures; not assembly/physical evidence."""
+import FreeCAD as App
+import Part,sys,json,hashlib,os,traceback,math
+from pathlib import Path
+from PySide import QtCore
+source=Path(os.environ.get('SC_CAD_DIR',Path(__file__).resolve().parent));sys.path.insert(0,str(source))
+result=os.environ.get('SC_FASTENER_CHECK_RESULT')
+try:
+ if result and Path(result).exists():raise ValueError('Choose a fresh result path')
+ from fastener_access import native_tools,native_check_paths,entry_dimensions
+ from hardware_spec import nut_dimensions,hexagon
+ paths=[source/n for n in ('fastener_access.py','test_fastener_access.py','FastenerAccessCheck.FCMacro','hardware_spec.py','component-inventory.json')]
+ def snapshot():return {str(p.relative_to(source.parents[1])):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+ before=snapshot();records={}
+ for length,radius in ((8,3.1),(9,3.9),(12,6.85)):
+  z=1.2;data=entry_dimensions(length=length);pf,ph=nut_dimensions('M2',pocket=True)
+  pts=[App.Vector(x,y,z) for x,y in hexagon(0,0,pf)]
+  pocket=Part.Face(Part.makePolygon(pts+[pts[0]])).extrude(App.Vector(0,0,ph))
+  blank=Part.makeBox(40,20,2,App.Vector(-20,-10,0)).fuse(Part.makeCylinder(radius,8.85))
+  entry,path=native_tools(0,0,z,(1,0),length)
+  native_check_paths([path],blank.cut(pocket.fuse(entry)),1)
+  old=Part.makeBox(length,pf,ph,App.Vector(0,-pf/2,z))
+  try:native_check_paths([path],blank.cut(pocket.fuse(old)),1)
+  except ValueError as error:
+   if 'blocked' not in str(error):raise
+  else:raise ValueError('An entry sized only to nut flats passed')
+  try:native_check_paths([],blank,1)
+  except ValueError as error:
+   if 'Complete nut' not in str(error):raise
+  else:raise ValueError('Missing insertion path passed')
+  obstruction=Part.makeBox(.1,pf,.1,App.Vector(radius-.3,-pf/2,z+.5))
+  try:native_check_paths([path],blank.cut(pocket.fuse(entry)).fuse(obstruction),1)
+  except ValueError as error:
+   if 'blocked' not in str(error):raise
+  else:raise ValueError('A thin insertion-path obstruction passed')
+  records[str(length)]={'nominal_pass':True,'old_flat_only_entry_rejected':True,'missing_and_thin_obstruction_rejected':True}
+ if before!=snapshot():raise ValueError('Fastener regression sources changed')
+ if result:
+  with Path(result).open('x') as f:json.dump({'scope':'synthetic regression only; not assembly evidence','checks':records,'inputs':before,'freecad':App.Version()},f,indent=2)
+ print('FASTENER ACCESS REGRESSION CHECK PASS',flush=True)
+except Exception:traceback.print_exc()
+finally:
+ if result:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

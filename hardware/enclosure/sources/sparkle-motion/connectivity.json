@@ -1,0 +1,3175 @@
+{
+  "schema_version": 1,
+  "upstream_commit": "7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+  "repository": "https://github.com/adafruit/Adafruit-Sparkle-Motion-PCB",
+  "license": "CC-BY-SA-3.0; see license.txt and upstream-README.md",
+  "boards": {
+    "A": {
+      "source_file": "Adafruit Sparkle Motion WLED Friend.sch",
+      "sha256": "afd13602a71467809ec14da7e0e05a57195fea23a556b6a3562d81a8059683ac",
+      "parts": {
+        "C1": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C10": {
+          "value": "1uF/50V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+5V",
+            "G$1.2": "GND"
+          }
+        },
+        "C11": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C12": {
+          "value": "0.1uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$16",
+            "G$1.2": "N$17"
+          }
+        },
+        "C13": {
+          "value": "56pF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "FB3",
+            "G$1.2": "3.3V"
+          }
+        },
+        "C14": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C15": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C2": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$2",
+            "G$1.2": "GND"
+          }
+        },
+        "C3": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C4": {
+          "value": "1uF/50V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "!RESET",
+            "G$1.2": "GND"
+          }
+        },
+        "C5": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C6": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C7": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C8": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+5V",
+            "G$1.2": "GND"
+          }
+        },
+        "C9": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "CONN1": {
+          "value": "JST SH 4P",
+          "deviceset": "STEMMA_I2C",
+          "package": "JST_SH4",
+          "pads": {
+            "G$1.GND": [
+              "1"
+            ],
+            "G$1.SCL": [
+              "4"
+            ],
+            "G$1.SDA": [
+              "3"
+            ],
+            "G$1.V+": [
+              "2"
+            ],
+            "G$2.MT": [
+              "MT1"
+            ],
+            "G$3.MT": [
+              "MT2"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.SCL": "SCL",
+            "G$1.SDA": "SDA",
+            "G$1.V+": "3.3V",
+            "G$2.MT": "GND",
+            "G$3.MT": "GND"
+          }
+        },
+        "D1": {
+          "value": "PMEG3050",
+          "deviceset": "DIODE",
+          "package": "SOD-128",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$14",
+            "G$1.C": "N$13"
+          }
+        },
+        "D2": {
+          "value": "PMEG3050",
+          "deviceset": "DIODE",
+          "package": "SOD-128",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$9",
+            "G$1.C": "N$13"
+          }
+        },
+        "D3": {
+          "value": "RED",
+          "deviceset": "LED",
+          "package": "CHIPLED_0603_NOOUTLINE",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$1",
+            "G$1.C": "GND"
+          }
+        },
+        "D4": {
+          "value": "GREEN",
+          "deviceset": "LED",
+          "package": "CHIPLED_0603_NOOUTLINE",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$15",
+            "G$1.C": "GND"
+          }
+        },
+        "IC1": {
+          "value": "CH343P",
+          "deviceset": "CH343P",
+          "package": "QFN16_3MM",
+          "pads": {
+            "G$1.!ACT": [
+              "10"
+            ],
+            "G$1.CTS": [
+              "15"
+            ],
+            "G$1.D+": [
+              "7"
+            ],
+            "G$1.D-": [
+              "8"
+            ],
+            "G$1.DCD": [
+              "11"
+            ],
+            "G$1.DSR": [
+              "14"
+            ],
+            "G$1.DTR": [
+              "12"
+            ],
+            "G$1.GND": [
+              "2",
+              "THERMAL"
+            ],
+            "G$1.RI": [
+              "16"
+            ],
+            "G$1.RTS": [
+              "13"
+            ],
+            "G$1.RXD": [
+              "5"
+            ],
+            "G$1.TXD": [
+              "4"
+            ],
+            "G$1.V3": [
+              "6"
+            ],
+            "G$1.VBUS": [
+              "9"
+            ],
+            "G$1.VDD5": [
+              "3"
+            ],
+            "G$1.VIO": [
+              "1"
+            ]
+          },
+          "nets": {
+            "G$1.D+": "D+",
+            "G$1.D-": "D-",
+            "G$1.DTR": "DTR",
+            "G$1.GND": "GND",
+            "G$1.RTS": "RTS",
+            "G$1.RXD": "TXD0",
+            "G$1.TXD": "RXD0",
+            "G$1.V3": "3.3V",
+            "G$1.VBUS": "+5V",
+            "G$1.VDD5": "3.3V",
+            "G$1.VIO": "3.3V"
+          }
+        },
+        "IC2": {
+          "value": "ICS-43434",
+          "deviceset": "MIC_I2S",
+          "package": "SPH0645LM4H",
+          "pads": {
+            "G$1.BCLK": [
+              "4"
+            ],
+            "G$1.DATA": [
+              "6"
+            ],
+            "G$1.GND": [
+              "3"
+            ],
+            "G$1.SELECT": [
+              "2"
+            ],
+            "G$1.VDD": [
+              "5"
+            ],
+            "G$1.WS": [
+              "1"
+            ]
+          },
+          "nets": {
+            "G$1.BCLK": "MIC_BCLK",
+            "G$1.DATA": "MIC_DATA",
+            "G$1.GND": "GND",
+            "G$1.SELECT": "GND",
+            "G$1.VDD": "3.3V",
+            "G$1.WS": "MIC_WS"
+          }
+        },
+        "IC4": {
+          "value": "74LVC2G34",
+          "deviceset": "74LVC2G34",
+          "package": "SC70-6L",
+          "pads": {
+            "G$1.1A": [
+              "1"
+            ],
+            "G$1.1Y": [
+              "6"
+            ],
+            "G$1.2A": [
+              "3"
+            ],
+            "G$1.2Y": [
+              "4"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.VCC": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1A": "SIG3",
+            "G$1.1Y": "N$18",
+            "G$1.2A": "SIG4",
+            "G$1.2Y": "N$19",
+            "G$1.GND": "GND",
+            "G$1.VCC": "+5V"
+          }
+        },
+        "IC5": {
+          "value": "74LVC2G34",
+          "deviceset": "74LVC2G34",
+          "package": "SC70-6L",
+          "pads": {
+            "G$1.1A": [
+              "1"
+            ],
+            "G$1.1Y": [
+              "6"
+            ],
+            "G$1.2A": [
+              "3"
+            ],
+            "G$1.2Y": [
+              "4"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.VCC": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1A": "SIG1",
+            "G$1.1Y": "N$10",
+            "G$1.2A": "SIG2",
+            "G$1.2Y": "N$11",
+            "G$1.GND": "GND",
+            "G$1.VCC": "+5V"
+          }
+        },
+        "JP1": {
+          "value": "9p 2.54mm Terminal",
+          "deviceset": "HEADER-1X9",
+          "package": "1X09_2.54MMTERMINAL",
+          "pads": {
+            "A.1": [
+              "1"
+            ],
+            "A.2": [
+              "2"
+            ],
+            "A.3": [
+              "3"
+            ],
+            "A.4": [
+              "4"
+            ],
+            "A.5": [
+              "5"
+            ],
+            "A.6": [
+              "6"
+            ],
+            "A.7": [
+              "7"
+            ],
+            "A.8": [
+              "8"
+            ],
+            "A.9": [
+              "9"
+            ]
+          },
+          "nets": {
+            "A.1": "GND",
+            "A.2": "S3",
+            "A.3": "+24V",
+            "A.4": "GND",
+            "A.5": "S2",
+            "A.6": "+24V",
+            "A.7": "GND",
+            "A.8": "S1",
+            "A.9": "+24V"
+          }
+        },
+        "JP3": {
+          "value": "DNP",
+          "deviceset": "HEADER-2X3",
+          "package": "2X03_ROUND_70MIL",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "3"
+            ],
+            "G$1.4": [
+              "4"
+            ],
+            "G$1.5": [
+              "5"
+            ],
+            "G$1.6": [
+              "6"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "3.3V",
+            "G$1.3": "IO9",
+            "G$1.4": "IO10",
+            "G$1.5": "IO18",
+            "G$1.6": "S4"
+          }
+        },
+        "L1": {
+          "value": "8.2uH / 2A / 150mOhm",
+          "deviceset": "INDUCTOR",
+          "package": "INDUCTOR_5X5MM_NR5040_NOTHERMALS",
+          "pads": {
+            "G$1.1": [
+              "P$1"
+            ],
+            "G$1.2": [
+              "P$2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$17",
+            "G$1.2": "3.3V"
+          }
+        },
+        "LED1": {
+          "value": "WS2812B_SK6805_1515",
+          "deviceset": "WS2812B",
+          "package": "SK6805_1515",
+          "pads": {
+            "G$1.DI": [
+              "1"
+            ],
+            "G$1.DO": [
+              "3"
+            ],
+            "G$1.GND": [
+              "4"
+            ],
+            "G$1.VDD": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.DI": "NEOPIX",
+            "G$1.GND": "GND",
+            "G$1.VDD": "3.3V"
+          }
+        },
+        "O1": {
+          "value": "GENERIC_IR_RECV",
+          "deviceset": "GENERIC_IR_RECV",
+          "package": "IRM-H6XXT",
+          "pads": {
+            "G$1.GND": [
+              "1",
+              "2"
+            ],
+            "G$1.OUT": [
+              "3"
+            ],
+            "G$1.VS": [
+              "4"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.OUT": "IR_RECV",
+            "G$1.VS": "3.3V"
+          }
+        },
+        "PTC1": {
+          "value": "2920L500/30GR",
+          "deviceset": "PTC",
+          "package": "PTC2920",
+          "pads": {
+            "G$1.1": [
+              "P$1"
+            ],
+            "G$1.2": [
+              "P$2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "N$13"
+          }
+        },
+        "Q1": {
+          "value": "AONR21307",
+          "deviceset": "MOSFET-P",
+          "package": "POWERDI3333",
+          "pads": {
+            "G$1.D": [
+              "5678"
+            ],
+            "G$1.G": [
+              "4"
+            ],
+            "G$1.S": [
+              "1",
+              "2",
+              "3"
+            ]
+          },
+          "nets": {
+            "G$1.D": "N$14",
+            "G$1.G": "N$3",
+            "G$1.S": "VBUS1"
+          }
+        },
+        "Q5": {
+          "value": "DUAL NPN",
+          "deviceset": "MOSFET-N_DUAL",
+          "package": "SOT363",
+          "pads": {
+            "1.D": [
+              "6"
+            ],
+            "1.G": [
+              "2"
+            ],
+            "1.S": [
+              "1"
+            ],
+            "2.D": [
+              "3"
+            ],
+            "2.G": [
+              "5"
+            ],
+            "2.S": [
+              "4"
+            ]
+          },
+          "nets": {
+            "1.D": "GPIO0",
+            "1.G": "N$8",
+            "1.S": "DTR",
+            "2.D": "!RESET",
+            "2.G": "N$7",
+            "2.S": "RTS"
+          }
+        },
+        "R1": {
+          "value": "10K Pack",
+          "deviceset": "RESISTOR_4PACK",
+          "package": "RESPACK_4X0603",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "8"
+            ],
+            "G$2.1": [
+              "2"
+            ],
+            "G$2.2": [
+              "7"
+            ],
+            "G$3.1": [
+              "3"
+            ],
+            "G$3.2": [
+              "6"
+            ],
+            "G$4.1": [
+              "4"
+            ],
+            "G$4.2": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1": "DTR",
+            "G$1.2": "N$7",
+            "G$2.1": "N$8",
+            "G$2.2": "RTS",
+            "G$3.1": "SCL",
+            "G$3.2": "3.3V",
+            "G$4.1": "SDA",
+            "G$4.2": "3.3V"
+          }
+        },
+        "R10": {
+          "value": "14K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "N$12"
+          }
+        },
+        "R11": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "FB3",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R12": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "FB3"
+          }
+        },
+        "R13": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$10",
+            "G$1.2": "S1"
+          }
+        },
+        "R14": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$11",
+            "G$1.2": "S2"
+          }
+        },
+        "R15": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$18",
+            "G$1.2": "S3"
+          }
+        },
+        "R16": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$19",
+            "G$1.2": "S4"
+          }
+        },
+        "R2": {
+          "value": "10 ohm",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$2",
+            "G$1.2": "VBUS1"
+          }
+        },
+        "R3": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GPIO0",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R4": {
+          "value": "5.1K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$4",
+            "G$1.2": "N$3"
+          }
+        },
+        "R5": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "VBUS1",
+            "G$1.2": "N$3"
+          }
+        },
+        "R6": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "!RESET",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R7": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "N$6"
+          }
+        },
+        "R8": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "LED",
+            "G$1.2": "N$1"
+          }
+        },
+        "R9": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$15",
+            "G$1.2": "+24V"
+          }
+        },
+        "SW1": {
+          "value": "KMR2",
+          "deviceset": "SWITCH_TACT_SMT",
+          "package": "BTN_RKB2_4.6X2.8",
+          "pads": {
+            "G$1.P": [
+              "A"
+            ],
+            "G$1.P1": [
+              "A'"
+            ],
+            "G$1.S": [
+              "B"
+            ],
+            "G$1.S1": [
+              "B'"
+            ]
+          },
+          "nets": {
+            "G$1.P": "GND",
+            "G$1.P1": "GND",
+            "G$1.S": "GPIO0",
+            "G$1.S1": "GPIO0"
+          }
+        },
+        "SW2": {
+          "value": "KMR2",
+          "deviceset": "SWITCH_TACT_SMT",
+          "package": "BTN_RKB2_4.6X2.8",
+          "pads": {
+            "G$1.P": [
+              "A"
+            ],
+            "G$1.P1": [
+              "A'"
+            ],
+            "G$1.S": [
+              "B"
+            ],
+            "G$1.S1": [
+              "B'"
+            ]
+          },
+          "nets": {
+            "G$1.P": "GND",
+            "G$1.P1": "GND",
+            "G$1.S": "!RESET",
+            "G$1.S1": "!RESET"
+          }
+        },
+        "SW3": {
+          "value": "SWITCH_SP3T_SMD",
+          "deviceset": "SWITCH_SP3T_SMD",
+          "package": "MSK-13C01",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "4"
+            ],
+            "G$1.P": [
+              "3"
+            ],
+            "G$2.MT": [
+              "MT1",
+              "MT2",
+              "MT3",
+              "MT4"
+            ]
+          },
+          "nets": {
+            "G$1.2": "N$6",
+            "G$1.3": "GND",
+            "G$1.P": "N$5",
+            "G$2.MT": "GND"
+          }
+        },
+        "TP1": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "RXD0"
+          }
+        },
+        "TP2": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "TXD0"
+          }
+        },
+        "TP3": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "!RESET"
+          }
+        },
+        "TP4": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "GPIO0"
+          }
+        },
+        "U$10": {
+          "value": "TPS54202",
+          "deviceset": "TPS54302",
+          "package": "SOT23-6",
+          "pads": {
+            "G$1.BOOT": [
+              "6"
+            ],
+            "G$1.EN": [
+              "5"
+            ],
+            "G$1.FB": [
+              "4"
+            ],
+            "G$1.GND": [
+              "1"
+            ],
+            "G$1.SW": [
+              "2"
+            ],
+            "G$1.VIN": [
+              "3"
+            ]
+          },
+          "nets": {
+            "G$1.BOOT": "N$16",
+            "G$1.EN": "+24V",
+            "G$1.FB": "FB3",
+            "G$1.GND": "GND",
+            "G$1.SW": "N$17",
+            "G$1.VIN": "+24V"
+          }
+        },
+        "U$14": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$20": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$28": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$31": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$34": {
+          "value": "FIDUCIAL",
+          "deviceset": "FIDUCIAL",
+          "package": "FIDUCIAL_1MM",
+          "pads": {},
+          "nets": {}
+        },
+        "U$35": {
+          "value": "FIDUCIAL",
+          "deviceset": "FIDUCIAL",
+          "package": "FIDUCIAL_1MM",
+          "pads": {},
+          "nets": {}
+        },
+        "U2": {
+          "value": "NCP718ASN500T1G",
+          "deviceset": "VREG_SOT23-5",
+          "package": "SOT23-5",
+          "pads": {
+            "G$1.EN": [
+              "3"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.IN": [
+              "1"
+            ],
+            "G$1.OUT": [
+              "5"
+            ],
+            "G$1.P4": [
+              "4"
+            ]
+          },
+          "nets": {
+            "G$1.EN": "+24V",
+            "G$1.GND": "GND",
+            "G$1.IN": "+24V",
+            "G$1.OUT": "+5V"
+          }
+        },
+        "X2": {
+          "value": "JST SH 3P",
+          "deviceset": "CON_JST_SH_3PIN",
+          "package": "JST_SH3",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "3"
+            ],
+            "G$2.MT": [
+              "MT1"
+            ],
+            "G$3.MT": [
+              "MT2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "SENSOR",
+            "G$1.2": "3.3V",
+            "G$1.3": "GND",
+            "G$2.MT": "GND",
+            "G$3.MT": "GND"
+          }
+        },
+        "X3": {
+          "value": "HUSB238",
+          "deviceset": "HUSB238",
+          "package": "DFN10_3X3MM",
+          "pads": {
+            "G$1.CC1": [
+              "4"
+            ],
+            "G$1.CC2": [
+              "5"
+            ],
+            "G$1.D+": [
+              "2"
+            ],
+            "G$1.D-": [
+              "3"
+            ],
+            "G$1.GATE": [
+              "10"
+            ],
+            "G$1.GND": [
+              "GND"
+            ],
+            "G$1.ISET": [
+              "9"
+            ],
+            "G$1.SCL": [
+              "7"
+            ],
+            "G$1.SDA": [
+              "6"
+            ],
+            "G$1.VIN": [
+              "1"
+            ],
+            "G$1.VSET": [
+              "8"
+            ]
+          },
+          "nets": {
+            "G$1.CC1": "CC1",
+            "G$1.CC2": "CC2",
+            "G$1.GATE": "N$4",
+            "G$1.GND": "GND",
+            "G$1.ISET": "N$12",
+            "G$1.SCL": "SCL",
+            "G$1.SDA": "SDA",
+            "G$1.VIN": "N$2",
+            "G$1.VSET": "N$5"
+          }
+        },
+        "X4": {
+          "value": "ESP32-MINI-1",
+          "deviceset": "ESP32-MINI-1",
+          "package": "ESP32-MINI-1",
+          "pads": {
+            "A.3.3V": [
+              "3"
+            ],
+            "A.EN": [
+              "8"
+            ],
+            "A.GND": [
+              "1",
+              "2",
+              "27",
+              "38",
+              "39",
+              "40",
+              "41",
+              "42",
+              "43",
+              "44",
+              "45",
+              "46",
+              "47",
+              "48",
+              "49",
+              "50",
+              "51",
+              "52",
+              "53",
+              "54",
+              "55",
+              "56",
+              "57",
+              "58",
+              "59",
+              "60",
+              "61",
+              "62",
+              "63"
+            ],
+            "A.I34/A1_6": [
+              "9"
+            ],
+            "A.I35/A1_7": [
+              "10"
+            ],
+            "A.I36/A1_0": [
+              "4"
+            ],
+            "A.I37/A1_1": [
+              "5"
+            ],
+            "A.I38/A1_2": [
+              "6"
+            ],
+            "A.I39/A1_3": [
+              "7"
+            ],
+            "A.IO0/A2_1": [
+              "21"
+            ],
+            "A.IO10": [
+              "26"
+            ],
+            "A.IO12/A2_5": [
+              "17"
+            ],
+            "A.IO13/A2_4": [
+              "18"
+            ],
+            "A.IO14/A2_6": [
+              "16"
+            ],
+            "A.IO15/A2_3": [
+              "19"
+            ],
+            "A.IO18": [
+              "30"
+            ],
+            "A.IO19": [
+              "32"
+            ],
+            "A.IO2/A2_2": [
+              "20"
+            ],
+            "A.IO21": [
+              "34"
+            ],
+            "A.IO22": [
+              "33"
+            ],
+            "A.IO23": [
+              "31"
+            ],
+            "A.IO25/DAC1/A2_8": [
+              "13"
+            ],
+            "A.IO26/DAC2/A2_9": [
+              "14"
+            ],
+            "A.IO27/A2_7": [
+              "15"
+            ],
+            "A.IO32/A1_4/X32P": [
+              "11"
+            ],
+            "A.IO33/A1_5/X32N": [
+              "12"
+            ],
+            "A.IO4/A2_0": [
+              "22"
+            ],
+            "A.IO5": [
+              "29"
+            ],
+            "A.IO9": [
+              "25"
+            ],
+            "A.RXD0": [
+              "35"
+            ],
+            "A.TXD0": [
+              "36"
+            ]
+          },
+          "nets": {
+            "A.3.3V": "3.3V",
+            "A.EN": "!RESET",
+            "A.GND": "GND",
+            "A.I34/A1_6": "GND",
+            "A.I35/A1_7": "GND",
+            "A.I36/A1_0": "GND",
+            "A.I37/A1_1": "GND",
+            "A.I38/A1_2": "GND",
+            "A.I39/A1_3": "GND",
+            "A.IO0/A2_1": "GPIO0",
+            "A.IO10": "IO10",
+            "A.IO13/A2_4": "SCL",
+            "A.IO14/A2_6": "SDA",
+            "A.IO18": "IO18",
+            "A.IO19": "SIG3",
+            "A.IO2/A2_2": "NEOPIX",
+            "A.IO21": "SIG1",
+            "A.IO22": "SIG2",
+            "A.IO23": "SIG4",
+            "A.IO25/DAC1/A2_8": "MIC_DATA",
+            "A.IO26/DAC2/A2_9": "MIC_BCLK",
+            "A.IO27/A2_7": "SENSOR",
+            "A.IO32/A1_4/X32P": "IR_RECV",
+            "A.IO33/A1_5/X32N": "MIC_WS",
+            "A.IO4/A2_0": "LED",
+            "A.IO9": "IO9",
+            "A.RXD0": "RXD0",
+            "A.TXD0": "TXD0"
+          }
+        },
+        "X5": {
+          "value": "USB Type C",
+          "deviceset": "USB_C",
+          "package": "USB_C_CUSB31-CFM2AX-01-X",
+          "pads": {
+            "G$1.CC1": [
+              "A5"
+            ],
+            "G$1.CC2": [
+              "B5"
+            ],
+            "G$1.D+": [
+              "A6",
+              "B6"
+            ],
+            "G$1.D-": [
+              "A7",
+              "B7"
+            ],
+            "G$1.GND": [
+              "A1B12",
+              "B1A12"
+            ],
+            "G$1.SBU1": [
+              "A8"
+            ],
+            "G$1.SBU2": [
+              "B8"
+            ],
+            "G$1.VBUS": [
+              "A4B9",
+              "B4A9"
+            ],
+            "G$2.MT": [
+              "M1",
+              "M2",
+              "M3",
+              "M4"
+            ]
+          },
+          "nets": {
+            "G$1.CC1": "CC1",
+            "G$1.CC2": "CC2",
+            "G$1.D+": "D+",
+            "G$1.D-": "D-",
+            "G$1.GND": "GND",
+            "G$1.VBUS": "VBUS1"
+          }
+        },
+        "X7": {
+          "value": "2.1mm 5A",
+          "deviceset": "DCBARREL",
+          "package": "DCJACK_2MM_PTH",
+          "pads": {
+            "G$1.GND": [
+              "GND"
+            ],
+            "G$1.GNDBREAK": [
+              "GNDBREAK"
+            ],
+            "G$1.PWR": [
+              "PWR"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.GNDBREAK": "GND",
+            "G$1.PWR": "N$9"
+          }
+        }
+      }
+    },
+    "D": {
+      "source_file": "Adafruit Sparkle Motion WLED Friend_Rev D.sch",
+      "sha256": "63245b5f0b24baffc181f28b3735ccd80d124e612f0d36b782db7d4a76d69c35",
+      "parts": {
+        "C1": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C10": {
+          "value": "1uF/50V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+5V",
+            "G$1.2": "GND"
+          }
+        },
+        "C11": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C12": {
+          "value": "0.1uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "BOOT",
+            "G$1.2": "SW"
+          }
+        },
+        "C13": {
+          "value": "56pF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "FB3",
+            "G$1.2": "3.3V"
+          }
+        },
+        "C14": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C15": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "3.3V",
+            "G$1.2": "GND"
+          }
+        },
+        "C2": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$2",
+            "G$1.2": "GND"
+          }
+        },
+        "C3": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C4": {
+          "value": "1uF/50V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "!RESET",
+            "G$1.2": "GND"
+          }
+        },
+        "C5": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C6": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C7": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "C8": {
+          "value": "10uF",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+5V",
+            "G$1.2": "GND"
+          }
+        },
+        "C9": {
+          "value": "22uF/25V",
+          "deviceset": "CAP_CERAMIC",
+          "package": "0805-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "GND"
+          }
+        },
+        "CONN1": {
+          "value": "JST SH 4P",
+          "deviceset": "STEMMA_I2C",
+          "package": "JST_SH4",
+          "pads": {
+            "G$1.GND": [
+              "1"
+            ],
+            "G$1.SCL": [
+              "4"
+            ],
+            "G$1.SDA": [
+              "3"
+            ],
+            "G$1.V+": [
+              "2"
+            ],
+            "G$2.MT": [
+              "MT1"
+            ],
+            "G$3.MT": [
+              "MT2"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.SCL": "SCL",
+            "G$1.SDA": "SDA",
+            "G$1.V+": "3.3V",
+            "G$2.MT": "GND",
+            "G$3.MT": "GND"
+          }
+        },
+        "D1": {
+          "value": "PMEG3050",
+          "deviceset": "DIODE",
+          "package": "SOD-128",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$14",
+            "G$1.C": "N$13"
+          }
+        },
+        "D2": {
+          "value": "PMEG3050",
+          "deviceset": "DIODE",
+          "package": "SOD-128",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$9",
+            "G$1.C": "N$13"
+          }
+        },
+        "D3": {
+          "value": "RED",
+          "deviceset": "LED",
+          "package": "CHIPLED_0603_NOOUTLINE",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$1",
+            "G$1.C": "GND"
+          }
+        },
+        "D4": {
+          "value": "GREEN",
+          "deviceset": "LED",
+          "package": "CHIPLED_0603_NOOUTLINE",
+          "pads": {
+            "G$1.A": [
+              "A"
+            ],
+            "G$1.C": [
+              "C"
+            ]
+          },
+          "nets": {
+            "G$1.A": "N$15",
+            "G$1.C": "GND"
+          }
+        },
+        "IC1": {
+          "value": "CH343P",
+          "deviceset": "CH343P",
+          "package": "QFN16_3MM",
+          "pads": {
+            "G$1.!ACT": [
+              "10"
+            ],
+            "G$1.CTS": [
+              "15"
+            ],
+            "G$1.D+": [
+              "7"
+            ],
+            "G$1.D-": [
+              "8"
+            ],
+            "G$1.DCD": [
+              "11"
+            ],
+            "G$1.DSR": [
+              "14"
+            ],
+            "G$1.DTR": [
+              "12"
+            ],
+            "G$1.GND": [
+              "2",
+              "THERMAL"
+            ],
+            "G$1.RI": [
+              "16"
+            ],
+            "G$1.RTS": [
+              "13"
+            ],
+            "G$1.RXD": [
+              "5"
+            ],
+            "G$1.TXD": [
+              "4"
+            ],
+            "G$1.V3": [
+              "6"
+            ],
+            "G$1.VBUS": [
+              "9"
+            ],
+            "G$1.VDD5": [
+              "3"
+            ],
+            "G$1.VIO": [
+              "1"
+            ]
+          },
+          "nets": {
+            "G$1.D+": "D+",
+            "G$1.D-": "D-",
+            "G$1.DTR": "DTR",
+            "G$1.GND": "GND",
+            "G$1.RTS": "RTS",
+            "G$1.RXD": "TXD0",
+            "G$1.TXD": "RXD0",
+            "G$1.V3": "3.3V",
+            "G$1.VBUS": "+5V",
+            "G$1.VDD5": "3.3V",
+            "G$1.VIO": "3.3V"
+          }
+        },
+        "IC2": {
+          "value": "ICS-43434",
+          "deviceset": "MIC_I2S",
+          "package": "SPH0645LM4H",
+          "pads": {
+            "G$1.BCLK": [
+              "4"
+            ],
+            "G$1.DATA": [
+              "6"
+            ],
+            "G$1.GND": [
+              "3"
+            ],
+            "G$1.SELECT": [
+              "2"
+            ],
+            "G$1.VDD": [
+              "5"
+            ],
+            "G$1.WS": [
+              "1"
+            ]
+          },
+          "nets": {
+            "G$1.BCLK": "MIC_BCLK",
+            "G$1.DATA": "MIC_DATA",
+            "G$1.GND": "GND",
+            "G$1.SELECT": "GND",
+            "G$1.VDD": "3.3V",
+            "G$1.WS": "MIC_WS"
+          }
+        },
+        "IC4": {
+          "value": "74LVC2G34",
+          "deviceset": "74LVC2G34",
+          "package": "SC70-6L",
+          "pads": {
+            "G$1.1A": [
+              "1"
+            ],
+            "G$1.1Y": [
+              "6"
+            ],
+            "G$1.2A": [
+              "3"
+            ],
+            "G$1.2Y": [
+              "4"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.VCC": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1A": "SIG3",
+            "G$1.1Y": "N$18",
+            "G$1.2A": "SIG4",
+            "G$1.2Y": "N$19",
+            "G$1.GND": "GND",
+            "G$1.VCC": "+5V"
+          }
+        },
+        "IC5": {
+          "value": "74LVC2G34",
+          "deviceset": "74LVC2G34",
+          "package": "SC70-6L",
+          "pads": {
+            "G$1.1A": [
+              "1"
+            ],
+            "G$1.1Y": [
+              "6"
+            ],
+            "G$1.2A": [
+              "3"
+            ],
+            "G$1.2Y": [
+              "4"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.VCC": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1A": "SIG1",
+            "G$1.1Y": "N$10",
+            "G$1.2A": "SIG2",
+            "G$1.2Y": "N$11",
+            "G$1.GND": "GND",
+            "G$1.VCC": "+5V"
+          }
+        },
+        "JP1": {
+          "value": "9p 2.54mm Terminal",
+          "deviceset": "HEADER-1X9",
+          "package": "1X09_2.54MMTERMINAL",
+          "pads": {
+            "A.1": [
+              "1"
+            ],
+            "A.2": [
+              "2"
+            ],
+            "A.3": [
+              "3"
+            ],
+            "A.4": [
+              "4"
+            ],
+            "A.5": [
+              "5"
+            ],
+            "A.6": [
+              "6"
+            ],
+            "A.7": [
+              "7"
+            ],
+            "A.8": [
+              "8"
+            ],
+            "A.9": [
+              "9"
+            ]
+          },
+          "nets": {
+            "A.1": "GND",
+            "A.2": "S3",
+            "A.3": "+24V",
+            "A.4": "GND",
+            "A.5": "S2",
+            "A.6": "+24V",
+            "A.7": "GND",
+            "A.8": "S1",
+            "A.9": "+24V"
+          }
+        },
+        "JP3": {
+          "value": "DNP",
+          "deviceset": "HEADER-2X3",
+          "package": "2X03_ROUND_70MIL",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "3"
+            ],
+            "G$1.4": [
+              "4"
+            ],
+            "G$1.5": [
+              "5"
+            ],
+            "G$1.6": [
+              "6"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "3.3V",
+            "G$1.3": "IO9",
+            "G$1.4": "IO10",
+            "G$1.5": "IO18",
+            "G$1.6": "S4"
+          }
+        },
+        "L1": {
+          "value": "8.2uH / 2A / 150mOhm",
+          "deviceset": "INDUCTOR",
+          "package": "INDUCTOR_5X5MM_NR5040_NOTHERMALS",
+          "pads": {
+            "G$1.1": [
+              "P$1"
+            ],
+            "G$1.2": [
+              "P$2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "SW",
+            "G$1.2": "3.3V"
+          }
+        },
+        "LED1": {
+          "value": "WS2812B_SK6805_1515",
+          "deviceset": "WS2812B",
+          "package": "SK6805_1515",
+          "pads": {
+            "G$1.DI": [
+              "1"
+            ],
+            "G$1.DO": [
+              "3"
+            ],
+            "G$1.GND": [
+              "4"
+            ],
+            "G$1.VDD": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.DI": "NEOPIX",
+            "G$1.GND": "GND",
+            "G$1.VDD": "3.3V"
+          }
+        },
+        "O1": {
+          "value": "GENERIC_IR_RECV",
+          "deviceset": "GENERIC_IR_RECV",
+          "package": "IRM-H6XXT",
+          "pads": {
+            "G$1.GND": [
+              "1",
+              "2"
+            ],
+            "G$1.OUT": [
+              "3"
+            ],
+            "G$1.VS": [
+              "4"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.OUT": "IR_RECV",
+            "G$1.VS": "3.3V"
+          }
+        },
+        "PTC1": {
+          "value": "2920L500/30GR",
+          "deviceset": "PTC",
+          "package": "PTC2920",
+          "pads": {
+            "G$1.1": [
+              "P$1"
+            ],
+            "G$1.2": [
+              "P$2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "+24V",
+            "G$1.2": "N$13"
+          }
+        },
+        "Q1": {
+          "value": "AONR21307",
+          "deviceset": "MOSFET-P",
+          "package": "POWERDI3333",
+          "pads": {
+            "G$1.D": [
+              "5678"
+            ],
+            "G$1.G": [
+              "4"
+            ],
+            "G$1.S": [
+              "1",
+              "2",
+              "3"
+            ]
+          },
+          "nets": {
+            "G$1.D": "N$14",
+            "G$1.G": "N$3",
+            "G$1.S": "VBUS1"
+          }
+        },
+        "Q5": {
+          "value": "DUAL NPN",
+          "deviceset": "MOSFET-N_DUAL",
+          "package": "SOT363",
+          "pads": {
+            "1.D": [
+              "6"
+            ],
+            "1.G": [
+              "2"
+            ],
+            "1.S": [
+              "1"
+            ],
+            "2.D": [
+              "3"
+            ],
+            "2.G": [
+              "5"
+            ],
+            "2.S": [
+              "4"
+            ]
+          },
+          "nets": {
+            "1.D": "GPIO0",
+            "1.G": "N$8",
+            "1.S": "DTR",
+            "2.D": "!RESET",
+            "2.G": "N$7",
+            "2.S": "RTS"
+          }
+        },
+        "R1": {
+          "value": "10K Pack",
+          "deviceset": "RESISTOR_4PACK",
+          "package": "RESPACK_4X0603",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "8"
+            ],
+            "G$2.1": [
+              "2"
+            ],
+            "G$2.2": [
+              "7"
+            ],
+            "G$3.1": [
+              "3"
+            ],
+            "G$3.2": [
+              "6"
+            ],
+            "G$4.1": [
+              "4"
+            ],
+            "G$4.2": [
+              "5"
+            ]
+          },
+          "nets": {
+            "G$1.1": "DTR",
+            "G$1.2": "N$7",
+            "G$2.1": "N$8",
+            "G$2.2": "RTS",
+            "G$3.1": "SCL",
+            "G$3.2": "3.3V",
+            "G$4.1": "SDA",
+            "G$4.2": "3.3V"
+          }
+        },
+        "R10": {
+          "value": "14K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "N$12"
+          }
+        },
+        "R11": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "FB3",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R12": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "FB3"
+          }
+        },
+        "R13": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$10",
+            "G$1.2": "S1"
+          }
+        },
+        "R14": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$11",
+            "G$1.2": "S2"
+          }
+        },
+        "R15": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$18",
+            "G$1.2": "S3"
+          }
+        },
+        "R16": {
+          "value": "100",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$19",
+            "G$1.2": "S4"
+          }
+        },
+        "R2": {
+          "value": "10 ohm",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$2",
+            "G$1.2": "VBUS1"
+          }
+        },
+        "R3": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GPIO0",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R4": {
+          "value": "5.1K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$4",
+            "G$1.2": "N$3"
+          }
+        },
+        "R5": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "VBUS1",
+            "G$1.2": "N$3"
+          }
+        },
+        "R6": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "!RESET",
+            "G$1.2": "3.3V"
+          }
+        },
+        "R7": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "GND",
+            "G$1.2": "N$6"
+          }
+        },
+        "R8": {
+          "value": "10K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "LED",
+            "G$1.2": "N$1"
+          }
+        },
+        "R9": {
+          "value": "47K",
+          "deviceset": "RESISTOR",
+          "package": "0603-NO",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "N$15",
+            "G$1.2": "+24V"
+          }
+        },
+        "SW1": {
+          "value": "KMR2",
+          "deviceset": "SWITCH_TACT_SMT",
+          "package": "BTN_RKB2_4.6X2.8",
+          "pads": {
+            "G$1.P": [
+              "A"
+            ],
+            "G$1.P1": [
+              "A'"
+            ],
+            "G$1.S": [
+              "B"
+            ],
+            "G$1.S1": [
+              "B'"
+            ]
+          },
+          "nets": {
+            "G$1.P": "GND",
+            "G$1.P1": "GND",
+            "G$1.S": "GPIO0",
+            "G$1.S1": "GPIO0"
+          }
+        },
+        "SW2": {
+          "value": "KMR2",
+          "deviceset": "SWITCH_TACT_SMT",
+          "package": "BTN_RKB2_4.6X2.8",
+          "pads": {
+            "G$1.P": [
+              "A"
+            ],
+            "G$1.P1": [
+              "A'"
+            ],
+            "G$1.S": [
+              "B"
+            ],
+            "G$1.S1": [
+              "B'"
+            ]
+          },
+          "nets": {
+            "G$1.P": "GND",
+            "G$1.P1": "GND",
+            "G$1.S": "!RESET",
+            "G$1.S1": "!RESET"
+          }
+        },
+        "SW3": {
+          "value": "SWITCH_SP3T_SMD",
+          "deviceset": "SWITCH_SP3T_SMD",
+          "package": "MSK-13C01",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "4"
+            ],
+            "G$1.P": [
+              "3"
+            ],
+            "G$2.MT": [
+              "MT1",
+              "MT2",
+              "MT3",
+              "MT4"
+            ]
+          },
+          "nets": {
+            "G$1.2": "N$6",
+            "G$1.3": "GND",
+            "G$1.P": "N$5",
+            "G$2.MT": "GND"
+          }
+        },
+        "TP1": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "RXD0"
+          }
+        },
+        "TP2": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "TXD0"
+          }
+        },
+        "TP3": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "!RESET"
+          }
+        },
+        "TP4": {
+          "value": "TESTPOINT",
+          "deviceset": "TESTPOINT",
+          "package": "TESTPOINT_ROUND_1.5MM",
+          "pads": {
+            "G$1.P$1": [
+              "P$1"
+            ]
+          },
+          "nets": {
+            "G$1.P$1": "GPIO0"
+          }
+        },
+        "U$10": {
+          "value": "TPS54202",
+          "deviceset": "TPS54302",
+          "package": "SOT23-6",
+          "pads": {
+            "G$1.BOOT": [
+              "6"
+            ],
+            "G$1.EN": [
+              "5"
+            ],
+            "G$1.FB": [
+              "4"
+            ],
+            "G$1.GND": [
+              "1"
+            ],
+            "G$1.SW": [
+              "2"
+            ],
+            "G$1.VIN": [
+              "3"
+            ]
+          },
+          "nets": {
+            "G$1.BOOT": "BOOT",
+            "G$1.FB": "FB3",
+            "G$1.GND": "GND",
+            "G$1.SW": "SW",
+            "G$1.VIN": "+24V"
+          }
+        },
+        "U$14": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$20": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$28": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$31": {
+          "value": "MOUNTINGHOLE",
+          "deviceset": "MOUNTINGHOLE",
+          "package": "MOUNTINGHOLE_2.5_PLATED",
+          "pads": {},
+          "nets": {}
+        },
+        "U$34": {
+          "value": "FIDUCIAL",
+          "deviceset": "FIDUCIAL",
+          "package": "FIDUCIAL_1MM",
+          "pads": {},
+          "nets": {}
+        },
+        "U$35": {
+          "value": "FIDUCIAL",
+          "deviceset": "FIDUCIAL",
+          "package": "FIDUCIAL_1MM",
+          "pads": {},
+          "nets": {}
+        },
+        "U2": {
+          "value": "NCP718ASN500T1G",
+          "deviceset": "VREG_SOT23-5",
+          "package": "SOT23-5",
+          "pads": {
+            "G$1.EN": [
+              "3"
+            ],
+            "G$1.GND": [
+              "2"
+            ],
+            "G$1.IN": [
+              "1"
+            ],
+            "G$1.OUT": [
+              "5"
+            ],
+            "G$1.P4": [
+              "4"
+            ]
+          },
+          "nets": {
+            "G$1.EN": "+24V",
+            "G$1.GND": "GND",
+            "G$1.IN": "+24V",
+            "G$1.OUT": "+5V"
+          }
+        },
+        "X2": {
+          "value": "JST SH 3P",
+          "deviceset": "CON_JST_SH_3PIN",
+          "package": "JST_SH3",
+          "pads": {
+            "G$1.1": [
+              "1"
+            ],
+            "G$1.2": [
+              "2"
+            ],
+            "G$1.3": [
+              "3"
+            ],
+            "G$2.MT": [
+              "MT1"
+            ],
+            "G$3.MT": [
+              "MT2"
+            ]
+          },
+          "nets": {
+            "G$1.1": "SENSOR",
+            "G$1.2": "3.3V",
+            "G$1.3": "GND",
+            "G$2.MT": "GND",
+            "G$3.MT": "GND"
+          }
+        },
+        "X3": {
+          "value": "HUSB238",
+          "deviceset": "HUSB238",
+          "package": "DFN10_3X3MM",
+          "pads": {
+            "G$1.CC1": [
+              "4"
+            ],
+            "G$1.CC2": [
+              "5"
+            ],
+            "G$1.D+": [
+              "2"
+            ],
+            "G$1.D-": [
+              "3"
+            ],
+            "G$1.GATE": [
+              "10"
+            ],
+            "G$1.GND": [
+              "GND"
+            ],
+            "G$1.ISET": [
+              "9"
+            ],
+            "G$1.SCL": [
+              "7"
+            ],
+            "G$1.SDA": [
+              "6"
+            ],
+            "G$1.VIN": [
+              "1"
+            ],
+            "G$1.VSET": [
+              "8"
+            ]
+          },
+          "nets": {
+            "G$1.CC1": "CC1",
+            "G$1.CC2": "CC2",
+            "G$1.GATE": "N$4",
+            "G$1.GND": "GND",
+            "G$1.ISET": "N$12",
+            "G$1.SCL": "SCL",
+            "G$1.SDA": "SDA",
+            "G$1.VIN": "N$2",
+            "G$1.VSET": "N$5"
+          }
+        },
+        "X4": {
+          "value": "ESP32-MINI-1",
+          "deviceset": "ESP32-MINI-1",
+          "package": "ESP32-MINI-1",
+          "pads": {
+            "A.3.3V": [
+              "3"
+            ],
+            "A.EN": [
+              "8"
+            ],
+            "A.GND": [
+              "1",
+              "2",
+              "27",
+              "38",
+              "39",
+              "40",
+              "41",
+              "42",
+              "43",
+              "44",
+              "45",
+              "46",
+              "47",
+              "48",
+              "49",
+              "50",
+              "51",
+              "52",
+              "53",
+              "54",
+              "55",
+              "56",
+              "57",
+              "58",
+              "59",
+              "60",
+              "61",
+              "62",
+              "63"
+            ],
+            "A.I34/A1_6": [
+              "9"
+            ],
+            "A.I35/A1_7": [
+              "10"
+            ],
+            "A.I36/A1_0": [
+              "4"
+            ],
+            "A.I37/A1_1": [
+              "5"
+            ],
+            "A.I38/A1_2": [
+              "6"
+            ],
+            "A.I39/A1_3": [
+              "7"
+            ],
+            "A.IO0/A2_1": [
+              "21"
+            ],
+            "A.IO10": [
+              "26"
+            ],
+            "A.IO12/A2_5": [
+              "17"
+            ],
+            "A.IO13/A2_4": [
+              "18"
+            ],
+            "A.IO14/A2_6": [
+              "16"
+            ],
+            "A.IO15/A2_3": [
+              "19"
+            ],
+            "A.IO18": [
+              "30"
+            ],
+            "A.IO19": [
+              "32"
+            ],
+            "A.IO2/A2_2": [
+              "20"
+            ],
+            "A.IO21": [
+              "34"
+            ],
+            "A.IO22": [
+              "33"
+            ],
+            "A.IO23": [
+              "31"
+            ],
+            "A.IO25/DAC1/A2_8": [
+              "13"
+            ],
+            "A.IO26/DAC2/A2_9": [
+              "14"
+            ],
+            "A.IO27/A2_7": [
+              "15"
+            ],
+            "A.IO32/A1_4/X32P": [
+              "11"
+            ],
+            "A.IO33/A1_5/X32N": [
+              "12"
+            ],
+            "A.IO4/A2_0": [
+              "22"
+            ],
+            "A.IO5": [
+              "29"
+            ],
+            "A.IO9": [
+              "25"
+            ],
+            "A.RXD0": [
+              "35"
+            ],
+            "A.TXD0": [
+              "36"
+            ]
+          },
+          "nets": {
+            "A.3.3V": "3.3V",
+            "A.EN": "!RESET",
+            "A.GND": "GND",
+            "A.I34/A1_6": "GND",
+            "A.I35/A1_7": "GND",
+            "A.I36/A1_0": "GND",
+            "A.I37/A1_1": "GND",
+            "A.I38/A1_2": "GND",
+            "A.I39/A1_3": "GND",
+            "A.IO0/A2_1": "GPIO0",
+            "A.IO10": "IO10",
+            "A.IO13/A2_4": "SCL",
+            "A.IO14/A2_6": "SDA",
+            "A.IO18": "IO18",
+            "A.IO19": "SIG3",
+            "A.IO2/A2_2": "NEOPIX",
+            "A.IO21": "SIG1",
+            "A.IO22": "SIG2",
+            "A.IO23": "SIG4",
+            "A.IO25/DAC1/A2_8": "MIC_DATA",
+            "A.IO26/DAC2/A2_9": "MIC_BCLK",
+            "A.IO27/A2_7": "SENSOR",
+            "A.IO32/A1_4/X32P": "IR_RECV",
+            "A.IO33/A1_5/X32N": "MIC_WS",
+            "A.IO4/A2_0": "LED",
+            "A.IO9": "IO9",
+            "A.RXD0": "RXD0",
+            "A.TXD0": "TXD0"
+          }
+        },
+        "X5": {
+          "value": "USB Type C",
+          "deviceset": "USB_C",
+          "package": "USB_C_CUSB31-CFM2AX-01-X",
+          "pads": {
+            "G$1.CC1": [
+              "A5"
+            ],
+            "G$1.CC2": [
+              "B5"
+            ],
+            "G$1.D+": [
+              "A6",
+              "B6"
+            ],
+            "G$1.D-": [
+              "A7",
+              "B7"
+            ],
+            "G$1.GND": [
+              "A1B12",
+              "B1A12"
+            ],
+            "G$1.SBU1": [
+              "A8"
+            ],
+            "G$1.SBU2": [
+              "B8"
+            ],
+            "G$1.VBUS": [
+              "A4B9",
+              "B4A9"
+            ],
+            "G$2.MT": [
+              "M1",
+              "M2",
+              "M3",
+              "M4"
+            ]
+          },
+          "nets": {
+            "G$1.CC1": "CC1",
+            "G$1.CC2": "CC2",
+            "G$1.D+": "D+",
+            "G$1.D-": "D-",
+            "G$1.GND": "GND",
+            "G$1.VBUS": "VBUS1"
+          }
+        },
+        "X7": {
+          "value": "2.1mm 5A",
+          "deviceset": "DCBARREL",
+          "package": "DCJACK_2MM_PTH",
+          "pads": {
+            "G$1.GND": [
+              "GND"
+            ],
+            "G$1.GNDBREAK": [
+              "GNDBREAK"
+            ],
+            "G$1.PWR": [
+              "PWR"
+            ]
+          },
+          "nets": {
+            "G$1.GND": "GND",
+            "G$1.GNDBREAK": "GND",
+            "G$1.PWR": "N$9"
+          }
+        }
+      }
+    }
+  }
+}

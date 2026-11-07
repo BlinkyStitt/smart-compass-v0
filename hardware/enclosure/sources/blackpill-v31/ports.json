@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+  "coordinate_source_sha256": "e713074f681a8ee3d1c54ae5419c8165c01b16e5abb54afae9252521651cb594",
+  "schematic_source_sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565",
+  "view": "component side; XY from the PCB outline lower-left in the original manufacturer V3.1 STEP; positive Z toward components",
+  "scope": "nominal publisher geometry and schematic pin identities; not supplied-part dimensions or finished-hole guarantees",
+  "headers": {
+    "P1": {
+      "y_mm": 18.009,
+      "nets": [
+        "5V",
+        "GND",
+        "3.3V",
+        "PB10",
+        "PB2",
+        "PB1",
+        "PB0",
+        "PA7",
+        "PA6",
+        "PA5",
+        "PA4",
+        "PA3",
+        "PA2",
+        "PA1",
+        "PA0",
+        "NRST",
+        "PC15",
+        "PC14",
+        "PC13",
+        "VB"
+      ]
+    },
+    "P2": {
+      "y_mm": 2.794,
+      "nets": [
+        "PB12",
+        "PB13",
+        "PB14",
+        "PB15",
+        "PA8",
+        "PA9",
+        "PA10",
+        "PA11",
+        "PA12",
+        "PA15",
+        "PB3",
+        "PB4",
+        "PB5",
+        "PB6",
+        "PB7",
+        "PB8",
+        "PB9",
+        "5V",
+        "GND",
+        "3.3V"
+      ]
+    }
+  },
+  "first_x_mm": 1.397,
+  "pitch_x_mm": 2.54,
+  "nominal_cad_hole_diameter_mm": 0.9,
+  "pcb_model_bounds_mm": [
+    [
+      -3.096765331915405e-13,
+      -5.05440176796606e-17,
+      -1.49143974
+    ],
+    [
+      52.806999206543,
+      20.778999328613253,
+      0.0
+    ]
+  ],
+  "pcb_model_thickness_mm": 1.49143974,
+  "release_notes_nominal_pcb_thickness_mm": 1.6,
+  "thickness_note": "The STEP and release notes differ. Neither supplies a guaranteed thickness tolerance; inspect the supplied board before fitting."
+}

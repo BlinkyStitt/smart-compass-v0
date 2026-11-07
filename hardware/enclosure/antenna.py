@@ -6,6 +6,7 @@ The path includes the stripped end, vertical feed, quarter-circle and straight.
 """
 
 import math
+import radio_mount
 from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
@@ -55,6 +56,8 @@ class Installation:
 
 def installation(p, compact=False):
     design = '200 mm compact' if compact else '250 mm original'
+    if compact and any('radio_'+key in p for key in ('width','length','height')):
+        raise ValueError(design+' antenna: Radio envelope derives from the selected source fixture; remove obsolete dimensions')
     values = {k[8:]: v for k, v in p.items() if k.startswith('antenna_')}
     required = ('length', 'wire_diameter', 'position_tolerance', 'feed_x', 'feed_y',
                 'rotation_deg', 'rise', 'bend_radius', 'stripped_length',
@@ -75,9 +78,11 @@ def installation(p, compact=False):
         raise ValueError(f'{design} antenna: ANT datum differs from sourced JP2')
     if compact:
         radio = next(e for e in p['electronics'] if e['name'] == 'Radio')
-        x, y = radio['centre']
-        z = radio['z']
-        w, length, height = radio['size']
+        x, y = radio['mount_datum']
+        z = radio['pcb_bottom_z_mm']
+        bounds=radio_mount.envelope(z,rotation)
+        w,length,total_height=bounds['size']
+        height=total_height-(z-bounds['z'])
     else:
         x, y, w, length, height = [p['radio_' + s] for s in ('x', 'y', 'width', 'length', 'height')]
         z = p['rear_thickness'] + 4

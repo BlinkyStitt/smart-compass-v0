@@ -1,1 +1,9 @@
 .DS_Store
+.build/
+.godot/
+__pycache__/
+*.pyc
+*.gd.uid
+*.gdshader.uid
+*.import
+site/node_modules/

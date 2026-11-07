@@ -4,6 +4,7 @@ Reference projects have no heater setpoints or start/end machine program.
 The print service must select its actual machine and PETG filament profile.
 """
 import argparse
+import sys
 import json
 import math
 from pathlib import Path
@@ -212,6 +213,6 @@ def check(root, fresh=True):
 if __name__=='__main__':
     argparse.ArgumentParser(description=__doc__).parse_args()
     try:
-        check(cad.ROOT)
+        subprocess.run([sys.executable,str(cad.ROOT/'designs/stacked/run.py'),'print-check'],cwd=cad.ROOT,check=True)
     except (cad.CadError,OSError,subprocess.CalledProcessError) as exc:
         raise SystemExit(str(exc))

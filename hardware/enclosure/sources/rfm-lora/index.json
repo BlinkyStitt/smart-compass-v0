@@ -1,0 +1,34 @@
+[
+  {
+    "file": "Adafruit RFM+LoRa Breakout.brd",
+    "original_file": "Adafruit RFM+LoRa Breakout.brd",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-RFM-LoRa-Radio-Breakout-PCB/3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1/Adafruit%20RFM%2BLoRa%20Breakout.brd",
+    "sha256": "7c1436eaafa74ed13a5871eb45f9e25420dd3151dfacd0a81cd1246867e30ca8",
+    "revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+    "bytes": 356385
+  },
+  {
+    "file": "Adafruit RFM+LoRa Breakout.sch",
+    "original_file": "Adafruit RFM+LoRa Breakout.sch",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-RFM-LoRa-Radio-Breakout-PCB/3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1/Adafruit%20RFM%2BLoRa%20Breakout.sch",
+    "sha256": "592011501f4b5f4f383d98c4215fda1fe5e63f814c71037611e34209229eb89a",
+    "revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+    "bytes": 358374
+  },
+  {
+    "file": "upstream-README.md",
+    "original_file": "README.md",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-RFM-LoRa-Radio-Breakout-PCB/3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1/README.md",
+    "sha256": "e302b2658728d34dd11963302fd2e0d2b36e236ce24a944a082b7d62f49adb0c",
+    "revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+    "bytes": 3464
+  },
+  {
+    "file": "license.txt",
+    "original_file": "license.txt",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-RFM-LoRa-Radio-Breakout-PCB/3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1/license.txt",
+    "sha256": "1f63e1f4676a433423b2c2ff1ccd9e80093f341f10b81f0ac0106342bc7bbe89",
+    "revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+    "bytes": 22597
+  }
+]

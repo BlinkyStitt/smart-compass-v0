@@ -1,0 +1,24 @@
+{
+  "printed": [
+    "BoostInputRelief"
+  ],
+  "rotation_deg": {
+    "BoostInputRelief": {
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "angle": 90
+    }
+  },
+  "wire_ids": [
+    "W006",
+    "W044"
+  ],
+  "lacing": "Alpha Wire LC134 BK088;70mm blank, square knot; trim within the4x2.2x2mm knot space",
+  "bond_area_target_mm2": 77.73950525523948,
+  "adhesive": "3M VHB5952; fitted1.0mm from nominal1.1mm. The derived curved bond area is a fabrication target, not a rated or qualified retention path.",
+  "assembly": "Clean and qualify the specified case/clip bond. Seat the insulated input-positive and continuous negative lead in the two source-checked curves immediately outsideBOOST.X2.2/X2.1. Tie both to the bonded relief land; do not crush insulation or load the connector. Disconnect both clamps before rear removal. Inspect adhesive creep and tie retention before any wearing trial.",
+  "physical_acceptance": "unmeasured"
+}

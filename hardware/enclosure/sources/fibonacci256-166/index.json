@@ -1,0 +1,35 @@
+{
+  "manufacturer": "Evil Genius Labs / Jason Coon",
+  "product": "Original Fibonacci256,166mm,v0.1",
+  "source_post_url": "https://raw.githubusercontent.com/evilgeniuslabs/evilgeniuslabs.github.io/a7bf6560d6adb5650abbef8b4c23d9d472e3b338/_posts/2020-02-27-fibonacci256.md",
+  "source_post_revision": "a7bf6560d6adb5650abbef8b4c23d9d472e3b338",
+  "source_post_sha256": "eaa4ea727538e47e025be6a0e9847dad82a2fc896a9f62e0e86969ccde50cdfc",
+  "published_dimensions_url": "https://www.evilgeniuslabs.org/fibonacci256#specifications",
+  "published_diameter_mm": 166,
+  "published_pcb_thickness_mm": 1.6,
+  "retrieved": "2026-11-05",
+  "photos": [
+    {
+      "file": "fnqNrNl.png",
+      "url": "https://imgur.com/fnqNrNl.png",
+      "original_post_image_url": "https://i.imgur.com/fnqNrNl.png",
+      "bytes": 993106,
+      "sha256": "5610a1bf1e1d0542bd8cd25df445e93cc1483e36bc89dfe2d09d1629f18409d1",
+      "image_px": [
+        4032,
+        3024
+      ]
+    },
+    {
+      "file": "ISnaLBD.png",
+      "url": "https://imgur.com/ISnaLBD.png",
+      "original_post_image_url": "https://i.imgur.com/ISnaLBD.png",
+      "bytes": 920407,
+      "sha256": "4fc3ddf4059876bbd9bf60b3599c2393d83e7513fd4009ab2c23759ebe5d950a",
+      "image_px": [
+        4032,
+        3024
+      ]
+    }
+  ]
+}

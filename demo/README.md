@@ -1,5 +1,31 @@
 # Amulet lighting preview
 
+The active removable-cell prototype is the200mm narrow design. Use its
+[build and service guide](../designs/stacked/README.md) for the current geometry,
+controls, inventory and source evidence. The wide exports remain an inactive
+optical reference. They are not a second SKI-1230 implementation.
+
+```sh
+just cad
+just cad-check
+just print-check
+just demo-check
+just demo
+```
+
+`just cad` owns the serial narrow native build, print projects, source and service
+checks, GPU checks and matched captures. It publishes a complete generation only
+after all required stages pass. `just validate` also runs the host, electrical,
+pattern-sampling, energy, Pages and browser checks. Physical qualification remains
+unmeasured. An actual-scene narrow performance benchmark is not implemented.
+
+![Active narrow night mannequin](../designs/stacked/exports/night-mannequin.png)
+
+## Archived wide preview reference
+
+The notes below retain the earlier wide optical and preview work. Its mechanical
+assembly and commands are historical. Use the active narrow commands above.
+
 Run `just demo` from the repository root. The app starts with a posed mannequin
 wearing the pendant on the night-time playa, with spiral rainbow. Use
 **Presentation** to choose the worn night scene, a night pendant close-up, or
@@ -169,13 +195,19 @@ For a renderer-independent adapter check, use an absolute metadata path:
 godot --headless --path demo --script res://check_patterns.gd -- "$PWD/hardware/enclosure/exports/scene.json"
 ```
 
-For visual inspection, select each new style in both viewers. Watch the circle
-and every ring or side row for at least one eight-second cycle. Check the top
-seam, pause/resume, and each output switch. In the main viewer, compare Glow
-PETG and Silver PETG with equal brightness and exposure. Stored glow can remain
-visible where LED intent is black; pause freezes the pattern while glow charging
-and decay continue. The stacked viewer retains its fixed illustrative charge.
-Keep this visual evidence separate from numerical and physical-device checks.
+The native preview checks exercise each new style, the circle and every ring or
+side row, cycle boundaries, pause/resume and output switches automatically.
+Wide GPU checks cover both Glow and Silver at the same settings. Stored glow can
+remain visible where LED intent is black; pause freezes the pattern while glow
+charging and decay continue. The stacked viewer retains its fixed illustrative
+charge. These digital checks do not establish physical flicker or runtime; no
+human observation is a completion gate.
+
+`python3 site/sample.py` also exports raw float32 RGB channels from these exact
+functions at 512 and 1024 steps per cycle, retaining `(group,index)` identities.
+It repeats each export and requires byte-for-byte equality, then halves the
+interval further if battery-input power has not converged. The electrical study
+and its limits are documented in [site/README.md](../site/README.md).
 
 ## What the image means
 

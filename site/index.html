@@ -9,6 +9,7 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
+  <script src="calculator.js" type="module"></script>
 </head>
 <body>
   <a class="skip" href="#films">Skip to the animations</a>
@@ -20,19 +21,19 @@
     <section class="intro wrap" aria-labelledby="title">
       <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Hardware in development</p>
       <h1 id="title">Smart compass.<br>Find your friends.</h1>
-      <p class="lede">We’re building a wearable medallion to help you find your friends. It’s designed to share locations by radio and use a compass to point you toward friends wearing one too. It also has a spiral of lights and an infinity-mirror effect. Explore two enclosure designs in the simulations below.</p>
+      <p class="lede">We’re building a wearable medallion to help you find your friends. It’s designed to share locations by radio and use a compass to point you toward friends wearing one too. It also has a spiral of lights and an infinity-mirror effect. The active prototype is the 200 mm narrow design. It uses one removable protected XTAR 21700 cell. The wide simulations remain as an archived size and optical reference.</p>
     </section>
     <section class="films wrap" id="films" data-comparison data-autoplay aria-label="Compare the wide and narrow smart compass simulations">
       <div class="film-grid">
         <article class="film">
-          <div class="film-heading"><h2><span>01</span> Wide</h2><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
+          <div class="film-heading"><h2><span>01</span> Wide archive</h2><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
           <video id="wide-video" muted loop playsinline preload="metadata" poster="{{wide_poster}}" aria-label="Wide enclosure simulation with a rotating rainbow and figure-eight camera path">
             <source src="{{wide_movie}}" type="video/mp4">
             <a href="{{wide_movie}}">Open the wide rainbow MP4</a>
           </video>
         </article>
         <article class="film">
-          <div class="film-heading"><h2><span>02</span> Narrow</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
+          <div class="film-heading"><h2><span>02</span> Narrow prototype</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
           <video id="narrow-video" muted loop playsinline preload="metadata" poster="{{narrow_poster}}" aria-label="Narrow enclosure simulation with a rotating rainbow and the same figure-eight camera path">
             <source src="{{narrow_movie}}" type="video/mp4">
             <a href="{{narrow_movie}}">Open the narrow rainbow MP4</a>
@@ -45,28 +46,28 @@
       </div>
       <div class="film-descriptions">
         <section class="film-description" aria-labelledby="wide-description-title">
-          <h3 id="wide-description-title">Wide</h3>
-          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>~{{wide_worn_weight}} <small>kg</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
-          <p class="stats-note">Pendant + battery + necklace · pendant ~{{wide_weight}} kg, including the {{battery_weight}} g battery</p>
+          <h3 id="wide-description-title">Wide archive</h3>
+          <p class="stats-note">Earlier pouch-pack design. Its CAD and clips are retained as references. It has no current removable-cell, worn-mass or runtime acceptance.</p>
           <p class="film-note">The mirror tunnel surrounds the <a href="https://www.evilgeniuslabs.org/fibonacci256">Fibonacci board</a>. A wider face keeps the body shallower.</p>
           <a class="file-link" href="{{wide_movie}}">Open wide MP4 ↗</a>
         </section>
         <section class="film-description" aria-labelledby="narrow-description-title">
-          <h3 id="narrow-description-title">Narrow</h3>
-          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>~{{narrow_worn_weight}} <small>kg</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
-          <p class="stats-note">Pendant + battery + necklace · pendant ~{{narrow_weight}} kg, including the {{battery_weight}} g battery</p>
+          <h3 id="narrow-description-title">Active narrow prototype</h3>
+          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>{{narrow_worn_g}} <small>g · {{narrow_worn_lb}} lb</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
+          <p class="stats-note">Complete worn estimate: pendant, one {{battery_weight}} g nominal cell ({{battery_upper_g}} g published upper) and the complete sewn necklace. Upper estimate {{narrow_upper_g}} g; margin {{narrow_margin_g}} g below 2.5 lb. The separate 50 g margin target is {{narrow_margin_target}}.</p>
           <p class="film-note">The mirror cavity sits above the board. An inner ring adds depth, with two light bands around the outside.</p>
           <a class="file-link" href="{{narrow_movie}}">Open narrow MP4 ↗</a>
         </section>
       </div>
-      <div class="estimate-note"><p>Runtime assumes <strong>1.25 A total at 5 V</strong>, a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">provisional 37 Wh / 10 Ah LiPo pack</a> and 85% conversion efficiency. The design target is <strong>4 hours</strong>. Reserve, temperature, aging and cutoff losses reduce the calculated runtime. Brightness at this power cap remains unverified.</p><p><strong>Battery access needs a revision.</strong> The current CAD uses a <a href="https://www.batteryspace.com/customizepolymerli-ionbattery37v10ah37wh7aratethinpvcandnolabelcu-mm109pid4816.aspx">BatterySpace CU-MM109 pouch pack</a> behind a screw-fastened rear cover. It is a fit candidate, not a purchase. The selected next revision uses one removable 26650 with spares and tool-free access, like the hats. The present compartment does not meet that requirement.</p><details><summary>Weight estimate basis</summary><p>Wide pendant allowance: {{wide_weight_range}} kg. Narrow: {{narrow_weight_range}} kg. The wide estimate comes from its installed-component inventory. The narrow estimate uses its own CAD material volumes and strip lengths, plus the same electronics, harness and fitting allowances. Both include the supplier's 190 g battery. The deeper narrow shell adds printed material. These ranges sum independent allowances; no finished assembly has been weighed.</p></details></div>
-      <noscript><p>Open the MP4 links to play the clips.</p></noscript>
+      <div class="estimate-note"><p>The narrow estimate uses its complete installed CAD census and its own component, wire, fastener, cell and necklace records. Estimated worn bounds are <strong>{{narrow_weight_range}} g</strong>. The glow upper estimate is {{narrow_upper_g}} g; silver is {{narrow_silver_upper_g}} g. These are sums of engineering allowances, not confidence intervals or a measured worn mass.</p><p>The displayed runtime uses the actual full-rainbow samples at <strong>2% electrical brightness</strong>, 2 W non-LED output, 85% conversion efficiency, 0.12 Ω path resistance and a 25% energy allowance for cutoff, reserve and aging. These are adjustable planning assumptions. Average savings do not establish PWM, radio, inrush or fault limits. Optical glow and screen brightness do not enter the electrical calculation.</p><p>Only the narrow removable-cell prototype is active. All physical electrical, thermal, fit, retention, runtime and wearing outcomes remain unmeasured. <a href="parts.json">Read the complete mass ledger</a>.</p></div>
+
     </section>
+    <section class="wrap energy-calculator" id="energy-calculator" aria-label="One-cell energy calculator"></section>
     <section class="story wrap" id="build" aria-labelledby="build-title">
       <div class="section-label"><span class="eyebrow">The build</span><h2 id="build-title">Light you can wear.<br>Direction you can share.</h2></div>
       <div class="story-copy">
         <p class="large">The planned build: a 256-LED centre display, three additional LED strips and two controller boards.</p>
-        <p>The <a href="https://www.evilgeniuslabs.org/fibonacci256">Evil Genius Labs Fibonacci256</a> forms the centre spiral. Separate strips make the circle halo, inner ring and outer ring. <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> will drive the lights; an <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> will read the sensors and handle the LoRa radio.</p>
+        <p>The <a href="https://www.evilgeniuslabs.org/fibonacci256">Evil Genius Labs Fibonacci256</a> forms the centre spiral. The narrow design adds one inward ring with 70 LEDs and two outside rows with 70 LEDs each. The outside rows form one 140-LED chain; the assembly has 466 LEDs. <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> will drive the lights; an <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> will read the sensors and handle the LoRa radio.</p>
         <p><strong>Navigation.</strong> We plan a compass mode that points north and toward live peers, plus a separate map mode showing peers relative to you. The goal is to navigate and exchange live locations without a phone or internet connection.</p>
         <p><strong>Light patterns.</strong> We plan geometric and microphone-reactive patterns across the centre display and strips. These simulations show a rotating rainbow with an eight-second colour cycle.</p>
         <p><a href="https://blink.stitthappens.com/">I’m experimenting with light patterns over here</a>.</p>
@@ -77,15 +78,16 @@
       </div>
     </section>
     <section class="comparison wrap" id="compare" aria-labelledby="compare-title">
-      <div class="section-top"><div><p class="eyebrow">At the same scale</p><h2 id="compare-title">50 mm makes a difference.</h2></div><p>The narrow face is 20% smaller in diameter.<br>The battery still fits inside both designs.</p></div>
-      <figure class="comparison-figure"><a href="{{size_comparison}}"><img src="{{size_comparison}}" width="1700" height="1130" loading="lazy" alt="Simulated front views at the same scale. Wide case: 250 mm diameter. Narrow case: 200 mm diameter. Dimension lines align their centres and outer edges."></a><figcaption>Simulated front views with dimension lines. Click any image to open it at full size.</figcaption></figure>
-      <div class="spec-table"><table><caption>Current enclosure dimensions</caption><thead><tr><th scope="col">Design</th><th scope="col">Diameter</th><th scope="col">Depth</th><th scope="col">Mirror gap</th><th scope="col">Total LEDs</th></tr></thead><tbody><tr><th scope="row">Wide</th><td>{{wide_width}} mm</td><td>{{wide_depth}} mm</td><td>{{wide_gap}} mm</td><td>{{wide_leds}}</td></tr><tr><th scope="row">Narrow</th><td>{{narrow_width}} mm</td><td>{{narrow_depth}} mm</td><td>{{narrow_gap}} mm</td><td>{{narrow_leds}}</td></tr></tbody></table></div>
+      <div class="section-top"><div><p class="eyebrow">At the same scale</p><h2 id="compare-title">50 mm makes a difference.</h2></div><p>The narrow face is 20% smaller in diameter.<br>The narrow design is active. The wide view is archived.</p></div>
+      <figure class="comparison-figure"><a href="{{size_comparison}}"><img src="{{size_comparison}}" width="1500" height="800" loading="lazy" alt="Source body dimensions at the same front and side scale. Wide archive:250mm diameter. Active narrow:200mm diameter, with actual closed depth shown."></a><figcaption>Current source body dimensions and the narrow closed CAD bounds. <a href="{{archived_size_comparison}}">Earlier optical front-view comparison</a> (the archived image shows the older57.6mm narrow body).</figcaption></figure>
+      <div class="spec-table"><table><caption>Active narrow prototype and archived wide dimensions</caption><thead><tr><th scope="col">Design</th><th scope="col">Diameter</th><th scope="col">Body depth</th><th scope="col">Closed width × height × depth</th><th scope="col">Mirror gap</th><th scope="col">Total LEDs</th></tr></thead><tbody><tr><th scope="row">Wide archive</th><td>{{wide_width}} mm</td><td>{{wide_depth}} mm</td><td>Archived</td><td>{{wide_gap}} mm</td><td>{{wide_leds}}</td></tr><tr><th scope="row">Narrow</th><td>{{narrow_width}} mm</td><td>{{narrow_depth}} mm</td><td>{{narrow_closed_size}} mm</td><td>{{narrow_gap}} mm</td><td>{{narrow_leds}}</td></tr></tbody></table></div>
     </section>
+    <section class="details wrap" aria-labelledby="service-title"><p class="eyebrow">One removable cell</p><h2 id="service-title">Captive, tool-free battery access.</h2><p>Support the pendant. Put S1 fully OFF and disconnect external power. Open the captive door, hold the cell, release the independent keeper and extract the cell with its pull ribbon. Follow the permanent polarity marks when you insert one compatible protected XTAR 21700 6000 mAh button-top cell. Close the keeper and door, check the catch, select ON and press START.</p><p>OFF isolates the positive cell contact in the reviewed topology. Reset and discharge timing remain unmeasured. A rapid replacement can retain electronic state. Light output does not establish GPS, radio or navigation readiness.</p><figure class="comparison-figure"><a href="service-guide.svg"><img src="service-guide.svg" width="960" height="790" loading="lazy" alt="Six actual CAD poses show support and OFF, captive door opening, keeper release, deliberate cell extraction, compatible-cell insertion and latch plus START."></a><figcaption>The continuous model service envelope is {{narrow_service_size}} mm (width × height × depth), including door and keeper motion, 40 mm cell withdrawal and the specified finger approaches. It does not bound a full human hand. Physical fit, insulation, retention and operation remain unmeasured.</figcaption></figure><figure class="comparison-figure"><a href="assembly-dimensions.svg"><img src="assembly-dimensions.svg" width="960" height="790" loading="lazy" alt="Actual narrow CAD front and side at one scale, with body, closed projections, service bounds, suspension and conditional balance."></a><figcaption>Front and side use the same scale. Red marks show the calculated pendant centre and mass-allowance interval. These do not bound physical wearing angle.</figcaption></figure><p>Charge the removed cell off-body with a compatible 4.2 V-termination Li-ion charger. Do not charge in the pendant. Keep spare terminals individually insulated. After damage, heat or repeated darkness, stop and service the unit. Remove the cell before USB 5 V service; keep S1 OFF.</p><p><a href="prototype-service.zip">Review the narrow prototype files and print-service package</a>, <a href="inventory.md">installed inventory</a> and <a href="parts.json">raw mass and balance records</a>. The package includes fit samples, both alternative ring materials, source-linked print settings, assembly references and the full wire cut list.</p></section>
     <section class="details wrap" aria-labelledby="details-title">
       <p class="eyebrow">A closer look</p><h2 id="details-title">The parts behind the light.</h2>
       <div class="detail-grid">
-        <figure><video id="assembly-video" muted loop playsinline preload="metadata" poster="{{assembly_poster}}" aria-label="Wide enclosure simulation showing exploded assembly and reassembly"><source src="{{assembly_movie}}" type="video/mp4"><a href="{{assembly_movie}}">Open exploded assembly MP4</a></video><figcaption><strong>Inside the Wide design</strong><a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
-        <figure><a href="{{narrow_side}}"><img src="{{narrow_side}}" width="1280" height="720" loading="lazy" alt="Simulated side view of the narrow enclosure and its two outside LED bands."></a><figcaption><strong>Two outside bands</strong>The 20 mm light band wraps the narrow case. The full body is {{narrow_depth}} mm deep.</figcaption></figure>
+        <figure><video id="assembly-video" muted loop playsinline preload="metadata" poster="{{assembly_poster}}" aria-label="Wide enclosure simulation showing exploded assembly and reassembly"><source src="{{assembly_movie}}" type="video/mp4"><a href="{{assembly_movie}}">Open exploded assembly MP4</a></video><figcaption><strong>Archived wide assembly</strong><a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
+        <figure><a href="{{narrow_side}}"><img src="{{narrow_side}}" width="1280" height="720" loading="lazy" alt="Simulated side view of the narrow enclosure and its two outside LED bands."></a><figcaption><strong>Two outside bands</strong>The 20 mm light band wraps the narrow case. The body is {{narrow_depth}} mm deep. The closed depth, including the rear guard, is {{narrow_closed_depth}} mm.</figcaption></figure>
         <figure><a href="{{wide_worn}}"><img src="{{wide_worn}}" width="1280" height="720" loading="lazy" alt="Simulated full stationary mannequin wearing the wide medallion in the raised-hand and pointing-hand pose."></a><figcaption><strong>Wearing scale</strong>The {{wide_width}} mm wide version on the posed mannequin. The straps illustrate wearing context.</figcaption></figure>
         <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="The same simulated mannequin and pose wearing the smaller, 200 mm narrow medallion."></a><figcaption><strong>Same wearer, smaller face</strong>The {{narrow_width}} mm narrow version uses the same pose and full-body framing.</figcaption></figure>
       </div>

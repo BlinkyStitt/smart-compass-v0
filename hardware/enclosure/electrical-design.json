@@ -1,0 +1,1099 @@
+{
+  "schema_version": 1,
+  "revision": "ski-1230-module-prototype-4",
+  "acceptance": "Digital prototype design review. Physical electrical, thermal, runtime and wearing qualification is unmeasured; this record is not physical acceptance for wearing an untested assembly.",
+  "authority": "Bryan requested a module prototype, identified the over-broad digital qualification contract, and authorized doing everything possible on the issue/PR on 2026-11-04. Preserve the original approved spec and rejected-circuit history.",
+  "parts": {
+    "CELL": {
+      "part": "XTAR protected 21700 6000 mAh button-top",
+      "source": "https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight"
+    },
+    "CONTACT_P": {
+      "part": "Mill-Max 0854-0-15-20-82-14-11-0",
+      "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "basis": "Wire-mount solder cup accepts up to16AWG; selected18AWG uses the intended termination.12A at30C rise/9.6A20%-derated per2024 sheet;20mohm maximum contact resistance. These component conditions do not qualify contact to cell, solder joints, fault withstand or enclosed heat."
+    },
+    "CONTACT_N": {
+      "part": "Mill-Max 0854-0-15-20-82-14-11-0",
+      "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "basis": "Wire-mount solder cup accepts up to16AWG; selected18AWG uses the intended termination.12A at30C rise/9.6A20%-derated per2024 sheet;20mohm maximum contact resistance. These component conditions do not qualify contact to cell, solder joints, fault withstand or enclosed heat."
+    },
+    "F1": {
+      "part": "Littelfuse 0251004.NRT1L, 4 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+    },
+    "S1": {
+      "part": "C&K 7201SYZQE, DPDT ON-ON, 5 A at 28 VDC",
+      "source": "https://www.ckswitches.com/media/1394/7000toggle.pdf"
+    },
+    "LATCH": {
+      "part": "Pololu 2808 Mini Pushbutton Power Switch LV",
+      "source": "https://www.pololu.com/product/2808",
+      "board_revision": "psw03a",
+      "source_record": "sources/latch-2808/index.json",
+      "terminal_bindings": {
+        "VIN": [
+          1.27,
+          16.51
+        ],
+        "VOUT": [
+          13.97,
+          16.51
+        ],
+        "GND": [
+          1.27,
+          8.89
+        ],
+        "A": [
+          13.97,
+          3.81
+        ],
+        "OFF": [
+          1.27,
+          3.81
+        ]
+      },
+      "wire_terminals": {
+        "part": "CamdenBoss CTBP2054/4, four-position2.54mm rising-clamp PCB terminal block",
+        "quantity": 2,
+        "mount_side": "underside",
+        "wire_awg_range": [
+          26,
+          18
+        ],
+        "published_ul_current_a": 6,
+        "published_iec_current_a": 8,
+        "maximum_contact_resistance_ohm": 0.02,
+        "nominal_body_mm": [
+          10.62,
+          6.2,
+          8.5
+        ],
+        "nominal_pin_section_mm": [
+          0.8,
+          0.5
+        ],
+        "pin_length_mm": [
+          3.2,
+          3.8
+        ],
+        "published_torque_nm": 0.1,
+        "wires_per_clamp": 1,
+        "strip_target_mm": 4.5,
+        "strip_basis": "Specified assembly target, not a published strip limit. Verify full conductor capture with insulation outside the clamp; no bare conductor outside its entry.",
+        "connections": {
+          "VIN.upper": "18AWG",
+          "VOUT.upper": "18AWG",
+          "VIN.lower_GND": "26AWG"
+        },
+        "unused": "Other five clamp positions remain empty and insulated; B,ON,CTRL have no external lead.",
+        "source": "https://www.camdenboss.com/media/1546/camblock-plus-catalogue-15a.pdf",
+        "limits": "Published UL6A/150V and IEC8A/130V;20mohm max. Pin/body sizes nominal except3.5+/-0.3mm pin length. Pololu +/-0.1mm is hole LOCATION; hole diameter1.02mm nominal. These records do not guarantee supplied pin/hole fit, soldering, fault withstand or enclosed heat. Do not force pins or drill plated holes."
+      },
+      "mount": {
+        "pcb_bottom_z_mm": 12.2,
+        "floor_bottom_z_mm": 2,
+        "floor_thickness_mm": 1.35,
+        "floor_size_mm": [
+          32,
+          22.75
+        ],
+        "post_x_mm": 13,
+        "post_y_mm": [
+          3.5,
+          -7.8
+        ],
+        "post_radius_mm": 2.75,
+        "lip_inner_x_mm": 7.1,
+        "lip_y_length_mm": 3,
+        "clamp_thickness_mm": 1.2,
+        "finished_screw_length_mm": 17,
+        "hardware": "Four DIN912 M2x20 A2 stock screws finished to17mm, eight DIN125 M2 washers, four DIN934 M2 A4 nuts. Four screws fasten carrier and clamps through the full2mm case bearing lands. No guessed PCB mounting holes.",
+        "floor_centre_xy_mm": [
+          0,
+          -0.625
+        ]
+      }
+    },
+    "BOOST": {
+      "part": "Adafruit PowerBoost 1000 Basic, PID 2030",
+      "source": "https://www.adafruit.com/product/2030",
+      "board_revision": "493d06d70537ce418355b395bb251a661d683150",
+      "source_record": "sources/powerboost-1000-basic/index.json",
+      "terminal_bindings": {
+        "BAT": "X2.2",
+        "INPUT_GND": "X2.1",
+        "OUT": "X1.2",
+        "OUTPUT_GND": "X1.1",
+        "TRIP": "R20.2"
+      },
+      "wire_terminals": {
+        "part": "Pololu2444 two-pin3.5mm side-entry screw terminal block",
+        "quantity": 2,
+        "positions": [
+          "X1",
+          "X2"
+        ],
+        "source": "https://www.pololu.com/product/2444",
+        "source_record": "sources/powerboost-terminals/index.json",
+        "wire_awg_range": [
+          24,
+          18
+        ],
+        "published_current_a": 10,
+        "current_basis": "Seller UL10A/125V, IEC10A/130V; no enclosed thermal or fault-clearing qualification.",
+        "strip_target_mm": 5,
+        "wires_per_clamp": 1,
+        "nominal_body_mm": [
+          7.96,
+          6.8,
+          8.4
+        ],
+        "nominal_pin_diameter_mm": 0.8,
+        "pin_length_mm": [
+          3.4,
+          4.0
+        ],
+        "wire_groups": {
+          "X2.1": "main",
+          "X2.2": "main",
+          "X1.1": "branches",
+          "X1.2": "branches"
+        },
+        "retention": "Solder both blocks before fixed harness assembly. Keep wire insulation outside clamps, one untinned stranded conductor per used clamp, and restrain insulated leads near each entry. Ordinary battery access leaves all clamps closed. Check supplied pin fit, solder quality, screw retention and temperatures physically; do not force or drill the plated holes.",
+        "contact_resistance_basis": "20mohm published; seller does not identify it as a guaranteed maximum. Do not use it as a worst-case path bound.",
+        "fit_boundary": "Source PCB drills1mm and terminal pins0.8mm are nominal. Published pin length is3.7+/-0.3mm. Other body/pin/PCB tolerances and actual fit remain unmeasured. The output terminal nominal body reaches X30.451mm on the29.21mm board. Fit from source geometry rather than the old loaded PCB rectangle."
+      }
+    },
+    "START": {
+      "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
+      "source": "https://www.ckswitches.com/media/1471/pts645.pdf",
+      "source_revision": "PTS645, MI 10/02/26, pages 1,2,5,7",
+      "body_nominal_mm": [
+        6,
+        6,
+        3.45
+      ],
+      "actuator_height_mm": [
+        6.9,
+        7.1
+      ],
+      "basis": "Ordering: S straight, L 1.3N nominal force, 70 height7mm,2 through-hole,LFS silver/RoHS. Source specifies50mA/12VDC and100mohm maximum initial contact resistance. Height is from PCB mounting datum;7mm is not travel. Use the supplied actuator directly through a retaining bezel; no printed plunger or inferred overtravel. Verify actual part, mounting and finger reach. Physical force/travel/fit remain unmeasured. The mechanical-characteristics table has inconsistent option/height entries; do not use those entries as bounds.",
+      "terminal_use": "Pin1 to LATCH.A; pin3 to GND. Pins1/2 are internally common; pins3/4 are internally common. Do not wire1-to2 as the momentary contact. Leave duplicate pins2/4 externally unconnected and individually insulated."
+    },
+    "C_OUT": {
+      "part": "Panasonic EEUFR1A102, 1000 uF 10 V +/-20%, 10 x 16 mm body",
+      "source": "https://industrial.panasonic.com/ww/products/pt/aluminum-cap-lead/models/EEUFR1A102",
+      "loaded_envelope_mm": [
+        12,
+        31,
+        14
+      ],
+      "basis": "Source nominal10x16mm; FR-A 01-Sep-2025 drawing gives diameter +/-0.5mm and length +/-1.5mm. Lay horizontally in12x31x14mm engineering reservation including leads. Published1.79Arms is at100kHz/+105C; apply the source frequency correction to the measured waveform, not to its frame average.",
+      "source_record": "sources/capacitor-fr-a/index.json",
+      "body_diameter_mm": [
+        9.5,
+        10.5
+      ],
+      "body_length_mm": [
+        14.5,
+        17.5
+      ],
+      "lead_diameter_mm": [
+        0.55,
+        0.65
+      ],
+      "lead_pitch_mm": [
+        4.5,
+        5.5
+      ],
+      "minimum_vent_clearance_mm": 2,
+      "mount": {
+        "shim_part": "RS PRO770-787 white polyester shim stock",
+        "shim_source": "https://uk.rs-online.com/web/p/plastic-shims/0770787",
+        "shim_nominal_mm": 0.25
+      }
+    },
+    "R_A": {
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_B": {
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_OUT": {
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_OFF": {
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_SENSE_TOP": {
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_SENSE_BOTTOM": {
+      "part": "Vishay MRS16000C1003FCT00, 100 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "SPARKLE": {
+      "part": "Adafruit Sparkle Motion, board revision D",
+      "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+      "led_terminals": {
+        "assembly": "Factory-installed JP1 nine-position 2.54mm screw terminal strip on Sparkle Motion Rev D",
+        "wire_group": "branches",
+        "signal_wire_group": "signals",
+        "wires_per_clamp": 1,
+        "wire_awg_range": [
+          20,
+          26
+        ],
+        "published_current_a": 5,
+        "current_basis": "Published board/terminal rating; does not qualify coherent PWM peaks, installed wire heating or enclosed temperatures.",
+        "strip_target_mm": 3.2,
+        "strip_basis": "Assembly target from maker approximately 1/8 inch instruction; inspect actual insertion/insulation and clamp retention.",
+        "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+        "assembly_source": "https://learn.adafruit.com/adafruit-sparkle-motion/connecting-leds",
+        "source_review": "2026-11-05, guide/RevD source7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+        "retention": "One fixed 22 AWG positive pigtail from JP1.9 to the insulated LED fuse/distribution carrier; one 26 AWG data lead per used data clamp. Do not put four fuse leads under one screw or replace the stock connector with an assumed 18 AWG part. Restrain the insulated leads near the board; screws and clamp pull-out remain physical tests."
+      },
+      "board_revision": "7a45f900d6ce0c1d60d67a9efbbba6dbd55ef31a",
+      "source_record": "sources/sparkle-motion/index.json",
+      "terminal_bindings": {
+        "INPUT": "X7.PWR",
+        "INPUT_GND": "X7.GND",
+        "AUX": "JP3.2",
+        "AUX_GND": "JP3.1",
+        "TX": "JP3.3",
+        "RX": "JP3.4",
+        "DATA1": "JP1.8",
+        "DATA2": "JP1.5",
+        "DATA3": "JP1.2",
+        "DATA4": "JP3.6",
+        "LED_RAIL": "JP1.9"
+      }
+    },
+    "BLACKPILL": {
+      "part": "WeAct BlackPill V3.1 STM32F411CEU6, optional U3 flash not installed, 3.3 V input",
+      "source": "https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1/blob/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf",
+      "source_revision": "WeAct V3.1 schematic,4/17/2021; pinned upstream6a7f7d434a9d6361f91590d4cdd16b4a70ce7513, sheet1 zonesB/C headers andD1 optional flash",
+      "basis": "Select the F411CEU6 board without optional U3 flash. In the actual V3.1 schematic, U3 shares PA4 chip-select, PA5 clock, PA6 MISO, PA7 MOSI. PA4 is the external battery divider input here. Do not use the newer KiCad README claim of SPI2/PB12-PB15 for this board. No new firmware or pin reassignment. Leave P1/P2/P3 header parts uninstalled; connect fixed wires directly to the selected PCB pads.",
+      "source_sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565",
+      "board_revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+      "source_record": "sources/blackpill-v31/index.json",
+      "terminal_bindings": {
+        "3V3": "P1.3",
+        "GND": "P1.2",
+        "PA0": "P1.15",
+        "PA10": "P2.7",
+        "PA2": "P1.13",
+        "PA3": "P1.12",
+        "PA4": "P1.11",
+        "PA5": "P1.10",
+        "PA6": "P1.9",
+        "PA7": "P1.8",
+        "PA8": "P2.5",
+        "PA9": "P2.6",
+        "PB0": "P1.7",
+        "PB1": "P1.6",
+        "PB10": "P1.4",
+        "PB12": "P2.1",
+        "PB13": "P2.2",
+        "PB14": "P2.3",
+        "PB5": "P2.13",
+        "PB6": "P2.14",
+        "PB7": "P2.15"
+      }
+    },
+    "GPS": {
+      "part": "Adafruit Ultimate GPS FeatherWing, 3V input",
+      "source": "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts",
+      "board_revision": "1b15a4f782c555903c0cfd7174d0616d2e128887",
+      "source_record": "sources/gps-featherwing/index.json",
+      "terminal_bindings": {
+        "3V": "JP4.9",
+        "GND": "JP4.7",
+        "RX": "JP3.1",
+        "TX": "JP3.2",
+        "PPS": "JP1.3",
+        "EN": "JP1.4"
+      }
+    },
+    "IMU": {
+      "part": "Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V",
+      "source": "https://www.adafruit.com/product/3387",
+      "loaded_envelope_mm": [
+        40,
+        28,
+        12
+      ],
+      "basis": "Maker board 33.4 x20.4 x3 mm; larger engineering reservation includes fixed soldered leads. Native pocket must use this reservation, not the old25x25 placeholder. Select classic Rev A: its Eagle outline is33.02x20.32mm nominal. Rev C changes the outline and swaps DRDY/INT_M between JP2.4 and JP2.5; do not substitute its terminal map. The published33.4x20.4mm product dimensions and40x28x12mm loaded reservation remain conservative planning geometry, not measured tolerances.",
+      "board_revision": "A",
+      "source_revision": "Adafruit classic blue LSM9DS1 Rev A; upstream9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+      "source_record": "sources/lsm9ds1-classic/index.json",
+      "terminal_bindings": {
+        "VIN": "JP4.9",
+        "GND": "JP4.7",
+        "SCL": "JP4.6",
+        "SDA": "JP4.5",
+        "SDOAG": "JP4.2",
+        "SDOM": "JP4.1",
+        "CSAG": "JP4.4",
+        "CSM": "JP4.3",
+        "INT1": "JP2.3",
+        "DRDY": "JP2.4"
+      }
+    },
+    "RADIO": {
+      "part": "Adafruit 3072 RFM95W, VIN=3.3 V",
+      "source": "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts",
+      "board_revision": "3ad6bed6e1b407afa7119ae548b5c2f1b107c6b1",
+      "source_record": "sources/rfm-lora/index.json",
+      "terminal_bindings": {
+        "VIN": "JP3.1",
+        "GND": "JP3.2",
+        "G0": "JP3.4",
+        "SCK": "JP3.5",
+        "MISO": "JP3.6",
+        "MOSI": "JP3.7",
+        "CS": "JP3.8",
+        "RST": "JP3.9",
+        "ANT": "JP2.1"
+      }
+    },
+    "FIBONACCI": {
+      "part": "Original Evil Genius Labs Fibonacci256",
+      "source": "https://www.evilgeniuslabs.org/fibonacci256",
+      "board_revision": "v0.1-166mm",
+      "source_record": "sources/fibonacci256-166/index.json",
+      "terminal_bindings": {
+        "5V": "IN.5V",
+        "DIN": "IN.DI",
+        "GND": "IN.GND"
+      }
+    },
+    "RING1": {
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
+    },
+    "RING2": {
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
+    },
+    "RING3": {
+      "part": "Allcoola WTP-2812-2020-120-0405, IP20 black PCB, 5 V, 120 pixels/m",
+      "source": "https://www.sk6812.com/?p=2760",
+      "basis": "Published4mm FPC,1.5mm total thickness, oneLED/cut. Retain existing10mm strip seat and2mm package reservation; fit/adhesive/optical output remain unmeasured. Remove stock plug leads; use the fixed branch harness."
+    },
+    "F_FIB": {
+      "part": "Littelfuse 0251002.NRT1L, 2 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        16.8,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
+    },
+    "F_RING1": {
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        16.8,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
+    },
+    "F_RING2": {
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        16.8,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
+    },
+    "F_RING3": {
+      "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        16.8,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
+    },
+    "F_AUX": {
+      "part": "Littelfuse 0251.500NRT1L, 0.5 A, axial",
+      "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
+      "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
+      "loaded_envelope_mm": [
+        16.8,
+        5,
+        5
+      ],
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
+    },
+    "R_BOOST": {
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "R_LOAD": {
+      "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
+      "source": "https://www.vishay.com/docs/28724/mrs16m25.pdf",
+      "source_revision": "28724,07-Mar-2016; application/film-temperature conditions apply",
+      "body_max_mm": [
+        3.6,
+        1.6
+      ],
+      "loaded_envelope_mm": [
+        12,
+        3.5,
+        3.5
+      ],
+      "basis": "Source maximum body length/diameter; loaded engineering reservation includes formed/sleeved leads. Fixed insulated wiring; no0603 adapter PCB. Source mass125mg is not a guaranteed maximum. Respect the source film/joint-temperature conditions; assembly thermal performance is unmeasured.",
+      "lead_diameter_nominal_mm": 0.5,
+      "lead_length_min_mm": 29,
+      "mounting_pitch_min_mm": 5,
+      "source_sha256": "645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e"
+    },
+    "S1_NUT": {
+      "part": "C&K 700201201, 1/4-40 UNS open hex mounting nut, nickel-plated brass",
+      "source": "https://www.ckswitches.com/media/1960/switchhardware.pdf",
+      "source_revision": "Hardware mounting-nut drawing; nominal .307in across flats,.062in thick; source dimensions are not supplied-part measurements or guaranteed tolerances"
+    },
+    "S1_WASHER": {
+      "part": "C&K 700303202, internal-tooth lockwasher for 1/4-40 bushing, nickel-plated steel",
+      "source": "https://www.ckswitches.com/media/1960/switchhardware.pdf",
+      "source_revision": "Hardware lockwasher drawing,VL01/21/26; nominal .402in OD,.018in thick; teeth/compression and supplied fit are unmeasured"
+    },
+    "MODE": {
+      "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
+      "source": "https://www.ckswitches.com/media/1471/pts645.pdf",
+      "source_revision": "PTS645, MI 10/02/26, pages 1,2,5,7",
+      "body_nominal_mm": [
+        6,
+        6,
+        3.45
+      ],
+      "actuator_height_mm": [
+        6.9,
+        7.1
+      ],
+      "basis": "Ordering: S straight, L 1.3N nominal force, 70 height7mm,2 through-hole,LFS silver/RoHS. Source specifies50mA/12VDC and100mohm maximum initial contact resistance. Height is from PCB mounting datum;7mm is not travel. Use the supplied actuator directly through a retaining bezel; no printed plunger or inferred overtravel. Verify actual part, mounting and finger reach. Physical force/travel/fit remain unmeasured. The mechanical-characteristics table has inconsistent option/height entries; do not use those entries as bounds.",
+      "terminal_use": "Pin1 to BLACKPILL.PB13; pin3 to GND. Pins1/2 are internally common; pins3/4 are internally common. Leave duplicate pins2/4 externally unconnected and insulated. Use the stock actuator directly. Preserve the existing MCU pull-up and active-low input assignment; no new firmware."
+    },
+    "ACTION": {
+      "part": "C&K PTS645SL70-2 LFS, normally-open SPST, 7 mm round actuator, through-hole",
+      "source": "https://www.ckswitches.com/media/1471/pts645.pdf",
+      "source_revision": "PTS645, MI 10/02/26, pages 1,2,5,7",
+      "body_nominal_mm": [
+        6,
+        6,
+        3.45
+      ],
+      "actuator_height_mm": [
+        6.9,
+        7.1
+      ],
+      "basis": "Ordering: S straight, L 1.3N nominal force, 70 height7mm,2 through-hole,LFS silver/RoHS. Source specifies50mA/12VDC and100mohm maximum initial contact resistance. Height is from PCB mounting datum;7mm is not travel. Use the supplied actuator directly through a retaining bezel; no printed plunger or inferred overtravel. Verify actual part, mounting and finger reach. Physical force/travel/fit remain unmeasured. The mechanical-characteristics table has inconsistent option/height entries; do not use those entries as bounds.",
+      "terminal_use": "Pin1 to BLACKPILL.PB14; pin3 to GND. Pins1/2 are internally common; pins3/4 are internally common. Leave duplicate pins2/4 externally unconnected and insulated. Use the stock actuator directly. Preserve the existing MCU pull-up and active-low input assignment; no new firmware."
+    },
+    "C_SENSE": {
+      "part": "KEMET C315C104K5R5TA, 100 nF 50 V +/-10%, X7R radial",
+      "source": "https://search.kemet.com/component-documentation/download/specsheet/C315C104K5R5TA",
+      "source_revision": "Manufacturer individual part sheet, generated11/05/2026; dimensions/specifications p1; simulations are typical and are not bounds",
+      "body_max_mm": [
+        3.81,
+        2.54,
+        3.14
+      ],
+      "lead_pitch_mm": [
+        1.76,
+        3.32
+      ],
+      "loaded_envelope_mm": [
+        12,
+        8.5,
+        3.5
+      ],
+      "basis": "Source body/lead limits and retained PDF hash. The selected formed/sleeved horizontal assembly spans12x8.5x3.5mm on the BlackPill sense bridge; this is an incoming/final gauge target, not a supplied bound or measurement. No guaranteed settling/reset time or mass bound is inferred.",
+      "source_sha256": "3532a937a01c65f20f1a722a547962c9ceaf2ba4ffef1d2284be5bf380a516a5",
+      "lead_diameter_mm": [
+        0.485,
+        0.61
+      ],
+      "lead_length_min_mm": 7
+    }
+  },
+  "nets": {
+    "CONTACT_P": [
+      "CONTACT_P.tail",
+      "F1.1"
+    ],
+    "FUSED_CELL": [
+      "F1.2",
+      "S1.1"
+    ],
+    "A": [
+      "S1.2",
+      "LATCH.VIN"
+    ],
+    "A_DRAIN": [
+      "S1.3",
+      "R_A.1"
+    ],
+    "B": [
+      "LATCH.VOUT",
+      "BOOST.X2.2",
+      "R_B.1",
+      "R_SENSE_TOP.1"
+    ],
+    "BOOST_OUT": [
+      "BOOST.X1.2",
+      "S1.4",
+      "R_BOOST.1"
+    ],
+    "LOAD_5V": [
+      "S1.5",
+      "R_LOAD.1",
+      "SPARKLE.X7.PWR"
+    ],
+    "OUTPUT_OFF": [
+      "S1.6"
+    ],
+    "LATCH_OFF": [
+      "BOOST.R20.2",
+      "LATCH.OFF",
+      "R_OFF.1"
+    ],
+    "START": [
+      "LATCH.A",
+      "START.1"
+    ],
+    "SENSE": [
+      "R_SENSE_TOP.2",
+      "R_SENSE_BOTTOM.1",
+      "BLACKPILL.PA4",
+      "C_SENSE.1"
+    ],
+    "LED_DISTRIBUTION": [
+      "SPARKLE.JP1.9",
+      "F_FIB.1",
+      "F_RING1.1",
+      "F_RING2.1",
+      "F_RING3.1"
+    ],
+    "FIB_5V": [
+      "F_FIB.2",
+      "FIBONACCI.5V",
+      "C_OUT.P",
+      "R_OUT.1"
+    ],
+    "RING1_5V": [
+      "F_RING1.2",
+      "RING1.5V"
+    ],
+    "RING2_5V": [
+      "F_RING2.2",
+      "RING2.5V"
+    ],
+    "RING3_5V": [
+      "F_RING3.2",
+      "RING3.5V"
+    ],
+    "AUX_SOURCE": [
+      "SPARKLE.JP3.2",
+      "F_AUX.1"
+    ],
+    "AUX_3V3": [
+      "F_AUX.2",
+      "BLACKPILL.3V3",
+      "GPS.3V",
+      "IMU.VIN",
+      "RADIO.VIN"
+    ],
+    "LED_DATA1": [
+      "SPARKLE.JP1.8",
+      "FIBONACCI.DIN"
+    ],
+    "LED_DATA2": [
+      "SPARKLE.JP1.5",
+      "RING1.DIN"
+    ],
+    "LED_DATA3": [
+      "SPARKLE.JP1.2",
+      "RING2.DIN"
+    ],
+    "LED_DATA4": [
+      "SPARKLE.JP3.6",
+      "RING3.DIN"
+    ],
+    "GND": [
+      "CONTACT_N.tail",
+      "LATCH.GND",
+      "BOOST.X2.1",
+      "C_OUT.N",
+      "R_A.2",
+      "R_B.2",
+      "R_OUT.2",
+      "R_OFF.2",
+      "START.3",
+      "R_SENSE_BOTTOM.2",
+      "SPARKLE.X7.GND",
+      "BLACKPILL.GND",
+      "GPS.GND",
+      "IMU.GND",
+      "RADIO.GND",
+      "FIBONACCI.GND",
+      "RING1.GND",
+      "RING2.GND",
+      "RING3.GND",
+      "R_BOOST.2",
+      "R_LOAD.2",
+      "C_SENSE.2",
+      "MODE.3",
+      "ACTION.3",
+      "BOOST.X1.1"
+    ],
+    "SPARKLE_TX": [
+      "SPARKLE.JP3.3",
+      "BLACKPILL.PA10"
+    ],
+    "SPARKLE_RX": [
+      "SPARKLE.JP3.4",
+      "BLACKPILL.PB6"
+    ],
+    "GPS_TX": [
+      "GPS.TX",
+      "BLACKPILL.PA3"
+    ],
+    "GPS_RX": [
+      "GPS.RX",
+      "BLACKPILL.PA2"
+    ],
+    "SPI_CLOCK": [
+      "BLACKPILL.PA5",
+      "IMU.SCL",
+      "RADIO.SCK"
+    ],
+    "SPI_MOSI": [
+      "BLACKPILL.PA7",
+      "IMU.SDA",
+      "RADIO.MOSI"
+    ],
+    "SPI_MISO": [
+      "BLACKPILL.PA6",
+      "IMU.SDOAG",
+      "IMU.SDOM",
+      "RADIO.MISO"
+    ],
+    "IMU_AG_SELECT": [
+      "BLACKPILL.PA8",
+      "IMU.CSAG"
+    ],
+    "IMU_M_SELECT": [
+      "BLACKPILL.PA9",
+      "IMU.CSM"
+    ],
+    "RADIO_SELECT": [
+      "BLACKPILL.PB0",
+      "RADIO.CS"
+    ],
+    "RADIO_INTERRUPT": [
+      "BLACKPILL.PB5",
+      "RADIO.G0"
+    ],
+    "RADIO_RESET": [
+      "BLACKPILL.PB12",
+      "RADIO.RST"
+    ],
+    "IMU_AG_READY": [
+      "BLACKPILL.PB10",
+      "IMU.INT1"
+    ],
+    "IMU_M_READY": [
+      "BLACKPILL.PB1",
+      "IMU.DRDY"
+    ],
+    "GPS_PPS": [
+      "BLACKPILL.PA0",
+      "GPS.PPS"
+    ],
+    "GPS_ENABLE": [
+      "BLACKPILL.PB7",
+      "GPS.EN"
+    ],
+    "MODE": [
+      "BLACKPILL.PB13",
+      "MODE.1"
+    ],
+    "ACTION": [
+      "BLACKPILL.PB14",
+      "ACTION.1"
+    ]
+  },
+  "switch_positions": {
+    "OFF": [
+      [
+        "S1.2",
+        "S1.3"
+      ],
+      [
+        "S1.5",
+        "S1.6"
+      ]
+    ],
+    "ON": [
+      [
+        "S1.2",
+        "S1.1"
+      ],
+      [
+        "S1.5",
+        "S1.4"
+      ]
+    ]
+  },
+  "module_rework": {
+    "BOOST.remove": [
+      "R20"
+    ],
+    "BOOST.tap": "R20.2",
+    "BOOST.leave_open": [
+      "JP1.1",
+      "JP1.2",
+      "JP1.3",
+      "JP1.4",
+      "JP1.5",
+      "JP1.6"
+    ],
+    "LATCH.leave_open": [
+      "B",
+      "ON",
+      "CTRL"
+    ],
+    "BOOST.do_not_install": [
+      "B1",
+      "CN1"
+    ],
+    "SPARKLE.usb_pd_v": 5,
+    "BOOST.nominal_output_v": 5.2,
+    "BLACKPILL.do_not_install": [
+      "U3",
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "BOOST.install": {
+      "X1": "Pololu2444",
+      "X2": "Pololu2444"
+    },
+    "SPARKLE.remove": [
+      "X7"
+    ],
+    "SPARKLE.retain": [
+      "D2",
+      "PTC1"
+    ],
+    "SPARKLE.leave_open": [
+      "X7.GNDBREAK"
+    ],
+    "RADIO.do_not_install": [
+      "JP1",
+      "JP2",
+      "JP3",
+      "X1"
+    ],
+    "RADIO.leave_open": [
+      "JP1.1",
+      "JP1.2",
+      "JP1.3",
+      "JP1.4",
+      "JP1.5",
+      "JP3.3"
+    ]
+  },
+  "source_record": {
+    "path": "sources/powerboost-1000-basic/extracted-connectivity.json",
+    "sha256": "cc5e696ac1de8cd90d187bff2f5a0d75d1d8ee12ab3e9e113eb375c7eeb23af3",
+    "upstream_commit": "493d06d70537ce418355b395bb251a661d683150"
+  },
+  "wiring": {
+    "main": "M22759/16-18-2 and M22759/16-18-0,18AWG, fixed soldered and supported screw-clamp connections. No lead is disconnected during cell service.",
+    "branches": "M22759/16-22-2 and M22759/16-22-0, 22 AWG; Fibonacci2A, each ring1A, auxiliary0.5A branch fuses",
+    "sense": "100 kohm/100 kohm divider from B to PA4; no raw-cell reporting bypass",
+    "source": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf",
+    "routing": "Place F1 at positive contact; insulate the unfused tail and both contact backs. Route paired supply/return; protect every fuse and solder joint. No raw-cell plug or external battery entry. Use18AWG from the negative star toBOOST.X2.1; return only the latch control current throughLATCH.GND. Use a paired22AWG output feed fromBOOST.X1.2/X1.1 throughS1 poleB and toSparkleX7.PWR/GND. BOOST input current does not pass through the latch ground trace.",
+    "signals": "M22759/18-26-* colour-coded 26 AWG thin-wall ETFE; fixed soldered signal/control leads, insulated and strain-relieved",
+    "stock_limits": {
+      "source_revision": "Thermax/Amphenol M22759 catalog, header 2012-09-07, printed pages41-42",
+      "temperature_basis": "Resistance maximum at20C, converted from the unrounded ohm/1000ft source column using exact304.8m/1000ft. The metric column is rounded. Listed masses are nominal, not maximum. Select tin-plated copper, ETFE stock to the stated slash-sheet.",
+      "main": {
+        "stock": "M22759/16-18",
+        "maximum_od_mm": 1.8542,
+        "nominal_mass_g_m": 11.4,
+        "maximum_resistance_ohm_m_at_20c": 0.02043963254593176,
+        "maximum_resistance_ohm_1000ft_at_20c": 6.23
+      },
+      "branches": {
+        "stock": "M22759/16-22",
+        "maximum_od_mm": 1.3716,
+        "nominal_mass_g_m": 5.24,
+        "maximum_resistance_ohm_m_at_20c": 0.053149606299212594,
+        "maximum_resistance_ohm_1000ft_at_20c": 16.2
+      },
+      "signals": {
+        "stock": "M22759/18-26",
+        "maximum_od_mm": 0.8636,
+        "nominal_mass_g_m": 2.26,
+        "maximum_resistance_ohm_m_at_20c": 0.13549868766404197,
+        "maximum_resistance_ohm_1000ft_at_20c": 41.3
+      }
+    }
+  },
+  "operating_plan": {
+    "cell_v": [
+      3.2,
+      4.2
+    ],
+    "cell_v_kind": "Bench sweep including depletion. The nominal LBI threshold is about3.2V at the PowerBoost input, so cell voltage at shutdown is higher by the loaded path drop. This is not a guaranteed cell operating range or trip envelope.",
+    "brightness": 0.02,
+    "non_led_budget_w": 2.0,
+    "efficiency_estimate": 0.85,
+    "path_estimate_ohm": 0.12,
+    "battery_current_review_a": 3.0,
+    "ambient_c": [
+      10,
+      30
+    ],
+    "basis": "Initial bench configuration only. Verify 2% electrical brightness and the 2 W non-LED allowance before operation. No firmware ceiling or safe current limit is claimed; higher brightness needs another load review. Enclosed temperatures and current transients are unmeasured.",
+    "model_record": "site/electrical-inputs.json#defaults"
+  },
+  "service": {
+    "off_dwell_s": null,
+    "instruction": "Support the assembly, put physical S1 fully OFF and disconnect USB, SWD and every other live interface before opening. The reviewed topology isolates the positive cell contact from all downstream stored-charge rails; it does not require a timed electronic reset for mechanical removal. Physical switch operation/insulation and all decay/reset times remain unmeasured. Insert one protected XTAR cell to the polarity marks, latch the door, select ON and press the on-only START button. A rapid swap may retain electronic state; do not promise a full reset or navigation/radio readiness from light output.",
+    "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant.",
+    "removal_basis": "Ordinary OFF topology only, with no external power. All downstream module terminals are treated as conducting in the digital contact-isolation check. A failed switch, damaged insulation or an untested assembly is not physically qualified by this graph."
+  },
+  "open_design_items": [],
+  "physical_qualification": {
+    "startup_and_pulses": {
+      "status": "unmeasured",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on the narrow assembly across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current. Check Mode/Action contact behavior and measure the filtered PA4 startup/settling and unpowered-pin current. No ADC calibration or existing software timing is established by the nominal RC estimate.",
+      "results": []
+    },
+    "latch_and_rebound": {
+      "status": "unmeasured",
+      "procedure": "Measure BOOST.R20.2 and LATCH.OFF amplitude/duration. Low battery must switch B off; voltage rebound must not restart it. Repeat with bounce, slow depletion and a fast supply drop. Record power-loss defaults separately.",
+      "results": []
+    },
+    "off_and_replacement": {
+      "status": "unmeasured",
+      "procedure": "With S1 OFF and USB absent, verify both switch poles disconnect, all load/control rails decay and START has no effect. Measure decay before accepting any service dwell; repeat warm/rapid replacement. Repeat with F_FIB open: R_BOOST drains the isolated boost output, R_LOAD drains LOAD_5V, and R_OUT drains the isolated Fibonacci bulk capacitor.",
+      "results": []
+    },
+    "short_and_reversal": {
+      "status": "unmeasured",
+      "procedure": "Use controlled laboratory fault testing to verify reversal, overload/short interruption, cell PCM recovery and fuse/harness/contact withstand. Do not deliberately short an unprotected loose cell.",
+      "results": []
+    },
+    "thermal": {
+      "status": "unmeasured",
+      "procedure": "Measure cell, boost, latch, contacts, wires and front/rear touch temperatures in the closed narrow enclosure at the stated ambient/load and wearing conditions, including warm recovery.",
+      "results": []
+    },
+    "runtime": {
+      "status": "unmeasured",
+      "procedure": "Measure usable energy and runtime at the named rainbow settings; compare with the model. No four-hour guarantee.",
+      "results": []
+    },
+    "fit_and_worn_mass": {
+      "status": "unmeasured",
+      "procedure": "Measure cell/holder contacts, retention/access and complete installed cell plus necklace mass. Digital geometry and estimated mass do not establish physical acceptance.",
+      "results": []
+    }
+  },
+  "historical_recovery": "electrical-review.md and the original electrical-*.json studies remain rejected custom-circuit evidence. Their counters/findings are not reset. They do not describe this module prototype.",
+  "signal_basis": {
+    "allocation": "design-v2.md, STM32 pin allocation; all3.3V logic. This is a wiring plan, not delivered new firmware or working navigation.",
+    "sources": [
+      "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+      "https://learn.adafruit.com/adafruit-lsm9ds1-accelerometer-plus-gyro-plus-magnetometer-9-dof-breakout/pinouts",
+      "https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/pinouts",
+      "https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts"
+    ],
+    "unused": "No GPS backup coin cell. No external sensor power. BlackPill5V and USB remain disconnected. Program BlackPill through SWD with target power supplied by Sparkle; the probe does not supply target voltage.",
+    "gps_enable": "GPS EN is a power-disable input: factory100kohm pull-down enables normal operation; drive PB7 high to disable. Preserve the pull-down; no new pull-up or firmware is added.",
+    "buttons": "Preserve design-v2 ModePB13 and ActionPB14: active-low momentary contacts to commonGND, MCU pull-ups. Three direct PTS645SL70-2 actuators including START; no added firmware.",
+    "sense_filter": "Retain100nF from PA4/divider midpoint to GND beside BlackPill, in addition to two100kohm resistors. Use a fixed insulated axial/radial assembly on a printed carrier; no custom PCB is implied. Assembly fit/settling/injection remain unmeasured."
+  },
+  "supply_allocation": {
+    "basis": "Engineering allocations for bench verification, not guaranteed component maxima or measurements. Verify concurrent radio/PWM peaks and average current before accepting the prototype operating plan.",
+    "external_3v3_peak_a": {
+      "BLACKPILL": 0.1,
+      "GPS": 0.05,
+      "IMU": 0.02,
+      "RADIO": 0.15
+    },
+    "external_3v3_published_peak_a": 0.5,
+    "source": "https://learn.adafruit.com/adafruit-sparkle-motion/pinouts",
+    "non_led_average_budget_w": 2.0,
+    "non_led_peak_review_w": 3.0,
+    "duty_cycle": "Review the all-peripheral peak concurrently; no radio duty-cycle reduction is used to approve the3.3V allocation. The2W average and3W peak are test targets, not a measured waveform."
+  },
+  "fuse_basis": {
+    "source_revision": "Littelfuse251 datasheet,GK18-Aug-2026,pp1-3",
+    "continuous_derating": 0.75,
+    "basis": "Engineering selection using the adopted approximate20mA/channel and1mA idle NeoPixel model. A saturated rainbow has at most two active channels per pixel. At2% brightness the conservative coherent-PWM heating estimate is about1.31Arms for256 pixels, above the old1A fuse continuous allowance. Select2A Fibonacci and retain1A ring fuses. These approximate LED coefficients are not guaranteed silicon peaks; verify the real waveform and temperature before physical acceptance. Use axial251 fuses to avoid a custom SMD fuse carrier. Fuse nominal cold resistance and nominal melting I2t are not guaranteed fault or withstand bounds."
+  }
+}

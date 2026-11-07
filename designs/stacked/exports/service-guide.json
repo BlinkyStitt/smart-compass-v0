@@ -1,0 +1,164 @@
+{
+  "scope": "Actual narrow CAD service poses; illustrations do not prove continuous clearance or physical operation",
+  "frames": [
+    {
+      "index": 1,
+      "title": "Support and OFF",
+      "caption": "Support the pendant on a padded surface. Put S1 fully OFF. Disconnect all external power.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "title": "Open captive door",
+      "caption": "Release the door catch and swing to its stop. The independent keeper still retains the cell.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "title": "Release keeper",
+      "caption": "Hold the cell. Rotate the keeper. Pull the ribbon; do not pull any wire.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "title": "Remove deliberately",
+      "caption": "Shift toward the negative contact, then withdraw through the rear opening. Inspect wrapper and end insulator.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        -1.1200000000000045,
+        0,
+        -40.0
+      ]
+    },
+    {
+      "index": 5,
+      "title": "Insert one compatible cell",
+      "caption": "Use one protected XTAR21700 6000mAh button-top. Follow the permanent + and - marks. Keep the ribbon clear.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "title": "Latch and START",
+      "caption": "Close the keeper and door. Check full catch engagement. Select ON and press START. Light does not prove navigation readiness.",
+      "geometry_parts": [
+        "BatteryCell",
+        "BatteryContactN",
+        "BatteryContactP",
+        "BatteryCradle",
+        "BatteryDoor",
+        "BatteryKeeper",
+        "PowerDisconnect",
+        "RearCover",
+        "StartBezel",
+        "StartSwitch",
+        "SwitchGuard"
+      ],
+      "cell_translation_mm": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "service_clearance": {
+    "minimum_mm": [
+      -100.0000002,
+      -100.0000002,
+      -54.16851304092563
+    ],
+    "maximum_mm": [
+      100.0000002,
+      104.00414038271342,
+      60.6000001
+    ],
+    "width_height_depth_mm": [
+      200.0000004,
+      204.00414058271343,
+      114.76851314092563
+    ],
+    "cell_withdrawal_mm": 40.0,
+    "door_open_deg": 120.0,
+    "basis": "Conservative continuous nominal CAD bounding box: closed assembly, released door and keeper sweeps, full cell withdrawal and specified finger approaches. This is not a supplied tolerance or full human-hand bound; physical access remains unmeasured."
+  },
+  "physical_acceptance": "unmeasured"
+}

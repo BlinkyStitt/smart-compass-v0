@@ -39,7 +39,8 @@ def check(build=False):
     godot('--editor', '--import', '--quit', headless=True)
     extra = ['--build-validation'] if build else []
     godot('--', '--check', *extra, headless=True, marker='DEMO SCENE PASS')
-    with tempfile.TemporaryDirectory(prefix='amulet-optics-', dir=ROOT.parent) as tmp:
+    (ROOT / ".build").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='amulet-optics-', dir=ROOT / ".build") as tmp:
         reference = Path(tmp)/'reference.json'
         optics = json.loads((ROOT/cad.EXPORTS/'scene.json').read_text())['optics']
         reference.write_text(json.dumps(cases(optics)))
@@ -49,7 +50,8 @@ def check(build=False):
 def capture():
     check(build=True)
     output = ROOT/cad.EXPORTS
-    with tempfile.TemporaryDirectory(prefix='amulet-capture-', dir=ROOT.parent) as tmp:
+    (ROOT / ".build").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='amulet-capture-', dir=ROOT / ".build") as tmp:
         frames = Path(tmp)
         godot('--', '--capture', str(frames), '--build-validation', marker='DEMO CAPTURE PASS')
         shutil.copyfile(frames/'night-mannequin.png',output/'night-mannequin.png')
@@ -86,16 +88,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command',choices=('launch','check','capture','benchmark'))
     args = parser.parse_args()
-    if args.command=='capture':
-        capture()
-    elif args.command=='check':
-        check()
-    else:
-        cad.check_freshness(cad.Snapshot(ROOT))
-        if args.command=='benchmark':
-            godot('--','--benchmark',marker='DEMO BENCHMARK')
-        else:
-            subprocess.run([shutil.which('godot') or 'godot','--path',str(ROOT/'demo')],check=True)
+    if args.command in ('capture','benchmark'):
+        raise RuntimeError('The selected narrow pipeline owns media. Run `just cad` for atomic checked capture; no narrow benchmark is implemented.')
+    command='preview-check' if args.command=='check' else 'preview'
+    subprocess.run([sys.executable,str(ROOT/'designs/stacked/run.py'),command],cwd=ROOT,check=True)
+
 
 
 if __name__=='__main__':

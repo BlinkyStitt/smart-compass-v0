@@ -1,0 +1,37 @@
+{
+  "revision": "narrow-print-layout-1",
+  "scope": "Narrow reference print poses and removable structural supports. Physical printing, removal, fit and strength remain unmeasured.",
+  "orientations": {
+    "BatteryContactNFront": {"axis": [0, 1, 0], "angle_deg": -90},
+    "BatteryDoor": {"axis": [1, 0, 0], "angle_deg": 90},
+    "BlackPillDrainBridge": {"axis": [1, 0, 0], "angle_deg": 180},
+    "BlackPillSenseBridge": {"axis": [1, 0, 0], "angle_deg": 180},
+    "BranchFuseCarrier": {"axis": [1, 0, 0], "angle_deg": 180},
+    "SwitchGuard": {"axis": [1, 0, 0], "angle_deg": 180}
+  },
+  "temporary_support_parts": [
+    "BatteryCradle",
+    "BlackPillCarrier",
+    "ElectronicsShell",
+    "HarnessSpliceCarrierAUX_3V3",
+    "HarnessSpliceCarrierGND",
+    "HarnessSpliceCarrierLED_DISTRIBUTION",
+    "RadioCarrier"
+  ],
+  "temporary_support_settings": {
+    "support_material": "1",
+    "support_material_auto": "1",
+    "support_material_buildplate_only": "1",
+    "support_material_style": "grid",
+    "dont_support_bridges": "0"
+  },
+  "source": {
+    "url": "https://help.prusa3d.com/article/support-material_1698",
+    "title": "PrusaSlicer 2.9 support material",
+    "accessed_utc_date": "2026-11-07",
+    "basis": "Per-object support settings, build-plate-only supports and bridge support. These settings are engineering print targets, not a physical strength or removal guarantee. Actual delivered projects must pass slicing, settings, source-mesh and bed checks."
+  },
+  "removal": "Remove all temporary supports and brims before assembly or weighing. Inspect bearing faces, bores, contact guides and every wire/lacing channel. Do not cut retaining lips, thin walls or integrated fixtures. Stop if features are incomplete or damaged. Qualify removal and fit on the samples before ordering full parts.",
+  "optical_rings": "Keep both optical rings and their samples upright and support-free, with the unchanged shared optical-material profiles.",
+  "physical_acceptance": "unmeasured"
+}

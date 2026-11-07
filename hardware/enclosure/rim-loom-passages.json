@@ -1,0 +1,43 @@
+{
+  "revision": "narrow-rim-loom-passages-1",
+  "frame": "Narrow source assembly XYZ,mm",
+  "openings": [
+    {
+      "id": "RimLeftLoomPassage",
+      "bounds_mm": [
+        [
+          -36,
+          -12
+        ],
+        [
+          78,
+          98
+        ],
+        [
+          1.9,
+          8.5
+        ]
+      ]
+    },
+    {
+      "id": "RimRightLoomPassage",
+      "bounds_mm": [
+        [
+          12,
+          36
+        ],
+        [
+          78,
+          98
+        ],
+        [
+          1.9,
+          8.5
+        ]
+      ]
+    }
+  ],
+  "basis": "Explicit lower-carrier cable passages connect the electronics bay to the fixed inner-ring lead exits. Below theZ14optical band; clear of both suspension lands and six rear fastener posts. These are specified source-case dimensions, not supplied print tolerances.",
+  "seal": "Fit and inspect removable cable seals after the fixed loom. Retain the joint_seals allowance; no dust/water or physical sealing acceptance is claimed.",
+  "physical_acceptance": "unmeasured"
+}

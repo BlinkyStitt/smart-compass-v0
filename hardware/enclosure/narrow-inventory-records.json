@@ -1,0 +1,237 @@
+{
+  "scope": "narrow only; source-backed legacy allowances retained; new estimates explicitly labelled",
+  "physical_acceptance": "unmeasured",
+  "modules": {
+    "fibonacci": {
+      "label": "166mm Fibonacci256 v0.1 board and256LEDs",
+      "nominal_g": 82,
+      "range_g": [
+        65,
+        105
+      ],
+      "cad_parts": [
+        "FibonacciPCB",
+        "CircleLEDs"
+      ],
+      "basis": "Existing component-inventory.json#circle allowance"
+    },
+    "sparkle": {
+      "label": "Adafruit6100 SparkleMotion RevD, jack removed",
+      "nominal_g": 18,
+      "range_g": [
+        12,
+        25
+      ],
+      "cad_parts": [
+        "SparklePCB",
+        "SparkleComponents",
+        "SparkleUnderboard"
+      ],
+      "basis": "Existing component-inventory.json#sparkle allowance; removed jack mass not subtracted"
+    },
+    "blackpill": {
+      "label": "WeAct BlackPill V3.1, no P1/P2/P3/U3",
+      "nominal_g": 7,
+      "range_g": [
+        4,
+        10
+      ],
+      "cad_parts": [
+        "BlackPillPCB",
+        "BlackPillLoadedReservation",
+        "BlackPillUnderboardReservation"
+      ],
+      "basis": "Existing component-inventory.json#blackpill allowance; no subtraction for removed parts"
+    },
+    "gps": {
+      "label": "Adafruit3133 Ultimate GPS FeatherWing",
+      "nominal_g": 8.8,
+      "range_g": [
+        8,
+        10
+      ],
+      "cad_parts": [
+        "GPSPCB",
+        "GPSComponents"
+      ],
+      "basis": "Existing component-inventory.json#gps allowance"
+    },
+    "imu": {
+      "label": "Adafruit3387 LSM9DS1",
+      "nominal_g": 2.5,
+      "range_g": [
+        2,
+        4
+      ],
+      "cad_parts": [
+        "IMUPCB",
+        "IMUComponents"
+      ],
+      "basis": "Existing component-inventory.json#imu allowance"
+    },
+    "radio": {
+      "label": "Adafruit3072 RFM95W breakout, no connectors",
+      "nominal_g": 3.1,
+      "range_g": [
+        2.8,
+        4.5
+      ],
+      "cad_parts": [
+        "RadioPCB",
+        "RadioLoadedReservation",
+        "RadioUnderboardReservation"
+      ],
+      "basis": "Existing component-inventory.json#radio allowance"
+    },
+    "boost": {
+      "label": "Adafruit2030 PowerBoost1000Basic, no JST/USB-A/R20",
+      "nominal_g": 5,
+      "range_g": [
+        3.2,
+        8
+      ],
+      "cad_parts": [
+        "BoostPCB",
+        "BoostComponents"
+      ],
+      "basis": "Engineering allowance for selected replacement board; supplied mass unmeasured"
+    },
+    "latch": {
+      "label": "Pololu2808 psw03a",
+      "nominal_g": 2,
+      "range_g": [
+        1,
+        6
+      ],
+      "cad_parts": [
+        "LatchModule"
+      ],
+      "basis": "Engineering allowance; supplied mass unmeasured"
+    },
+    "cell": {
+      "label": "One protected XTAR21700 6000mAh button-top",
+      "nominal_g": 73,
+      "range_g": [
+        65,
+        76
+      ],
+      "cad_parts": [
+        "BatteryCell"
+      ],
+      "basis": "XTAR manufacturer net weight <=76g; lower/nominal estimates, not measurements"
+    },
+    "capacitor": {
+      "label": "Selected1000uF output capacitor",
+      "nominal_g": 2,
+      "range_g": [
+        1,
+        4
+      ],
+      "cad_parts": [
+        "BulkCapacitor",
+        "CapacitorPositiveLeadVariation",
+        "CapacitorNegativeLeadVariation",
+        "CapacitorVentClearance"
+      ],
+      "basis": "Existing component-inventory.json#bulk_cap allowance; source includes full leads"
+    },
+    "disconnect": {
+      "label": "C&K7201SYZQE DPDT",
+      "nominal_g": 8,
+      "range_g": [
+        4,
+        15
+      ],
+      "cad_parts": [
+        "PowerDisconnect",
+        "PowerDisconnectNut",
+        "PowerDisconnectLockwasher"
+      ],
+      "basis": "Engineering allowance for selected replacement switch, nut/lockwasher included"
+    },
+    "antenna": {
+      "label": "Selected78mm insulated radio wire antenna",
+      "nominal_g": 0.25,
+      "range_g": [
+        0.15,
+        0.6
+      ],
+      "cad_parts": [
+        "RadioAntenna"
+      ],
+      "basis": "Existing component-inventory.json#rf_antenna allowance"
+    },
+    "contact_p": {
+      "label": "Mill-Max0854 wire-mount contact positive",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "BatteryContactP"
+      ],
+      "basis": "Engineering allowance; supplied contact mass unmeasured"
+    },
+    "contact_n": {
+      "label": "Mill-Max0854 wire-mount contact negative",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "BatteryContactN"
+      ],
+      "basis": "Engineering allowance; supplied contact mass unmeasured"
+    },
+    "terminal_latch_vin": {
+      "label": "CamdenBoss CTBP2054/4",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "LatchTerminalVIN"
+      ],
+      "basis": "Engineering allowance per complete four-position block"
+    },
+    "terminal_latch_vout": {
+      "label": "CamdenBoss CTBP2054/4",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "LatchTerminalVOUT"
+      ],
+      "basis": "Engineering allowance per complete four-position block"
+    },
+    "terminal_boost_x1": {
+      "label": "Pololu2444 two-pin3.5mm side-entry screw terminal block",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "BoostTerminalX1"
+      ],
+      "basis": "Engineering allowance per complete clamp block"
+    },
+    "terminal_boost_x2": {
+      "label": "Pololu2444 two-pin3.5mm side-entry screw terminal block",
+      "nominal_g": 1.5,
+      "range_g": [
+        0.5,
+        3
+      ],
+      "cad_parts": [
+        "BoostTerminalX2"
+      ],
+      "basis": "Engineering allowance per complete clamp block"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "file": "wayne-5038-3_8.html",
+      "bytes": 49515,
+      "sha256": "7481703e87311ff490f0760a8e836c0545af41485a157cad8456feaf812dc861",
+      "source": "https://www.waynemills.com/item/5038-MIL-DTL-5038K-TYPE-III-CLASS-1A-0.375-inch-31",
+      "retrieved": "2026-11-05",
+      "revision": "Manufacturer product5038,0.375in TypeIII Class1A; no numberedpage revision"
+    },
+    {
+      "file": "MIL-DTL-5038K-2016.pdf",
+      "bytes": 1153727,
+      "sha256": "2cfd0f6c3024916fbd30c738ab813a3ca3e7a3d2bc23db7740af63f841281007",
+      "source": "https://acw1.com/wp-content/uploads/2024/08/ACW-MIL-DTL-5038K.pdf",
+      "source_kind": "Manufacturer-hosted reproduction of MIL-DTL-5038K,22June2016",
+      "reviewed": "2026-11-05"
+    },
+    {
+      "file": "Coats-Nylbond-102023.pdf",
+      "bytes": 297570,
+      "sha256": "210efea328025c5de39b3062b43156f98306faf101e944303f25c29a2b84cae2",
+      "source": "https://cdn.coats.com/wp-content/uploads/Nylbond-Product-Information-Sheet-102023.pdf",
+      "revision": "102023; printed copyright2023; p2 product range and limitations",
+      "reviewed": "2026-11-05",
+      "selected": "S663040,Ticket40,Tex70,nylon6.6;black",
+      "conditions": "Published strength4700cN is an average, not a seam or retention guarantee. Manufacturer states data are indicative current averages. Inspect and physically qualify the assembled seams."
+    }
+  ],
+  "physical_acceptance": "unmeasured"
+}

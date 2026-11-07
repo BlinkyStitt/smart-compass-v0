@@ -9,10 +9,61 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT / "hardware/enclosure"))
 import antenna
+import latch_mount
+import imu_mount
+import boost_mount
+import capacitor_mount
+import gps_mount
+import sparkle_mount
+import blackpill_mount
+import radio_mount
+
+
+def electronics_census(p):
+    names=[entry.get('name') for entry in p['electronics']]
+    expected={'SparkleMotion','BlackPill','GPS','IMU','Radio','Boost5V','PowerLatch','BulkCapacitor'}
+    if len(names)!=len(expected) or set(names)!=expected:
+        raise ValueError('Use the complete selected source-module set; BatterySense/pouch/generic shelves are obsolete')
+
+
+def reject_legacy_cell_parameters(p):
+    if any(key.startswith('battery_') for key in p) or {'runtime_hours','example_total_current_a','example_output_voltage','assumed_efficiency'}.intersection(p):
+        raise ValueError('Use the shared selected cell; remove legacy pack/runtime fields')
 
 
 def parameters():
     p = json.loads((HERE / "parameters.json").read_text())
+    reject_legacy_cell_parameters(p)
+    electronics_census(p)
+    for entry in p['electronics']:
+        if entry['name']=='PowerLatch':
+            if set(entry)!={'name','centre','source_fixture'} or entry['source_fixture']!='latch':
+                raise ValueError('Latch size/Z are now owned by the source fixture; remove obsolete fields and regenerate')
+            entry.update(latch_mount.envelope())
+        if entry['name']=='IMU':
+            if set(entry)!={'name','centre','source_fixture','pcb_bottom_z_mm','rotation_deg'} or entry['source_fixture']!='imu':
+                raise ValueError('IMU size/Z are source-fixture derived; remove obsolete fields and regenerate')
+            entry.update(imu_mount.envelope(entry['pcb_bottom_z_mm'],entry['rotation_deg']))
+        if entry['name']=='Boost5V':
+            if set(entry)!={'name','centre','source_fixture','pcb_bottom_z_mm','rotation_deg'} or entry['source_fixture']!='boost':
+                raise ValueError('PowerBoost size/Z are source-fixture derived; remove obsolete fields and regenerate')
+            entry.update(boost_mount.envelope(entry['pcb_bottom_z_mm'],entry['rotation_deg']))
+        if entry['name']=='BulkCapacitor':
+            if set(entry)!={'name','centre','source_fixture'} or entry['source_fixture']!='capacitor':
+                raise ValueError('Capacitor size/Z are source-holder derived; remove obsolete fields and regenerate')
+            entry.update(capacitor_mount.envelope('narrow'))
+        if entry['name'] in ('GPS','SparkleMotion','BlackPill','Radio'):
+            expected={'GPS':'gps','SparkleMotion':'sparkle','BlackPill':'blackpill','Radio':'radio'}[entry['name']]
+            if set(entry)!={'name','mount_datum','source_fixture','pcb_bottom_z_mm','rotation_deg'} or entry['source_fixture']!=expected:
+                raise ValueError(entry['name']+' dimensions/centre/Z are source-fixture derived; use mount_datum and remove obsolete fields')
+            if expected in ('gps','blackpill','radio'):
+                factory={'gps':gps_mount,'blackpill':blackpill_mount,'radio':radio_mount}[expected]
+                entry.update(factory.envelope(entry['pcb_bottom_z_mm'],entry['rotation_deg']))
+                entry['centre']=list(entry['mount_datum'])
+            else:
+                bounds=sparkle_mount.envelope(entry['pcb_bottom_z_mm'],entry['rotation_deg'])
+                entry.update(size=[bounds[axis][1]-bounds[axis][0] for axis in ('x','y','z')],z=bounds['z'][0],
+                             centre=[entry['mount_datum'][i]+sum(bounds[axis])/2 for i,axis in enumerate(('x','y'))])
     acrylic = json.loads((ROOT / "hardware/enclosure/acrylic-optics.json").read_text())[
         "materials"
     ]
@@ -79,6 +130,8 @@ def dimensions(p):
 
 
 def validate(p):
+    reject_legacy_cell_parameters(p)
+    electronics_census(p)
     if not isinstance(p["side_rows"], int) or p["side_rows"] < 1:
         raise ValueError("Side band needs a positive whole number of strips")
     antenna.validate(p, compact=True)
@@ -122,6 +175,23 @@ def validate(p):
         if min(r, t) < 0 or r + t > 1:
             raise ValueError("Mirror reflection plus transmission must be at most one")
     for e in p["electronics"]:
+        if e['name']=='BulkCapacitor' and any(e.get(key)!=value for key,value in capacitor_mount.envelope('narrow').items()):
+            raise ValueError('Resolved capacitor dimensions differ from the source holder')
+        if e['name']=='PowerLatch' and any(e.get(key)!=value for key,value in latch_mount.envelope().items()):
+            raise ValueError('Resolved latch dimensions differ from the single source fixture')
+        for name,factory in (('IMU',imu_mount),('Boost5V',boost_mount)):
+            if e['name']==name and any(e.get(key)!=value for key,value in factory.envelope(e['pcb_bottom_z_mm'],e['rotation_deg']).items()):
+                raise ValueError(name+' resolved dimensions differ from the selected source fixture')
+        if e['name'] in ('GPS','BlackPill','Radio'):
+            factory={'GPS':gps_mount,'BlackPill':blackpill_mount,'Radio':radio_mount}[e['name']]
+            expected=factory.envelope(e['pcb_bottom_z_mm'],e['rotation_deg'])
+            if e['centre']!=e['mount_datum'] or any(e.get(key)!=value for key,value in expected.items()):
+                raise ValueError(e['name']+' resolved geometry differs from the source fixture')
+        if e['name']=='SparkleMotion':
+            bounds=sparkle_mount.envelope(e['pcb_bottom_z_mm'],e['rotation_deg'])
+            size=[bounds[axis][1]-bounds[axis][0] for axis in ('x','y','z')]
+            centre=[e['mount_datum'][i]+sum(bounds[axis])/2 for i,axis in enumerate(('x','y'))]
+            if e['size']!=size or e['centre']!=centre or e['z']!=bounds['z'][0]:raise ValueError('Sparkle resolved geometry differs from its source datum')
         x, y = e["centre"]
         w, l, h = e["size"]
         if (
@@ -130,7 +200,7 @@ def validate(p):
                 for sx in (-1, 1)
                 for sy in (-1, 1)
             )
-            > 84
+            > d["shell_inner_radius"]-.25
         ):
             raise ValueError(e["name"] + " exceeds the electronics bay")
         if e["z"] + h > p["circle_back_z"] - 2:

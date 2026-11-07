@@ -18,10 +18,11 @@ MASTER = CAD + '/smart-compass.FCStd'
 EXPORTS = CAD + '/exports'
 MANIFEST = CAD + '/exports-manifest.json'
 INPUTS = (
-    'justfile', 'design-v2.md',
+    'justfile', 'validation.just', 'design-v2.md',
     *(CAD + '/' + name for name in (
         'cad.py', 'build.py', 'check.py', 'geometry.py', 'baffle.py',
         'antenna.py', 'antenna_native.py', 'test_antenna.py', 'antenna-placement.md', 'README.md',
+        'native_publication.py', 'test_native_publication.py',
         'vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl',
         'vendor/evilgeniuslabs-fibonacci256/LICENSE.txt',
         'vendor/evilgeniuslabs-fibonacci256/README.txt',
@@ -207,7 +208,10 @@ def validate_inventory(snapshot):
     return expected
 
 
-def check_freshness(snapshot):
+def check_freshness(snapshot, *, publishing=False):
+    import native_publication
+    if not publishing and native_publication.pending(snapshot.root / '.build/wide-publication'):
+        raise CadError('Interrupted native publication; run just cad to restore the prior complete release')
     manifest = load_json(snapshot, MANIFEST)
     if not isinstance(manifest, dict) or manifest.get('format_version') != 1:
         raise CadError('Unsupported CAD freshness manifest')
@@ -289,14 +293,12 @@ def publish(root, staged, original, tools):
         # its inventory, do not delete old meshes; the final check rejects orphans.
         previous_meshes = set()
     ensure_unchanged(root, original)
-    # Replace each file atomically. Write the manifest last so an interrupted
-    # publication cannot pass the freshness check with mixed generations.
-    for path in sorted(exports | {MASTER, 'design-v2.md'}):
-        atomic_write(root / path, staged.read(path))
-    for path in sorted((previous_meshes | RETIRED_EXPORTS) - exports):
-        (root / path).unlink(missing_ok=True)
-    atomic_write(root / MANIFEST, (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode())
-    check_freshness(Snapshot(root))
+    import native_publication
+    files = {path: staged.read(path) for path in exports | {MASTER, 'design-v2.md'}}
+    files[MANIFEST] = (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode()
+    native_publication.publish(root, root / '.build/wide-publication', files,
+                               (previous_meshes | RETIRED_EXPORTS) - exports, MANIFEST,
+                               lambda: check_freshness(Snapshot(root), publishing=True))
 
 
 def rebuild(root):
@@ -305,7 +307,10 @@ def rebuild(root):
     godot = shutil.which('godot')
     if not Path(freecad).is_file() or not (ffmpeg and ffprobe and godot):
         raise CadError('Install the build tools: brew install just ffmpeg; brew install --cask freecad godot')
-    with build_lock(root), tempfile.TemporaryDirectory(prefix='smart-compass-cad-', dir=root.parent) as temporary:
+    (root / ".build").mkdir(exist_ok=True)
+    with build_lock(root), tempfile.TemporaryDirectory(prefix='smart-compass-cad-', dir=root / ".build") as temporary:
+        import native_publication
+        native_publication.recover(root, root / '.build/wide-publication')
         source = Snapshot(root)
         staged = Snapshot(Path(temporary))
         original = {}
@@ -351,11 +356,11 @@ def main():
     if args.staged and args.command != 'check':
         parser.error('--staged only applies to check')
     try:
-        if args.command == 'build':
-            rebuild(ROOT)
-        else:
-            check_freshness(Snapshot(ROOT, staged=args.staged))
-            print('CAD FRESHNESS PASS: ' + ('staged files' if args.staged else 'working files'))
+        # Narrow is the selected prototype. Preserve the old wide archive
+        # functions for archive integrity and their regression evidence.
+        command=[sys.executable,str(ROOT/'designs/stacked/run.py'),args.command]
+        if args.staged:command.append('--staged')
+        subprocess.run(command,cwd=ROOT,check=True)
     except (CadError, OSError, subprocess.CalledProcessError) as exc:
         print('CAD ERROR: ' + str(exc), file=sys.stderr)
         print('Save and close the model, then run `just cad`.', file=sys.stderr)

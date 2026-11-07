@@ -1,0 +1,26 @@
+[
+  {
+    "file": "panasonic-fr-a-2025.pdf",
+    "url": "https://industrial.panasonic.com/cdbs/www-data/pdf/RDF0000/ABA0000C1259.pdf",
+    "revision": "01-Sep-2025,FR-A pp1,4",
+    "basis": "EEUFR1A102,1000uF10V;D10+/-0.5,L16+/-1.5,pitch5+/-0.5,lead0.6+/-0.05mm;1.79Arms100kHz/+105C,28mohm max impedance100kHz/+20C; not broadband ESR.",
+    "bytes": 855742,
+    "sha256": "47cf18461482e03270f72e475f855080e11e2154e3f343f735e5cb0e61e27df7"
+  },
+  {
+    "file": "panasonic-safety-2025.pdf",
+    "url": "https://industrial.panasonic.com/cdbs/www-data/pdf/RDF0000/DMF0000COL69.pdf",
+    "revision": "01-Sep-2025,mounting conditions p5;legal p1 dated10-May-2024",
+    "basis": "D6.3..16mm needs >=2mm pressure-valve free space; isolate case; sleeve has no guaranteed insulation; do not compress body or stress leads; confirm actual assembly.",
+    "bytes": 500940,
+    "sha256": "2e7d642ee8c1728bbde3ad9182f079f84e70620ea6a2c1cd7b611770b98f4347"
+  },
+  {
+    "file": "rs-pro-770787.pdf",
+    "url": "https://docs.rs-online.com/7c9a/0900766b8150d8ad.pdf",
+    "revision": "RS Pro stock770-787,undated1-page sheet,retrieved5-Nov-2026",
+    "basis": "Plastic0.25mm nominal,457x305mm; no thickness tolerance or insulation certification. Publisher product page https://uk.rs-online.com/web/p/plastic-shims/0770787 identifies polyester. Gauge supplied stock.",
+    "sha256": "f537df569a389be7bdc669412c89fe85ba1491f49d9214e0cb86326d775b5967",
+    "bytes": 235732
+  }
+]

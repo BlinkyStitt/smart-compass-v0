@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "cell": {
+    "quantity": 1,
+    "source_record": "site/electrical-inputs.json#cell"
+  },
+  "contact": {
+    "part": "Mill-Max 0854-0-15-20-82-14-11-0",
+    "quantity": 2,
+    "full_stroke_mm": 2.286,
+    "source_length_tolerance_mm": 0.1524,
+    "unloaded_tip_gap_mm": [
+      73.8,
+      74.0
+    ],
+    "datum_basis": "Assembly acceptance settings: 73.9 +/-0.1 mm between unloaded tips and 1.82 +/-0.05 mm negative-plunger compression at its insulating stop. These are specified settings, not measured or guaranteed print dimensions. Adjust and lock carriers, verify with gauges, and do not assume equal spring compression. Replace the nominal 0.25 mm insulating shim washers to set the actual tip gap; finish/shim the negative insulating bearing face to its measured stop setting. The nominal CAD does not establish these achieved settings.",
+    "carrier_adjustment_mm": 0.5,
+    "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+    "drawing": {
+      "initial_tip_to_mount_mm": 8.6106,
+      "flange_thickness_mm": 0.762,
+      "flange_diameter_mm": 3.175,
+      "barrel_diameter_mm": 2.413,
+      "rear_diameter_mm": 2.2098,
+      "tip_diameter_mm": 1.27,
+      "total_height_mm": 15.2146,
+      "source_revision": "Mill-Max0854 drawing/specification,2-Feb-2024,pp1-3; length+/-0.006in,diameter+/-0.002in; stroke+/-0.005in",
+      "drawing_source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+      "cup_outer_diameter_mm": 2.54,
+      "cup_hole_diameter_mm": 1.7018,
+      "cup_length_mm": 4.572,
+      "cup_depth_mm": 2.8448,
+      "front_plate_bore_radius_mm": 1.375,
+      "back_plate_bore_radius_mm": 1.375
+    },
+    "carrier": "Two screwed insulating clamp plates capture the flange. Finish both bores to2.75+/-0.05mm bores and gauge source barrel clearances before assembly. Negative-stop bridge spans the longer selected barrel. Use the designed wire solder cup; no lap joint on a PCB-mount barrel.",
+    "negative_stop_compression_mm": [
+      1.77,
+      1.87
+    ],
+    "full_stroke_tolerance_mm": 0.127,
+    "source_record": "sources/battery-contact-0854/index.json"
+  },
+  "cradle": {
+    "length_mm": 104.0,
+    "width_mm": 32.0,
+    "top_z_mm": 26.5,
+    "wall_mm": 2.0,
+    "ceiling_mm": 1.5,
+    "cell_axis_z_mm": 13.0,
+    "rear_opening_mm": [
+      106,
+      36.0
+    ],
+    "mount_x_mm": 58.0,
+    "mount_y_offset_mm": 9.0,
+    "mount_bottom_z_mm": 2.0,
+    "mount_thickness_mm": 3.0,
+    "upper_chamfer": {
+      "bottom_z_mm": 23.0,
+      "bottom_radius_mm": 82.5,
+      "top_radius_mm": 79.0,
+      "basis": "Common cradle corner clearance below the existing Wide tapered circle seat; keep the original board seat and optics. Native assembly check still required."
+    },
+    "side_wall_mm": 1.35
+  },
+  "door": {
+    "length_mm": 108.0,
+    "width_mm": 36.0,
+    "bottom_z_mm": -5.5,
+    "thickness_mm": 1.8,
+    "hinge_y_offset_mm": -20.0,
+    "hinge_z_mm": -3.7,
+    "hinge_radius_mm": 3.5,
+    "hinge_pin_radius_mm": 1.5,
+    "hinge_bore_radius_mm": 1.75,
+    "hinge_pin_length_mm": 97,
+    "open_angle_deg": 120.0,
+    "latch_release_mm": 1.2,
+    "status": "Printed captive hinge and positive flex latch; strength, force, fatigue, dust seal and low-light service remain unmeasured."
+  },
+  "keeper": {
+    "pivot_x_mm": -20.0,
+    "pivot_y_offset_mm": 18.0,
+    "length_mm": 32.0,
+    "width_mm": 6.0,
+    "bottom_z_mm": -0.5,
+    "thickness_mm": 1.6,
+    "open_angle_deg": 90.0,
+    "status": "Independent captive quarter-turn bar prevents a cell drop after opening the door. Deliberately turn it before pulling the ribbon."
+  },
+  "removal": {
+    "tilt_deg": 0.0,
+    "withdrawal_mm": 40.0,
+    "finger_radius_mm": 12.0,
+    "finger_start_z_mm": -10.0,
+    "noncontact_clearance_mm": 0.25,
+    "status": "Press the cell against the fixed negative-end insulating stop, then pull outward with the ribbon after opening the independent keeper. The source/cell/assembly corners leave at least 0.27 mm at the positive end and 0.289 mm mechanical stroke margin. Spring force, contact/wrapper wiping and assembly settings remain unmeasured.",
+    "positive_end_release_gap_mm": 0.25
+  },
+  "designs": {
+    "wide": {
+      "case_diameter_mm": 250.0,
+      "cell_centre_xy_mm": [
+        0,
+        -47
+      ],
+      "boost_centre_xy_mm": [
+        87.0,
+        -30.0
+      ],
+      "latch_centre_xy_mm": [
+        0.0,
+        -90.0
+      ],
+      "switch_centre_xy_mm": [
+        70.0,
+        -70.0
+      ],
+      "start_centre_xy_mm": [
+        20.0,
+        -20.0
+      ],
+      "capacitor_centre_xy_mm": [
+        6.0,
+        -18.0
+      ],
+      "imu_centre_xy_mm": [
+        -46,
+        76
+      ]
+    },
+    "narrow": {
+      "case_diameter_mm": 200.0,
+      "cell_centre_xy_mm": [
+        0,
+        -47
+      ],
+      "boost_centre_xy_mm": [
+        -62,
+        -7.5
+      ],
+      "latch_centre_xy_mm": [
+        0,
+        -78
+      ],
+      "switch_centre_xy_mm": [
+        70,
+        -40
+      ],
+      "start_centre_xy_mm": [
+        20.0,
+        -20.0
+      ],
+      "capacitor_centre_xy_mm": [
+        6.0,
+        -18.0
+      ],
+      "imu_centre_xy_mm": [
+        -24.0,
+        -16.0
+      ]
+    }
+  },
+  "acceptance": "Prototype compartment geometry only. Source-sized bodies and specified contact settings do not prove spring force, wrapper/end-insulator wiping, print fit or assembled electrical acceptance. Integration and all physical results remain incomplete.",
+  "hardware": {
+    "hinge": "DIN 912 M3 x 100 A2 socket screw, finish under-head length to 97 mm; DIN 934 M3 A2 nut, retained threadlocker after assembly. No loose fastener during ordinary access. Two printed 3.95/0.75 mm axial spacers and two DIN 125 M3 washers leave 0.2 mm nominal axial play. Verify assembled play.",
+    "keeper": "ISO 7380-1 M3 x 12 A2 button-head screw and two DIN 934 M3 A2 jammed nuts; set 0.25 mm lower and upper rotational play, then jam nuts without clamping bar. Verify supplied head envelope.",
+    "contacts": "Four DIN912 M2x16 A2 stock screws, finish under-head length to13mm; four DIN934 M2 A2 nuts and four DIN125 M2 washers. Two per fixed flange clamp. Retain matched PET shims and printed compression tubes; set tip gap before locking.",
+    "qualification": "Fastener strength, retention, print dimensions and compass disturbance remain unmeasured.",
+    "case_mounts": "Four DIN912 M3x10 A2 screws, four DIN125 M3 washers and four DIN934 M3 A2 nuts. Screws bear on the2mm rear plate; flange bearing starts atZ2mm. Clamp flange/washer/nut without an unsupported gap. These remain fitted during cell service. Actual plate/rib relief and thread retention require complete assembly checks."
+  },
+  "ribbon": {
+    "part": "Bally Ribbon Mills pattern 4462, MIL-DTL-5038K Type III Class 1A, 3/8 inch nylon tape, unfinished",
+    "cut_length_mm": 100,
+    "width_mm": [
+      8.73125,
+      10.31875
+    ],
+    "thickness_mm": [
+      0.381,
+      0.635
+    ],
+    "max_oz_per_yard": 0.12,
+    "minimum_stock_breaking_lbf": 200,
+    "maker": "https://www.ballyribbon.com/mil-spec/5038",
+    "limits_source": "https://acw1.com/wp-content/uploads/2024/08/ACW-MIL-DTL-5038K.pdf",
+    "source_revision": "MIL-DTL-5038K, 22 June 2016, Table III; maker pattern 4462 Class 1a specification retrieved 2026-11-04.",
+    "attachment": "Thread around the integral insulating anchor bar and sew the fixed loop before final enclosure assembly. Fold and sew an 8 mm free pull tab. Finish cut ends. No adhesive/wire carries extraction load.",
+    "status": "Maximum-stock representative drape; supplied tape, sewn joint, flexibility, wear, trapped-ribbon response and pull force are unmeasured."
+  },
+  "contact_leads": {
+    "bend_start_x_from_cell_mm": 56,
+    "individual_bend_radius_mm": 6.0,
+    "between_bends_straight_mm": 10.969138929554134,
+    "conduit_start_x_from_cell_mm": 54.4,
+    "conduit_inner_radius_mm": 1.25,
+    "conduit_outer_radius_mm": 2.6,
+    "strip_each_end_mm": 3.5,
+    "blank_length_mm": 50,
+    "main_fuse_centre_x_from_cell_mm": 41.0,
+    "bend_basis": "Specified individual-wire routing target. NASA-STD-8739.4A Change4 Table7-1, p30:3x outside diameter minimum for AWG10-or-smaller non-coax/non-polyimide harness. This does not qualify the wire, bends, solder joints or a thicker bundle.",
+    "bend_source": "https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf",
+    "limits": "Two fixed insulated main leads, one selected main fuse in a20x5x5mm finished assembly gauge and two specified lacing loops. Downstream fixed wiring and physical joint/insulation/retention/fault qualification remain incomplete.",
+    "final_return_straight_mm": 5,
+    "route_descent_deg": 11.6,
+    "cup_collar_start_x_from_cell_mm": 49.8,
+    "cup_collar_end_x_from_cell_mm": 54.5,
+    "cup_collar_inner_radius_mm": 1.6,
+    "cup_collar_outer_radius_mm": 2.95,
+    "main_fuse_lacing": {
+      "part": "Alpha Wire LC134 BK088",
+      "quantity": 2,
+      "blank_length_mm": 70,
+      "stock_section_max_mm": [
+        1.6764,
+        0.4318
+      ],
+      "finished_loop_section_mm": [
+        1.7,
+        0.5
+      ],
+      "knot_space_mm": [
+        4,
+        2.2,
+        2
+      ],
+      "knot_side": "negativeY",
+      "source": "https://www.alphawire.com/products/accessories/fit-wire-management/lacing-tape/lc134",
+      "source_revision": "Alpha specification printed13May2024; .060\u00b1.006in width/.014\u00b1.003in thickness;25lb tape breaking strength,not knot retention",
+      "insulation": "TE Raychem RNF-100-1/8-0-SP; recover outside PETG; finish each fuse/joint assembly within20x5x5mm gauge",
+      "physical_acceptance": "unmeasured",
+      "stations_from_fuse_centre_mm": [
+        -8,
+        8
+      ],
+      "body_gauge_mm": [
+        9,
+        5,
+        5
+      ],
+      "joint_gauge_mm": [
+        5.5,
+        3.5,
+        3.5
+      ],
+      "knot_x_offsets_mm": [
+        0,
+        1
+      ]
+    }
+  }
+}

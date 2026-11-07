@@ -1,0 +1,110 @@
+{
+  "schema_version": 2,
+  "revision": "ski-1230-thermal-state-envelope-2",
+  "defect_id": "aeca6807-29f0-429a-918d-5555e9779659",
+  "scope": "Conditional thermal envelope and complete required-state coverage audit. No assembly temperature, physical result, or qualified circuit is claimed. Null means unknown; no reference data is substituted for it.",
+  "heat_accounting": "Every composed-netlist component and harness segment has one heat owner. U4 and Sparkle use local conversion/internal losses, excluding forwarded output power counted at loads. Cell heat includes electrochemical effects; capacitor heat includes ESR and release. Optical escape, radio emission and cooling credit are zero unless independently bounded. New or hidden physical paths still require the complete-circuit premise. Combined owners need separate member temperature limits and transfer bounds covering every possible internal heat distribution. LED transfer bounds must also cover every possible optical reabsorption site; depositing all photon energy at the LED junction alone does not bound other surfaces.",
+  "model_conditions": "A fixed passive linear thermal network, or a proved dominating one, with nonnegative impulse responses and bounded boundary and ALL internal initial temperature intervals. Transfer coefficients include cross heating/cooling, material/contact/airflow/wearing uncertainty. Signed local power must remain between -cooling_upper_w and heat_upper_w instantaneously over the whole temperature range, including repeated events. Zero cooling needs evidence; it is not inferred from an upper heat bound. Averaged PWM or short pulses need a separately qualified transient model.",
+  "efuse_operating_max_c": 125,
+  "efuse_operating_min_c": -40,
+  "sources": {
+    "efuse_operating_range": {
+      "url": "https://www.ti.com/product/TPS25947",
+      "revision": "Manufacturer product page retrieved 2026-10-31",
+      "sections": "Features and description: characterized operating junction range -40 C to +125 C",
+      "reviewed": "2026-10-31"
+    },
+    "thermal_metrics": {
+      "url": "https://www.ti.com/lit/an/spra953d/spra953d.pdf",
+      "revision": "SPRA953D, March 2024",
+      "sections": "1 and 1.1, PDF p. 2: package RthetaJA depends on test board and boundary conditions",
+      "reviewed": "2026-10-31",
+      "retrieved_pdf_sha256": "8ab81b5a351132ae8ab049d984e7cc72f1eb3dd3e4d9d8e063be6fcd841080a9"
+    },
+    "efuse": {
+      "url": "https://www.ti.com/lit/ds/symlink/tps25947.pdf",
+      "revision": "SLVSFC9C, May 2026",
+      "sections": "6.3-6.5, 7.3.5, 7.3.8 and 8.2.2.3",
+      "facts": "125 C recommended junction maximum. 41.7 and 74.5 K/W are simulations on different four-layer test PCBs, not enclosure bounds. 45 mOhm maximum at 3 A is not a linear-mode loss model. Thermal shutdown does not qualify cell or touch temperature.",
+      "reviewed": "2026-10-31"
+    },
+    "boost": {
+      "url": "https://www.pololu.com/product/2891",
+      "revision": "Manufacturer page retrieved 2026-10-31",
+      "sections": "Typical efficiencies and maximum output currents",
+      "facts": "Efficiency and current plots are typical; achieved current depends on ambient, airflow and heat sinking. The 85% reference is not a guaranteed efficiency minimum."
+    }
+  },
+  "states": {
+    "normal": "Continuous operation; bound every local heat source over the operating voltage and temperature range.",
+    "pwm_radio_peak": "Coincident LED PWM and radio peaks; average brightness is not an instantaneous heat bound.",
+    "startup": "Capacitor charge, boost inrush and eFuse linear operation through KILL blanking; no I-squared-R assumption in current limit.",
+    "absent_cell": "OFF and ON with cell absent, including retained B/C/output charge and signal ingress.",
+    "depleted_cell": "Hardware cutoff with S1 still ON; controller, bleeders and other residual dissipation remain.",
+    "reversed_cell": "Both switch positions and retained positive rails; include all power/control pin injection and contact heat.",
+    "contact_bounce": "Intermittent contacts while ON and during insertion; include arcing and accumulated heating.",
+    "voltage_rebound": "Voltage recovery after depletion; no idealized reset or automatic cooling credit.",
+    "rapid_replacement": "Warm initial assembly and charged rails before qualified discharge; bound repeated inrush.",
+    "charged_capacitors": "Stored-energy discharge in all rails including USB-isolated and backpowered states.",
+    "overload": "Continuous and transient overload including eFuse linear dissipation and thermal latch-off.",
+    "short": "F1 backup, prefuse and load faults; peak heat and capacitor release require separate current/energy evidence.",
+    "cleared_fault": "Warm restart after fault removal; electronics reset does not reset temperature or repair a blown fuse.",
+    "usb_service": "Cell removed and USB 5 V; bound signal/backfeed losses and USB power independently of the battery protector."
+  },
+  "designs": {
+    "wide": {
+      "boundary_upper_c": null,
+      "boundary_lower_c": null,
+      "transfer_upper_k_per_w": null,
+      "temperature_limits_c": {},
+      "temperature_min_limits_c": {},
+      "states": {
+        "normal": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "pwm_radio_peak": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "startup": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "absent_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "depleted_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "reversed_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "contact_bounce": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "voltage_rebound": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "rapid_replacement": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "charged_capacitors": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "overload": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "short": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "cleared_fault": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "usb_service": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}}
+      }
+    },
+    "narrow": {
+      "boundary_upper_c": null,
+      "boundary_lower_c": null,
+      "transfer_upper_k_per_w": null,
+      "temperature_limits_c": {},
+      "temperature_min_limits_c": {},
+      "states": {
+        "normal": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "pwm_radio_peak": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "startup": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "absent_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "depleted_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "reversed_cell": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "contact_bounce": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "voltage_rebound": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "rapid_replacement": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "charged_capacitors": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "overload": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "short": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "cleared_fault": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}},
+        "usb_service": {"heat_upper_w": null, "cooling_upper_w": null, "initial_upper_c": null, "initial_lower_c": null, "premises": {"passive_linear_transfer": null, "instantaneous_heat_bounds": null, "complete_circuit_state": null, "temperature_range_covered": null}}
+      }
+    }
+  },
+  "remaining_evidence": [
+    "Lower boundary and initial temperature bounds, minimum operating temperatures for every observer, and instantaneous cooling magnitudes for all sources. Unknown signed cell heat cannot be treated as zero cooling; hot-limit success cannot certify cold operation.",
+    "Complete circuit waveforms for every state, all pin and source conditions, repeated transitions and stored-energy release. Existing partial DC/reset/fault models do not supply these.",
+    "Instantaneous local heat bounds for all owned parts and conductors, including cell electrochemistry, converter losses, capacitor ESR, controller and bleeders; source conditions must cover the resulting temperature range.",
+    "Separate enclosure transfer coefficients for both designs, including PCB copper, print/material/contact tolerances, optics, clothing/skin contact, ambient and solar heat; no datasheet test-board substitution.",
+    "Bound initial stored heat through swaps/fault recovery, all environmental temperatures and sustained external heating. A source-free OFF interval is not a thermal reset.",
+    "Component, cell, insulation and front/rear surface operating limits with source/conditions. The 125 C eFuse limit does not establish safe touching or wearing."
+  ]
+}

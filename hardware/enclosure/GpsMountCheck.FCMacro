@@ -1,0 +1,59 @@
+"""Check actual GPS module mounts; do not assert installed or physical acceptance."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import traceback
+import FreeCAD as App
+import Part
+from PySide import QtCore
+
+source=Path(os.environ['SC_CAD_DIR']) if 'SC_CAD_DIR' in os.environ else Path(__file__).resolve().parent
+sys.path.insert(0,str(source))
+result_path=os.environ.get('SC_GPS_CHECK_RESULT')
+try:
+    if result_path and Path(result_path).exists():raise ValueError('Choose a new GPS result path; preserve existing evidence')
+    import gps_mount
+    paths=[source/name for name in ('gps_mount.py','test_gps_mount.py','electrical_peripherals.py','electrical_board.py',
+           'electrical-design.json','component-inventory.json','hardware_spec.py','fastener_access.py','solid_clearance.py',
+           'gps-mounts.md','GpsMountCheck.FCMacro')]
+    for name in ('gps-featherwing','gps-featherwing-mechanical'):paths+=sorted((source/'sources'/name).iterdir())
+    def snapshot():return {p.relative_to(source.parents[1]).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    before=snapshot();results={}
+    for design,z in (('wide',6),('narrow',9)):
+        shapes=gps_mount.native_shapes(z);results[design]=gps_mount.native_check(shapes,z)
+        for name in ('GPSPCB','GPSScrew0','GPSNut3','GPSComponents'):
+            broken=dict(shapes);del broken[name]
+            try:gps_mount.native_check(broken,z)
+            except ValueError as error:
+                if 'census' not in str(error):raise
+            else:raise ValueError('Missing GPS product/reference accepted: '+name)
+        broken=dict(shapes);extra=shapes['GPSPCB'].copy();extra.translate(App.Vector(0,0,30))
+        broken['GPSPCB']=Part.makeCompound([shapes['GPSPCB'],extra])
+        try:gps_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'solid count' not in str(error):raise
+        else:raise ValueError('A detached extra GPS PCB body was accepted')
+        broken=dict(shapes);broken['rear_addition']=shapes['rear_addition'].copy()
+        broken['rear_addition'].translate(App.Vector(0,0,-.2))
+        try:gps_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'lacks full bearing' not in str(error):raise
+        else:raise ValueError('Floating GPS mounting annuli accepted')
+        broken=dict(shapes);broken['GPSScrew0']=shapes['GPSScrew0'].copy()
+        broken['GPSScrew0'].translate(App.Vector(0,0,1))
+        try:gps_mount.native_check(broken,z)
+        except ValueError as error:
+            if 'engage the full nut' not in str(error):raise
+        else:raise ValueError('A GPS screw that misses full nut engagement was accepted')
+    if before!=snapshot():raise ValueError('GPS inputs changed during native checks')
+    record={'checks':results,'inputs':before,'freecad_version':App.Version()}
+    if result_path:
+        with Path(result_path).open('x') as output:json.dump(record,output,indent=2)
+    print(json.dumps(record));print('GPS MOUNT COMPONENT CHECK PASS',flush=True)
+except Exception:
+    traceback.print_exc()
+    raise
+finally:
+    if result_path:QtCore.QTimer.singleShot(0,QtCore.QCoreApplication.quit)

@@ -1,0 +1,10 @@
+{
+  "part": "0854-0-15-20-82-14-11-0",
+  "manufacturer": "Mill-Max",
+  "file": "mill-max-0854-2024.pdf",
+  "sha256": "722040057ba3552bdb3e355f5986913c9f94ea59e6104aab51ee5d0d93996edc",
+  "bytes": 169934,
+  "source": "https://www1.futureelectronics.com/doc/Mill-Max/0854-0-15-20-82-14-11-0.pdf",
+  "revision": "Updated2-Feb-2024,06:18AM EST,3pages",
+  "conditions": "Page1 drawing: wire-mount solder cup accepts up to16AWG. Stroke0.090+/-0.005in; ordinary length+/-0.006in, diameter+/-0.002in. Page2:12A at30C temperature rise,9.6A after20% derating perIEC60512-5-2; page3:20mohm max perEIA364-23C. These do not qualify cell-interface resistance, assembled soldering, fault withstand or enclosed skin temperatures."
+}

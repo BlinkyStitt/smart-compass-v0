@@ -1,0 +1,50 @@
+{
+  "revision": "narrow-sewn-necklace-1",
+  "scope": "One necklace; no metal clasp, rings or separate adjusters",
+  "tape": {
+    "part": "WayneMills5038 TypeIII Class1A3/8,black,uncoated",
+    "source": "sources/necklace/index.json",
+    "width_mm": [
+      8.73125,
+      10.31875
+    ],
+    "thickness_mm": [
+      0.381,
+      0.635
+    ],
+    "main_cut_target_mm": 1100,
+    "wear_loop_cut_targets_mm": [
+      100,
+      100
+    ],
+    "published_max_mass_oz_yd": 0.12,
+    "mass_basis": "MIL-DTL5038K2016 TableIII; conditional on conforming, conditioned stock, not wet/contaminated assembly"
+  },
+  "thread": {
+    "part": "Coats Nylbond S663040,Ticket40,Tex70,black",
+    "source": "sources/necklace/index.json",
+    "installed_mass_g": 0.5,
+    "installed_mass_range_g": [
+      0.2,
+      1
+    ],
+    "mass_basis": "Retained engineering stitching allowance, not a manufacturer maximum or new lower mass claim"
+  },
+  "seams": {
+    "stitch": "301 lockstitch, same selected thread in needle and bobbin",
+    "pitch_target_mm": 2,
+    "lock_backstitches_each_end": 3,
+    "wear_loop_overlap_mm": 20,
+    "wear_loop_box_x_mm": [
+      16,
+      3
+    ],
+    "main_end_overlap_mm": 30,
+    "main_end_box_x_mm": [
+      24,
+      6
+    ],
+    "instruction": "Fold each wear-loop tape width once at the attachment passages and completed20mm overlap. Complete one rectangle and both diagonals at each of four overlaps. Centre the3mm-wide wear-loop stitching within the folded tape; use6mm-wide stitching on the unfolded main ends. Do not cut tape fibres, glue a seam or substitute a knot. Inspect balanced stitches, no skipped stitches, and intact edge margins. Seam strength and snag behaviour require physical qualification."
+  },
+  "physical_acceptance": "unmeasured"
+}

@@ -11,3 +11,12 @@
   #films .film-heading h2{font-size:20px}
   #films .film-heading h2 span{margin-right:6px}
 }
+/* Electrical study controls are independent of optical preview controls. */
+.energy-calculator { margin-block: 3rem; overflow-wrap: anywhere; }
+.energy-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem; }
+.energy-fields label { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+.energy-fields input, .energy-fields select { box-sizing: border-box; width: 100%; min-width: 0; padding: .65rem; font: inherit; color: #f4f4ee; background: #202822; border: 1px solid #89958c; border-radius: .25rem; }
+.energy-fields [aria-invalid="true"] { border-width: 3px; border-style: dashed; }
+#energy-error { font-weight: bold; }
+#energy-result { padding-block: 1rem; line-height: 1.7; }
+@media (max-width: 600px) { .energy-fields { grid-template-columns: 1fr; } }

@@ -1,0 +1,30 @@
+[
+  {
+    "file": "Adafruit LSM9DS1 Rev A.brd",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-LSM9DS1-Breakout-PCB/9f6db79a66ae599aa410a2a14b161e26216e8bd4/Adafruit%20LSM9DS1%20Rev%20A.brd",
+    "revision": "9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+    "sha256": "ae642906f132b2325c28e44a443ca20c16864d0d7d9a5bc5ef471942dbf59e7d",
+    "bytes": 289529
+  },
+  {
+    "file": "Adafruit LSM9DS1 Rev A.sch",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-LSM9DS1-Breakout-PCB/9f6db79a66ae599aa410a2a14b161e26216e8bd4/Adafruit%20LSM9DS1%20Rev%20A.sch",
+    "revision": "9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+    "sha256": "0f874bd4ad47097c65cc6447382cf7d90cdcc704e3cc88f26ec4e604c50429d2",
+    "bytes": 144198
+  },
+  {
+    "file": "README.md",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-LSM9DS1-Breakout-PCB/9f6db79a66ae599aa410a2a14b161e26216e8bd4/README.md",
+    "revision": "9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+    "sha256": "53a89a7841145004210b6075f590eeb0865e379757c3540101ad09ad72d3496d",
+    "bytes": 1673
+  },
+  {
+    "file": "license.txt",
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-LSM9DS1-Breakout-PCB/9f6db79a66ae599aa410a2a14b161e26216e8bd4/license.txt",
+    "revision": "9f6db79a66ae599aa410a2a14b161e26216e8bd4",
+    "sha256": "1f63e1f4676a433423b2c2ff1ccd9e80093f341f10b81f0ac0106342bc7bbe89",
+    "bytes": 22597
+  }
+]

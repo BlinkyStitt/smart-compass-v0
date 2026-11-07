@@ -1,0 +1,249 @@
+{
+  "scope": "narrow fixed loom only",
+  "revision": "narrow-splices-4-rear-space31mm",
+  "splices": {
+    "GND": {
+      "centre_mm": [
+        -44,
+        44,
+        26
+      ],
+      "diameter_target_mm": 9.5,
+      "length_target_mm": 20,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "body_diameter_target_mm": 5.5,
+      "body_length_target_mm": 10,
+      "sleeve": "TE RNF-3000-9/3-0-STK; finished profiled assembly target",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-0",
+        "cut_mm": 20,
+        "strip_mm": 20,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "AUX_3V3": {
+      "centre_mm": [
+        -4,
+        24,
+        27.75
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 12,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 12,
+        "strip_mm": 12,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "LED_DISTRIBUTION": {
+      "centre_mm": [
+        16,
+        24,
+        27.75
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 12,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 90,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 12,
+        "strip_mm": 12,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "B": {
+      "centre_mm": [
+        -38,
+        -16,
+        28.25
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 90,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "BOOST_OUT": {
+      "centre_mm": [
+        -10,
+        -26,
+        27.75
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "FIB_5V": {
+      "centre_mm": [
+        14,
+        -24,
+        27.75
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 90,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "LOAD_5V": {
+      "centre_mm": [
+        -2,
+        -16,
+        27.75
+      ],
+      "diameter_target_mm": 4.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "LATCH_OFF": {
+      "centre_mm": [
+        -58,
+        -30,
+        28.25
+      ],
+      "diameter_target_mm": 3.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "SENSE": {
+      "centre_mm": [
+        -10,
+        6,
+        28.25
+      ],
+      "diameter_target_mm": 3.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "SPI_CLOCK": {
+      "centre_mm": [
+        -46,
+        6,
+        28.25
+      ],
+      "diameter_target_mm": 3.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "SPI_MISO": {
+      "centre_mm": [
+        -30,
+        34,
+        28.25
+      ],
+      "diameter_target_mm": 3.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    },
+    "SPI_MOSI": {
+      "centre_mm": [
+        -20,
+        52,
+        28.25
+      ],
+      "diameter_target_mm": 3.5,
+      "length_target_mm": 10,
+      "insulation": "Selected TE sleeve over a staggered solder splice, with insulated tail overlaps; finished gauge is a fabrication target, verify supplied fit",
+      "physical_acceptance": "unmeasured",
+      "sleeve": "TE RNF-100-1/8-0-STK",
+      "rotation_deg": 0,
+      "end_exit_reservation_mm": 7,
+      "core": {
+        "stock": "M22759/16-18-2",
+        "cut_mm": 10,
+        "strip_mm": 10,
+        "basis": "Continuous bare tinned core links both end bundles. Finished overall gauge includes the splice and sleeve; verify actual fit."
+      }
+    }
+  },
+  "physical_acceptance": "unmeasured"
+}

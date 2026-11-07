@@ -1,6 +1,8 @@
 {
-  "reference_commit": "ad105c3de1f5ad525f298b1e0ee1aa4c95fa056f",
+  "reference_commit": "5ebad1436ce28d90d51a1d5edaa23f87f364409c",
   "reference_design": "hardware/enclosure/exports",
+  "reference_manifest_sha256": "c67254e30ddf744b66ddd6a5802381daa7feaa8eaf0a2cc8baa13d9b37092d78",
+  "reference_status": "Inactive wide archive; export bytes preserved",
   "separate_files": true,
   "width_px": 1280,
   "height_px": 720,

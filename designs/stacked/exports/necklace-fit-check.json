@@ -1,0 +1,35 @@
+{
+  "free_main_span_target_mm": 925.5093238758752,
+  "frames": [
+    {
+      "side": -1,
+      "anchor_z_mm": 8.1,
+      "wear_loop_closed_centreline_mm": 80,
+      "wear_loop_overlap_mm": 30,
+      "outer_radial_mm": 28.11592955033327,
+      "main_end_stock_mm": 87.24533806206236,
+      "main_overlap_mm": 30,
+      "free_span_entry_local_mm": [
+        0,
+        28.11592955033327,
+        46
+      ]
+    },
+    {
+      "side": 1,
+      "anchor_z_mm": 8.1,
+      "wear_loop_closed_centreline_mm": 80,
+      "wear_loop_overlap_mm": 30,
+      "outer_radial_mm": 28.11592955033327,
+      "main_end_stock_mm": 87.24533806206236,
+      "main_overlap_mm": 30,
+      "free_span_entry_local_mm": [
+        0,
+        28.11592955033327,
+        46
+      ]
+    }
+  ],
+  "service_condition": "Keep free necklace span above the supported pendant and clear of the door/controls; both formed attachment regions remain fitted.",
+  "physical_acceptance": "unmeasured"
+}

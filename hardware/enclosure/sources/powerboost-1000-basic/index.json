@@ -1,0 +1,34 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-PowerBoost-1000-PCB/493d06d70537ce418355b395bb251a661d683150/Adafruit%20PowerBoost%201000%20Basic.sch",
+    "revision": "493d06d70537ce418355b395bb251a661d683150",
+    "file": "Adafruit PowerBoost 1000 Basic.sch",
+    "sha256": "374791ee72acf98377f213186cab2ae64005c73896af35d3f43552039eb068cf",
+    "bytes": 334235,
+    "retrieved_utc": "2026-11-04T21:00:05.439141+00:00"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-PowerBoost-1000-PCB/493d06d70537ce418355b395bb251a661d683150/Adafruit%20PowerBoost%201000%20Basic.brd",
+    "revision": "493d06d70537ce418355b395bb251a661d683150",
+    "file": "Adafruit PowerBoost 1000 Basic.brd",
+    "sha256": "8a93f4cd2b3bb6e656248b63e64b1d1cce134ed9cd31ff40d18467c01b0bc11f",
+    "bytes": 177787,
+    "retrieved_utc": "2026-11-04T21:00:05.867064+00:00"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-PowerBoost-1000-PCB/493d06d70537ce418355b395bb251a661d683150/README.md",
+    "revision": "493d06d70537ce418355b395bb251a661d683150",
+    "file": "README.md",
+    "sha256": "1fa5bad95a406cbff1f457275ed3a00e6a8ab7ca294256d6fa49c86e823dee20",
+    "bytes": 1745,
+    "retrieved_utc": "2026-11-04T21:00:06.086864+00:00"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/adafruit/Adafruit-PowerBoost-1000-PCB/493d06d70537ce418355b395bb251a661d683150/license.txt",
+    "revision": "493d06d70537ce418355b395bb251a661d683150",
+    "file": "license.txt",
+    "sha256": "1f63e1f4676a433423b2c2ff1ccd9e80093f341f10b81f0ac0106342bc7bbe89",
+    "bytes": 22597,
+    "retrieved_utc": "2026-11-04T21:00:06.268044+00:00"
+  }
+]

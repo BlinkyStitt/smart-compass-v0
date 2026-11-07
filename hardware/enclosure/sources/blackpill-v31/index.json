@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+  "sources": {
+    "mechanical": {
+      "upstream_path": "Hardware/MiniF4x1Cx_V31_3D.step",
+      "url": "https://raw.githubusercontent.com/WeActStudio/WeActStudio.MiniSTM32F4x1/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31_3D.step",
+      "revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+      "sha256": "e713074f681a8ee3d1c54ae5419c8165c01b16e5abb54afae9252521651cb594",
+      "bytes": 5095700
+    },
+    "schematic": {
+      "upstream_path": "Hardware/MiniF4x1Cx_V31 SchDoc.pdf",
+      "url": "https://raw.githubusercontent.com/WeActStudio/WeActStudio.MiniSTM32F4x1/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/MiniF4x1Cx_V31%20SchDoc.pdf",
+      "revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+      "sha256": "4ba1ee95b1d49f6a2dd3441f6910bc1b29be45d0431638368d56bfb59e08e565",
+      "bytes": 190443
+    },
+    "release_notes": {
+      "upstream_path": "Hardware/README.md",
+      "url": "https://raw.githubusercontent.com/WeActStudio/WeActStudio.MiniSTM32F4x1/6a7f7d434a9d6361f91590d4cdd16b4a70ce7513/Hardware/README.md",
+      "revision": "6a7f7d434a9d6361f91590d4cdd16b4a70ce7513",
+      "sha256": "5ec3e20b6a6d11f5db7590d3b2fcb0b4a6682d62b0d6bc1666a7d5e4747b48db",
+      "bytes": 1820
+    }
+  },
+  "files": [
+    {
+      "file": "ports.json",
+      "bytes": 1816,
+      "sha256": "f412530ba182d36083a792e03667292f4576e4128875d5b734321f23f772b571"
+    },
+    {
+      "file": "pcb.brep",
+      "bytes": 62952,
+      "sha256": "24b1aef5b969a0a8a2b03491b2eaba8fa2e6533922863d2106bb0596e83b8795"
+    },
+    {
+      "file": "component-bounds.json",
+      "bytes": 32063,
+      "sha256": "2f84a70df823aed90209feca71a26f412dc26cffc8dd5bd973a4cb8fbb9c70ca"
+    }
+  ]
+}

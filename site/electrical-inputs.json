@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "status": "estimated-average-demand; hardware protection and assembly remain unqualified",
+  "cell": {
+    "name": "One XTAR protected 21700 6000 mAh button-top",
+    "nominal_v": 3.6,
+    "capacity_ah": 6.0,
+    "diameter_mm": [
+      21.5,
+      22.1
+    ],
+    "length_mm": [
+      74.3,
+      75.3
+    ],
+    "published_mass_upper_g": 76,
+    "source": "https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight",
+    "source_revision": "Official-store specification table, retrieved 2026-11-04; no numbered revision",
+    "protection": "Manufacturer lists integrated protection; exact thresholds, timing, let-through and recovery are not published bounds."
+  },
+  "reference": {
+    "output_w": 6.25,
+    "efficiency": 0.85,
+    "legacy_cell": {
+      "name": "Historical Efest 26650 comparison; no longer selected",
+      "capacity_ah": 5.2,
+      "nominal_v": 3.7
+    }
+  },
+  "defaults": {
+    "brightness": 0.02,
+    "efficiency": 0.85,
+    "reserve": 0.25,
+    "capacity_ah": 6.0,
+    "cell_v": 3.6,
+    "non_led_w": 2.0,
+    "quiescent_w": 0.045,
+    "path_ohm": 0.12
+  },
+  "mapping": "Clamp each shared Godot RGB channel times electrical brightness to [0,1], round to the nearest 8-bit PWM code; no optical gamma, shader brightness, reflections or glow. A modeling scenario, not a delivered firmware cap.",
+  "operating_basis": {
+    "patterns": [
+      "rainbow",
+      "dark-sectors",
+      "dark-spirals",
+      "dark-diagonals"
+    ],
+    "excluded_normal_use": "Full-white, full-brightness operation is outside the intended use. It is not the runtime sizing case.",
+    "led_model": "Adafruit NeoPixel engineering estimate: 20 mA per fully driven RGB channel plus a separately retained 1 mA logic allowance per powered pixel.",
+    "pattern_model": "Sample the shared Godot RGB functions over the full eight-second cycle. The full-saturation HSV rainbow has mean R+G+B of 1.5 before 8-bit quantization, so its dynamic channel demand averages half of RGB white at equal brightness.",
+    "brightness": "2% is the initial bench planning scenario and calculator default, not a firmware-enforced ceiling. Other settings need their own load review.",
+    "protection": "Use average estimates for runtime and normal operating load planning. Retain separate inrush, fault, cutoff, recovery and thermal checks; software brightness is not a hardware fault limit."
+  },
+  "groups": {
+    "wide": [
+      {
+        "id": 0,
+        "name": "Fibonacci",
+        "count": 256,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 1,
+        "name": "Halo",
+        "count": 64,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 2,
+        "name": "Inner",
+        "count": 84,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 3,
+        "name": "Outer",
+        "count": 90,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      }
+    ],
+    "narrow": [
+      {
+        "id": 0,
+        "name": "Fibonacci",
+        "count": 256,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 1,
+        "name": "Inner",
+        "count": 70,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 2,
+        "name": "Side0",
+        "count": 70,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      },
+      {
+        "id": 3,
+        "name": "Side1",
+        "count": 70,
+        "channel_a": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "idle_a": 0.001
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "url": "https://xtardirect.com/products/xtar-21700-6000mah-10a-lithium-ion-battery-for-flashlight",
+      "source_revision": "Official-store specification table, retrieved 2026-11-04; no numbered revision",
+      "claim": "Selected protected button-top: 3.6 V, 6000 mAh, 10 A continuous, maximum cell-only dimensions 22.1 x 75.3 mm and net weight <=76 g. Nominal 21.6 Wh is not guaranteed usable energy or system fault/recovery/thermal acceptance."
+    },
+    {
+      "url": "https://learn.adafruit.com/adafruit-neopixel-uberguide/powering-neopixels",
+      "source_revision": "Read 2026-11-04; Estimating Power Requirements",
+      "claim": "Adafruit uses 60 mA RGB white and a rough 20 mA per pixel animation budget. The active model resolves the actual RGB channels; it does not multiply that animation budget by another one-third rainbow factor. Equal 20 mA channel coefficients are the adopted planning approximation."
+    },
+    {
+      "url": "https://learn.adafruit.com/sipping-power-with-neopixels/insights",
+      "source_revision": "Page last edited 2024-03-08; read 2026-11-04",
+      "claim": "Adafruit describes primary-color current as about one-third of white and its saturated rainbow average duty near 50%. Our actual HSV RGB samples, rather than a fixed rainbow discount, determine demand."
+    },
+    {
+      "url": "https://learn.adafruit.com/introducing-feather-rp2040-scorpio/powering-scorpio-neopixel-projects",
+      "source_revision": "Page last edited 2024-03-08; read 2026-11-04",
+      "claim": "Adafruit uses about 1 mA logic current per powered dark pixel. The active model retains this allowance at zero brightness and under moving dark masks; it does not scale idle current with brightness."
+    },
+    {
+      "url": "https://www.pjrc.com/how-much-current-do-ws2812-neopixel-leds-really-use/",
+      "source_revision": "PJRC original two-product measurements; read 2026-11-04",
+      "claim": "Measured two WS2812B products at approximately 33.5 and 52.5 mA maximum and just under 1 mA dark. These are sensitivity evidence for variation, not measurements of our Fibonacci board."
+    },
+    {
+      "url": "https://github.com/FastLED/FastLED/blob/23c67b720d09dc386799f310739bcae93163e646/src/power_mgt.cpp",
+      "source_revision": "FastLED 3.6.0, commit 23c67b720d09dc386799f310739bcae93163e646",
+      "claim": "Reference comparison only: 16/11/15 mA red/green/blue plus 1 mA dark at 5 V. These measured-strip calibration coefficients are not substituted into the selected Adafruit model, and FastLED hsv2rgb_rainbow is not our Godot HSV function."
+    },
+    {
+      "url": "https://www.adafruit.com/product/2030",
+      "claim": "Selected stock5.2V boost: Adafruit gives5mA enabled quiescent current with its power LED on and output-current examples at stated battery conditions. These do not establish guaranteed enclosed efficiency, quiescent maxima or transient/thermal performance.",
+      "source_revision": "PowerBoost1000Basic product specification, read2026-11-04"
+    },
+    {
+      "path": "hardware/enclosure/component-inventory.json",
+      "claim": "The NeoPixel planning approximation also applies to the current ring counts. Exact strip stock, protection and assembly ratings remain separate design work."
+    }
+  ],
+  "uncertainty": "Estimated NeoPixel average demand from Adafruit channel/idle figures and the actual shared RGB pattern. Pixel variants differ; PJRC measurements show this variation. Controller/radio load, efficiency, path loss and reserve remain adjustable planning assumptions. Calculated runtime is an estimate, not a measured result. Sampled frame peaks exclude internal PWM, radio bursts, inrush and faults; hardware protection and thermal qualification remain separate.",
+  "loss_basis": {
+    "kind": "Engineering estimates; no measured or guaranteed assembly loss/usable capacity",
+    "quiescent_w": "0.045W input planning allowance: enabled PowerBoost maker5mA plus input-side1kohm drain, Pololu indicator/current and sense divider at up to4.2V. This is not a guaranteed maximum. Output-side drains are inside the2W non-LED allowance.",
+    "path_ohm": "0.12ohm estimated cell-to-boost path. Two20mohm reference contacts + Pololu26mohm specified at1.8V + switch below10mohm typical + fuse19.7mohm nominal already total about95.7mohm before wiring/joints. No guaranteed or measured assembly bound is claimed.",
+    "reserve": "25% engineering allowance for cutoff, aging, temperature and usable-capacity uncertainty; not derived from a published XTAR discharge/cutoff curve. Count once in usable energy.",
+    "non_led_w": "2W average planning allowance includes controllers/sensors/radio, Sparkle barrel/PTC/3.3V distribution and three output bleed resistors. Conversion efficiency remains a separate constant85% estimate."
+  }
+}
