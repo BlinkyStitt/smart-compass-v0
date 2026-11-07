@@ -55,6 +55,13 @@ def geometry(part=None):
             'keepout_radius_mm':radius,'terminals':terminals}
 
 
+def envelope(pcb_bottom_z=6,rotation_deg=0):
+    size=list(definition()['loaded_envelope_mm'])
+    if rotation_deg==90:size[0],size[1]=size[1],size[0]
+    elif rotation_deg!=0:raise ValueError('Review the selected IMU rotation')
+    return {'size':size,'z':pcb_bottom_z}
+
+
 def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
     import FreeCAD as App
     import Part

@@ -1,9 +1,24 @@
 # Classic IMU source-hole mounting
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 This is an IMU component study. It replaces the proposed oversized PCB rails
 with mounting posts at the classic Rev A board's four actual mounting holes.
-Both installed designs still need integration. It does not close the
-`fitted-harness` error or establish physical acceptance.
+The complete narrow generation supplies the installed loom and service checks.
+The component result does not establish physical acceptance.
 
 The selected [classic Rev A sources](sources/lsm9ds1-classic/README.md) define
 an unscaled33.02 x20.32 mm outline with2.54 mm corner radii. Four2.5 mm holes
@@ -12,7 +27,7 @@ the outline, hole pattern and all through-pad drills from the original Eagle
 file. It retains the separate40 x28 x12 mm loaded engineering reservation.
 That reservation includes fixed leads. It is not a measured component maximum.
 
-Use four **SSCF-M2-8-A2 DIN912 cap screws**, finished to6.8 mm under the
+Use four **SSCF-M2-8-TI5 cap screws**, finished to 6.8 mm under the
 head, and four **NUT203M2-B DIN934 M2 A4 nuts** from the existing hardware
 record. The3.8 mm cap head fits the source's4.032 mm component-keepout disc.
 Do not put a standard5 mm DIN125 washer on this PCB: it exceeds that keepout.
@@ -48,8 +63,9 @@ hashes. Exit zero alone does not prove a pass.
 The native check covers both orientations, nine physical products plus one
 reference, a connected rear/post interface, closed interference, PCB-annulus
 bearing and screw projection. Missing board/hardware/reference inputs and
-posts lowered clear of the PCB must fail. Complete enclosure clearance,
-wire cuts/strain relief and physical qualification remain separate work.
+posts lowered clear of the PCB must fail. The complete narrow records supply
+installed clearance, wire cuts and strain-relief geometry. Physical
+qualification remains separate and unmeasured.
 
 The captive-nut slot has8mm entry length and clears the nut corners, not only
 the flats. Before fitting boards or screws, lower each nut into the open end

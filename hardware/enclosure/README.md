@@ -1,4 +1,14 @@
-# Round compass pendant
+# Archived wide enclosure reference
+
+This document preserves the earlier250mm design. It is inactive for the current
+removable-cell prototype. Its pouch, belt, build and mass descriptions below are
+historical reference material. Do not use them as the active battery instructions.
+
+Use the [selected narrow design](../../designs/stacked/README.md),
+[module circuit](electrical-design.md), [cell service](battery-access.md), and
+[qualification procedure](qualification-plan.md). Root build/check commands now
+operate on the narrow generation. The wide exports retain their recorded hashes.
+
 
 ## Get the CAD and media assets
 

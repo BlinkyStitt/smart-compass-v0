@@ -34,7 +34,7 @@ class FitTests(unittest.TestCase):
     def test_antenna_feed_and_counted_length(self):
         import antenna
         r = antenna.validate(parameters(), compact=True)
-        for actual, expected in zip(r.feed, (68.636, -7.094, 8.0)):
+        for actual, expected in zip(r.feed, (51.936, 6.906, 8.0)):
             self.assertAlmostEqual(actual, expected)
         self.assertEqual(r.direction, 1)
         self.assertAlmostEqual(r.rise-r.bend+math.pi*r.bend/2+r.straight,78)
@@ -50,10 +50,11 @@ class FitTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'200 mm compact antenna removal: screw'):
             antenna.check_boxes(r,[obstacle],removal=40)
         bad = copy.deepcopy(p)
-        battery = next(e for e in bad['electronics'] if e['name']=='Battery')
-        battery['centre'] = [x,y]
-        battery['z'] = 8
-        with self.assertRaisesRegex(ValueError,'200 mm compact antenna: Battery'):
+        gps = next(e for e in bad['electronics'] if e['name']=='GPS')
+        # Move the actual GPS source datum and derived centre together. Its
+        # loaded volume now blocks the unchanged radio antenna route.
+        gps['mount_datum']=[x,r.feed[1]];gps['centre']=[x,r.feed[1]]
+        with self.assertRaisesRegex(ValueError,'200 mm compact antenna: GPS'):
             validate(bad)
 
     def test_lower_board_inner_ring_and_two_side_strips_fit(self):
@@ -107,7 +108,7 @@ class FitTests(unittest.TestCase):
         p = parameters()
         for gap in (12, 14, 16, 20):
             d = validate(dict(p, mirror_gap=gap))
-            self.assertAlmostEqual(d["depth"], 43.6 + gap)
+            self.assertAlmostEqual(d["depth"], 46.6 + gap)
             self.assertAlmostEqual(d["front_z"] - d["rear_z"], gap)
             self.assertGreaterEqual(
                 p["circle_back_z"]
@@ -124,24 +125,19 @@ class FitTests(unittest.TestCase):
                 )
                 self.assertFalse(overlap, a["name"] + " / " + b["name"])
 
-    def test_electronics_keep_original_dimensions(self):
-        old = json.loads((ROOT / "hardware/enclosure/parameters.json").read_text())
-        names = {
-            "Battery": "battery",
-            "SparkleMotion": "sparkle",
-            "BlackPill": "blackpill",
-            "GPS": "gps",
-            "IMU": "imu",
-            "Radio": "radio",
-            "BatterySense": "sense",
-            "Boost5V": "power",
-        }
-        for e in parameters()["electronics"]:
-            key = names[e["name"]]
-            expected = sorted(
-                [old[key + "_width"], old[key + "_length"], old[key + "_height"]]
-            )
-            self.assertEqual(sorted(e["size"]), expected, e["name"])
+    def test_selected_source_owners_reject_size_and_datum_drift(self):
+        p=parameters()
+        for name in ('SparkleMotion','BlackPill','GPS','IMU','Radio','Boost5V','PowerLatch','BulkCapacitor'):
+            changed=copy.deepcopy(p)
+            entry=next(e for e in changed['electronics'] if e['name']==name)
+            entry['size'][0]+=.1
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,'source'):
+                validate(changed)
+        for name in ('BatterySense','Battery'):
+            changed=copy.deepcopy(p)
+            changed['electronics'].append({'name':name,'size':[18,16,7],'centre':[10,10],'z':8})
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,'selected source-module set'):
+                validate(changed)
 
     def test_reject_blocked_source_and_invalid_coating(self):
         p = parameters()

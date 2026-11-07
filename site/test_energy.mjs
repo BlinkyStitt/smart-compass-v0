@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
-import {evaluate, batteryPower, runtime, usableEnergy, savings, InputError, PowerEquilibriumError} from './energy.mjs';
+import {evaluate, referenceCases, batteryPower, runtime, usableEnergy, savings, InputError, PowerEquilibriumError} from './energy.mjs';
 
 export async function check() {
   const model = JSON.parse(await readFile(new URL('./electrical-inputs.json', import.meta.url), 'utf8'));
@@ -9,9 +9,9 @@ export async function check() {
   const settings = {...model.defaults, path_ohm: 0};
   // Retain the historical Efest arithmetic as a regression, separate from the
   // selected cell consumed by the CLI and browser.
-  near(runtime(usableEnergy(5.2, 3.7, 0), 6.25 / .85).hours, 2.61664);
+  near(referenceCases(model).legacy_efest.hours, 2.61664);
   near(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), 21.6);
-  near(runtime(21.6, model.reference.output_w / model.reference.efficiency).hours, 2.9376);
+  near(referenceCases(model).selected_cell.hours, 2.9376);
   assert.equal(model.defaults.capacity_ah, model.cell.capacity_ah);
   assert.equal(model.defaults.cell_v, model.cell.nominal_v);
   assert.equal(runtime(1, 0).state, 'unbounded');

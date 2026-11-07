@@ -30,6 +30,22 @@ class CapacitorMountTests(unittest.TestCase):
   self.assertGreaterEqual(data['post_flat_width_mm']/2-flats/2,1.35)
   self.assertGreaterEqual(data['post_radius_mm']-flats/math.sqrt(3),1.35)
   with self.assertRaises(ValueError):mounting('unreviewed design')
+ def test_narrow_lead_turn_fits_stock_and_clears_retained_screw(self):
+  import math,harness_ports,harness_route
+  data=mounting('narrow');z=data['axis_z_mm'];turn=data['formed_lead_turn_y_mm'];end=data['formed_lead_exit_z_mm']
+  length=math.fsum(row['length_mm'] for row in harness_route.segments([[-2.5,-5,z],[-2.5,turn,z],[-2.5,turn,end]],data['formed_lead_radius_target_mm']))
+  self.assertAlmostEqual(data['finished_lead_mm'],11.942477796076938)
+  self.assertAlmostEqual(data['finished_lead_mm'],length)
+  self.assertEqual(mounting('wide')['finished_lead_mm'],9.5)
+  self.assertNotIn('finished_lead_mm',geometry())
+  self.assertLessEqual(length,data['source_minimum_lead_mm'])
+  self.assertGreater(end-3.5-(z+data['formed_lead_radius_target_mm']),.4)
+  x,y=data['post_xy_mm'][0]
+  self.assertGreater(math.hypot(2.5-x,turn-y)-1.9-1.5,.25)
+  ports=harness_ports.terminals()
+  for pin in ['C_OUT.P','C_OUT.N']:
+   self.assertEqual(ports[pin]['axis'],[0,0,1])
+   self.assertEqual(ports[pin]['wire_end_mm'][2],end)
  def test_changed_primary_source_is_rejected(self):
   with tempfile.TemporaryDirectory() as temporary:
    root=Path(temporary);target=root/SOURCE;target.mkdir(parents=True)

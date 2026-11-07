@@ -356,11 +356,11 @@ def main():
     if args.staged and args.command != 'check':
         parser.error('--staged only applies to check')
     try:
-        if args.command == 'build':
-            rebuild(ROOT)
-        else:
-            check_freshness(Snapshot(ROOT, staged=args.staged))
-            print('CAD FRESHNESS PASS: ' + ('staged files' if args.staged else 'working files'))
+        # Narrow is the selected prototype. Preserve the old wide archive
+        # functions for archive integrity and their regression evidence.
+        command=[sys.executable,str(ROOT/'designs/stacked/run.py'),args.command]
+        if args.staged:command.append('--staged')
+        subprocess.run(command,cwd=ROOT,check=True)
     except (CadError, OSError, subprocess.CalledProcessError) as exc:
         print('CAD ERROR: ' + str(exc), file=sys.stderr)
         print('Save and close the model, then run `just cad`.', file=sys.stderr)

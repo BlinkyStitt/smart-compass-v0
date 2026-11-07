@@ -493,55 +493,80 @@
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
       "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
-        20,
+        16.8,
         5,
         5
       ],
-      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
     },
     "F_RING1": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
       "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
-        20,
+        16.8,
         5,
         5
       ],
-      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
     },
     "F_RING2": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
       "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
-        20,
+        16.8,
         5,
         5
       ],
-      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
     },
     "F_RING3": {
       "part": "Littelfuse 0251001.NRT1L, 1 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
       "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
-        20,
+        16.8,
         5,
         5
       ],
-      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
     },
     "F_AUX": {
       "part": "Littelfuse 0251.500NRT1L, 0.5 A, axial",
       "source": "https://www.littelfuse.com/assetdocs/littelfuse-fuse-251-253-datasheet?assetguid=f47a0bb7-8ede-4679-9646-7114c3787688",
       "source_revision": "251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A",
       "loaded_envelope_mm": [
-        20,
+        16.8,
         5,
         5
       ],
-      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured."
+      "basis": "Axial fuse with insulated soldered wire joints. Engineering reservation includes formed leads and insulation; it is not a vendor dimensional guarantee. No custom fuse PCB. Verify supplied part and completed joint fit. 300A interrupt at125VDC;2x rated current opens within1s for these ratings. Fault let-through/assembly withstand remain unmeasured.",
+      "archived_wide_loaded_envelope_mm": [
+        20,
+        5,
+        5
+      ]
     },
     "R_BOOST": {
       "part": "Vishay MRS16000C1001FCT00, 1 kohm 1% 0.4 W, axial",
@@ -1000,16 +1025,11 @@
     "usb": "Remove the cell, keep S1 OFF, use USB 5 V off-body. No barrel supply or other live interface at the same time. PowerBoost USB-A and battery JST are not installed; do not charge the cell in the pendant.",
     "removal_basis": "Ordinary OFF topology only, with no external power. All downstream module terminals are treated as conducting in the digital contact-isolation check. A failed switch, damaged insulation or an untested assembly is not physically qualified by this graph."
   },
-  "open_design_items": [
-    {
-      "id": "fitted-harness",
-      "detail": "Derive both installed wire cut lists and strain relief/envelopes from the new compartment/module layout. Current wire gauges alone do not complete routing."
-    }
-  ],
+  "open_design_items": [],
   "physical_qualification": {
     "startup_and_pulses": {
       "status": "unmeasured",
-      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on both assemblies across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current. Check Mode/Action contact behavior and measure the filtered PA4 startup/settling and unpowered-pin current. No ADC calibration or existing software timing is established by the nominal RC estimate.",
+      "procedure": "Measure boost input/output, battery current and radio/PWM/inrush on the narrow assembly across the declared cell range; no reset, trip or out-of-rating pin transient during normal use. Verify the320mA external3.3V allocation,2W average/3W peak non-LED planning budgets, logic-pin sequencing and radio duty cycle. With S1OFF and the cell removed, use only Sparkle USB; no powered BlackPillUSB or probe target supply. Measure actual PWM frequency, waveform/RMS current through each fuse and ripple through C_OUT; apply manufacturer continuous-current and temperature derating. The1.79A capacitor rating applies at100kHz/+105C and needs its frequency correction. Verify both capacitor-terminal peak voltage and current. Check Mode/Action contact behavior and measure the filtered PA4 startup/settling and unpowered-pin current. No ADC calibration or existing software timing is established by the nominal RC estimate.",
       "results": []
     },
     "latch_and_rebound": {
@@ -1029,7 +1049,7 @@
     },
     "thermal": {
       "status": "unmeasured",
-      "procedure": "Measure cell, boost, latch, contacts, wires and front/rear touch temperatures in both closed enclosures at the stated ambient/load and wearing conditions, including warm recovery.",
+      "procedure": "Measure cell, boost, latch, contacts, wires and front/rear touch temperatures in the closed narrow enclosure at the stated ambient/load and wearing conditions, including warm recovery.",
       "results": []
     },
     "runtime": {

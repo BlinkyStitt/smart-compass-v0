@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
-STATIONS={'R_A':(14,2.5),'R_B':(29,2.5),'R_OUT':(14,9),
-          'R_OFF':(29,9),'R_BOOST':(14,15.5),'R_LOAD':(29,15.5)}
+STATIONS={'R_A':(14,2.5),'R_B':(32,2.5),'R_OUT':(14,9),
+          'R_OFF':(32,9),'R_BOOST':(14,15.5),'R_LOAD':(32,15.5)}
 PASSIVES=frozenset('BlackPillDrain'+name for name in STATIONS)
 LACING=frozenset('BlackPillDrainLacing'+str(i) for i in range(12))
 PRINTED=frozenset({'BlackPillDrainBridge'})
@@ -28,7 +28,16 @@ def geometry(design=None):
                 or row.get('lead_length_min_mm')!=29 or row.get('mounting_pitch_min_mm')!=5
                 or row.get('source_sha256')!='645bb41aaa34f2a72fc19fc71d02ddb14ed400ae97634684ad1745189505f47e'):
             raise ValueError('Retain selected discharge resistor and MRS16 source facts: '+name)
-    return {'stations_source_xy_mm':{name:list(xy) for name,xy in STATIONS.items()},
+    # Two opposed axial exits each retain2mm of jacket insulation. Keep
+    # positive space between those fabrication targets; no supplied tolerance
+    # or physical insulation/retention bound is inferred from this spacing.
+    gaps={}
+    for lower,upper in [('R_A','R_B'),('R_OUT','R_OFF'),('R_BOOST','R_LOAD')]:
+        x0,y0=STATIONS[lower];x1,y1=STATIONS[upper]
+        if y0!=y1 or x1-(x0+12)<=4:raise ValueError('Opposed drain exits cannot fit both2mm jacket cuffs')
+        gaps[lower+'/'+upper]=x1-(x0+12)
+    return {'opposed_exit_gaps_mm':gaps,'jacket_overlap_each_mm':2,
+            'stations_source_xy_mm':{name:list(xy) for name,xy in STATIONS.items()},
             'axis_z_above_pcb_bottom_mm':16,'floor_z_above_pcb_bottom_mm':[12.8,14.15],
             'joint_space_mm':[12,3.5,3.5],'lacing_blank_mm':[70]*12,
             'mount':'Two existing BlackPill far stations; stockM2x25, finish z+13.7mm',

@@ -112,7 +112,7 @@ def native_shapes(pcb_bottom_z=6,rotation_deg=0,part=None):
 def native_check(shapes,pcb_bottom_z=6,rotation_deg=0):
     import FreeCAD as App
     import Part
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('PowerBoost fixture census is incomplete')
     for name in CHECK_NAMES:
         if not shapes[name].isValid() or len(shapes[name].Solids)!=1:raise ValueError('PowerBoost fixture is invalid or detached: '+name)
@@ -120,7 +120,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=0):
     if not rear.isValid() or len(rear.Solids)!=1:raise ValueError('PowerBoost posts do not connect to the rear interface')
     all_shapes={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(all_shapes),2):
-        if box_distance(all_shapes[a].BoundBox,all_shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(all_shapes[a]),bounds(all_shapes[b]))>1e-6:continue
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('PowerBoost interference '+a+'/'+b+': '+str(volume))
     if any(probe.cut(rear).Volume>1e-6 for probe in shapes['mount_probes']):raise ValueError('Actual PowerBoost PCB mounting annulus lacks full bearing')

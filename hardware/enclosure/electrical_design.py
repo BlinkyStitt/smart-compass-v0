@@ -306,6 +306,13 @@ def assess(design, directory=HERE):
             'peripheral-current-budget', 'Declare all external loads within the published 500 mA peak supply.')
     require(bool(allocation.get('basis')) and bool(design.get('signal_basis', {}).get('sources')),
             'signal-and-budget-evidence', 'Retain pin-map sources and the estimation/test boundary.')
+    fitted_harness={}
+    try:
+        import harness_contract,harness_plan
+        routing=json.loads((Path(directory)/'harness-routing.json').read_text())
+        fitted_harness=harness_contract.validate(routing,harness_plan.definition(design))
+    except (OSError,ValueError,KeyError,TypeError) as error:
+        require(False,'fitted-harness',str(error))
     for item in design.get('open_design_items', []):
         failures.append({'id': item['id'], 'detail': item['detail']})
     qualification = design.get('physical_qualification', {})
@@ -340,5 +347,7 @@ def assess(design, directory=HERE):
         'boost_source_terminals': boost_terminals,
         'latch_source_terminals': latch_terminals,
         'bulk_capacitor_targets':capacitor_targets,
+        'fitted_harness':fitted_harness,
+        'fitted_harness_scope':'Complete selected wire bindings, endpoints, stock, bends and cuts. Native installed-source, insulation and service checks remain mandatory in the CAD pipeline. Physical qualification remains unmeasured.',
         'historical_recovery': design.get('historical_recovery'),
     }

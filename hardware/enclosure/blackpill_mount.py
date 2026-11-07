@@ -126,7 +126,7 @@ def native_service_check(shapes,pcb_bottom_z,obstacles):
     """Conservative continuous vertical assembly sweep, after caps/screws removal."""
     import FreeCAD as App
     import Part
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     # These boxes enclose the complete source PCB/loaded space through a
     # continuous 20mm vertical lift. Underboard space excludes the bare rails.
     sweeps=[Part.makeBox(L,W,32,App.Vector(0,0,pcb_bottom_z)),
@@ -134,7 +134,7 @@ def native_service_check(shapes,pcb_bottom_z,obstacles):
     for sweep in sweeps:
         sweep.translate(App.Vector(-DATUM[0],-DATUM[1],0));sweep.rotate(App.Vector(),App.Vector(0,0,1),90)
         for name,shape in obstacles.items():
-            if box_distance(sweep.BoundBox,shape.BoundBox)>1e-6:continue
+            if box_distance(bounds(sweep),bounds(shape))>1e-6:continue
             if sweep.common(shape).Volume>1e-6:raise ValueError('BlackPill vertical assembly path is blocked: '+name)
     return {'motion':'continuous vertical20mm; all four retainers/screws removed','scope':'component assembly, before wiring and case installation'}
 
@@ -143,7 +143,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
     import FreeCAD as App
     import Part
     from fastener_access import native_check_paths
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     data=geometry();envelope(pcb_bottom_z,rotation_deg);z=pcb_bottom_z
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','stop_probes','nut_paths'}!=CHECK_NAMES:
         raise ValueError('BlackPill fixture census is incomplete')
@@ -154,7 +154,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
     if not rear.isValid() or len(rear.Solids)!=1:raise ValueError('BlackPill rear bosses are disconnected')
     all_shapes={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(all_shapes),2):
-        if box_distance(all_shapes[a].BoundBox,all_shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(all_shapes[a]),bounds(all_shapes[b]))>1e-6:continue
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('BlackPill fixture interference '+a+'/'+b+': '+str(volume))
     if len(shapes['mount_probes'])!=4 or len(shapes['stop_probes'])!=4:raise ValueError('Four BlackPill bearing and hard-stop probes are required')
@@ -183,7 +183,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=90):
         lo,hi=row['min_mm'],row['max_mm'];body=Part.makeBox(*(b-a for a,b in zip(lo,hi)),App.Vector(*lo))
         body.translate(App.Vector(-DATUM[0],-DATUM[1],z+1.6));body.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
         for name,shape in fixtures.items():
-            if box_distance(body.BoundBox,shape.BoundBox)>1e-6:continue
+            if box_distance(bounds(body),bounds(shape))>1e-6:continue
             if body.common(shape).Volume>1e-6:raise ValueError('BlackPill fixture intersects nominal source body '+name+'/'+str(row['index']))
     original=Part.read(str(HERE/electrical_blackpill.SOURCE/'pcb.brep'))
     face=max((f for f in original.Faces if f.BoundBox.ZLength<1e-7 and abs(f.BoundBox.ZMax)<1e-7),key=lambda f:f.Area)

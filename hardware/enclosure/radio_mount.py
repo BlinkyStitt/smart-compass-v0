@@ -184,11 +184,11 @@ def _contact(probe,shape):
 def native_service_check(shapes,pcb_bottom_z,rotation_deg,obstacles):
     import FreeCAD as App
     import Part
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     for sweep in (Part.makeBox(L,W,28,App.Vector(0,0,pcb_bottom_z)),Part.makeBox(23.75,W-1.6,30.1,App.Vector(0,.8,pcb_bottom_z-2.1))):
         sweep.translate(App.Vector(-DATUM[0],-DATUM[1],0));sweep.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
         for name,shape in obstacles.items():
-            if box_distance(sweep.BoundBox,shape.BoundBox)>1e-6:continue
+            if box_distance(bounds(sweep),bounds(shape))>1e-6:continue
             if sweep.common(shape).Volume>1e-6:raise ValueError('Radio vertical assembly path is blocked: '+name)
     return {'motion':'continuous vertical20mm; all three retainers/screws removed','scope':'component assembly, before wiring and case installation'}
 
@@ -197,7 +197,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=180):
     import FreeCAD as App
     import Part
     from fastener_access import native_check_paths
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     data=geometry();envelope(pcb_bottom_z,rotation_deg);z=pcb_bottom_z
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','stop_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('Radio fixture census is incomplete')
     for name in CHECK_NAMES:
@@ -206,7 +206,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=180):
     if not rear.isValid() or len(rear.Solids)!=1:raise ValueError('Radio rear bosses are disconnected')
     all_shapes={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(all_shapes),2):
-        if box_distance(all_shapes[a].BoundBox,all_shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(all_shapes[a]),bounds(all_shapes[b]))>1e-6:continue
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('Radio fixture interference '+a+'/'+b+': '+str(volume))
     if len(shapes['mount_probes'])!=3 or len(shapes['stop_probes'])!=3:raise ValueError('Three radio bearing and hard-stop probes are required')
@@ -232,7 +232,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=180):
         lo,hi=row['min_mm'],row['max_mm'];body=Part.makeBox(*(b-a for a,b in zip(lo,hi)),6.4,App.Vector(*lo,z+1.6))
         body.translate(App.Vector(-DATUM[0],-DATUM[1],0));body.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
         for name,shape in fixtures.items():
-            if box_distance(body.BoundBox,shape.BoundBox)>1e-6:continue
+            if box_distance(bounds(body),bounds(shape))>1e-6:continue
             if body.common(shape).Volume>1e-6:raise ValueError('Radio fixture intersects nominal source footprint '+row['element']+'/'+name)
     for delta in ((.4,0,0),(-.4,0,0),(0,.4,0),(0,-.4,0),(0,0,.4),(0,0,-.05)):
         board=shapes['RadioPCB'].copy();board.translate(App.Vector(*delta))

@@ -24,6 +24,9 @@ class BatteryLeadTests(unittest.TestCase):
             self.assertAlmostEqual(data['final_offset_y_mm'],-22.5)
             self.assertAlmostEqual(data['final_offset_z_mm'],-22.5*math.tan(math.radians(11.6)))
             self.assertAlmostEqual(data['wire_radius_mm'],1.8542/2)
+            self.assertGreaterEqual(data['fuse_exit_radius_mm']-1.5,
+                                    self.spec['removal']['noncontact_clearance_mm'])
+            self.assertGreaterEqual(data['fuse_exit_wall_mm'],1.35)
 
     def test_thicker_stock_does_not_keep_old_clearance_or_bend(self):
         for od in (.9,2.1,3,True,float('nan')):

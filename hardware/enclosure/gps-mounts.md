@@ -1,5 +1,20 @@
 # GPS source-hole mounts
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 Use the selected Adafruit Ultimate GPS FeatherWing at its four MS1 outline
 mounts. Do not use the GPS antenna's internal hole as a board mount. The right
 holes are nominal 2.54 mm unplated holes. The left holes are nominal 2.5 mm
@@ -16,7 +31,7 @@ a complementary empty-space reference. The conservative space keeps the
 complete original loaded bound and avoids that unreliable Boolean operation.
 Do not compute module mass from the sum of mixed-material CAD volumes.
 
-Use four selected M2 × 8 cap screws finished to 6.8 mm and four selected M2
+Use four selected SSCF-M2-8-TI5 cap screws finished to 6.8 mm and four selected M2
 nuts. Use no PCB washers. The source model registers the PCB holes. The native
 test also checks each original source body against all eight hardware parts.
 The 2.016 mm radius around each screw head is an assembly clearance in

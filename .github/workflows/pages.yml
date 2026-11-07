@@ -25,6 +25,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends ffmpeg git-lfs unzip
       - name: Fetch all native and site inputs from Git LFS
         run: git lfs pull
+      - name: Check enclosure and narrow source contracts
+        run: |
+          python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
+          python3 designs/stacked/run.py test
       - name: Check electrical prototype design
         run: python3 hardware/enclosure/electrical.py check
       - name: Install pinned pattern sampler and browser

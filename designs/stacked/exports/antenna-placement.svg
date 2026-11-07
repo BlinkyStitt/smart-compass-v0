@@ -5,49 +5,49 @@
 <ns0:text x="24" y="28">200 mm compact — 915 MHz internal wire; mechanical allowances only</ns0:text>
 <ns0:text x="24" y="54">Open rear: +X left, +Y up / necklace; +Z toward front, away from body</ns0:text>
 <ns0:circle cx="180" cy="300" r="114.99999999999999" fill="none" stroke="#999" />
-<ns0:rect x="134.0" y="302.875" width="92.0" height="74.75" fill="none" stroke="#999" />
-<ns0:text x="136.0" y="312.875" font-size="9">Battery</ns0:text>
-<ns0:rect x="107.09" y="246.440475" width="58.419999999999995" height="38.11904999999999" fill="none" stroke="#999" />
-<ns0:text x="109.09" y="256.440475" font-size="9">SparkleMotion</ns0:text>
-<ns0:rect x="202.54" y="233.99" width="23.919999999999995" height="60.71999999999999" fill="none" stroke="#999" />
-<ns0:text x="204.54" y="243.99" font-size="9">BlackPill</ns0:text>
-<ns0:rect x="166.8555" y="206.39" width="26.288999999999998" height="58.42" fill="none" stroke="#999" />
-<ns0:text x="168.8555" y="216.39" font-size="9">GPS</ns0:text>
-<ns0:rect x="235.775" y="277.575" width="28.749999999999996" height="28.749999999999996" fill="none" stroke="#999" />
-<ns0:text x="237.775" y="287.575" font-size="9">IMU</ns0:text>
-<ns0:rect x="96.39500000000001" y="301.15" width="29.210000000000004" height="36.8" fill="none" stroke="#999" />
-<ns0:text x="98.39500000000001" y="333.95" font-size="9">Radio</ns0:text>
-<ns0:rect x="169.65" y="279.3" width="20.7" height="18.4" fill="none" stroke="#999" />
-<ns0:text x="171.65" y="289.3" font-size="9">BatterySense</ns0:text>
-<ns0:rect x="236.81" y="311.155" width="17.479999999999993" height="46.68999999999999" fill="none" stroke="#999" />
-<ns0:text x="238.81" y="321.155" font-size="9">Boost5V</ns0:text>
+<ns0:rect x="127.79" y="238.89245" width="59.56999999999999" height="38.11905" fill="none" stroke="#999" />
+<ns0:text x="129.79000000000002" y="248.89245" font-size="9">SparkleMotion</ns0:text>
+<ns0:rect x="199.10207538604737" y="262.9659754562378" width="23.895849227905238" height="60.72804908752444" fill="none" stroke="#999" />
+<ns0:text x="201.10207538604737" y="272.9659754562378" font-size="9">BlackPill</ns0:text>
+<ns0:rect x="188.1305" y="202.365" width="26.288999999999998" height="58.42" fill="none" stroke="#999" />
+<ns0:text x="190.1305" y="212.365" font-size="9">GPS</ns0:text>
+<ns0:rect x="236.925" y="246.525" width="32.199999999999996" height="46.0" fill="none" stroke="#999" />
+<ns0:text x="238.925" y="256.525" font-size="9">IMU</ns0:text>
+<ns0:rect x="115.60000000000001" y="286.65425" width="29.21" height="33.591499999999996" fill="none" stroke="#999" />
+<ns0:text x="117.60000000000001" y="316.24575" font-size="9">Radio</ns0:text>
+<ns0:rect x="225.425" y="294.25" width="51.74999999999999" height="34.5" fill="none" stroke="#999" />
+<ns0:text x="227.425" y="304.25" font-size="9">Boost5V</ns0:text>
+<ns0:rect x="161.6" y="374.75" width="36.8" height="27.599999999999998" fill="none" stroke="#999" />
+<ns0:text x="163.6" y="384.75" font-size="9">PowerLatch</ns0:text>
+<ns0:rect x="148.49" y="290.685" width="18.744999999999994" height="52.669999999999995" fill="none" stroke="#999" />
+<ns0:text x="150.49" y="300.685" font-size="9">BulkCapacitor</ns0:text>
 <ns0:rect x="166.2" y="231.0" width="27.599999999999998" height="74.75" fill="none" stroke="#999" />
 <ns0:text x="168.2" y="241.0" font-size="9">LED/power harness</ns0:text>
-<ns0:polyline points="101.06860000000002,308.1581 101.06860000000002,308.1581 101.06860000000002,308.1449717084165 101.06860000000002,308.1056867478921 101.06860000000002,308.0405441006973 101.06860000000002,307.95003954171136 101.06860000000002,307.8348618652764 101.06860000000002,307.6958876430563 101.06860000000002,307.534174552797 101.06860000000002,307.35095332876045 101.06860000000002,307.14761839509356 101.06860000000002,306.92571725341855 101.06860000000002,306.6869387054111 101.06860000000002,306.4331 101.06860000000002,306.1661330030054 101.06860000000002,305.88806949447354 101.06860000000002,305.6010257056037 101.06860000000002,305.3071862129509 101.06860000000002,305.0087873124794 101.06860000000002,304.7081 101.06860000000002,235.3773473274424" fill="none" stroke="#0072b2" stroke-width="4" />
+<ns0:polyline points="120.27360000000002,292.0581 120.27360000000002,292.0581 120.27360000000002,292.04497170841654 120.27360000000002,292.0056867478921 120.27360000000002,291.9405441006973 120.27360000000002,291.8500395417114 120.27360000000002,291.73486186527646 120.27360000000002,291.5958876430563 120.27360000000002,291.434174552797 120.27360000000002,291.2509533287605 120.27360000000002,291.0476183950936 120.27360000000002,290.8257172534186 120.27360000000002,290.5869387054111 120.27360000000002,290.3331 120.27360000000002,290.0661330030054 120.27360000000002,289.7880694944736 120.27360000000002,289.5010257056037 120.27360000000002,289.2071862129509 120.27360000000002,288.90878731247943 120.27360000000002,288.6081 120.27360000000002,219.27734732744238" fill="none" stroke="#0072b2" stroke-width="4" />
 <ns0:path d="M 60,140 V 90 l -6,10 m 6,-10 l 6,10" stroke="#111" fill="none" />
 <ns0:text x="28" y="80">UP +Y</ns0:text>
-<ns0:circle cx="101.06860000000002" cy="308.1581" r="5" fill="#111" /><ns0:text x="87.06860000000002" y="318.1581" text-anchor="end">ANT</ns0:text>
-<ns0:rect x="93.06860000000002" y="287.2081" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="87.06860000000002" y="298.2081" text-anchor="end">Tie 1</ns0:text>
-<ns0:rect x="93.06860000000002" y="241.2081" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="87.06860000000002" y="252.2081" text-anchor="end">Tie 2</ns0:text>
+<ns0:circle cx="120.27360000000002" cy="292.0581" r="5" fill="#111" /><ns0:text x="106.27360000000002" y="302.0581" text-anchor="end">ANT</ns0:text>
+<ns0:rect x="112.27360000000002" y="267.0831" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="106.27360000000002" y="278.0831" text-anchor="end">Tie 1</ns0:text>
+<ns0:rect x="112.27360000000002" y="225.1081" width="16" height="12" fill="white" stroke="#111" /><ns0:text x="106.27360000000002" y="236.1081" text-anchor="end">Tie 2</ns0:text>
 <ns0:text x="24" y="510" font-size="13">Side: +Z toward front (up); body behind feed</ns0:text>
-<ns0:polyline points="65.0,595.0 65.0,556.0 65.02283181144952,555.2155983152711 65.09115348192675,554.4371664009976 65.20444504226559,553.6706285940774 65.36184427528455,552.9218187100689 65.5621532777801,552.1964356443337 65.80384757729337,551.5 66.08508773426605,550.8378120728406 66.40373334128613,550.2149115128211 66.75735931288071,549.6360389693211 67.14327434188077,549.1056000119293 67.55854138189372,548.6276316013991 68.0,548.2057713659401 68.4642904295558,547.8432299166701 68.94787914004598,547.5427664129269 69.44708572938487,547.3066675633984 69.95811093399841,547.1367302228902 70.47706554351404,547.0342477171743 71.0,547.0 191.57522203923062,547.0" fill="none" stroke="#0072b2" stroke-width="3" />
+<ns0:polyline points="65.0,595 65.0,556.0 65.02283181144952,555.2155983152711 65.09115348192675,554.4371664009976 65.20444504226559,553.6706285940774 65.36184427528455,552.9218187100689 65.5621532777801,552.1964356443337 65.80384757729337,551.5 66.08508773426605,550.8378120728406 66.40373334128613,550.2149115128211 66.75735931288071,549.6360389693211 67.14327434188077,549.1056000119293 67.55854138189372,548.6276316013991 68.0,548.2057713659401 68.4642904295558,547.8432299166701 68.94787914004598,547.5427664129269 69.44708572938487,547.3066675633984 69.95811093399841,547.1367302228902 70.47706554351404,547.0342477171743 71.0,547.0 191.57522203923065,547" fill="none" stroke="#0072b2" stroke-width="3" />
 <ns0:text x="24" y="620" font-size="13">Form riser and bend before soldering into ANT.</ns0:text>
 <ns0:text x="370" y="95" font-size="14">Cut 78 mm TOTAL; includes 2 mm stripped end.</ns0:text>
-<ns0:text x="370" y="121" font-size="14">ANT XYZ: (68.636, -7.094, 8) mm.</ns0:text>
+<ns0:text x="370" y="121" font-size="14">ANT XYZ: (51.936, 6.906, 8) mm.</ns0:text>
 <ns0:text x="370" y="147" font-size="14">Feed rises 16 mm; bend radius 3 mm.</ns0:text>
 <ns0:text x="370" y="173" font-size="14">Straight after bend: 60.288 mm at Z24.</ns0:text>
-<ns0:text x="370" y="199" font-size="14">Tip XYZ: (68.636, 56.194, 24).</ns0:text>
+<ns0:text x="370" y="199" font-size="14">Tip XYZ: (51.936, 70.194, 24).</ns0:text>
 <ns0:text x="370" y="225" font-size="14">Wire OD 1; placement tolerance ±0.2 mm.</ns0:text>
 <ns0:text x="370" y="251" font-size="14">Tie saddles locate the run; release ties before radio removal.</ns0:text>
 <ns0:text x="370" y="277" font-size="14">Gap values below include insulation + placement tolerance:</ns0:text>
-<ns0:text x="370" y="303" font-size="14">RadioShelf: 0.80 mm</ns0:text>
-<ns0:text x="370" y="329" font-size="14">ElectronicsShell: 1.30 mm</ns0:text>
-<ns0:text x="370" y="355" font-size="14">Radio: 2.50 mm</ns0:text>
-<ns0:text x="370" y="381" font-size="14">FibonacciPCB: 3.30 mm</ns0:text>
-<ns0:text x="370" y="407" font-size="14">Side0Strip: 3.76 mm</ns0:text>
-<ns0:text x="370" y="433" font-size="14">Side1Strip: 3.76 mm</ns0:text>
-<ns0:text x="370" y="459" font-size="14">SparkleMotion: 4.63 mm</ns0:text>
-<ns0:text x="370" y="485" font-size="14">Side0LEDs: 4.70 mm</ns0:text>
+<ns0:text x="370" y="303" font-size="14">RadioCarrier: 1.96 mm</ns0:text>
+<ns0:text x="370" y="329" font-size="14">W040: 2.24 mm</ns0:text>
+<ns0:text x="370" y="355" font-size="14">W042: 2.42 mm</ns0:text>
+<ns0:text x="370" y="381" font-size="14">W043: 2.42 mm</ns0:text>
+<ns0:text x="370" y="407" font-size="14">RadioLoadedReservation: 2.50 mm</ns0:text>
+<ns0:text x="370" y="433" font-size="14">RadioPCB: 2.50 mm</ns0:text>
+<ns0:text x="370" y="459" font-size="14">RadioUnderboardReservation: 2.50 mm</ns0:text>
+<ns0:text x="370" y="485" font-size="14">W076: 2.99 mm</ns0:text>
 <ns0:text x="370" y="511" font-size="14">Feed pad / saddle contacts are bounded exceptions.</ns0:text>
 <ns0:text x="370" y="537" font-size="14">CAD checks do not establish RF range or installed tuning.</ns0:text>
 </ns0:g></ns0:svg>

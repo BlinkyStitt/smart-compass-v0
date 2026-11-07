@@ -28,6 +28,13 @@ export function runtime(usableWh, batteryW) {
   return {hours, state: 'finite', explanation: 'Calculated hours before unmodeled losses and swap/startup downtime.'};
 }
 
+export function referenceCases(model) {
+  const demand = model.reference.output_w / model.reference.efficiency;
+  const result = cell => ({name: cell.name, energy_wh: usableEnergy(cell.capacity_ah, cell.nominal_v, 0),
+    ...runtime(usableEnergy(cell.capacity_ah, cell.nominal_v, 0), demand)});
+  return {selected_cell: result(model.cell), legacy_efest: result(model.reference.legacy_cell)};
+}
+
 export function batteryPower(outputW, settings) {
   number(outputW, 'output_w');
   const efficiency = number(settings.efficiency, 'efficiency', Number.MIN_VALUE, 1);
@@ -132,8 +139,8 @@ async function main() {
     if (result.status !== 0) throw new Error(`Energy checks failed: ${result.status ?? result.signal}`);
   } else if (process.argv[2] === '--reference') {
     const model = JSON.parse(await readFile(new URL('./electrical-inputs.json', import.meta.url), 'utf8'));
-    const wh = usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0);
-    console.log(JSON.stringify(runtime(wh, model.reference.output_w / model.reference.efficiency)));
+    const references = referenceCases(model);
+    console.log(JSON.stringify({...references.selected_cell, references}));
   } else if (process.argv[2] === '--evaluate') {
     let input = '';
     for await (const chunk of process.stdin) input += chunk;

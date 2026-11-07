@@ -1,8 +1,24 @@
 # Horizontal bulk-capacitor holder
 
-This is a component study. Both full installed designs, wired joints and physical
-qualification remain incomplete. No thermal, fault, wearing or retention pass
-comes from the nominal CAD.
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
+This component fixture defines the selected can, lead shapes and holder.
+The complete narrow generation supplies its installed joints, routing and
+service checks. No physical thermal, fault, wearing or retention pass comes
+from the nominal CAD.
 
 Use Panasonic EEUFR1A102,1000uF10V+/-20%, FR-A. The retained original1September2025
 sheet gives D10+/-0.5,L16+/-1.5, lead diameter0.6+/-0.05 and pitch5+/-0.5mm.
@@ -19,24 +35,36 @@ actual valve location and clearance. Leave the valve path free of wiring.
 
 The can axis is Y atZ8.85mm. Set its lead-side face atY-5mm, pressure valve
 toward+Y and negative stripe toward+X. P is the-X lead and N is the+X lead.
-Verify the supplied markings before soldering. Finish straight leads to9.5mm;
-the source supplies at least14mm on the shorter lead. Do not bend at the seal.
-Lead pitch/dimension corners occupy radius0.575mm atX+/-2.5mm. Each printed
-lead channel has0.8mm radius. Two separate1.6mm-radius joint pockets cover
-Y-14.5..-10.5mm and leave1.8mm plastic between them. Wired joint geometry and
-its cut list remain unfinished; empty pockets do not qualify solder joints.
+Verify the supplied markings before soldering. These are local fixture XY
+coordinates; use the BulkCapacitor placement in the narrow parameters for the
+case transform. Keep both lead axes at X = +/-2.5 mm. Form each lead from
+Y = -5 mm/Z = 8.85 mm toward -Y, round the corner at Y = -12.6 mm with the
+0.6 mm centreline-radius target, then rise to Z = 13.45 mm. The rounded
+centreline target is about 11.94 mm, within the shorter lead's published
+14 mm minimum stock. Support the body during forming; keep bends away from
+the seal. These geometry targets do not qualify the forming process.
+
+The selected lead/pitch variation occupies a 1.15 mm diameter gauge. The
+horizontal lead channels retain 0.8 mm radius. Each added vertical joint
+channel has 1.75 mm radius. Make the specified 3.5 mm coaxial split-strand lap
+below each lead end. Keep every strand, recover the selected sleeve onto 2 mm
+of intact wire jacket, and gauge the completed 3 mm outside diameter. Use the
+actual C_OUT.P/C_OUT.N routes and finishes in the complete narrow records.
+Empty clearance pockets do not establish solder or insulation quality.
 
 Wide uses the two side posts atX+/-10/Y8.5mm. Narrow uses posts at
 X0.5/Y-9.5 andX4.25/Y19mm. The latter clears the2.5mm valve reservation.
 A1.35mm outer bridge joins its cover ear outside the valve path. Narrow's7mm
 base strip clears the keeper hood; recut lead channels pass through the lead-side
-post without reaching its screw bore. The two profiles share the can, lead,
-shim, hard-stop and source limits. They do not move the radio or controls.
+post without reaching its screw bore. The two profiles share the can, shim,
+hard-stop and source limits. Narrow uses the formed lead path above. The
+profiles do not move the radio or controls.
 
 The lower clamshell and two screw posts fuse into the actual rear panel. The
-upper clamshell lifts off after removing two screws. Use SSCF-M2-8-A2 stock
-screws finished/deburred to6.6mm forWide or7.6mm forNarrow and two NUT203 M2-B A4 nuts from the existing
-hardware inventory. Hard stops take the screw load. The nominal tip projection
+upper clamshell lifts off after removing two screws. Use selected
+SSCF-M2-8-TI5 stock screws finished/deburred to 7.6 mm for Narrow and two
+NUT203 M2-B A4 nuts. The inactive Wide component fixture uses its separate
+6.6 mm finish target. Hard stops take the screw load. The nominal tip projection
 is0.4mm. Gauge the actual stack and check full nut engagement.
 
 Two nominal0.25mm polyester semicircular shims support the10.5mm maximum can

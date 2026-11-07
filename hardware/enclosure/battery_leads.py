@@ -6,6 +6,7 @@ are targets, not measurements or physical fault/abrasion qualification.
 import math
 import json
 from pathlib import Path
+from harness_finish import ASSEMBLED_FINISH_DIAMETER_MM
 
 WIRE_NAMES=frozenset({'BatteryLeadP','BatteryLeadN'})
 FUSE_NAME='BatteryMainFuse'
@@ -66,6 +67,11 @@ def layout(spec, design, electrical=None):
         raise ValueError('Insulated main lead has no specified tube clearance')
     if outer_r-inner_r<1.35 or r<3*(2*wire_r):
         raise ValueError('Retain the specified insulation wall and individual-wire bend radius')
+    # The main-fuse exit carries the recovered sleeve as well as the jacket.
+    # Keep the existing conduit and its full wall; enlarge only this exit.
+    fuse_exit_r=ASSEMBLED_FINISH_DIAMETER_MM/2+spec['removal']['noncontact_clearance_mm']
+    if 4.1-fuse_exit_r<1.35:
+        raise ValueError('The finished main-fuse exit needs its full housing wall')
     tip=sum(spec['contact']['unloaded_tip_gap_mm'])/4
     tail=tip+spec['contact']['drawing']['total_height_mm']
     cup_start=tail-spec['contact']['drawing']['cup_length_mm']
@@ -97,6 +103,7 @@ def layout(spec, design, electrical=None):
             'radius_mm':r,'bend_x_mm':bend_x,'straight_mm':straight,
             'conduit_start_x_mm':start_x,'conduit_inner_radius_mm':inner_r,
             'conduit_outer_radius_mm':outer_r,'wire_radius_mm':wire_r,
+            'fuse_exit_radius_mm':fuse_exit_r,'fuse_exit_wall_mm':4.1-fuse_exit_r,
             'return_length_mm':return_length,'tail_x_mm':tail,'final_offset_y_mm':plane_offset*math.cos(tilt),'final_offset_z_mm':final_drop,
             'routed_centreline_mm':length,'finished_cut_target_mm':cut,
             'cell_centre_xy_mm':spec['designs'][design]['cell_centre_xy_mm'],
@@ -167,7 +174,7 @@ def native_shapes(spec,design):
         knot_x=fx+dx+data['main_fuse_lacing']['knot_x_offsets_mm'][i]
         knot=Part.makeBox(4,2.2,2,App.Vector(knot_x-2,fy-6.4,z+.5))
         result['BatteryMainFuseLacing'+str(i)]=outer.cut(inner).fuse(knot).removeSplitter()
-    exit_hole=Part.makeCylinder(inner_r,5,App.Vector(fx-13,fy,z),App.Vector(1,0,0))
+    exit_hole=Part.makeCylinder(data['fuse_exit_radius_mm'],5,App.Vector(fx-13,fy,z),App.Vector(1,0,0))
     cavity=cavity.fuse(exit_hole)
     result.update({FUSE_NAME:fuse,'secondary_shells':shells+[housing],
                    'secondary_bores':bores+[cavity],'wire_cuts':lengths,

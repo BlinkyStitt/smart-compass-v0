@@ -97,7 +97,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
     import FreeCAD as App
     import Part
     from fastener_access import native_check_paths
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     rotation_deg=(0 if pcb_bottom_z==6 else 90) if rotation_deg is None else rotation_deg
     envelope(pcb_bottom_z,rotation_deg)
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('GPS fixture census is incomplete')
@@ -109,7 +109,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
     if not rear.isValid() or len(rear.Solids)!=1:raise ValueError('GPS source posts do not connect to the rear interface')
     all_shapes={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(all_shapes),2):
-        if box_distance(all_shapes[a].BoundBox,all_shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(all_shapes[a]),bounds(all_shapes[b]))>1e-6:continue
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('GPS fixture interference '+a+'/'+b+': '+str(volume))
     # Independently check the original component bodies against the selected
@@ -120,7 +120,7 @@ def native_check(shapes,pcb_bottom_z=6,rotation_deg=None):
     original.rotate(App.Vector(),App.Vector(0,0,1),rotation_deg)
     for name in HARDWARE_NAMES:
         for i,body in enumerate(original.Solids):
-            if box_distance(shapes[name].BoundBox,body.BoundBox)>1e-6:continue
+            if box_distance(bounds(shapes[name]),bounds(body))>1e-6:continue
             volume=shapes[name].common(body).Volume
             if volume>1e-6:raise ValueError('GPS hardware intersects original source body '+name+'/'+str(i)+': '+str(volume))
     if len(shapes['mount_probes'])!=4 or any(probe.cut(rear).Volume>1e-6 for probe in shapes['mount_probes']):

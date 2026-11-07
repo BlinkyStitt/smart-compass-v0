@@ -52,15 +52,17 @@ try {
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
       const initial = await agreement(page);
-      assert.equal(initial.design, 'wide'); assert.equal(initial.pattern, 'rainbow');
+      assert.equal(initial.design, 'narrow');
+      assert.deepEqual(await page.locator('[name=design] option').evaluateAll(rows => rows.map(row => row.value)), ['narrow']); assert.equal(initial.pattern, 'rainbow');
       assert.ok((await page.locator('#energy-reference').innerText()).includes('2.94'));
+      assert.ok((await page.locator('#energy-reference').innerText()).includes('2.62'));
       assert.equal(await page.locator('#energy-result').getAttribute('aria-live'), 'polite');
       assert.equal(await page.locator('#energy-error').getAttribute('role'), 'alert');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Viewport overflow');
       await page.getByLabel('Design', {exact: true}).focus();
       await page.keyboard.press('Tab');
       assert.equal(await page.locator(':focus').getAttribute('name'), 'pattern');
-      for (const design of ['wide', 'narrow']) {
+      for (const design of ['narrow']) {
         await page.getByLabel('Design', {exact: true}).selectOption(design);
         for (const pattern of ['rainbow', 'dark-sectors', 'dark-spirals', 'dark-diagonals']) {
           await page.getByLabel('Pattern', {exact: true}).selectOption(pattern);
@@ -71,10 +73,16 @@ try {
       }
       // The selected dark pattern can be feasible while its rainbow baseline
       // is not. Keep its current/runtime visible without inventing savings.
-      await page.getByLabel('Design', {exact: true}).selectOption('wide');
+      await page.getByLabel('Design', {exact: true}).selectOption('narrow');
       await page.getByLabel('Pattern', {exact: true}).selectOption('dark-sectors');
       await page.getByLabel('Controller, sensors and radio output (W)', {exact: true}).fill('0.5');
-      await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).fill('0.085');
+      // Synthetic UI failure scenario, derived from the actual sampled load.
+      // It is not a contact-resistance or assembly measurement.
+      const unimpeded = {...initial.settings, non_led_w: .5, brightness: .5, path_ohm: 0};
+      const full = await expected('narrow', 'rainbow', unimpeded);
+      const dark = await expected('narrow', 'dark-sectors', unimpeded);
+      const failureResistance = unimpeded.cell_v ** 2 / 8 * (1 / full.sampled_peak_battery_w + 1 / dark.sampled_peak_battery_w);
+      await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).fill(String(failureResistance));
       await page.getByLabel('Electrical brightness (%)', {exact: true}).fill('50');
       const comparison = await agreement(page);
       assert.equal(comparison.savings.state, 'unavailable');
@@ -123,19 +131,22 @@ try {
         const [model, manifest] = await Promise.all(['electrical-inputs.json', 'pattern-samples.json'].map(path => fetch(path).then(r => r.json())));
         window.studyRelease = null;
         window.studyOldFinished = false;
-        mountCalculator(document.querySelector('#energy-calculator'), model, manifest, async set => {
-          if (set.design === 'wide') await new Promise(resolve => { window.studyRelease = resolve; });
+        await mountCalculator(document.querySelector('#energy-calculator'), model, manifest, async set => {
+          // Keep the shared rainbow baseline available. Hold only the old
+          // selected request, so the new selection can actually complete.
+          if (set.pattern === 'dark-sectors') await new Promise(resolve => { window.studyRelease = resolve; });
           const sample = await loadSample(set);
-          if (set.design === 'wide') window.studyOldFinished = true;
+          if (set.pattern === 'dark-sectors') window.studyOldFinished = true;
           return sample;
-        });
+        }).ready;
       });
+      await page.getByLabel('Pattern', {exact: true}).selectOption('dark-sectors');
       await page.waitForFunction(() => typeof window.studyRelease === 'function');
-      await page.getByLabel('Design', {exact: true}).selectOption('narrow');
-      assert.equal((await agreement(page)).design, 'narrow');
+      await page.getByLabel('Pattern', {exact: true}).selectOption('dark-spirals');
+      assert.equal((await agreement(page)).pattern, 'dark-spirals');
       await page.evaluate(() => window.studyRelease());
       await page.waitForFunction(() => window.studyOldFinished);
-      assert.equal((await agreement(page)).design, 'narrow');
+      assert.equal((await agreement(page)).pattern, 'dark-spirals');
 
       // Exercise the shipped paired-player handlers with actual MP4 decoding.
       assert.ok(await page.locator('#films video').evaluateAll(videos => videos.every(video => video.paused)));

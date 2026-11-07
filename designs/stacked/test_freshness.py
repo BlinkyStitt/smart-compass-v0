@@ -32,6 +32,7 @@ class FreshnessTests(unittest.TestCase):
             "format_version": 1,
             "inputs": run.hashes(run.inputs()),
             "exports": run.hashes(exports / name for name in run.EXPECTED),
+            "documents": run.hashes([self.root/"design-v2.md"]),
         }))
 
     def test_complete_combined_snapshot_passes(self):
@@ -39,10 +40,18 @@ class FreshnessTests(unittest.TestCase):
 
     def test_mixed_antenna_and_lighting_generations_fail(self):
         paths = (
+            "site/electrical-inputs.json",
+            "design-v2.md",
+            "designs/stacked/inventory_doc.py",
             "hardware/enclosure/antenna.py",
             "hardware/enclosure/antenna_native.py",
             "hardware/enclosure/native_publication.py",
-            "hardware/enclosure/exports/scene.json",
+            "hardware/enclosure/branch_fuses.py",
+            "hardware/enclosure/sources/wire-m22759/amphenol-m22759.pdf",
+            "designs/stacked/prints.py",
+            "designs/stacked/exports/RearCover.3mf",
+            "designs/stacked/exports/RearCover.stl",
+            "hardware/enclosure/harness-splices.json",
             "designs/stacked/parameters.json",
             "designs/stacked/antenna_view.py",
             "designs/stacked/exports/antenna-placement.svg",
@@ -62,3 +71,10 @@ class FreshnessTests(unittest.TestCase):
                         run.check()
                 finally:
                     path.write_bytes(original)
+
+    def test_missing_fit_sample_or_unexpected_file_fails(self):
+        path=run.EXPORTS/'FitBatteryDoor.3mf';original=path.read_bytes();path.unlink()
+        with self.assertRaises((RuntimeError,FileNotFoundError)):run.check()
+        path.write_bytes(original)
+        (run.EXPORTS/'unreviewed.stl').write_bytes(b'not part of the selected prototype')
+        with self.assertRaisesRegex(RuntimeError,'unexpected'):run.check()

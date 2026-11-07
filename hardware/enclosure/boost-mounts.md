@@ -1,5 +1,20 @@
 # Source-based PowerBoost mounting study
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 This component fixture uses the pinned Adafruit2030 Basic source PCB and two
 Pololu2444 blocks. It does not release either enclosure or the fitted harness.
 Supplied fit, soldering, retention, vibration and temperature are unmeasured.
@@ -10,7 +25,8 @@ are nominal2.5mm at(2.794,20.32) and(2.54,2.54), from the source board origin.
 The module has two holes on one edge. Its component keepout radius is2.016mm.
 Do not add a standard5mm DIN125 washer at the PCB: it exceeds this keepout.
 
-Use two SSCF-M2-8-A2 screws, finish/deburr to6.8mm under the head, and two
+Use two selected SSCF-M2-8-TI5 screws, finish/deburr to 6.8 mm under the
+head, and two
 NUT203 M2-B A4 nuts from the existing hardware inventory. Four source-hole
 posts are not possible on this board. The two lower pods have3.1mm radii;
 the final1.5mm post neck has1.95mm radius and bears on the actual PCB annulus.
@@ -37,14 +53,16 @@ Leave all JP1 external connections open. Use one untinned18AWG input conductor
 or22AWG output conductor per clamp and the selected5mm strip target. Route the
 26AWG trip lead from the R20.2 collector after removing R20. Do not use the
 other R20 pad. Fit and restrain the leads so a battery change applies no load
-to these joints. The full routes, joint insulation and strain relief remain
-open work; the source-hole mount alone does not resolve them.
+to these joints. Follow the actual route, joint insulation and boost-input
+relief in the complete narrow loom. Its lacing captures W006 and the continuous
+W044 negative conductor. The source-hole component check alone does not prove
+that installed result or physical retention.
 
 `BoostMountCheck.FCMacro` checks both nominal orientations, closed intersections,
 connected posts, actual annulus support, full nut engagement and missing-part,
 floating-post and short-engagement rejection. Its separate component reference
 retains all earlier clearance outside the real terminal body and head keepouts.
-Count the PCB/module once, two blocks and four fasteners in the eventual BOM;
+Count the PCB/module once, two blocks and four fasteners in the installed BOM;
 do not add reference volume to the physical mass. Enclosure integration and
 all physical acceptance remain separate checks.
 

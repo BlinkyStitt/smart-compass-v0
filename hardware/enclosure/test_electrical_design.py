@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 
 from electrical_design import assess, off_service_isolation
 
@@ -17,14 +18,9 @@ class PrototypeDesignTests(unittest.TestCase):
         self.design = json.loads((HERE / 'electrical-design.json').read_text())
 
     def reviewed_fixture(self):
-        # Contract fixture only: not evidence that these remaining assembly
-        # decisions or physical tests have been completed.
-        design = copy.deepcopy(self.design)
-        design['open_design_items'] = []
-        for part in design['parts'].values():
-            if 'unresolved' in part['part'].lower():
-                part['part'] = 'Selected fixture part; not assembly evidence'
-        return design
+        # Destructive test copies use the actual complete selected record.
+        # They never invent assembly evidence or clear a real design gate.
+        return copy.deepcopy(self.design)
 
     def failure_ids(self, design):
         return {item['id'] for item in assess(design)['failures']}
@@ -38,13 +34,30 @@ class PrototypeDesignTests(unittest.TestCase):
         self.assertTrue(all(item['status'] == 'unmeasured'
                             for item in report['physical_qualification'].values()))
 
-    def test_real_remaining_design_work_still_fails(self):
-        report = assess(self.design)
+    def test_selected_complete_route_contract_passes_without_physical_claim(self):
+        report=assess(self.design)
+        self.assertTrue(report['digital_design_pass'],report['failures'])
+        self.assertEqual(report['fitted_harness']['route_count'],92)
+        self.assertEqual(report['fitted_harness']['splice_count'],12)
+        self.assertEqual(report['physical_acceptance'],'unmeasured')
+        self.assertFalse(report['safe_to_wear_claim'])
+        self.assertEqual(self.design['parts']['IMU']['part'],'Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V')
+        self.assertIn('WTP-2812-2020-120-0405',self.design['parts']['RING1']['part'])
+
+    def test_missing_routes_cannot_pass_by_clearing_open_items(self):
+        design=self.reviewed_fixture();design['open_design_items']=[]
+        actual=Path.read_text
+        def read(path,*args,**kwargs):
+            if path==HERE/'harness-routing.json':raise FileNotFoundError('Required selected route record missing')
+            return actual(path,*args,**kwargs)
+        with patch.object(Path,'read_text',read):report=assess(design)
         self.assertFalse(report['digital_design_pass'])
-        self.assertIn('fitted-harness', self.failure_ids(self.design))
-        self.assertEqual(self.design['parts']['IMU']['part'],
-                         'Adafruit LSM9DS1 classic breakout PID 3387, VIN=3.3 V')
-        self.assertIn('WTP-2812-2020-120-0405', self.design['parts']['RING1']['part'])
+        self.assertIn('fitted-harness',{row['id'] for row in report['failures']})
+
+    def test_reduced_wire_diameter_or_mass_cannot_create_a_pass(self):
+        for key in ['maximum_od_mm','nominal_mass_g_m','maximum_resistance_ohm_m_at_20c']:
+            design=self.reviewed_fixture();design['wiring']['stock_limits']['branches'][key]*=.5
+            with self.subTest(key=key):self.assertIn('fitted-harness',self.failure_ids(design))
 
     def test_pcb_contact_and_unreviewed_contact_source_fail(self):
         for name in ('CONTACT_P', 'CONTACT_N'):
@@ -243,14 +256,17 @@ class PrototypeDesignTests(unittest.TestCase):
         design['operating_plan']['cell_v'] = [1.5, 4.2]
         self.assertIn('cell-operating-range', self.failure_ids(design))
 
-    def test_cli_checks_selected_design_and_keeps_failure_visible(self):
+    def test_cli_checks_complete_design_and_keeps_physical_boundary(self):
         result = subprocess.run([sys.executable, str(HERE / 'electrical.py'), 'check'],
                                 capture_output=True, text=True)
         report, _ = json.JSONDecoder().raw_decode(result.stdout)
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 0)
         self.assertEqual(report['scope'], 'digital-prototype-design-review')
         self.assertEqual(report['physical_acceptance'], 'unmeasured')
-        self.assertIn('ELECTRICAL DESIGN CHECK FAILED', result.stdout)
+        self.assertIn('Digital design review only.', result.stdout)
+        self.assertNotIn('ELECTRICAL DESIGN CHECK FAILED',result.stdout)
+        self.assertTrue(report['digital_design_pass'])
+        self.assertEqual(report['fitted_harness']['route_count'],92)
         self.assertNotIn('NaN', result.stdout)
 
 

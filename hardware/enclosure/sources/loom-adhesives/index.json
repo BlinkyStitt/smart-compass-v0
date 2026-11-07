@@ -1,0 +1,52 @@
+{
+  "retrieved": "2026-11-05",
+  "capture_kind": "Primary PDF text read through web provider; direct PDF downloads returned HTTP403. No original PDF-byte hash is claimed.",
+  "private_full_capture_sha256": "de217c61183db9e8b507f47c431e02648d5ee97dc856126b86add8586b00f896",
+  "sources": [
+    {
+      "part": "3M VHB5952",
+      "url": "https://multimedia.3m.com/mws/media/2366487O/3m-vhb-tape-5952.pdf",
+      "revision": "English-US September2024, supersedesAugust2024,5pages",
+      "facts": {
+        "nominal_thickness_mm": 1.1,
+        "typical_density_kg_m3": 590
+      },
+      "conditions": "The sheet labels its technical data representative/typical, not specification limits. Metal adhesion/shear examples apply at23C after72h and do not qualify PETG/FR4 bonds. Page4 static-area rule is general guidance. Fitted1.0mm compression, bond footprint and installed retention are assembly targets and remain physically unmeasured."
+    },
+    {
+      "part": "3M5413 polyimide tape",
+      "url": "https://multimedia.3m.com/mws/media/136011O/3m-polyimide-film-tape-5413-tds.pdf",
+      "revision": "July2026,3pages; primary file is newer than cached July2021 search snippets",
+      "facts": {
+        "nominal_total_thickness_mm": 0.069,
+        "nominal_backing_mil": 1.0
+      },
+      "conditions": "Current sheet calls the values representative/typical, not specification limits. The quoted temperature range concerns clean removal from copper and is not an assembled continuous-insulation rating. Two-wrap formed joint gauges and long-term insulation/adhesion require physical inspection."
+    },
+    {
+      "part": "TE RNF-3000-9/3-0-STK,5677582005",
+      "url": "https://www.te.com/en/product-5677582005.html",
+      "revision": "Primary product page retrieved2026-11-05; links standard-sizes drawingA3, drawing fetch unavailable",
+      "facts": {
+        "expanded_id_min_mm": 9,
+        "recovered_id_max_mm": 3,
+        "recovered_wall_nominal_mm": 0.75,
+        "recovered_wall_tolerance_mm": 0.12
+      },
+      "conditions": "Full recovery values do not specify the finished nonuniform solder splice. The9.5mm ends and5.5mm central assembly gauges are fabrication targets. Fit/overlap/insulation remain unmeasured. Page lists active stock but manufacturer direct availability is unavailable; no procurement claim."
+    },
+    {
+      "part": "TE RNF-100-1/8-0-STK",
+      "url": "https://www.te.com/en/product-CAT-HST-RNF100-0.html",
+      "revision": "Primary family page retrieved2026-11-05; catalog1654296-3 revised10-2012 p51",
+      "catalog": "https://www.te.com.cn/content/dam/te-com/documents/automotive/global/heatshrinktubing/mechanical/rnf-100-tubing.pdf",
+      "facts": {
+        "expanded_id_min_mm": 3.2,
+        "recovered_id_max_mm": 1.6,
+        "recovered_wall_nominal_mm": 0.5
+      },
+      "conditions": "Catalog dimensions are reference values, subject to change. Nominal wall is not a guaranteed maximum. Finished3.5/4.5mm gauges and tail insulation overlaps require fabrication inspection."
+    }
+  ],
+  "sleeve_primary_capture_sha256": "e67db530b1b8b47c553140f7cd0548af912c5f7424ba5d5426ad9450f1d60817"
+}

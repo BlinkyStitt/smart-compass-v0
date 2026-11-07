@@ -107,7 +107,7 @@ def export():
             x += nx*p['ring_led_depth']/2
             y += ny*p['ring_led_depth']/2
             leds.append({'group': group, 'index': i, 'position_m': [x/1000,y/1000,(strip_bottom(name,p)+p['strip_width']/2)/1000], 'direction': [nx,ny,0]})
-    objects = [o for group in (source.Manufactured,source.Electronics,source.Optics) for o in group.Group if o.Visibility]
+    objects = [o for group in (source.Manufactured,source.Electronics,source.Hardware,source.Optics) for o in group.Group if o.Visibility]
     def add(name,shape,color,role='solid',label=None,pixel_centres=None):
         parts.append(glb.mesh(name,shape,color,role=role,label=label,pixel_centres=pixel_centres))
     for obj in objects:

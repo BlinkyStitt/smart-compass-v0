@@ -1,5 +1,20 @@
 # Fixed branch-fuse carrier
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 Fit one F_FIB 2 A fuse, three F_RING 1 A fuses and one F_AUX 0.5 A fuse.
 Use the selected Littelfuse 251 axial parts in `electrical-design.json`.
 Keep all five protected branches. Do not bypass a fuse with a second feed.
@@ -38,7 +53,8 @@ before the fuses or other electronics. Insert the first from source −X through
 the second from source +Y through a 12 mm entry. The native check covers
 the complete nut lowering/entry paths and full pocket-roof bearing.
 
-Fit two M2 × 20 screws finished to 17.7 mm under head and two 0.35 mm M2
+Fit two selected SSC-M2-20-TI5 screws finished to 17.7 mm under head and
+two 0.35 mm M2
 washers from the rear. Deburr and gauge the finished lengths. The nominal
 tip extends 0.4 mm beyond the nut. The screw bores stop below the floor top;
 0.95 mm of nominal printed material covers each finished tip. The nut roof
@@ -51,7 +67,8 @@ run from Y = −7 to13 mm at X = 24.5 and32.5 mm. Each joint centre is at
 Z = 20.8 mm. Pin1 is at the lower coordinate; pin2 is at the higher one.
 In Wide, turn the whole carrier 90 degrees, then add [11,25] mm. Transform
 both ends and every support together. `branch_fuses.ports()` supplies these
-specified joint exits. Final wire cut lengths and fitted routes remain open.
+specified joint exits. The selected narrow wire cuts and fitted routes are
+in the complete loom record and fixed loom assembly guide.
 
 Use two Alpha Wire LC134 BK088 square-knot spot ties per fuse, over the
 insulated joint regions at2 and18 mm along the axis. Cut ten70 mm blanks.
@@ -69,9 +86,9 @@ Run `BranchFuseCheck.FCMacro` with `SC_CAD_DIR` set to this directory and
 and unchanged source hashes. It checks all22 physical products and5 assembly
 references, actual pair intersections, rear support, screw tips, covered
 nut seats and complete nut paths. It rejects missing parts, floating support
-and a short screw. This is a component check. Both complete enclosures,
-battery access, all fixed routes and service states still require installed
-checks. Count each selected fuse, tie and hardware item once. Do not use
+and a short screw. This is a component check. Use the complete narrow
+installed records for battery access, all fixed routes and service states.
+Count each selected fuse, tie and hardware item once. Do not use
 reference volumes as purchased parts or mass. Physical fit, joints, insulation,
 fault interruption, vibration, temperature and wearing remain unmeasured.
 

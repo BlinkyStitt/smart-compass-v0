@@ -1,6 +1,7 @@
 # Built-prototype qualification procedure
 
-All results are **unmeasured** for both designs. This procedure is part of the
+All physical results are **unmeasured** for the selected narrow prototype.
+The earlier wide design is an inactive archive. This procedure is part of the
 digital delivery. It does not record physical acceptance or require a human
 sign-off before the source work can finish. Manufacturing and these tests are
 outside that delivery. Keep the seven outcome records in
@@ -8,14 +9,14 @@ outside that delivery. Keep the seven outcome records in
 review can accept actual revision, conditions and results.
 
 Use the selected module circuit in [electrical-design.md](electrical-design.md).
-Do not test the rejected custom circuit as if it were this assembly. Complete
-the fitted harness, per-design inventory and native release checks before
-building from the design. The present PR does not meet that condition.
+Do not test the rejected custom circuit as if it were this assembly. Use only a generation with passing fitted-loom, complete narrow inventory and
+native release records before building from the design. Digital passing records
+do not qualify the supplied assembly or authorize wearing it.
 
 ## Record each test
 
 Keep separate records for fit, electrical behavior, temperature, optics, runtime
-and worn mass/balance. Identify Wide or Narrow and the material variant. Record:
+and worn mass/balance. Identify the narrow revision and selected ring material variant. Record:
 
 - The Git commit, native manifest and source/export hashes.
 - The actual cell model, lot, condition, initial voltage and charge method.
@@ -138,7 +139,7 @@ not establish cell-fed let-through or harness/contact withstand.
 
 For `thermal`, record a baseline and time series for cell, contacts, switch,
 latch, converter, fuse/joint areas, wire groups and front/rear touch surfaces.
-Use both complete closed enclosures at the declared ambient and normal rainbow
+Use the complete closed narrow enclosure at the declared ambient and normal rainbow
 settings. Record support, orientation, insulation from clothing and radio/load
 activity. Keep the first enclosed trials off-body. Include warm restart and
 the longest intended normal run.
@@ -161,8 +162,8 @@ four-hour-per-cell promise or delivered navigation-ready indication.
 
 Record optics separately under named ambient/light conditions. Inspect low-light
 glare, moving spatial color, mask continuity, stored glow, and light leaking
-through battery/access openings. Keep distinct Wide/Narrow and silver/glow
-results. A rendered night scene does not establish physical optical performance.
+through battery/access openings. Keep separate silver/glow results for the active narrow assembly. Preserve any
+older wide results as historical records. A rendered night scene does not establish physical optical performance.
 
 ## Complete worn mass, balance and comfort
 

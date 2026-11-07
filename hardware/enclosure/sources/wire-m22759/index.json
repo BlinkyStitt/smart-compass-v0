@@ -1,0 +1,23 @@
+{
+  "source": "https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf",
+  "revision": "Thermax catalog header2012-09-07,printedpp41-42",
+  "reviewed": "2026-11-05",
+  "retained_primary_pdf_sha256": "72ee89ff2113eb09389dd37345bb8fb22bef44edfc639ed1f869e7c209b6f996",
+  "capture": "Retained original primary PDF. Hash binds the reviewed pp41-42 catalog source.",
+  "facts": {
+    "M22759/16-18": {
+      "stranding": "19/30",
+      "nominal_bare_diameter_mm": 1.2192
+    },
+    "M22759/16-22": {
+      "stranding": "19/34",
+      "nominal_bare_diameter_mm": 0.7619999999999999
+    },
+    "M22759/18-26": {
+      "stranding": "19/38",
+      "nominal_bare_diameter_mm": 0.4826
+    }
+  },
+  "conditions": "Bare diameters and weights are nominal. Only explicitly marked insulation min/max and resistance maximum are limits. Tinned0.80/0.52mm targets do not guarantee supplied fit. Preserve all strands and original plated holes; inspect assembly before physical acceptance.",
+  "file": "amphenol-m22759.pdf"
+}

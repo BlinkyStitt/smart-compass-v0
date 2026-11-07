@@ -1,0 +1,524 @@
+{
+  "scope": "Non-optical printed case structure; physical strength and print quality unmeasured",
+  "lower_wall_radial_mm": [
+    91.66784829954797,
+    93.16784829954797
+  ],
+  "frame_inner_outer_mm": [
+    93.8,
+    95.3
+  ],
+  "rear_skin_mm": 0.8,
+  "rear_rib_mm": 3,
+  "rear_pocket_count": 101,
+  "rear_rib_layout": {
+    "radial_count": 24,
+    "angle_pitch_deg": 15,
+    "circular_radius_mm": 50
+  },
+  "rear_grid_kept_for_mounts": [
+    {
+      "mount": "ActionBezel"
+    },
+    {
+      "mount": "ActionCompression0"
+    },
+    {
+      "mount": "ActionCompression1"
+    },
+    {
+      "mount": "ActionSwitch"
+    },
+    {
+      "mount": "GuardMountScrew0"
+    },
+    {
+      "mount": "GuardMountScrew1"
+    },
+    {
+      "mount": "GuardMountWasher0"
+    },
+    {
+      "mount": "GuardMountWasher1"
+    },
+    {
+      "mount": "ModeBezel"
+    },
+    {
+      "mount": "ModeBezel"
+    },
+    {
+      "mount": "ModeCompression0"
+    },
+    {
+      "mount": "ModeCompression1"
+    },
+    {
+      "mount": "ModeSwitch"
+    },
+    {
+      "mount": "PowerDisconnect"
+    },
+    {
+      "mount": "StartBezel"
+    },
+    {
+      "mount": "StartCompression1"
+    },
+    {
+      "mount": "StartSwitch"
+    },
+    {
+      "mount": "BatteryCaseMountScrew0"
+    },
+    {
+      "mount": "BatteryCaseMountScrew1"
+    },
+    {
+      "mount": "BatteryCaseMountScrew2"
+    },
+    {
+      "mount": "BatteryCaseMountScrew3"
+    },
+    {
+      "mount": "BatteryCell"
+    },
+    {
+      "mount": "BatteryCradle"
+    },
+    {
+      "mount": "BatteryDoor"
+    },
+    {
+      "mount": "BatteryDoor"
+    },
+    {
+      "mount": "BatteryDoor"
+    },
+    {
+      "mount": "BatteryDoor"
+    },
+    {
+      "mount": "BatteryKeeperScrew"
+    },
+    {
+      "mount": "BatteryPullRibbon"
+    },
+    {
+      "mount": "RearScrew0"
+    },
+    {
+      "mount": "RearNut0"
+    },
+    {
+      "mount": "RearScrew1"
+    },
+    {
+      "mount": "RearNut1"
+    },
+    {
+      "mount": "RearScrew2"
+    },
+    {
+      "mount": "RearNut2"
+    },
+    {
+      "mount": "RearScrew3"
+    },
+    {
+      "mount": "RearNut3"
+    },
+    {
+      "mount": "RearScrew4"
+    },
+    {
+      "mount": "RearNut4"
+    },
+    {
+      "mount": "RearScrew5"
+    },
+    {
+      "mount": "RearNut5"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "ElectronicsShell"
+    },
+    {
+      "mount": "LatchCarrier"
+    },
+    {
+      "mount": "BlackPillNut0"
+    },
+    {
+      "mount": "BlackPillNut1"
+    },
+    {
+      "mount": "BlackPillNut2"
+    },
+    {
+      "mount": "BlackPillNut3"
+    },
+    {
+      "mount": "RadioNut0"
+    },
+    {
+      "mount": "RadioNut1"
+    },
+    {
+      "mount": "RadioNut2"
+    },
+    {
+      "mount": "BranchFuseCarrier"
+    },
+    {
+      "mount": "BranchFuseCarrier"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    },
+    {
+      "mount": "IntegratedRearMounts"
+    }
+  ],
+  "bearing_faces": [
+    {
+      "part": "ActionCompression0",
+      "preserved_contact_mm2": 24.12743157956961
+    },
+    {
+      "part": "ActionCompression1",
+      "preserved_contact_mm2": 24.127431579569638
+    },
+    {
+      "part": "GuardMountWasher0",
+      "preserved_contact_mm2": 15.833626974092565
+    },
+    {
+      "part": "GuardMountWasher1",
+      "preserved_contact_mm2": 15.833626974092557
+    },
+    {
+      "part": "ModeCompression0",
+      "preserved_contact_mm2": 24.127431579569606
+    },
+    {
+      "part": "ModeCompression1",
+      "preserved_contact_mm2": 24.127431579569635
+    },
+    {
+      "part": "PowerDisconnect",
+      "preserved_contact_mm2": 108.8441889245026
+    },
+    {
+      "part": "StartCompression0",
+      "preserved_contact_mm2": 24.127431579569613
+    },
+    {
+      "part": "StartCompression1",
+      "preserved_contact_mm2": 24.127431579569635
+    },
+    {
+      "part": "BatteryCradle",
+      "preserved_contact_mm2": 62.92079723112529
+    },
+    {
+      "part": "BatteryCradle",
+      "preserved_contact_mm2": 62.92079723112529
+    },
+    {
+      "part": "BatteryCradle",
+      "preserved_contact_mm2": 62.920797231125235
+    },
+    {
+      "part": "BatteryCradle",
+      "preserved_contact_mm2": 62.920797231125235
+    },
+    {
+      "part": "RearNut0",
+      "preserved_contact_mm2": 17.11806569560477
+    },
+    {
+      "part": "RearNut1",
+      "preserved_contact_mm2": 17.118065695604734
+    },
+    {
+      "part": "RearNut2",
+      "preserved_contact_mm2": 17.118065695604734
+    },
+    {
+      "part": "RearNut3",
+      "preserved_contact_mm2": 17.11806569560477
+    },
+    {
+      "part": "RearNut4",
+      "preserved_contact_mm2": 17.118065695604734
+    },
+    {
+      "part": "RearNut5",
+      "preserved_contact_mm2": 17.118065695604738
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 41.445333915870926
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117410208
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117412429
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117407881
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461768979
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461819342
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 143.10538796387195
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 119.91550810371065
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 118.54026660289962
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461821425
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461787846
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 41.44533391583941
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771206886
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117408807
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771207869
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 309.6323020096559
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 208.68964326956205
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 118.54026660290582
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 75.15310327745382
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461727901
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.0041891234617291925
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117411925
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117406847
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117407363
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.1027616111741003
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117412429
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117409807
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771165977
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117406847
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771165719
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 316.5866826207102
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 126.22916973094225
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 228.26349370914008
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461789395
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461789134
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.1027616111740987
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.1027616111740881
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117411929
+    },
+    {
+      "part": "LatchCarrier",
+      "preserved_contact_mm2": 701.3056290566251
+    },
+    {
+      "part": "BranchFuseCarrier",
+      "preserved_contact_mm2": 26.389378290154262
+    },
+    {
+      "part": "BranchFuseCarrier",
+      "preserved_contact_mm2": 26.389378290154262
+    }
+  ],
+  "suspension_removed_mm3": [
+    0.0,
+    0.0
+  ],
+  "case_saved_mm3": 43271.96237565625,
+  "rear_saved_mm3": 16428.108563470603
+}

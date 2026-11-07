@@ -52,6 +52,18 @@ def placement(part):
             'terminal_floor_clearance_mm':m['pcb_bottom_z_mm']-8.5-m['floor_bottom_z_mm']-m['floor_thickness_mm']}
 
 
+def envelope(part=None):
+    part=definition() if part is None else part
+    target=placement(part);m=part['mount']
+    from hardware_spec import WASHERS,nut_dimensions
+    washer=WASHERS['M2']['thickness'];_,nut=nut_dimensions('M2')
+    low=-washer-2
+    high=max(m['pcb_bottom_z_mm']+2.966,m['pcb_bottom_z_mm']+3.8,
+             target['pcb_top_z_mm']+m['clamp_thickness_mm']+washer+nut,
+             m['finished_screw_length_mm']-washer)
+    return {'size':[2*abs(m['floor_centre_xy_mm'][0])+m['floor_size_mm'][0],2*abs(m['floor_centre_xy_mm'][1])+m['floor_size_mm'][1],high-low],'z':low}
+
+
 def native_shapes(part=None):
     import FreeCAD as App
     import Part
@@ -102,7 +114,7 @@ def native_shapes(part=None):
 def native_check(shapes,part=None):
     import FreeCAD as App
     import Part
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     part=definition() if part is None else part
     if set(shapes)-{'rear_addition','rear_cutout','rear_bearing','targets'}!=PRODUCT_NAMES:
         raise ValueError('Latch component census is incomplete')
@@ -110,7 +122,7 @@ def native_check(shapes,part=None):
         shape=shapes[name]
         if not shape.isValid() or len(shape.Solids)!=1:raise ValueError('Invalid or detached latch part: '+name)
     for a,b in itertools.combinations(sorted(PRODUCT_NAMES),2):
-        if box_distance(shapes[a].BoundBox,shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(shapes[a]),bounds(shapes[b]))>1e-6:continue
         volume=shapes[a].common(shapes[b]).Volume
         if volume>1e-6:raise ValueError('Latch interference '+a+'/'+b+': '+str(volume))
     # Move the source PCB by0.05mm for an independent contact-area probe.

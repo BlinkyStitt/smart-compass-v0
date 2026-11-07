@@ -1,4 +1,4 @@
-import {evaluate, runtime, savings, usableEnergy, InputError, PowerEquilibriumError} from './energy.mjs';
+import {evaluate, referenceCases, runtime, savings, usableEnergy, InputError, PowerEquilibriumError} from './energy.mjs';
 
 const fields = [
   ['brightness', 'Electrical brightness (%)', 0, 100, .1],
@@ -29,10 +29,10 @@ export async function loadSample(set) {
 
 export function mountCalculator(root, model, manifest, loader = loadSample) {
   root.innerHTML = `<h2>One-cell energy calculator</h2>
-    <p id="energy-basis"></p><p id="energy-reference"></p>
+    <p id="energy-basis"></p><p id="energy-reference"></p><p>Changing these assumptions does not change the compatible cell or qualify a higher brightness.</p>
     <form id="energy-form" novalidate>
       <div class="energy-fields">
-        <div><label for="energy-design">Design</label><select id="energy-design" name="design"><option value="wide">Wide</option><option value="narrow">Narrow</option></select></div>
+        <div><label for="energy-design">Design</label><select id="energy-design" name="design"><option value="narrow">Active narrow prototype</option></select></div>
         <div><label for="energy-pattern">Pattern</label><select id="energy-pattern" name="pattern">${patterns.map((pattern, i) => `<option value="${pattern}">${names[i]}</option>`).join('')}</select></div>
         ${fields.map(([id, label, min, max, step]) => `<label for="energy-${id}">${label}<input id="energy-${id}" name="${id}" type="number" min="${min}" ${max === '' ? '' : `max="${max}"`} step="${step}" required aria-describedby="energy-error"></label>`).join('')}
       </div><button type="reset">Reset calculator</button>
@@ -45,7 +45,8 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
   const error = root.querySelector('#energy-error');
   const inputs = Object.fromEntries([...form.elements].filter(element => element.name).map(element => [element.name, element]));
   root.querySelector('#energy-basis').textContent = `${model.cell.name}. ${model.uncertainty}`;
-  root.querySelector('#energy-reference').textContent = `Reference: ${runtime(usableEnergy(model.cell.capacity_ah, model.cell.nominal_v, 0), model.reference.output_w / model.reference.efficiency).hours.toFixed(2)} calculated hours at ${model.reference.output_w} W and ${model.reference.efficiency * 100}% efficiency, before reserve and other losses. Swaps interrupt operation and startup.`;
+  const references = referenceCases(model);
+  root.querySelector('#energy-reference').textContent = `Selected-cell reference: ${references.selected_cell.hours.toFixed(2)} calculated hours at ${model.reference.output_w} W and ${model.reference.efficiency * 100}% efficiency, before reserve and other losses. Historical Efest comparison: ${references.legacy_efest.hours.toFixed(2)} hours under the same assumptions. Swaps interrupt operation and startup.`;
   let generation = 0;
   const cache = new Map();
   const numeric = key => {
@@ -115,7 +116,7 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
     }
   }
   function reset() {
-    inputs.design.value = 'wide'; inputs.pattern.value = 'rainbow';
+    inputs.design.value = 'narrow'; inputs.pattern.value = 'rainbow';
     for (const [key, value] of Object.entries(model.defaults)) {
       if (inputs[key]) inputs[key].value = display(['brightness', 'efficiency', 'reserve'].includes(key) ? value * 100 : value);
     }

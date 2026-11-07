@@ -1,5 +1,20 @@
 # BlackPill perimeter carrier
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 Use the selected WeAct V3.1 F411 board with U3 and P1/P2/P3 header parts absent.
 Fit fixed wires to the selected PCB pads. Preserve the existing circuit and
 firmware pin assignments. The carrier uses the original functional PCB outline
@@ -34,10 +49,12 @@ side lips and unused far end support the actual PCB face. The native check
 requires at least 80 mm² nominal bearing area; this is a design target, not a
 published force rating. The open centre leaves space below the components.
 
-Fit four printed edge retainers. At stations 0/1, use M2 × 12 screws finished
-to 8.75 mm in Wide or 10.75 mm in Narrow. At stations 2/3, fit the sense bridge over the retainer and the discharge
-bridge over it. Use M2 × 25 screws finished to 19.7 mm in Wide or 21.7 mm
-in Narrow. Deburr and check each finished screw.
+Fit four printed edge retainers. For the active Narrow stations 0/1, use
+SSCF-M2-16-TI5 stock screws finished to 10.75 mm. At stations 2/3, fit the
+sense bridge over the retainer and the discharge bridge over it. Keep the
+selected steel M2 x 25 screws finished to 21.7 mm at those two stations.
+Deburr and check each finished screw. The inactive Wide component fixture
+retains its separate 8.75 mm and 19.7 mm targets.
 The nominal tip extends 0.4 mm beyond the complete nut. The retainers seat on
 hard stops. Their 0.8 mm edge overlap captures the board with 0.25 mm nominal
 side clearance. Do not tighten them against the PCB or components.
@@ -60,8 +77,8 @@ The source models above 0.05 mm from PCB top lie between Y = 4.70846 and
 15.79880 mm. The 1.2 mm edge relief is a conservative nominal source space.
 The underside reference reserves 1 mm below the active PCB area and stops at
 X = 49.75 mm, before the unused end bearing. Do not add underside wiring at
-that bearing. All selected header pads lie at X ≤ 36.957 mm. Final joints,
-routes and strain relief remain open design work.
+that bearing. All selected header pads lie at X ≤ 36.957 mm. Use the complete
+narrow loom record for the selected joints, routes and strain relief.
 
 Run `BlackPillMountCheck.FCMacro` with `SC_CAD_DIR` set to this directory and
 `SC_BLACKPILL_CHECK_RESULT` set to a new result path. Require its named PASS and
@@ -79,7 +96,8 @@ retainers and their existing nuts. Its 1.35 mm floor starts 5.5 mm above PCB
 bottom. The feet seat on both retainer tops. The two bridges share the longer screws. They keep the same
 0.4 mm nominal projection through the nuts. The native check requires complete
 foot bearing, full nut engagement and no solid intersections. This is a
-component study; complete installed wiring and case acceptance remain open.
+component study; use the complete narrow installed records for fitted wiring
+and case geometry. Physical acceptance remains unmeasured.
 
 Fit the two selected 100 kohm MRS16 resistors parallel to source X. Their
 centres are [20, 5.5] and [20, 10.5] mm, 8.7 mm above PCB bottom. Finish each
@@ -92,9 +110,9 @@ Its 29 mm minimum lead length and 5 mm minimum mounting pitch support the
 specified trim. These values do not establish a supplied lead maximum.
 
 Lay the KEMET C315C104K5R5TA beside the resistors. In source coordinates, its
-maximum body spans X = 28..31.14 mm and Y = 7.095..10.905 mm. Its centre is
+maximum body spans X = 34..37.14 mm and Y = 7.095..10.905 mm. Its centre is
 8.7 mm above PCB bottom. Form the two leads towards +X to a 5 mm joint pitch
-at X = 34.14 mm, then trim them at X = 37.14 mm. Pin1 uses Y = 6.5 mm for
+at X = 40.14 mm, then trim them at X = 43.14 mm. Pin1 uses Y = 6.5 mm for
 SENSE; pin2 uses Y = 11.5 mm for GND. The source permits a 1.76..3.32 mm
 initial pitch and a 0.485..0.61 mm lead diameter. At the smallest pitch, the
 specified lead path uses about 6.41 mm of the 7 mm minimum stock length.
@@ -102,7 +120,10 @@ Support the body during forming. Do not put a bend at the body seal. The
 geometric allowance does not establish a qualified lead-forming process.
 
 Make separate fixed lap joints to insulated 26 AWG signal wire. Keep each
-capacitor joint inside X = 34.14..40 mm and a 3.5 mm outside-diameter gauge.
+capacitor joint inside X = 40.14..46 mm and a 3.5 mm outside-diameter gauge.
+The 3.5 mm wire strip starts at X = 42.5 mm. It overlaps the capacitor lead,
+trimmed at X = 43.14 mm, by 0.64 mm. The separate joint ties support these
+leads. Joint strength and installed retention remain unmeasured.
 Use TE Raychem RNF-100-1/8-0-SP sleeves. Recover and inspect them before
 installation near PETG. The source states a 95 C minimum shrink temperature
 and 121 C full-recovery temperature. The TE A2 drawing, 29-May-2025, gives
@@ -111,6 +132,10 @@ fully recovered wall. The product page lists a wider wall tolerance. Neither
 value is an installed joint OD limit. The finished 3.5 mm space is an assembly
 gauge target, not a manufacturer guarantee. Verify sleeve coverage, insulation
 and joint workmanship on the supplied parts. Do not shrink tubing in the case.
+
+Keep the capacitor and its three ties at the specified stations. Leave
+7 mm from the resistor pin2 exits to the capacitor-body tie knot. This
+reserves the 2 mm jacket cuffs. The spaces remain unmeasured.
 
 Use seven separate Alpha Wire LC134 BK088 square-knot spot ties through the
 bridge slots: two on each resistor assembly, one on the capacitor body, and
@@ -125,11 +150,12 @@ The selected Alpha specification gives 0.060 ± 0.006 inch width and
 an installed knot or component-retention rating. Use the current product
 specification; the older catalog gives different nominal thickness/strength.
 
-Use separate taps on a continuous SENSE wire. Connect R_SENSE_TOP.2,
-R_SENSE_BOTTOM.1, C_SENSE.1 and PA4 to that wire. Connect the two GND leads
-to the fixed BlackPill return outside its PCB pad. Put one conductor through
-each PCB hole. Final cut lengths, taps, strain relief and full installed
-routes remain required; this component check does not supply those results.
+Connect R_SENSE_TOP.2, R_SENSE_BOTTOM.1, C_SENSE.1 and PA4 at the selected
+fixed SENSE splice. Use its declared continuous bare core, separate branch
+leads, sleeve and carrier from `harness-splices.json` and `harness-routing.json`.
+Connect each GND lead to its assigned fixed return splice. Put one conductor
+through each PCB hole. Use the complete narrow cut list and restraint records;
+the isolated component check does not supply those installed results.
 
 Primary sources: [Vishay MRS16, 28724, 07-Mar-2016](https://www.vishay.com/docs/28724/mrs16m25.pdf),
 [KEMET individual part sheet, generated 05-Nov-2026](https://search.kemet.com/component-documentation/download/specsheet/C315C104K5R5TA),
@@ -158,11 +184,15 @@ The source-coordinate resistor starts are:
 | Part | Pin1 X | Y | Pin2 X |
 | --- | ---: | ---: | ---: |
 | R_A | 14 | 2.5 | 26 |
-| R_B | 29 | 2.5 | 41 |
+| R_B | 32 | 2.5 | 44 |
 | R_OUT | 14 | 9 | 26 |
-| R_OFF | 29 | 9 | 41 |
+| R_OFF | 32 | 9 | 44 |
 | R_BOOST | 14 | 15.5 | 26 |
-| R_LOAD | 29 | 15.5 | 41 |
+| R_LOAD | 32 | 15.5 | 44 |
+
+The opposed exits have a 6 mm gap. Each wire has a 2 mm jacket cuff,
+leaving 2 mm nominal free space between the two cuffs. Keep the complete
+3 mm cuff diameter. These spaces are assembly targets and remain unmeasured.
 
 Each axis is 16 mm above PCB bottom. Transform these points with the same
 BlackPill datum, 90-degree rotation and installed centre as the board.

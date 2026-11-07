@@ -9,6 +9,7 @@ import blackpill_drains
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
+CAPACITOR_X_SHIFT_MM=6
 PASSIVES=frozenset({'BlackPillSenseTop','BlackPillSenseBottom','BlackPillSenseCapacitor'})
 LACING=frozenset('BlackPillSenseLacing'+str(i) for i in range(7))
 PRINTED=frozenset({'BlackPillSenseBridge'})|blackpill_drains.PRINTED
@@ -45,8 +46,20 @@ def geometry(design=None):
             'lacing_stock_max_mm':[.066*25.4,.017*25.4],
             'lacing_finished_space_mm':[1.7,.5],
             'lacing_cut_targets_mm':[70]*7,'finished_joint_max_od_mm':3.5,
+            'capacitor_source_x_shift_mm':CAPACITOR_X_SHIFT_MM,
+            'source_joint_exits_mm':source_ports(),
             'cap_lead_stock_required_mm':required,'cap_finished_pitch_mm':5,
             'measurement_status':'unmeasured; all formed/joint/knot spaces are manufacturing targets'}
+
+
+def source_ports():
+    """Joint exits in source XY, above the PCB bottom; fixture is the owner."""
+    ports={name+'.'+pin:[x,y,8.7]
+           for name,y in [('R_SENSE_TOP',5.5),('R_SENSE_BOTTOM',10.5)]
+           for pin,x in [('1',14),('2',26)]}
+    ports.update({'C_SENSE.'+pin:[40+CAPACITOR_X_SHIFT_MM,y,8.7]
+                  for pin,y in [('1',6.5),('2',11.5)]})
+    return ports
 
 
 def augment(products,z,width,body_rows,design=None):
@@ -75,13 +88,14 @@ def augment(products,z,width,body_rows,design=None):
         body=body.fuse(cylinder(.25,12,14,y,z+8.7,App.Vector(1,0,0))).removeSplitter()
         added[name]=body;targets[name]=box(14,26,y-1.75,y+1.75,z+6.95,z+10.45)
     name='BlackPillSenseCapacitor'
-    body=box(28,31.14,9-3.81/2,9+3.81/2,z+8.7-1.27,z+8.7+1.27)
+    dx=CAPACITOR_X_SHIFT_MM
+    body=box(28+dx,31.14+dx,9-3.81/2,9+3.81/2,z+8.7-1.27,z+8.7+1.27)
     for sign in (-1,1):
-        body=body.fuse(lead([(31.14,9+sign*1.27,z+8.7),(34.14,9+sign*2.5,z+8.7),(37.14,9+sign*2.5,z+8.7)],.305))
+        body=body.fuse(lead([(31.14+dx,9+sign*1.27,z+8.7),(34.14+dx,9+sign*2.5,z+8.7),(37.14+dx,9+sign*2.5,z+8.7)],.305))
     added[name]=body.removeSplitter()
-    targets[name]=box(28,31.14,9-3.81/2,9+3.81/2,z+8.7-1.27,z+8.7+1.27).fuse(
-        box(31.14,34.14,6.195,11.805,z+8.395,z+9.005))
-    for y in (6.5,11.5):targets[name]=targets[name].fuse(box(34.14,40,y-1.75,y+1.75,z+6.95,z+10.45))
+    targets[name]=box(28+dx,31.14+dx,9-3.81/2,9+3.81/2,z+8.7-1.27,z+8.7+1.27).fuse(
+        box(31.14+dx,34.14+dx,6.195,11.805,z+8.395,z+9.005))
+    for y in (6.5,11.5):targets[name]=targets[name].fuse(box(34.14+dx,40+dx,y-1.75,y+1.75,z+6.95,z+10.45))
     for key,target in targets.items():
         if added[key].cut(target).Volume>1e-6:raise ValueError('Passive assembly space misses its nominal source body/lead: '+key)
         added[key+'Assembly']=target.cut(added[key]).removeSplitter()
@@ -90,8 +104,8 @@ def augment(products,z,width,body_rows,design=None):
     # shape, tension or installed retention measurement.
     stations=[(17,3.75,7.25,z+10.45,-1),(23,3.75,7.25,z+10.45,-1),
               (17,8.75,12.25,z+10.45,1),(23,8.75,12.25,z+10.45,1),
-              (29,9-3.81/2,9+3.81/2,z+9.97,-1),
-              (36.5,4.75,8.25,z+10.45,-1),(36.5,9.75,13.25,z+10.45,1)]
+              (29+dx,9-3.81/2,9+3.81/2,z+9.97,-1),
+              (36.5+dx,4.75,8.25,z+10.45,-1),(36.5+dx,9.75,13.25,z+10.45,1)]
     for i,(x,low,high,top,side) in enumerate(stations):
         outer=box(x-.85,x+.85,low-.5,high+.5,z+5,top+.5)
         inner=box(x-1,x+1,low,high,z+5.5,top)

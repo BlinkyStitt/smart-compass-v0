@@ -1,5 +1,20 @@
 # Radio edge carrier
 
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
 Use Adafruit 3072 RFM95W with JP1, JP2, JP3 and optional X1 antenna connector
 parts uninstalled. Fit the selected fixed wires directly to their source pads.
 Leave JP1.1–JP1.5 and JP3.3 EN without external leads. Use JP2.1 ANT for the
@@ -35,8 +50,9 @@ captures 0.6 mm of the PCB edge. The 1.85 mm slot leaves 0.25 mm play for the
 1.6 mm nominal PCB. The 0.25 mm side gap and all printed dimensions are assembly
 targets. They are not guaranteed tolerances of a supplied board or print.
 
-Use three M2 × 12 screws, finished under the head to 8.75 mm in Wide or
-10.75 mm in Narrow. Deburr and inspect the ends. Nominal tip projection is
+For active Narrow, use three SSCF-M2-16-TI5 stock screws finished to
+10.75 mm under the head. The inactive Wide component fixture retains its
+8.75 mm target. Deburr and inspect the ends. Nominal tip projection is
 0.4 mm beyond the complete nut. Tighten onto the hard stops; do not squeeze
 the PCB. Remove all three retainers and screws for straight board insertion.
 The component check covers a continuous 20 mm vertical motion before wiring

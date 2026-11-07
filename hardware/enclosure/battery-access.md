@@ -1,9 +1,12 @@
 # Shared removable-cell compartment
 
-This source implements a **compartment component study** for both enclosures.
-The complete installed CAD, harness, inventory and service release still need
-integration. The existing canonical files continue to describe the pouch design.
-Do not use a passing component check as complete assembly or physical acceptance.
+The selected narrow prototype uses this shared mechanism. The wide branch of
+the factory remains an inactive reference; it is not an installed release.
+Use the [actual narrow fit record](../../designs/stacked/exports/installed-fit-check.json),
+[full loom](../../designs/stacked/exports/loom-check.json),
+[inventory](../../designs/stacked/exports/inventory.md) and
+[illustrated service guide](../../designs/stacked/exports/service-guide.svg).
+A component check alone does not establish full assembly or physical acceptance.
 
 The [electrical input record](../../site/electrical-inputs.json) owns the selected
 protected XTAR 21700 6000 mAh cell, including its 22.1 x 75.3 mm cell-only maxima
@@ -62,10 +65,15 @@ figure does not rate the sewn joint or the installed mechanism.
 [Maker](https://www.ballyribbon.com/mil-spec/5038),
 [MIL-DTL-5038K, 22 June 2016, Table III, manufacturer mirror](https://acw1.com/wp-content/uploads/2024/08/ACW-MIL-DTL-5038K.pdf).
 
-The JSON selects the hinge, keeper, clamp and four case-mount fastener sets.
-The case mounts useM3x10 screws, M3 washers and M3 nuts. Their clamp stack
-bears on a2mm rear interface without a floating flange. The hinge pin has a
-head and retained nut larger than its bore. Two printed spacers and two M3
+The compartment JSON owns the hinge, keeper and clamp geometry. For the active
+Narrow assembly, use `designs/stacked/fasteners.json` for its 52 named titanium
+cap screws; the service ZIP includes `04-REFERENCE/fasteners.json`. The four
+contact-clamp screws use SSCF-M2-16-TI5 stock finished to 13 mm under the head.
+The four case mounts use ZS755M3X10 screws at 10 mm, M3 washers and M3 nuts.
+Keep the other selected hinge/keeper hardware and all washers and nuts. Gauge
+the actual stock, finished lengths, threads and full engagement. The case-mount
+clamp stack bears on a 2 mm rear interface without a floating flange. The hinge
+pin has a head and retained nut larger than its bore. Two printed spacers and two M3
 washers limit its nominal axial play to 0.2 mm. The keeper uses a button-head screw
 and jammed nuts with specified rotational play. These parts remain installed
 during ordinary access. Verify actual hardware, thread retention, clearances
@@ -104,9 +112,10 @@ The flexible ribbon uses a representative maximum-stock drape.
 These checks do not prove print tolerance, spring force, sewn strength, latch
 strain or fatigue, compressed/trapped-ribbon response, dust sealing, actual hand
 use, worn mass, electrical performance or temperature. Those physical outcomes
-remain **unmeasured**. The common mechanism also needs both complete installed
-assemblies, wire exits/strain relief, guarded power controls, the full mass and
-balance ledgers, and illustrated service instructions before digital closeout.
+remain **unmeasured**. Only the selected narrow assembly enters the release
+contract. Its full native build adds the complete installed loom, strain relief,
+guarded controls, mass and balance ledgers, and illustrated service instructions.
+The wide component model stays an inactive study.
 
 The native function also accepts named fixed `surroundings`. It checks every
 supplied solid against the closed components and all service motions. The
@@ -142,10 +151,12 @@ atZ2mm; at least1.3814132935mm remains below the fuse cavity. This specifies
 connected geometry, not a measured bearing against the assembled rear skin.
 
 The source wire maximum OD remains1.8542mm. The6mm bend radius exceeds
-three diameters. Joint soldering, fuse lacing, insulation inspection and
-strain relief still need assembly qualification and downstream design. No
-accepted full harness follows from this component study. StandardM3x10 case
-screws remain; the smaller wire-only tubes remove the need to shorten them.
+three diameters. Joint soldering, fuse lacing, insulation and strain relief
+remain physically unmeasured. The complete narrow loom record supplies the
+downstream design; the component study alone does not supply that result.
+Use the selected ZS755M3X10 case screws at their 10 mm finished length in
+`designs/stacked/fasteners.json`. Keep the washers and nuts. The wire-only
+tubes leave room for that complete stack.
 [Wire catalog, printed page 41](https://www.amphenol-cit.com/wp-content/uploads/pdfs/prodinfo/M22759.pdf).
 
 The 6 mm radius exceeds three times the wire's maximum diameter. This uses
@@ -159,10 +170,11 @@ outside bends.
 The positive lead ends at the 20 x 5 x 5 mm main-fuse reservation. Its integral
 insulating holder opens toward the rear, outside the cell opening. Fit it
 before bolting down the cradle. Four side-wall slots carry two joint restraints.
-The two selected main-fuse ties and joint gauge are specified below. Downstream
-wiring, actual strain relief, fault withstand and both complete wired assemblies
-remain incomplete.
-The electrical `fitted-harness` failure stays active.
+The negative-X exit has a 3.5 mm diameter for the finished 3 mm sleeve and
+0.25 mm radial clearance. Its housing retains a 2.35 mm wall target. These
+are assembly dimensions, not supplied-fit or strength guarantees.
+The two selected main-fuse ties and joint gauge are specified below. The generated narrow full-loom record owns downstream cuts, routes and restraints.
+Supplied fit, insulation, restraint force and fault withstand remain unmeasured.
 
 The rear opening is 106 mm long. The end walls stay 2 mm thick. The long side
 walls are 1.35 mm thick, with the existing 2 mm lower lip and 1.5 mm ceiling.
@@ -170,13 +182,16 @@ Each actual rear panel must support the full case-mount bearing ring at the
 specified 2 mm datum. The checker rejects a thin rear skin below that datum.
 These geometry checks do not establish printed strength.
 
-For initial assembly, thread each unterminated50mm blank through its fixed tube.
-Pull its contact end into the empty cell bay. Solder the contact cup off the
-printed part. Let the joint cool completely. Pull the far wire end through the
-fuse outlet while you slide the cup into its collar. Fit and gauge the clamps
-and shims. Solder the fuse end last. Keep the wire insulation outside the cup;
-the printed collar supplies secondary insulation. This sequence is a specified
-process. Joint quality, retention and physical assembly remain unmeasured.
+For initial assembly, read the generated full wire cut list. Use the specified
+positive-contact blank. Use the fullW044 blank for the negative contact-to-boost
+lead; the conduit datum is not a tail cut or splice. Thread each unterminated
+lead through its tube before closing the carriers. Pull the cup end into the
+empty bay and solder it outside the printed part. Let it cool. Draw the wire
+through while you seat the cup and collar. Fit and gauge clamps and shims.
+Solder the positive fuse end last. Route the continuous negative wire to
+BOOST.X2.1 and clamp its untinned stripped end. Keep insulation outside each
+cup and clamp. The printed collar supplies secondary insulation. Joint quality,
+strain relief, physical assembly and fault withstand remain unmeasured.
 
 ## Main-fuse joint restraints
 
@@ -190,7 +205,7 @@ Littelfuse 251, GK 18-Aug-2026, pages 1–3. Keep the nominal lead/body lengths
 separate from the 2.80 mm maximum body diameter.
 See the [current fuse source and joint process](branch-fuses.md).
 
-Pin 1 is the right end at X51 mm in both designs. It connects to the fixed
+In the selected narrow assembly, pin1 is the right end atX51mm. It connects to the fixed
 positive contact lead. Pin 2 is the left end at X31 mm and goes to FUSED_CELL
 and S1.1. Both joint axes are Y−69.5 mm/Z8.3814132935 mm. These are assembly
 coordinates. The fixed contact lead includes its existing 3.5 mm stripped-end
@@ -200,6 +215,11 @@ RNF-100-1/8 sleeves. Recover and inspect them outside PETG. Gauge the central
 body and both completed joints against their separate limits. In particular,
 3.5 mm is a finished joint target, not a vendor guarantee for a soldered lap
 joint. Joint quality, actual fit and insulation remain unmeasured.
+
+The downstream housing opening has a 3.5 mm diameter. It clears the 3 mm
+recovered-sleeve gauge by 0.25 mm radially and retains a 2.35 mm housing wall.
+The contact conduits keep their specified bore and wall. These dimensions are
+fabrication targets. Check the finished sleeve and printed opening before assembly.
 
 Use two Alpha Wire LC134 BK088 square-knot spot ties, at X33 and X49 mm.
 Cut 70 mm blanks. Each tie captures its sleeved lead and the negative-Y
@@ -226,3 +246,30 @@ holder. Gauge every completed knot and trimmed-tail space. The component
 check requires both ties and rejects a tie that intrudes into the joint or
 housing. Physical fit, retention, temperature, insulation and fault withstand
 remain unmeasured.
+
+## Narrow fitted service
+
+Support the pendant and keep the free necklace span above it, clear of the bay
+and controls. Put S1 fully OFF and remove USB, SWD and other live interfaces.
+Open the captive door. Hold the cell, release its independent keeper and pull
+the ribbon. Inspect the wrapper, end insulator, guides and contacts. Insert one
+compatible protected XTAR21700 6000mAh button-top to the permanent+/-marks.
+Close the keeper and door; inspect the catch. Select ON and press START.
+
+No reset dwell is qualified. A rapid replacement may retain state. Light does
+not establish GPS acquisition, radio synchronization or navigation readiness.
+After heat, damage or repeated darkness, stop and service; do not bypass a fuse
+or repeatedly cycle a fault. Charge removed cells off-body. Remove the cell for
+USB5V service and keep S1 OFF.
+
+Ordinary cell service leaves the full loom fitted. Rear/radio maintenance requires
+releasing every bridging wire at both ends and removing loose wires, insulation
+and boots. Fixed PCB-backed splice carriers stay on the original board. Empty
+the bay and put the captive door at its open stop before radio withdrawal.
+The generated antenna-service record states all removal preconditions.
+
+The lower carrier has two source-defined cable passages below the LED band.
+Do not trap a lead when fitting the rear. Fit and inspect the removable cable
+seals. The existing seal allowance remains in worn mass; no dust/water rating
+is established. Inspect insulation, supplied fit and all physical outcomes
+under [the qualification procedure](qualification-plan.md).

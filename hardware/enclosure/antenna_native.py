@@ -1,11 +1,23 @@
 """FreeCAD solids and distance checks for the two fixed antenna installations."""
 
 import math
+import json
 
 import FreeCAD as App
 import Part
 
 import antenna
+import radio_mount
+import branch_fuses
+import blackpill_mount
+import gps_mount
+import sparkle_mount
+import imu_mount
+import boost_mount
+import latch_mount
+import capacitor_mount
+import battery_access
+import control_fixture
 
 
 def path(route):
@@ -54,13 +66,6 @@ def retention_windows(route):
                               for x, y, z in map(route.point, route.restraints)])
 
 
-def radio_shelf_extension(route, radio_y):
-    lo = min(radio_y, *(route.point(v)[1]-3 for v in route.restraints))
-    hi = max(radio_y, *(route.point(v)[1]+3 for v in route.restraints))
-    spine = Part.makeBox(6, hi-lo, 2, App.Vector(route.feed[0]-3, lo, 2))
-    return spine.multiFuse(restraints(route, 2)).removeSplitter()
-
-
 def reserved_shapes(p, compact):
     result = []
     for name, lo, hi, gap in antenna.reservations(p, compact):
@@ -79,10 +84,10 @@ def check(p, objects, compact=False):
     if abs(centreline.Length-route.length) > 1e-6:
         raise ValueError(route.design + ' antenna: native centreline is not 78 mm')
     windows = retention_windows(route)
-    support = 'RadioShelf' if compact else 'RearPlate'
-    radio_names = {'Radio'} if compact else {'radioPCB', 'radioComponents'}
-    height = (next(e['size'][2] for e in p['electronics'] if e['name']=='Radio')
-              if compact else p['radio_height'])
+    support = 'RadioCarrier'
+    radio_names = {'RadioPCB','RadioLoadedReservation','RadioUnderboardReservation'}
+    envelope=radio_mount.envelope(route.feed[2],0 if compact else 180)
+    height=envelope['size'][2]-(route.feed[2]-envelope['z'])
     pad = feed_relief(route, height)
     gaps = {}
     for obj in objects:
@@ -108,7 +113,7 @@ def check(p, objects, compact=False):
     return gaps
 
 
-def removal(p, fixed, compact=False):
+def removal(p, fixed, carriers, case_depth_mm, compact=False):
     """Continuous -Z withdrawal: swept wire surfaces plus conservative carrier boxes.
 
     Rear cover and its seals are released first on the compact design. On the
@@ -116,52 +121,68 @@ def removal(p, fixed, compact=False):
     may bridge the moving assembly: disconnect it with the rear supported.
     """
     route = antenna.installation(p, compact)
+    if not isinstance(carriers,dict) or set(carriers)!=radio_mount.CHECK_NAMES:
+        raise ValueError(route.design+' antenna removal requires every actual radio product/reference')
+    for name,shape in carriers.items():
+        if not shape.isValid() or len(shape.Solids)!=1:raise ValueError('Invalid radio removal solid: '+name)
     # All bridging harnesses are unplugged; the remaining fixed wiring must
     # stay in the reservation throughout withdrawal as well as when assembled.
     fixed = list(fixed) + [(name, shape) for name, shape, _ in reserved_shapes(p, compact)
                            if 'harness' in name]
-    travel = p.get('case_depth', 80) + route.top + 10
+    if not math.isfinite(case_depth_mm) or case_depth_mm<=0:raise ValueError('Use the actual resolved body depth for withdrawal')
+    travel = case_depth_mm + route.top + 10
     centreline = path(route)
     end = centreline.copy()
     end.translate(App.Vector(0, 0, -travel))
     # The vertical feed edge sweeps into itself; its extremities suffice.
     sweep = Part.makeCompound([centreline, end] + [edge.extrude(App.Vector(0, 0, -travel))
                               for edge in centreline.Edges if edge.BoundBox.YLength > 1e-7])
+    failures=[];wire_gaps={}
     for name, shape in fixed:
         distance = sweep.distToShape(shape)[0] - route.envelope
+        wire_gaps[name]=distance
         if distance < route.plastic_gap - 1e-6:
-            raise ValueError(f'{route.design} antenna removal: {name} clearance {distance:.3f} mm')
-    # Full carrier including the radio and both restraints, not just the wire.
-    carriers = restraints(route, 2 if compact else p['rear_skin_thickness']-.2)
-    if compact:
-        radio = next(e for e in p['electronics'] if e['name']=='Radio')
-        w, length, h = radio['size']; x, y = radio['centre']; z = radio['z']
-        carriers.append(radio_shelf_extension(route, y))
-    else:
-        w, length, h = (p['radio_'+s] for s in ('width', 'length', 'height'))
-        x, y, z = p['radio_x'], p['radio_y'], p['rear_thickness']+4
-    carriers.append(Part.makeBox(w+1, length+1, h+1, App.Vector(x-w/2-.5, y-length/2-.5, z-1)))
-    for carrier in carriers:
-        bb = carrier.BoundBox
-        swept_box = Part.makeBox(bb.XLength, bb.YLength, bb.ZLength+travel,
-                                 App.Vector(bb.XMin, bb.YMin, bb.ZMin-travel))
-        for name, shape in fixed:
-            if swept_box.common(shape).Volume > 1e-7:
-                raise ValueError(f'{route.design} antenna carrier removal: {name} obstructs radio/restraints')
+            failures.append({'part':name,'stage':'wire','clearance_mm':distance,'required_mm':route.plastic_gap})
+    # Continuous exact-solid distance bounds avoid filling the empty regions
+    # of the branched carrier. Every actual source product remains required.
+    from solid_clearance import translation_clearance
+    required=battery_access.definition()['removal']['noncontact_clearance_mm']
+    certified={}
+    for moving_name,carrier in carriers.items():
+        certified[moving_name]={}
+        for name,shape in fixed:
+            try:
+                certified[moving_name][name]=translation_clearance(carrier,shape,(0,0,-travel),required)
+            except ValueError as error:
+                failures.append({'part':name,'moving':moving_name,'stage':'radio/restraint carrier','detail':str(error)})
+    if failures:
+        raise ValueError(route.design+' antenna removal: '+json.dumps(failures,allow_nan=False))
+    return {'scope':'continuous source-solid translation','travel_mm':travel,'required_gap_mm':required,'required_wire_gap_mm':route.plastic_gap,'wire_gaps_mm':wire_gaps,'certified_pairs':certified}
+
+
+def radio_products(doc):
+    result={}
+    for name in radio_mount.CHECK_NAMES:
+        obj=doc.getObject(name)
+        if obj is None or not hasattr(obj,'Shape') or obj.Shape.isNull():raise ValueError('Missing actual radio service product: '+name)
+        result[name]=obj.Shape
+    return result
 
 
 def original_fixed(doc):
     # Classify actual products, never hidden construction tools. Rear screws and
     # washers are removed; their nuts and every body/anchor fastener stay fixed.
+    owned=(branch_fuses.CHECK_NAMES|radio_mount.CHECK_NAMES|blackpill_mount.CHECK_NAMES|gps_mount.CHECK_NAMES|sparkle_mount.CHECK_NAMES
+           |imu_mount.CHECK_NAMES|boost_mount.CHECK_NAMES|latch_mount.PRODUCT_NAMES|capacitor_mount.CHECK_NAMES
+           |battery_access.PART_NAMES|control_fixture.PRODUCT_NAMES)
     fixed = []
-    for group in (doc.Manufactured, doc.Electronics, doc.Optics):
+    for group in (doc.Manufactured, doc.Electronics, doc.Hardware, doc.Optics):
         for obj in group.Group:
             name = obj.Name
+            if name in owned:continue
             if name in {'RearPlate', 'ServiceCover', 'HatchGasket', 'ExternalPowerBlank', 'RadioAntenna'}:
                 continue
             if name.startswith(('Vent', 'ControlMembrane', 'RearButton', 'BatteryEnvelope', 'BatteryHeadroom', 'Hatch', 'Sparkle')) or 'Components' in name:
-                continue
-            if name.startswith(('sparkle', 'blackpill', 'gps', 'imu', 'radio', 'sense', 'power')):
                 continue
             if name.startswith('Rear') and name.endswith(('Screw', 'Washer')):
                 continue
@@ -169,9 +190,11 @@ def original_fixed(doc):
     return fixed
 
 
-def regression_checks(p, compact=False):
+def regression_checks(p, case_depth_mm, compact=False):
     """Exercise the same native predicates against intentional boundary failures."""
     from types import SimpleNamespace
+    from solid_clearance import native_translation_regressions
+    native_translation_regressions()
     route = antenna.installation(p, compact)
     # The lowest permitted wire crown must stand proud of the saddle walls;
     # otherwise a tightened tie could leave the wire free to slide under it.
@@ -189,19 +212,24 @@ def regression_checks(p, compact=False):
             raise AssertionError(route.design + ': antenna regression missed ' + name)
     rejects(lambda: check(p, [obstacle('ThinScrew',x,y,z)], compact), 'ThinScrew')
     rejects(lambda: check(p, [obstacle('Tolerance',x+.65,y,z)], compact), 'Tolerance')
+    radio_z=route.feed[2];rotation=0 if compact else 180
+    xy=next(e for e in p['electronics'] if e['name']=='Radio')['mount_datum'] if compact else (p['radio_x'],p['radio_y'])
+    actual=radio_mount.carrier_with_antenna(radio_mount.native_shapes(radio_z,rotation),route,xy)
+    actual_carriers={name:actual[name].copy() for name in radio_mount.CHECK_NAMES}
+    for shape in actual_carriers.values():shape.translate(App.Vector(*xy,0))
     lowered = obstacle('RemovalSeal',x,y,z-7.215)
     check(p, [lowered], compact)
-    rejects(lambda: removal(p, [(lowered.Name,lowered.Shape)], compact), 'RemovalSeal')
+    rejects(lambda: removal(p,[(lowered.Name,lowered.Shape)],actual_carriers,case_depth_mm,compact), 'RemovalSeal')
     fx, fy, fz = route.feed
     rejects(lambda: check(p, [obstacle('UnexpectedFeedMetal',fx,fy,fz+1)], compact), 'UnexpectedFeedMetal')
     # Contact permissions are local to the named part and bounded in space.
-    radio = 'Radio' if compact else 'radioPCB'
+    radio = 'RadioPCB'
     allowed = obstacle(radio,fx,fy,fz+1)
     allowed.Shape = allowed.Shape.fuse(Part.makeBox(1,1,1,App.Vector(0,0,-10)))
     check(p, [allowed], compact)
     outside = obstacle(radio,x,y,z)
     rejects(lambda: check(p, [outside], compact), radio)
-    support = 'RadioShelf' if compact else 'RearPlate'
+    support = 'RadioCarrier'
     rejects(lambda: check(p, [obstacle(support,x,y,z)], compact), support)
     # A support can touch the wire only inside its saddle windows.
     sx, sy, sz = route.point(route.restraints[0])

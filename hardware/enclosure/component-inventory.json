@@ -1,6 +1,14 @@
 {
   "format_version": 1,
   "source_review_date": "2026-10-12",
+  "scope": "Historical wide inventory and shared hardware/material allowances. Wide is an inactive archive. Use the owners below for the active narrow prototype; do not apply the historical pouch or wide quantities to it.",
+  "active_narrow_inventory": {
+    "module_records": "hardware/enclosure/narrow-inventory-records.json",
+    "accounting_owner": "hardware/enclosure/narrow_inventory.py",
+    "wire_cuts": "hardware/enclosure/harness-routing.json",
+    "generated_installed_census": "designs/stacked/exports/parts.json",
+    "physical_acceptance": "unmeasured"
+  },
   "hardware": {
     "nuts": {
       "M3": {

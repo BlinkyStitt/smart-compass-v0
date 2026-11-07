@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from electrical_design import assess
 from fibonacci_board import FILES, SOURCE, terminals
@@ -66,7 +67,11 @@ class FibonacciTerminalTests(unittest.TestCase):
                     terminals(self.part, root)
 
     def test_pad_evidence_does_not_claim_a_fitted_harness(self):
-        report = assess(self.design)
+        actual=Path.read_text
+        def read(path,*args,**kwargs):
+            if path==HERE/'harness-routing.json':raise FileNotFoundError('Required selected route record missing')
+            return actual(path,*args,**kwargs)
+        with patch.object(Path,'read_text',read):report=assess(self.design)
         self.assertEqual({row['id'] for row in report['failures']}, {'fitted-harness'})
         self.assertEqual(report['fibonacci_source_terminals'], terminals(self.part))
         self.assertEqual(report['physical_acceptance'], 'unmeasured')

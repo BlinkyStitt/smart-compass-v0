@@ -1,7 +1,7 @@
 """Five selected axial branch fuses on one removable printed carrier.
 
 The drawing's nominal lead/body lengths are not guaranteed maxima. Completed
-20x5x5mm insulated assemblies are specified gauge targets, still unmeasured.
+16.8x5x5mm narrow and20x5x5mm wide insulated assemblies are specified gauge targets, still unmeasured.
 """
 import itertools
 import json
@@ -26,7 +26,7 @@ def geometry(design='narrow',electrical=None):
     electrical=json.loads((HERE/'electrical-design.json').read_text()) if electrical is None else electrical
     for name,part in PARTS.items():
         row=electrical['parts'][name]
-        if (row['part']!=part or row.get('loaded_envelope_mm')!=[20,5,5]
+        if (row['part']!=part or row.get('loaded_envelope_mm')!=[16.8,5,5] or row.get('archived_wide_loaded_envelope_mm')!=[20,5,5]
                 or row.get('source_revision')!='251 series, GK 18-Aug-2026, pp1-3; selected ratings0.5/1/2/4A'):
             raise ValueError('Review changed branch fuse/assembly space: '+name)
     return {'design':design,'rotation_deg':90 if design=='wide' else 0,
@@ -35,8 +35,11 @@ def geometry(design='narrow',electrical=None):
             'floor_bottom_z_mm':16.95,'floor_thickness_mm':1.35,
             'fuses':{'F_FIB':[0,-3,0],'F_RING1':[0,5,0],'F_RING2':[0,13,0],
                      'F_RING3':[24.5,-7,90],'F_AUX':[32.5,-7,90]},
-            'fuse_body_diameter_max_mm':2.8,'fuse_body_length_nominal_mm':7.11,
-            'fuse_lead_diameter_nominal_mm':.64,'assembly_target_mm':[20,5,5],
+            'fuse_body_diameter_nominal_mm':2.8,'fuse_body_length_nominal_mm':7.11,
+            'fuse_lead_diameter_nominal_mm':.64,'assembly_target_mm':[16.8 if design=='narrow' else 20,5,5],
+            'solder_overlap_target_mm':2.8 if design=='narrow' else 3.5,
+            'body_to_solder_clearance_target_mm':2 if design=='narrow' else 2.9,
+            'hand_solder_iron_c':{'target':350,'tolerance':5,'maximum_heating_seconds':5},
             'stock_screw':'M2x20; finish17.7mm under head','stock_screw_tip_projection_mm':.4,
             'lacing':'Alpha Wire LC134 BK088; ten70mm blanks; separate square-knot spot ties',
             'insulation':'TE Raychem RNF-100-1/8-0-SP; recover before fitting PETG',
@@ -55,7 +58,7 @@ def ports(design='narrow'):
     data=geometry(design);angle=math.radians(data['rotation_deg']);c,s=math.cos(angle),math.sin(angle);dx,dy=data['translation_xy_mm'];out={}
     for name,(x,y,rotation) in data['fuses'].items():
         a=math.radians(rotation)
-        for pin,t in (('1',0),('2',20)):
+        for pin,t in (('1',0),('2',data['assembly_target_mm'][0])):
             px,py=x+t*math.cos(a),y+t*math.sin(a)
             out[name+'.'+pin]=[dx+c*px-s*py,dy+s*px+c*py,20.8]
     return out
@@ -88,14 +91,16 @@ def native_shapes(design='narrow'):
         points=[App.Vector(x+a,y+b,15.35) for a,b in hexagon(0,0,flat)]
         products['BranchFuseMountNut'+str(i)]=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,nh)).cut(cylinder(1.1,nh+.2,x,y,15.25))
         probes.append(cylinder(3.1,.05,x,y,1.95).cut(cylinder(1.1,.1,x,y,1.925)))
+    length=data['assembly_target_mm'][0]
+    if length<7.11+2*(data['solder_overlap_target_mm']+data['body_to_solder_clearance_target_mm']):raise ValueError('Finished fuse target leaves insufficient nominal body, joint overlap and body-to-solder clearance')
     for index,(name,(x,y,rotation)) in enumerate(data['fuses'].items()):
-        body=Part.makeCylinder(1.4,7.11,App.Vector(6.445,0,20.8),App.Vector(1,0,0))
-        body=body.fuse(Part.makeCylinder(.32,20,App.Vector(0,0,20.8),App.Vector(1,0,0))).removeSplitter()
-        target=box(0,20,-2.5,2.5,18.3,23.3)
+        body=Part.makeCylinder(1.4,7.11,App.Vector((length-7.11)/2,0,20.8),App.Vector(1,0,0))
+        body=body.fuse(Part.makeCylinder(.32,length,App.Vector(0,0,20.8),App.Vector(1,0,0))).removeSplitter()
+        target=box(0,length,-2.5,2.5,18.3,23.3)
         ref=target.cut(body).removeSplitter()
         for shape in (body,ref):shape.rotate(App.Vector(),App.Vector(0,0,1),rotation);shape.translate(App.Vector(x,y,0))
         products['BranchFuse'+name]=body;products['BranchFuse'+name+'Assembly']=ref
-        for j,t in enumerate((2,18)):
+        for j,t in enumerate((2,length-2)):
             outer=box(t-.85,t+.85,-3,3,16.45,23.8);inner=box(t-1,t+1,-2.5,2.5,16.95,23.3)
             loop=outer.cut(inner)
             # Each row's knot stays on its positive side. Its2.2mm side
@@ -118,7 +123,7 @@ def native_check(shapes,design='narrow'):
     import FreeCAD as App
     import Part
     from fastener_access import native_check_paths
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     from blackpill_mount import _top_contact
     data=geometry(design)
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths'}!=CHECK_NAMES:raise ValueError('Incomplete branch-fuse carrier census')
@@ -127,7 +132,7 @@ def native_check(shapes,design='narrow'):
     rear=_place(Part.makeBox(60,60,2,App.Vector(-15,-20,0)),data).fuse(shapes['rear_addition']).cut(shapes['rear_cutout']).removeSplitter()
     all_shapes={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(all_shapes),2):
-        if box_distance(all_shapes[a].BoundBox,all_shapes[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(all_shapes[a]),bounds(all_shapes[b]))>1e-6:continue
         volume=all_shapes[a].common(all_shapes[b]).Volume
         if volume>1e-6:raise ValueError('Branch-fuse interference '+a+'/'+b+': '+str(volume))
     if len(shapes['mount_probes'])!=2:raise ValueError('Two branch-fuse mounting bearing probes are required')

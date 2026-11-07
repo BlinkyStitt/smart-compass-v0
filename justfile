@@ -30,7 +30,7 @@ demo:
 demo-check:
     python3 demo/run.py check
 
-# Measure the actual 1280 x 720 scene on this machine.
+# The existing wide benchmark is archived; no narrow benchmark is implemented.
 demo-benchmark:
     python3 demo/run.py benchmark
 

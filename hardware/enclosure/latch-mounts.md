@@ -1,8 +1,23 @@
 # Latch module and wire-clamp mount
 
-This is a source-based component study. Both complete installed assemblies and
-all harness routes still need integration. A component pass does not close the
-`fitted-harness` error or establish physical acceptance.
+## Selected narrow assembly
+
+Use this guide with the [fixed loom assembly guide](harness-assembly.md).
+The complete narrow generation owns `installed-fit-check.json`, `loom-check.json`
+and `inventory.md`. These records are in `designs/stacked/exports/` in the
+repository and `04-REFERENCE/` in the service ZIP. A component test alone does
+not establish installed fit or physical acceptance. Any Wide fixture data below
+is an inactive component-study reference.
+
+Use `designs/stacked/fasteners.json` for its 52 named narrow titanium cap screws.
+The service ZIP includes `04-REFERENCE/fasteners.json`. All other hardware keeps
+its specified parts, materials and mass allowances. Gauge the actual stock,
+finished length, thread/runout, head fit and full nut engagement. Physical fit,
+retention and strength remain unmeasured.
+
+This source-based component fixture defines the selected latch and clamps.
+Use the complete narrow records above for installed routing and service results.
+Physical acceptance remains unmeasured.
 
 Use the Pololu2808 LV module, PCB psw03a. The retained manufacturer STEP model
 contains the actual nominal PCB and populated components. Its bounds are
@@ -54,7 +69,8 @@ bear on the side edges, clear of the populated centre. Each lip retains a
 0.66 mm² bearing target at the source's minimum edge position. This area is a
 geometry target. It does not establish retention strength.
 
-Four DIN912 M2x20 A2 stock screws, finished to17 mm under the head, fasten the
+Four selected SSC-M2-20-TI5 cap screws, finished to 17 mm under the head,
+fasten the
 carrier and clips through full2 mm case lands. Use eight DIN125 M2 washers
 and four DIN934 M2 A4 nuts. The nominal complete stack leaves0.284 mm screw
 tip projection above the nut. Gauge the stack, deburr the cut ends and verify

@@ -1,5 +1,31 @@
 # Amulet lighting preview
 
+The active removable-cell prototype is the200mm narrow design. Use its
+[build and service guide](../designs/stacked/README.md) for the current geometry,
+controls, inventory and source evidence. The wide exports remain an inactive
+optical reference. They are not a second SKI-1230 implementation.
+
+```sh
+just cad
+just cad-check
+just print-check
+just demo-check
+just demo
+```
+
+`just cad` owns the serial narrow native build, print projects, source and service
+checks, GPU checks and matched captures. It publishes a complete generation only
+after all required stages pass. `just validate` also runs the host, electrical,
+pattern-sampling, energy, Pages and browser checks. Physical qualification remains
+unmeasured. An actual-scene narrow performance benchmark is not implemented.
+
+![Active narrow night mannequin](../designs/stacked/exports/night-mannequin.png)
+
+## Archived wide preview reference
+
+The notes below retain the earlier wide optical and preview work. Its mechanical
+assembly and commands are historical. Use the active narrow commands above.
+
 Run `just demo` from the repository root. The app starts with a posed mannequin
 wearing the pendant on the night-time playa, with spiral rainbow. Use
 **Presentation** to choose the worn night scene, a night pendant close-up, or

@@ -16,7 +16,7 @@ WIDE = ROOT / "hardware/enclosure/exports"
 NARROW = ROOT / "designs/stacked/exports"
 sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
-from estimates import estimate_masses, runtime_hours
+from estimates import estimate_masses
 from publication import publish, seal
 
 
@@ -33,10 +33,10 @@ MEDIA = {
     "wide_movie": Movie(WIDE / "infinity-rainbow.mp4", 16, rainbow_scene=WIDE / "scene.json"),
     "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "silver_movie": Movie(WIDE / "infinity-rainbow-silver.mp4", 16, rainbow_scene=WIDE / "scene.json"),
-    "silver_narrow_movie": Movie(SITE / "assets/narrow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
+    "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
     "wide_worn": SITE / "assets/wide-worn.png",
-    "narrow_worn": SITE / "assets/narrow-worn.png",
+    "narrow_worn": NARROW / "night-mannequin.png",
     "narrow_side": NARROW / "night-side.png",
     "size_comparison": SITE / "assets/size-comparison.png",
     **{
@@ -132,25 +132,36 @@ def render(output, provenance):
         values[name + "_leds"] = str(len(metadata["leds"]))
         gap = (metadata["optics"]["front_z"] - metadata["optics"]["rear_z"]) * 1000
         values[name + "_gap"] = f"{gap:.1f}".removesuffix(".0")
-    wide_parts = json.loads(read_input(WIDE / "parts.json", provenance))
-    narrow_scene = json.loads(read_input(NARROW / "scene.json", provenance))
-    narrow_parameters = json.loads(read_input(ROOT / "designs/stacked/parameters.json", provenance))
-    material = json.loads(read_input(WIDE / "scene.json", provenance))["ring_materials"]["glow"]
-    masses = estimate_masses(wide_parts, narrow_scene, narrow_parameters, material)
-    # Legacy pouch calculation. SKI-1230 cell/model migration remains incomplete.
-    battery = {"cell_wh": 37.0, "efficiency": 0.85, "total_amps": 1.25, "volts": 5.0}
-    hours = runtime_hours(**battery)
-    for name, mass in masses.items():
-        values[name + "_weight"] = f"{mass['complete_pendant']['nominal_g'] / 1000:.2f}"
-        values[name + "_worn_weight"] = f"{mass['total_worn']['nominal_g'] / 1000:.2f}"
-        values[name + "_weight_range"] = "–".join(f"{n / 1000:.2f}" for n in mass["complete_pendant"]["range_g"])
-    pack = next(row for row in wide_parts["components"] if row["id"] == "battery")
-    values["battery_weight"] = f"{pack['installed_mass_g']:.0f}"
-    values["runtime"] = f"{hours:.1f}"
-    (output / "estimates.json").write_text(json.dumps({
-        "masses": masses, "runtime_assumptions": battery, "calculated_hours": hours,
-        "narrow_basis": "Narrow CAD materials and strip lengths; wide electronics, harness and fitting allowances transferred provisionally",
-    }, indent=2) + "\n")
+    parts=json.loads(read_input(NARROW/'parts.json',provenance))
+    from dimensions import comparison
+    (output/'size-comparison.svg').write_text(comparison(dimensions['wide'],dimensions['narrow'],parts))
+    values['archived_size_comparison']=values['size_comparison']
+    values['size_comparison']='size-comparison.svg'
+    variants=estimate_masses(parts);mass=variants['glow']['mass_estimate'];cell=next(row for row in variants['glow']['components'] if row['id']=='cell')
+    study=subprocess.run(['node',str(SITE/'sample_check.mjs'),str(SAMPLES/'manifest.json')],text=True,capture_output=True,check=True)
+    energy=json.loads(study.stdout)
+    if not energy['converged']:raise RuntimeError('Pattern energy estimates have not converged')
+    rainbow=next(row for row in energy['convergence'] if row['design']=='narrow' and row['pattern']=='rainbow')
+    values['narrow_weight']=f"{mass['complete_pendant']['nominal_g']/1000:.2f}"
+    values['narrow_worn_weight']=f"{mass['total_worn']['nominal_g']/1000:.2f}"
+    values['narrow_worn_g']=f"{mass['total_worn']['nominal_g']:.1f}"
+    values['narrow_worn_lb']=f"{mass['total_worn']['nominal_g']/453.59237:.3f}"
+    values['narrow_upper_g']=f"{mass['upper_worn_g']:.1f}"
+    values['narrow_margin_g']=f"{mass['margin_g']:.1f}"
+    values['narrow_margin_target']='met' if mass['margin_target_pass'] else 'not met'
+    values['narrow_weight_range']='–'.join(f"{n:.1f}" for n in mass['total_worn']['range_g'])
+    values['battery_weight']=f"{cell['mass_g_per_unit']:.1f}"
+    values['battery_upper_g']=f"{cell['mass_range_g_per_unit'][1]:.1f}"
+    values['runtime']=f"{rainbow['runtime']['hours']:.2f}"
+    values['narrow_closed_depth']=f"{parts['dimensions_mm']['closed_depth']:.1f}"
+    values['narrow_closed_size']=' × '.join(f"{parts['dimensions_mm'][key]:.1f}" for key in ['closed_width','closed_height','closed_depth'])
+    values['narrow_service_size']=' × '.join(f'{value:.1f}' for value in parts['service_clearance']['width_height_depth_mm'])
+    values['narrow_silver_upper_g']=f"{variants['silver']['mass_estimate']['upper_worn_g']:.1f}"
+    (output/'estimates.json').write_text(json.dumps({'active_design':'narrow','masses':{'narrow':mass},'material_variants':{key:value['mass_estimate'] for key,value in variants.items()},'runtime_assumptions':json.loads(read_input(SITE/'electrical-inputs.json',provenance)),
+        'patterns':[row for row in energy['convergence'] if row['design']=='narrow'],'calculated_hours':rainbow['runtime']['hours'],
+        'narrow_basis':'Complete narrow native census, explicit source records, fixed loom cuts, one installed protected cell and sewn necklace. Engineering allowances and physical acceptance remain unmeasured.','wide_status':'Inactive archived reference; no SKI-1230 removable-cell or current mass/runtime acceptance.'},indent=2)+'\n')
+    for name in ['service-guide.svg','assembly-dimensions.svg','prototype-service.zip','parts.json','inventory.md']:
+        (output/name).write_bytes(read_input(NARROW/name,provenance))
     template = read_input(SITE / "index.html", provenance).decode()
     rendered = re.sub(r"{{(\w+)}}", lambda match: html.escape(values[match[1]], quote=True), template)
     if "{{" in rendered:
@@ -177,14 +188,22 @@ def render(output, provenance):
 def source_snapshot(*, include_samples=True):
     """Hash both native generations and all site/model/docs inputs, rejecting LFS pointers."""
     paths = set()
-    for relative in ("hardware/enclosure/exports-manifest.json", "designs/stacked/exports-manifest.json"):
+    for relative in ("designs/stacked/exports-manifest.json",):
         path = ROOT / relative
         manifest = json.loads(checked_bytes(path))
         paths.add(path)
-        for name in (*manifest["inputs"], *manifest["exports"]):
+        for name in (*manifest["inputs"], *manifest["exports"], *manifest.get("documents",{})):
             if Path(name).is_absolute() or ".." in Path(name).parts:
                 raise RuntimeError("Unsafe native manifest input: " + name)
             paths.add(ROOT / name)
+    # Preserve the wide release as a pinned archive. Its original input
+    #hashes remain historical; current prototype freshness is owned by narrow.
+    archive_path=ROOT/'hardware/enclosure/exports-manifest.json';archive=json.loads(checked_bytes(archive_path));paths.add(archive_path)
+    for name,expected in archive['exports'].items():
+        if Path(name).is_absolute() or '..' in Path(name).parts:raise RuntimeError('Unsafe archived export path')
+        path=ROOT/name
+        if hashlib.sha256(checked_bytes(path)).hexdigest()!=expected:raise RuntimeError('Archived wide artifact changed: '+name)
+        paths.add(path)
     paths.update(path for path in SITE.rglob("*") if path.is_file()
                  and not set(path.relative_to(SITE).parts) & {"__pycache__", ".build", "node_modules"})
     paths.update(ROOT / name for name in (

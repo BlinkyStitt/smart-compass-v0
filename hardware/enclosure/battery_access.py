@@ -436,6 +436,21 @@ def native_shapes(spec, design):
             'latch_hook': hook, 'latch_pad': pad, 'latch_axis': [-1, 0, 0]}
 
 
+def _released_door(spec,shapes):
+    import FreeCAD as App
+    hook=shapes['latch_hook'].copy()
+    hook.translate(App.Vector(-spec['door']['latch_release_mm'],0,0))
+    return shapes['BatteryDoor'].cut(shapes['latch_hook']).fuse(hook)
+
+
+def door_at_open_stop(spec,shapes):
+    """The shared released-catch and source-hinge pose, for checks and media."""
+    import FreeCAD as App
+    door=_released_door(spec,shapes)
+    door.rotate(App.Vector(*shapes['hinge_axis']),App.Vector(1,0,0),-spec['door']['open_angle_deg'])
+    return door
+
+
 def native_check(spec, design, shapes, *, surroundings=()):
     """Check closed solids and continuous motion envelopes of the prototype.
 
@@ -447,6 +462,7 @@ def native_check(spec, design, shapes, *, surroundings=()):
     """
     import FreeCAD as App
     import Part
+    from solid_clearance import bounds, distance, FixedObstacles
 
     surroundings=list(surroundings)
     extra_names=[name for name, _ in surroundings]
@@ -479,18 +495,17 @@ def native_check(spec, design, shapes, *, surroundings=()):
     checked={name:shapes[name] for name in names}
     checked['rear_interface']=shapes['rear_interface']
     checked.update(surroundings)
+    checked_bounds={name:bounds(shape) for name,shape in checked.items()}
     for a, b in itertools.combinations(checked, 2):
         if a not in PART_NAMES and b not in PART_NAMES:
             continue  # The complete native builder checks its fixed assembly.
-        ab,bb=checked[a].BoundBox,checked[b].BoundBox
+        ab,bb=checked_bounds[a],checked_bounds[b]
         if any(min(getattr(ab,axis+'Max'),getattr(bb,axis+'Max'))
                -max(getattr(ab,axis+'Min'),getattr(bb,axis+'Min')) <= 1e-7 for axis in 'XYZ'):
             continue
         volume = checked[a].common(checked[b]).Volume
         if volume > 1e-5:
             raise ValueError(f'Battery closed-position interference: {a}/{b}: {volume:g} mm3')
-
-    from solid_clearance import distance
 
     def rotate(shape, axis, direction, angle):
         moved = shape.copy()
@@ -504,28 +519,26 @@ def native_check(spec, design, shapes, *, surroundings=()):
         unit = App.Vector(*direction)
         radius = max((v.Point-origin).cross(unit).Length for v in moving.Vertexes)
         # Curved surfaces can extend beyond their topological vertices.
-        bb = moving.BoundBox
+        bb = bounds(moving)
         corners = itertools.product((bb.XMin, bb.XMax), (bb.YMin, bb.YMax), (bb.ZMin, bb.ZMax))
         radius = max(radius, *( (App.Vector(*p)-origin).cross(unit).Length for p in corners))
         count = math.ceil(abs(last)/step)
         half_interval = math.radians(abs(last)/count)/2
         displacement = 2*radius*math.sin(half_interval/2)
-        distances = [distance(rotate(moving, axis, direction, last*i/count),fixed)
+        query=FixedObstacles(fixed)
+        distances = [query.distance(rotate(moving, axis, direction, last*i/count))
                      for i in range(count+1)]
         bound = min(distances)-displacement
         if bound <= 0:
             raise ValueError(f'Battery motion has no positive continuous clearance: {bound:g} mm')
         return bound
 
-    released = shapes['latch_hook'].copy()
-    released.translate(App.Vector(-spec['door']['latch_release_mm'], 0, 0))
-    released_door = shapes['BatteryDoor'].cut(shapes['latch_hook']).fuse(released)
+    released_door = _released_door(spec,shapes)
     fixed_door=[shape for _,shape in surroundings]+[shapes['rear_interface']]+[shapes[name] for name in names if name not in {'BatteryDoor','BatteryPullRibbon'}]
     door_gap = rotation_clearance(released_door, fixed_door,
                                   shapes['hinge_axis'], (1, 0, 0),
                                   -spec['door']['open_angle_deg'],step=.25)
-    opened_door = rotate(released_door, shapes['hinge_axis'], (1, 0, 0),
-                         -spec['door']['open_angle_deg'])
+    opened_door = door_at_open_stop(spec,shapes)
     fixed_keeper=[shape for _,shape in surroundings]+[opened_door,shapes['rear_interface']]+[shapes[name] for name in names
                                   if name not in {'BatteryDoor','BatteryKeeper','BatteryPullRibbon'}]
     keeper_gap = rotation_clearance(shapes['BatteryKeeper'], fixed_keeper,

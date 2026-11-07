@@ -39,22 +39,42 @@ def geometry(part=None,directory=HERE):
             raise ValueError('Capacitor primary source hash mismatch: '+name)
     # These are defined assembly targets, not further manufacturer limits.
     return {'axis_z_mm':8.85,'can_start_y_mm':-5,'can_end_y_mm':12.5,
-            'finished_lead_mm':9.5,'vent_target_mm':2.5,'maximum_accepted_axial_motion_mm':.25,
+            'source_minimum_lead_mm':14,'vent_target_mm':2.5,'maximum_accepted_axial_motion_mm':.25,
             'lead_channel_radius_mm':.8,'joint_channel_radius_mm':1.6,
             'shim_nominal_mm':.25,
-            'profiles':{'wide':{'post_xy_mm':[[-10,8.5],[10,8.5]],'floor_width_mm':13.7,
+            'profiles':{'wide':{'post_xy_mm':[[-10,8.5],[10,8.5]],'floor_width_mm':13.7,'finished_lead_mm':9.5,
                                 'entry_axes':[[0,-1],[0,-1]],'entry_lengths_mm':[9,9],
                                 'cover_ear_thickness_mm':1.35,'finished_screw_length_mm':6.6},
                         'narrow':{'post_xy_mm':[[.5,-9.5],[4.25,19]],'floor_width_mm':7,
                                   'entry_axes':[[1,0],[1,0]],'entry_lengths_mm':[12,9],
-                                  'cover_ear_thickness_mm':2.35,'finished_screw_length_mm':7.6}},
+                                  'cover_ear_thickness_mm':2.35,'finished_screw_length_mm':7.6,
+                                  'formed_lead_turn_y_mm':-12.6,'formed_lead_exit_z_mm':13.45,
+                                  'formed_lead_radius_target_mm':.6,'formed_joint_channel_radius_mm':1.75}},
             'post_radius_mm':3.9,'post_flat_width_mm':7.2}
+
+
+def _formed_lead_points(data,x):
+    return [[x,data['can_start_y_mm'],data['axis_z_mm']],
+            [x,data['formed_lead_turn_y_mm'],data['axis_z_mm']],
+            [x,data['formed_lead_turn_y_mm'],data['formed_lead_exit_z_mm']]]
 
 
 def mounting(design,part=None):
     data=geometry(part)
     if design not in data['profiles']:raise ValueError('Choose the Wide or Narrow capacitor holder')
-    return {**data,**data['profiles'][design],'selected_design':design}
+    selected={**data,**data['profiles'][design],'selected_design':design}
+    if design=='narrow':
+        from harness_route import segments
+        selected['finished_lead_mm']=math.fsum(row['length_mm'] for row in segments(
+            _formed_lead_points(selected,-2.5),selected['formed_lead_radius_target_mm']))
+    return selected
+
+
+def envelope(design):
+    data=mounting(design);radius=data['post_radius_mm']
+    x=max(6.85,data['floor_width_mm']/2,*(abs(x)+radius for x,y in data['post_xy_mm']))
+    y=max(15.5,*(abs(y)+radius for x,y in data['post_xy_mm']))
+    return {'size':[2*x,2*y,15.7],'z':0}
 
 
 def native_shapes(design,part=None):
@@ -71,6 +91,9 @@ def native_shapes(design,part=None):
     outer=axial(6.85,-15.5,15.5)
     cavity=axial(5.5,-5.25,15.6)
     for x in (-2.5,2.5):cavity=cavity.fuse(axial(.8,-15.6,-5.15,x)).fuse(axial(1.6,-14.5,-10.5,x))
+    if design=='narrow':
+        for x in (-2.5,2.5):
+            cavity=cavity.fuse(cylinder(data['formed_joint_channel_radius_mm'],8,x,data['formed_lead_turn_y_mm'],z+.5))
     shell=outer.cut(cavity)
     lowbox=box(40,40,z,-0.,0,0);highbox=box(40,40,20,0,0,z)
     lower=shell.common(lowbox).fuse(box(data['floor_width_mm'],31,3.35,0,0,0)).cut(cavity)
@@ -103,8 +126,18 @@ def native_shapes(design,part=None):
     upper=upper.cut(cavity)
     can=axial(5.25,-5,12.5)
     for name,x in (('Positive',-2.5),('Negative',2.5)):
-        can=can.fuse(axial(.325,-14.5,-5,x))
-        products['Capacitor'+name+'LeadVariation']=axial(.575,-14.5,-5,x).cut(axial(.325,-14.6,-4.9,x))
+        if design=='narrow':
+            from harness_route import native
+            points=_formed_lead_points(data,x)
+            lead,length=native(points,data['formed_lead_radius_target_mm'],.65)
+            gauge,_=native(points,data['formed_lead_radius_target_mm'],1.15)
+            if abs(length-data['finished_lead_mm'])>1e-6:raise ValueError('Native formed lead differs from its selected finish record')
+            if length>data['source_minimum_lead_mm']:raise ValueError('Formed lead exceeds published minimum stock')
+            can=can.fuse(lead)
+            products['Capacitor'+name+'LeadVariation']=gauge.cut(lead).removeSplitter()
+        else:
+            can=can.fuse(axial(.325,-14.5,-5,x))
+            products['Capacitor'+name+'LeadVariation']=axial(.575,-14.5,-5,x).cut(axial(.325,-14.6,-4.9,x))
     shim=axial(5.5,1.5,7.5).cut(axial(5.25,1.4,7.6))
     products.update(BulkCapacitor=can.removeSplitter(),CapacitorCover=upper.removeSplitter(),
                     CapacitorUpperShim=shim.common(highbox),CapacitorLowerShim=shim.common(lowbox),
@@ -115,7 +148,7 @@ def native_shapes(design,part=None):
 def native_check(shapes,design,part=None):
     import FreeCAD as App
     import Part
-    from solid_clearance import box_distance
+    from solid_clearance import bounds,box_distance
     data=mounting(design,part)
     if shapes.get('targets')!=data:raise ValueError('Capacitor fixture differs from its selected design')
     if set(shapes)-{'rear_addition','rear_cutout','mount_probes','nut_paths','targets'}!=CHECK_NAMES:raise ValueError('Capacitor fixture census is incomplete')
@@ -125,7 +158,7 @@ def native_check(shapes,design,part=None):
     if not rear.isValid() or len(rear.Solids)!=1:raise ValueError('Capacitor holder does not connect to the rear interface')
     items={**{name:shapes[name] for name in CHECK_NAMES},'RearInterface':rear}
     for a,b in itertools.combinations(sorted(items),2):
-        if box_distance(items[a].BoundBox,items[b].BoundBox)>1e-6:continue
+        if box_distance(bounds(items[a]),bounds(items[b]))>1e-6:continue
         volume=items[a].common(items[b]).Volume
         if volume>1e-6:raise ValueError('Capacitor fixture interference '+a+'/'+b+': '+str(volume))
     for probe in shapes['mount_probes']:

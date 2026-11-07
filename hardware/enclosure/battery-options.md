@@ -5,15 +5,15 @@ Engineering decision, revised 2026-11-04 for SKI-1230: use one **XTAR protected
 Bryan authorized a safer cell and a module-based prototype. This selection replaces
 the earlier XTAR 50E 5000 mAh candidate because the maker publishes a maximum
 cell mass. It retains a protected single-cell architecture and external charging.
-The existing CAD and mass ledger still describe the legacy pouch until rebuilt.
+The narrow source, generated installed census and full loom own the active assembly.
+The earlier wide/pouch design remains an inactive archive.
 The historical custom-circuit review and recovery counters remain unchanged.
 
-**Canonical release artifacts have not integrated this selection.** Component
-and private installed-geometry studies do not complete the wired assembly.
-Complete worn mass, including the installed cell and necklace, must be at most
-**2.5 lb = 1,133.980925 g**, with a separate 50 g margin target. The active
-[module design](electrical-design.md) still requires fitted integration. CAD,
-inventory and publication remain pending. Physical acceptance stays unmeasured.
+The active scope is the narrow prototype. Complete worn mass, including the
+installed cell and necklace, must be at most**2.5lb =1133.980925g**. The separate
+50g margin is a target. Read the generated [complete inventory](../../designs/stacked/exports/inventory.md)
+and [raw bounds](../../designs/stacked/exports/parts.json). Digital source and
+geometry checks do not establish physical electrical, thermal or wearing acceptance.
 
 Use a dedicated holder for this exact protected button-top cell. Exclude adapters,
 a second installed cell, selectors, series/parallel connections, hot swap and
@@ -52,11 +52,10 @@ peak-load rating. The
 [rainbow demand basis](../../site/README.md#rainbow-demand-basis) uses
 Adafruit's NeoPixel channel/idle estimates and samples the real shared pattern.
 This estimate does not require replacing Fibonacci256 or obtaining supplier
-data. At the current 2% calculator brightness, all Wide pixels average about
-0.786 A at 5 V; Narrow averages 0.742 A. With the documented reserve and other
-loss assumptions, calculated runtime is about 2.14 h / 2.23 h respectively.
-Two percent is not a firmware-enforced limit. Physical brightness and runtime
-remain unmeasured; fault, inrush and thermal checks remain separate.
+data. Use the calculator's active narrow design and stated electrical settings
+for its sampled LED demand and runtime. Two percent is not a firmware-enforced
+limit. Physical brightness and runtime remain unmeasured; fault, inrush and
+thermal checks remain separate.
 
 Historical Efest evidence remains in the original electrical review:
 [HKJ's 2016 report](https://budgetlightforum.com/t/test-review-of-efest-imr26650-5200mah-purple-2016/41275)
@@ -69,7 +68,7 @@ Do not transfer that cell's mass, dimensions or current labels to the XTAR.
 The following table records earlier candidate investigations. These parts do not
 define the active module prototype. Use [electrical-design.json](electrical-design.json)
 and its [design review](electrical-design.md) for the selected circuit, open
-design items and physical test procedures. The fitted harness remains incomplete.
+design items and physical test procedures. The full narrow loom is specified in its generated cut/fit record.
 
 | Element | Evidence | Decision / missing qualification |
 | --- | --- | --- |
@@ -84,7 +83,7 @@ not establish the selected XTAR cell's recovery behavior. Its exact protection
 thresholds, delays and fault recovery remain unpublished and physically unmeasured.
 Do not transfer another protector's settings or test results to this cell.
 
-## Active module design and remaining work
+## Active module design
 
 The selected topology is:
 
@@ -105,11 +104,12 @@ connect a powered BlackPill USB cable or a probe target supply at the same time.
 Do not charge a cell inside the pendant.
 
 The digital review checks concrete parts, connections, supply interfaces,
-physical OFF topology and source records. It still rejects the missing fitted
-harness. Both designs need installed wire routes and cut lists, joint insulation,
-taps, bends, strain relief and clearance checks. The final per-design inventory,
-worn-mass and balance ledgers, CAD exports, service illustrations, media and
-Pages remain required. A passing component study does not close these items.
+physical OFF topology, source records and the complete 92-wire narrow loom.
+The [routing record](harness-routing.json) owns each stock cut and formed path.
+The native pipeline separately checks the installed joints, insulation, strain
+relief, source bodies and service clearances. Use its generated inventory,
+worn-mass and balance ledgers, CAD, service illustrations and media from one
+complete generation. The wide design remains an inactive archive.
 
 The old 2.9 V boost calculation belongs to the superseded Pololu design. It is
 not the PowerBoost's minimum input rating or a measured shutdown point. The
@@ -117,15 +117,15 @@ active bench plan uses 2% electrical brightness and a 2 W non-LED allowance;
 these are planning settings, not firmware limits or guaranteed peak bounds.
 The loss/runtime model and electrical review retain their stated approximations.
 Measure PWM/radio/inrush behavior, depletion/rebound, OFF decay, fault withstand
-and temperatures on the actual assemblies. Keep those physical outcomes
+and temperatures on the actual narrow assembly. Keep those physical outcomes
 unmeasured until results exist. Physical manufacturing and qualification are
 outside this digital delivery and do not require a human sign-off to finish it.
 
 ## Specified replacement sequence
 
 This is the specified sequence for the unbuilt removable-cell assembly. It is
-not an instruction to put a loose cell into the existing pouch cradle. Both
-final service guides must illustrate it with the rear, optics and necklace fitted.
+not an instruction to put a loose cell into the existing pouch cradle. The
+narrow service guide illustrates it with the rear, optics and necklace fitted.
 
 1. Support the pendant by hand or on a padded surface. Use the case as support.
    Do not hang it from wires or the door.
@@ -202,43 +202,36 @@ only the pouch mass with the dated cell mass would not close either upper-bound
 deficit, even before adding a holder and protection. Do not shrink allowances
 just to pass the ceiling.
 
-After layout review, give each design its own complete inventory and unrounded
+After layout review, give the narrow design its own complete inventory and unrounded
 upper-bound comparison. Count the cell, holder, protection, door, latch, seal,
 fasteners, wiring and necklace once; exclude stock, samples, spares and charger.
 Publish nominal mass, summed bounds, installed cell mass, upper-bound margin and
-unresolved allowances prominently. Derive each pendant's mass-weighted centre of
+unresolved allowances prominently. Derive the narrow pendant's mass-weighted centre of
 gravity and bounded uncertainty from its installed parts relative to its own
 suspension points. Assess fore/aft tilt and lateral imbalance; reposition parts
 before adding counterweights. Current renders establish neither balance nor
 walking comfort.
 
-## Resume and release boundary
+## Build and evidence boundary
 
-After required digital design checks pass, update each design's parameter JSON;
-saved CAD spreadsheets and Pages are outputs. Rebuild Wide, then Narrow, then
-Pages.
-Update `design-v2.md` through its inventory generator, both enclosure READMEs,
-service materials, site calculations/cards and size comparison in the same
-release. Remove obsolete pouch/belt accounting with its replacement inventory.
-Verify one-cell enforcement, loaded and moving clearances, complete per-design
-accounting, unrounded mass bounds, runtime and centre-of-gravity uncertainty.
+Run `just validate` for the serial narrow contract. It includes host/source tests,
+electrical topology and fixed-loom checks, native continuous fitted service,
+complete raw mass and balance, exact print projects/slicing, Godot CPU/GPU/media,
+repeatable pattern sampling and Pages/browser checks. A failed gate stops
+publication. Require full LFS contents and matching source/export hashes.
+The wide exports remain an integrity-checked archive; no new wide build is required.
 
-Preserve Fibonacci256/stencil, configurable optical gaps and distinct whole
-circles. Coordinate shared preview work with SKI-1225: retain separate moving
-rainbow clips, the matched 384-frame/24-fps figure-eight loop, stationary
-mannequin and field, zero night sun, and sky/amber/blue lights.
+The native build generates the design document inventory with the same installed
+census and publishes both in one transaction. It preserves the unscaled166mm
+board and original stencil, whole circles, configurable mirror gap, optical
+coefficients,2mm outside diffuser, pattern functions and night-glare repair.
+Media retains the matched384frame/24fps figure-eight, stationary mannequin/field,
+zero night sun and the sky/amber/blue lights. Separate archived wide clips retain
+their original provenance and do not claim current removable-cell acceptance.
 
-Run `just validate` for the serial automated contract. It includes host tests,
-`electrical.py check`, actual Godot sampling and energy tests, both native
-pipelines and the Pages/browser checks. A failed electrical gate stops dependent
-publication. Require complete LFS content and matching input/export hashes;
-reject changed inputs. The orchestrator owns deployment verification and
-complete-release rollback.
-
-Digital validation does not establish physical fit, repeated low-light swaps,
-latch/seal/retention, protection/recovery, rail transients, enclosed heat,
-optics/runtime, magnetic interference, hanging angle/twist, walking comfort or
-measured worn mass. These outcomes remain unmeasured evidence limits for both
-designs, not manual acceptance gates, owner assignments or a human handoff.
-Automated geometry sweeps, injected electrical states, rendered assertions and
-raw mass arithmetic remain required and must fail when their bounds are missing.
+Manufacturing and physical qualification are outside digital closure. Keep fit,
+repeated low-light swaps, partial seating, wrapper wear, retention, protection/
+recovery, transients, enclosed/skin heat, optics, runtime, magnetic interference,
+hanging angle/twist, comfort and actual worn mass explicitly unmeasured until
+real revision-specific results exist. No human sign-off gates the source delivery.
+The orchestrator handles resumption separately; recovery history and counters stay intact.

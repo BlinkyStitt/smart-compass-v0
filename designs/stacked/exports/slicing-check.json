@@ -1,0 +1,798 @@
+{
+  "scope": "Exact delivered3MF sliced without external transforms/settings; toolpaths do not establish physical print fit/strength",
+  "projects": [
+    {
+      "project": "ActionBackplate.3mf",
+      "source_stl_sha256": "5858037281648dc5cf054030709eb9780f72cfde616258c61e3a55e2f9e0b54b",
+      "layers": 7,
+      "toolpath_mass_g": 0.44,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ActionBezel.3mf",
+      "source_stl_sha256": "5d125b47c41374a2d372d8137babe84c7d7a02b1a60579aaed7f6933b17f4e14",
+      "layers": 21,
+      "toolpath_mass_g": 0.41,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ActionCompression0.3mf",
+      "source_stl_sha256": "89a5f4e1907efde528cb271c14bf245cb49039f04dd61cc314d6126205c94a88",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ActionCompression1.3mf",
+      "source_stl_sha256": "534b00c2cd7c001ec8d308fa533edbea9358bbdd20813477255c8612702833a0",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactNBack.3mf",
+      "source_stl_sha256": "8306ab8ffd6c46f3723e8e709a3c52d278d1a435daa7f11a2b326cfdb861c2d0",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactNFront.3mf",
+      "source_stl_sha256": "2d7f03bb63c917d17f6c5d3fc731640468e7f36ba2b632aa9e5f70fe92128a03",
+      "layers": 30,
+      "toolpath_mass_g": 1.83,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactNSpacer0.3mf",
+      "source_stl_sha256": "6e10495bfc17b4daeab4aee46be0de11f374a29ac6dcf210dc1055a0a77a7120",
+      "layers": 12,
+      "toolpath_mass_g": 0.12,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactNSpacer1.3mf",
+      "source_stl_sha256": "bbc669ba1cfac9292773c2afe2a6e3f14f9fb2c42e0c99d19b9d20f980bb9d36",
+      "layers": 12,
+      "toolpath_mass_g": 0.12,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactPBack.3mf",
+      "source_stl_sha256": "86e038d13a92a3105b925ee2f2a33cd6a0683b5b481ab84f7408d561a0c00814",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactPFront.3mf",
+      "source_stl_sha256": "6872aa653b2b8f427cef147a30cd3e121915d9d4a6cc594348e7f485682b6dca",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactPSpacer0.3mf",
+      "source_stl_sha256": "484a33b720393a8b73c5c895bf60ba9196c9f1a25b962a413beb2a1ebe3d47be",
+      "layers": 12,
+      "toolpath_mass_g": 0.12,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryContactPSpacer1.3mf",
+      "source_stl_sha256": "f404d5e6ab104534ea41509580c37cb4f4d766cdfa9c7a90a73e5e28c1ea5b7b",
+      "layers": 12,
+      "toolpath_mass_g": 0.12,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryCradle.3mf",
+      "source_stl_sha256": "241546e1c89754c4b8f2f5aa5b944e47ac8aaf186fa90b7eaab40ae6b5856008",
+      "layers": 225,
+      "toolpath_mass_g": 65.73,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryDoor.3mf",
+      "source_stl_sha256": "70f75e097f5f7626a353900d4701ac8d3ae5ae299c24eb2073479c79d8b9737f",
+      "layers": 267,
+      "toolpath_mass_g": 10.45,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryHingeSpacer0.3mf",
+      "source_stl_sha256": "bebeff7f313659dad888146ea01a8e500a43a19f7112e1a53ed4a42bdcaeaca9",
+      "layers": 20,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryHingeSpacer1.3mf",
+      "source_stl_sha256": "3f31290664f61da663cd102c8e4a427167ab53e3741453ac52414bb82297b23e",
+      "layers": 4,
+      "toolpath_mass_g": 0.08,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BatteryKeeper.3mf",
+      "source_stl_sha256": "5f31da7de5d08882eb9b4706a05f88d7f82caa72e252c0ac0cb145b6eeab0953",
+      "layers": 8,
+      "toolpath_mass_g": 0.54,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillCarrier.3mf",
+      "source_stl_sha256": "e8dd11804bb13de57331a39f0749a92f6d93f0eafd3002cf8ead5474b70a5e37",
+      "layers": 35,
+      "toolpath_mass_g": 3.71,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillDrainBridge.3mf",
+      "source_stl_sha256": "af9571d8043ea3cf0f6b707f14259b8ed354dac9ffb5fdd09dcf84f24a4aa9a0",
+      "layers": 37,
+      "toolpath_mass_g": 2.18,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillRetainer0.3mf",
+      "source_stl_sha256": "298da5207563b6c6a01203e74f2c9671f073ffbf530bc5cda8d5a71d85b3ef9b",
+      "layers": 7,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillRetainer1.3mf",
+      "source_stl_sha256": "a60a95c00bec636c5a2bae7e3053896d7ec2c76f73883b5387524f287bd9b96d",
+      "layers": 7,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillRetainer2.3mf",
+      "source_stl_sha256": "5ad0391f9723d3154ac0ec1cf50477edebdf829b007b4dd41011178ed9d2a2c9",
+      "layers": 7,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillRetainer3.3mf",
+      "source_stl_sha256": "1fa81ae234a02c9bf5df6f6c965763caf92dc660dc60ae654bcf29ec61ba69fb",
+      "layers": 7,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BlackPillSenseBridge.3mf",
+      "source_stl_sha256": "c4fea260ad11df6a95210c45409c0e01247685b45d9dcbf9cc963def2483083f",
+      "layers": 18,
+      "toolpath_mass_g": 1.69,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BoardEdgeClip0.3mf",
+      "source_stl_sha256": "d59dd7d4b15aeaf253a6753060466d5b3604358731c6329dd447d3b7ccaddf45",
+      "layers": 6,
+      "toolpath_mass_g": 0.11,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BoardEdgeClip1.3mf",
+      "source_stl_sha256": "3e40ed9ace1374b21e82526f800f2246955636f5404038291be66f5a06bcbe24",
+      "layers": 6,
+      "toolpath_mass_g": 0.11,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BoardEdgeClip2.3mf",
+      "source_stl_sha256": "09febbc3884dfd83df953c995d53226b90293573587c9caa1200457ed5325d8d",
+      "layers": 6,
+      "toolpath_mass_g": 0.11,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BoostInputRelief.3mf",
+      "source_stl_sha256": "c9cff3698930b75fcbce33155461e5ddc3ed5c9929901c11b33b5177212caa7f",
+      "layers": 33,
+      "toolpath_mass_g": 0.33,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "BranchFuseCarrier.3mf",
+      "source_stl_sha256": "84fcb97aa2fdfca80bf0caee113e5e88f0096bfe454bca13cde44e4f2e44d5a6",
+      "layers": 81,
+      "toolpath_mass_g": 2.79,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "CapacitorCover.3mf",
+      "source_stl_sha256": "d8f253788233c5b28e4404ad728b26a96ddc2bf29d4014dee41eda9b7a4990bc",
+      "layers": 34,
+      "toolpath_mass_g": 1.74,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "EGLStencil.3mf",
+      "source_stl_sha256": "98ebae327667a875a321bacfdf28b0376a8cb75c13deca8f3578da26176941e1",
+      "layers": 19,
+      "toolpath_mass_g": 9.2,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ElectronicsShell.3mf",
+      "source_stl_sha256": "eb0b8a674438ebe02e10fe1b15029857360be5a3f15f9ad496bc93c182590b2b",
+      "layers": 411,
+      "toolpath_mass_g": 183.01,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FrontBezel.3mf",
+      "source_stl_sha256": "8d135dab16eb3c94b6e758934ee8b044d5426c2e1f047b55d063f049bc6840e9",
+      "layers": 7,
+      "toolpath_mass_g": 12.05,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierAUX_3V3.3mf",
+      "source_stl_sha256": "747855d14e015cc307bbc8cea2da5e681db51f503105a6ca5ddc5b4d50d40ec8",
+      "layers": 41,
+      "toolpath_mass_g": 0.72,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierB.3mf",
+      "source_stl_sha256": "71437969fb8ff27be7a3cf4bc2576cf3464b73f32abcc0f29526f4dba038facc",
+      "layers": 27,
+      "toolpath_mass_g": 0.35,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierBOOST_OUT.3mf",
+      "source_stl_sha256": "9ebcc2358caed44fef1ee71dd34d1fa03a07d3512e29c898d40e919c1eee21e5",
+      "layers": 29,
+      "toolpath_mass_g": 0.36,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierFIB_5V.3mf",
+      "source_stl_sha256": "95decade35f11010716075c98a2715fd97a61e0f15442de6fffdf8c26d0bdabe",
+      "layers": 29,
+      "toolpath_mass_g": 0.36,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierGND.3mf",
+      "source_stl_sha256": "59d9953b4b20120b0942e0c07ec01075250c390d69b443e98b016c4333f598a7",
+      "layers": 57,
+      "toolpath_mass_g": 1.57,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierLATCH_OFF.3mf",
+      "source_stl_sha256": "a84117ad70d002eb8410d870c1033d9d50524f56c1503ba2e59c31351170c5d4",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierLED_DISTRIBUTION.3mf",
+      "source_stl_sha256": "0a8def3b93d734cde8040aa342cf0d788c100cb2fcef2bb4c52eb4204b6af675",
+      "layers": 41,
+      "toolpath_mass_g": 0.68,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierLOAD_5V.3mf",
+      "source_stl_sha256": "53a28e5dd967fcc8bca4a33b3ec6d63d1e8552473d50ba75f3adf8e9b7ab4677",
+      "layers": 29,
+      "toolpath_mass_g": 0.36,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierSENSE.3mf",
+      "source_stl_sha256": "92899ab3a762894935f4e2077dcd468f62a692e80e310a527fd2eb3ded81ae30",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierSPI_CLOCK.3mf",
+      "source_stl_sha256": "ce48062b075da029f1f5b58ae6b64c4406904275b1233b03981f3e7e5d79cac5",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierSPI_MISO.3mf",
+      "source_stl_sha256": "08a1b9f385b10c8842cf5d9caf80472fe72f02ae8f9a09fd4942b73bc88ae7bc",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "HarnessSpliceCarrierSPI_MOSI.3mf",
+      "source_stl_sha256": "b03fa009cd07796446d105b60cad66bc92243f61549635ddd4ee46cdf5977384",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "InnerDiffuser.3mf",
+      "source_stl_sha256": "08df413719f2a3eaaf29c4b66c7b2aff957ab77f25fabf0778add696e2ad5421",
+      "layers": 68,
+      "toolpath_mass_g": 13.72,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "InnerDiffuser-silver.3mf",
+      "source_stl_sha256": "08df413719f2a3eaaf29c4b66c7b2aff957ab77f25fabf0778add696e2ad5421",
+      "layers": 68,
+      "toolpath_mass_g": 11.8,
+      "material": "silver",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "LatchCarrier.3mf",
+      "source_stl_sha256": "135e13e88918ed73f05d22535cf983f58a3f6508ae115f1412538930b8f7f1be",
+      "layers": 56,
+      "toolpath_mass_g": 3.15,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "LatchClamp0.3mf",
+      "source_stl_sha256": "106ea6649d1be68ede5358b5b53066a3fe9d098caf5ad9ffab3d570d16e038c2",
+      "layers": 6,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "LatchClamp1.3mf",
+      "source_stl_sha256": "4ca6915621f89d04bc6c8f86d6dbcfd0ccc13f77322271d9286ddf8df72a302b",
+      "layers": 6,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "LatchClamp2.3mf",
+      "source_stl_sha256": "4978976d55a9b1173093d688a6f75d18895e8f1195ab657c27723d6b0f1782b8",
+      "layers": 6,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "LatchClamp3.3mf",
+      "source_stl_sha256": "f786f8f525111b3b1fd2ddf049db50340fa3c6e2dccd4202717dbb05388eb7c6",
+      "layers": 6,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ModeBackplate.3mf",
+      "source_stl_sha256": "fb61361f21dcf3daabf583531fe233e8ab5b9d39335bfb7697af1a910bf0fac8",
+      "layers": 7,
+      "toolpath_mass_g": 0.44,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ModeBezel.3mf",
+      "source_stl_sha256": "773fb87b257c7f58cac696ba12719155093a02211fcba4f993d36489016fcdd3",
+      "layers": 21,
+      "toolpath_mass_g": 0.41,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ModeCompression0.3mf",
+      "source_stl_sha256": "fd28095cbc1cd2de8468b08e69b874b4072430ad4f7048aba1263367f660f178",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "ModeCompression1.3mf",
+      "source_stl_sha256": "34a7349487011380d03b85727dfb19ee511cd44dca9493e5272e31dd0bda76d6",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "RadioCarrier.3mf",
+      "source_stl_sha256": "a4466653f253da46bc5350eaa6558eceff5bc998d94166ea8c1631b4b8b313ba",
+      "layers": 105,
+      "toolpath_mass_g": 5.54,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "RadioRetainer0.3mf",
+      "source_stl_sha256": "afd942f2dd9ae8ae3b15c3bfd167172bbf47d6a9da5381eb3a9305fbf7fcdff6",
+      "layers": 7,
+      "toolpath_mass_g": 0.18,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "RadioRetainer1.3mf",
+      "source_stl_sha256": "c6189866cf74b40d0dce18fafa9788fb6c2d85a36e9c5bfde81827110ed791ef",
+      "layers": 7,
+      "toolpath_mass_g": 0.18,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "RadioRetainer2.3mf",
+      "source_stl_sha256": "b7812d473f137d3cf48a7fd3de09d8d91fde72e3169bc11ec82416a183904fe2",
+      "layers": 7,
+      "toolpath_mass_g": 0.18,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "RearCover.3mf",
+      "source_stl_sha256": "504d3443d034d2858c84ce076f15e2c0cf14bb5f11528f256f14d8eb0f51698b",
+      "layers": 45,
+      "toolpath_mass_g": 51.02,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "SideDiffuser.3mf",
+      "source_stl_sha256": "bdeba074b459f1edefec94b91cdc15f1c870f2def3f958dcf00e6caa1c9cc13f",
+      "layers": 100,
+      "toolpath_mass_g": 37.54,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "SideDiffuser-silver.3mf",
+      "source_stl_sha256": "bdeba074b459f1edefec94b91cdc15f1c870f2def3f958dcf00e6caa1c9cc13f",
+      "layers": 100,
+      "toolpath_mass_g": 32.28,
+      "material": "silver",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "StartBackplate.3mf",
+      "source_stl_sha256": "67555ef48560d6a7531bf31de588ba86081d4c2c58fa0d8b2760ffdea21e9e99",
+      "layers": 7,
+      "toolpath_mass_g": 0.44,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "StartBezel.3mf",
+      "source_stl_sha256": "7d400e70faf8c2cc5ae9a779977ca861c9f9d840ddd4f978fc35e4b83db26e03",
+      "layers": 21,
+      "toolpath_mass_g": 0.41,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "StartCompression0.3mf",
+      "source_stl_sha256": "238e348e71bb1daf129359ba5bed1d141b5a9c34f465d78b5d4468ca5c99d17d",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "StartCompression1.3mf",
+      "source_stl_sha256": "46a147c1f22d0bf7990c7f468641a1783453c53198d1ca13775f4758b7a0a057",
+      "layers": 8,
+      "toolpath_mass_g": 0.1,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "SwitchGuard.3mf",
+      "source_stl_sha256": "3b1552c3380711ceb42b4e00ffbf0d15b3c668858b1c22db637bc3561c6dad26",
+      "layers": 100,
+      "toolpath_mass_g": 3.49,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryContactPFront.3mf",
+      "source_stl_sha256": "6872aa653b2b8f427cef147a30cd3e121915d9d4a6cc594348e7f485682b6dca",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryContactPBack.3mf",
+      "source_stl_sha256": "86e038d13a92a3105b925ee2f2a33cd6a0683b5b481ab84f7408d561a0c00814",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryContactNFront.3mf",
+      "source_stl_sha256": "2d7f03bb63c917d17f6c5d3fc731640468e7f36ba2b632aa9e5f70fe92128a03",
+      "layers": 30,
+      "toolpath_mass_g": 1.83,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryContactNBack.3mf",
+      "source_stl_sha256": "8306ab8ffd6c46f3723e8e709a3c52d278d1a435daa7f11a2b326cfdb861c2d0",
+      "layers": 9,
+      "toolpath_mass_g": 1.63,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryKeeper.3mf",
+      "source_stl_sha256": "5f31da7de5d08882eb9b4706a05f88d7f82caa72e252c0ac0cb145b6eeab0953",
+      "layers": 8,
+      "toolpath_mass_g": 0.54,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryDoor.3mf",
+      "source_stl_sha256": "70f75e097f5f7626a353900d4701ac8d3ae5ae299c24eb2073479c79d8b9737f",
+      "layers": 267,
+      "toolpath_mass_g": 10.45,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBatteryHingeSpacer0.3mf",
+      "source_stl_sha256": "bebeff7f313659dad888146ea01a8e500a43a19f7112e1a53ed4a42bdcaeaca9",
+      "layers": 20,
+      "toolpath_mass_g": 0.19,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBoardEdgeClip0.3mf",
+      "source_stl_sha256": "d59dd7d4b15aeaf253a6753060466d5b3604358731c6329dd447d3b7ccaddf45",
+      "layers": 6,
+      "toolpath_mass_g": 0.11,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitLatchCarrier.3mf",
+      "source_stl_sha256": "135e13e88918ed73f05d22535cf983f58a3f6508ae115f1412538930b8f7f1be",
+      "layers": 56,
+      "toolpath_mass_g": 3.15,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitStartBezel.3mf",
+      "source_stl_sha256": "7d400e70faf8c2cc5ae9a779977ca861c9f9d840ddd4f978fc35e4b83db26e03",
+      "layers": 21,
+      "toolpath_mass_g": 0.41,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitHarnessSpliceCarrierGND.3mf",
+      "source_stl_sha256": "59d9953b4b20120b0942e0c07ec01075250c390d69b443e98b016c4333f598a7",
+      "layers": 57,
+      "toolpath_mass_g": 1.57,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitHarnessSpliceCarrierSENSE.3mf",
+      "source_stl_sha256": "92899ab3a762894935f4e2077dcd468f62a692e80e310a527fd2eb3ded81ae30",
+      "layers": 24,
+      "toolpath_mass_g": 0.31,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBoostInputRelief.3mf",
+      "source_stl_sha256": "c9cff3698930b75fcbce33155461e5ddc3ed5c9929901c11b33b5177212caa7f",
+      "layers": 33,
+      "toolpath_mass_g": 0.33,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitSuspensionLeft.3mf",
+      "source_stl_sha256": "f4d446e02bcba7e4489fb678932b3ffca09131f3755fe68f16f47ea3a44cb340",
+      "layers": 103,
+      "toolpath_mass_g": 4.48,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitSuspensionRight.3mf",
+      "source_stl_sha256": "e1b7eafb88a2e38aaca219fb33d99aaeec8f792ce8c56003cabe5df8a69638c7",
+      "layers": 103,
+      "toolpath_mass_g": 4.51,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitInnerDiffuser.3mf",
+      "source_stl_sha256": "c0d7f9c1e4b90550e6f6fd7e1a1393a2ade68beb34270ff92b3342ecf39e053a",
+      "layers": 68,
+      "toolpath_mass_g": 1.07,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitInnerDiffuser-silver.3mf",
+      "source_stl_sha256": "c0d7f9c1e4b90550e6f6fd7e1a1393a2ade68beb34270ff92b3342ecf39e053a",
+      "layers": 68,
+      "toolpath_mass_g": 0.92,
+      "material": "silver",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitSideDiffuser.3mf",
+      "source_stl_sha256": "53b61b1892c80de7759a92833135c1b7eb312917c039dd96bc98b10e11d5f3eb",
+      "layers": 100,
+      "toolpath_mass_g": 2.51,
+      "material": "glow",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitSideDiffuser-silver.3mf",
+      "source_stl_sha256": "53b61b1892c80de7759a92833135c1b7eb312917c039dd96bc98b10e11d5f3eb",
+      "layers": 100,
+      "toolpath_mass_g": 2.16,
+      "material": "silver",
+      "temporary_support_toolpaths": false,
+      "physical_acceptance": "unmeasured"
+    },
+    {
+      "project": "FitBoardEdgeSeat.3mf",
+      "source_stl_sha256": "fc7765b23d740097d032745ecdd862b7eb05b9e6c1a71b1fb5cbaf3ec72fb36a",
+      "layers": 59,
+      "toolpath_mass_g": 1.31,
+      "material": "glow",
+      "temporary_support_toolpaths": true,
+      "physical_acceptance": "unmeasured"
+    }
+  ],
+  "physical_acceptance": "unmeasured"
+}

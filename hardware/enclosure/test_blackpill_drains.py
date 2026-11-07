@@ -1,11 +1,29 @@
 """Selected discharge parts and joint stations must stay complete."""
 import copy
 import unittest
+from unittest.mock import patch
 import blackpill_mount
 import blackpill_drains
 
 
 class DischargeLoomTests(unittest.TestCase):
+    def test_opposed_exits_leave_room_for_both_jacket_cuffs(self):
+        # Each axial solder lap retains a 2mm, 3mm-OD jacket cuff in
+        # harness_finish.apply. Opposed exits must reserve both cuffs.
+        ports=blackpill_drains.source_ports()
+        for lower,upper in [('R_A','R_B'),('R_OUT','R_OFF'),('R_BOOST','R_LOAD')]:
+            a,b=ports[lower+'.2'],ports[upper+'.1']
+            with self.subTest(pair=(lower,upper)):
+                self.assertEqual(a[1:],b[1:])
+                self.assertGreater(b[0]-a[0],4)
+
+    def test_old_opposed_spacing_is_rejected(self):
+        for name in ['R_B','R_OFF','R_LOAD']:
+            x,y=blackpill_drains.STATIONS[name]
+            with self.subTest(part=name),patch.dict(blackpill_drains.STATIONS,{name:(29,y)}):
+                with self.assertRaisesRegex(ValueError,'both2mm jacket cuffs'):
+                    blackpill_drains.geometry()
+
     def test_all_six_selected_drains_have_two_fixed_ends(self):
         data=blackpill_drains.geometry()
         self.assertEqual(set(data['stations_source_xy_mm']),{'R_A','R_B','R_OUT','R_OFF','R_BOOST','R_LOAD'})

@@ -2,7 +2,7 @@
   "case_diameter": 200.0,
   "circle_diameter": 166.0,
   "circle_pcb_thickness": 1.6,
-  "circle_back_z": 28.0,
+  "circle_back_z": 31,
   "led_height": 3.0,
   "led_map_radius": 79.5,
   "map_rotation_deg": 0.0,
@@ -35,14 +35,82 @@
   "brightness": 2.0,
   "exposure": 1.0,
   "electronics": [
-    {"name":"Battery", "size":[80.0,65.0,20.0], "centre":[0.0,-35.0], "z":3.0},
-    {"name":"SparkleMotion", "size":[50.8,33.147,15.0], "centre":[38.0,30.0], "z":8.0},
-    {"name":"BlackPill", "size":[20.8,52.8,12.0], "centre":[-30.0,31.0], "z":8.0},
-    {"name":"GPS", "size":[22.86,50.8,8.0], "centre":[0.0,56.0], "rotation_deg":90.0, "z":9.0},
-    {"name":"IMU", "size":[25.0,25.0,8.0], "centre":[-61.0,7.0], "z":9.0},
-    {"name":"Radio", "size":[25.4,32.0,8.0], "centre":[60.0,-17.0], "z":8.0},
-    {"name":"BatterySense", "size":[18.0,16.0,7.0], "centre":[0.0,10.0], "z":8.0},
-    {"name":"Boost5V", "size":[15.2,40.6,4.6], "centre":[-57.0,-30.0], "z":9.0}
+    {
+      "name": "SparkleMotion",
+      "mount_datum": [
+        20,
+        36.5
+      ],
+      "source_fixture": "sparkle",
+      "pcb_bottom_z_mm": 8,
+      "rotation_deg": 0
+    },
+    {
+      "name": "BlackPill",
+      "mount_datum": [
+        -27,
+        5.8
+      ],
+      "source_fixture": "blackpill",
+      "pcb_bottom_z_mm": 8,
+      "rotation_deg": 90
+    },
+    {
+      "name": "GPS",
+      "mount_datum": [
+        -18.5,
+        59.5
+      ],
+      "source_fixture": "gps",
+      "pcb_bottom_z_mm": 9,
+      "rotation_deg": 90
+    },
+    {
+      "name": "IMU",
+      "centre": [
+        -63.5,
+        26.5
+      ],
+      "source_fixture": "imu",
+      "pcb_bottom_z_mm": 9,
+      "rotation_deg": 90
+    },
+    {
+      "name": "Radio",
+      "mount_datum": [
+        43.3,
+        -3.0
+      ],
+      "source_fixture": "radio",
+      "pcb_bottom_z_mm": 8,
+      "rotation_deg": 0
+    },
+    {
+      "name": "Boost5V",
+      "centre": [
+        -62,
+        -10
+      ],
+      "source_fixture": "boost",
+      "pcb_bottom_z_mm": 9,
+      "rotation_deg": 0
+    },
+    {
+      "name": "PowerLatch",
+      "centre": [
+        0,
+        -77
+      ],
+      "source_fixture": "latch"
+    },
+    {
+      "name": "BulkCapacitor",
+      "centre": [
+        19.25,
+        -14.8
+      ],
+      "source_fixture": "capacitor"
+    }
   ],
   "antenna_length": 78.0,
   "antenna_wire_diameter": 1.0,
@@ -56,6 +124,34 @@
   "antenna_conductor_clearance": 2.0,
   "antenna_plastic_clearance": 0.5,
   "antenna_feed_relief_radius": 3.2,
-  "antenna_first_restraint": 10.0,
-  "antenna_second_restraint": 50.0
+  "antenna_first_restraint": 13.5,
+  "antenna_second_restraint": 50.0,
+  "control_switch_x": 79,
+  "control_switch_y": -18,
+  "control_start_x": -5,
+  "control_start_y": 7.5,
+  "control_mode_x": -51,
+  "control_mode_y": -8,
+  "control_action_x": 5,
+  "control_action_y": -11,
+  "control_switch_rotation_deg": 0,
+  "control_guard_mount_offset": 6,
+  "rear_vents_xy_mm": [
+    [
+      -45,
+      15
+    ],
+    [
+      45,
+      0
+    ],
+    [
+      -30,
+      60
+    ],
+    [
+      30,
+      60
+    ]
+  ]
 }

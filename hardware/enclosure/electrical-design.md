@@ -1,6 +1,6 @@
 # Removable-cell module prototype
 
-This is the active electrical design candidate for SKI-1230. It is **incomplete**.
+This is the selected module circuit for the narrow prototype.
 Run `python3 hardware/enclosure/electrical.py check` for the current design errors.
 The same command reports every required physical test as **unmeasured**. It does
 not certify an assembled pendant, temperature, fault withstand or safe wearing.
@@ -96,8 +96,8 @@ Rev C has a25.4x17.78mm nominal outline and puts DRDY_M at **JP2.5**.
 Rev A has a33.02x20.32mm nominal outline and puts it at **JP2.4**. Thus the
 two source layouts cannot share a fitted wire map. Retain the larger40x28x12mm
 loaded reservation. Published nominal geometry and1mm source drills do not
-prove supplied-board tolerances or completed solder-joint fit. Installed wire
-routes, cut lengths and strain relief remain required work.
+prove supplied-board tolerances or completed solder-joint fit. The narrow loom definition owns the installed routes, cut lengths and relief.
+The full native build must check them against this source board.
 
 ### GPS and radio source pads
 
@@ -138,7 +138,8 @@ Source names such as `SCK_5V` identify the radio board's logic-input nets.
 This assembly supplies VIN with3.3V and uses the existing3.3V MCU signals.
 The map does not direct a builder to supply5V. Nominal1mm drills do not prove
 finished-wire fit, joints, strain relief, supplied dimensions or electrical
-performance. Both installed harnesses and all physical outcomes remain open.
+performance. The narrow native build must check the complete installed loom. All physical
+outcomes remain unmeasured. The wide model is an inactive archive.
 
 ### Module changes
 
@@ -155,8 +156,8 @@ Strip to a 3.2 mm assembly target, from the maker's approximate 1/8 inch guidanc
 Inspect insertion and insulation, tighten gently, and restrain the insulated
 leads near the board. The maker's current rating does not establish our PWM
 peak, wire temperature, screw retention or enclosed thermal performance. Keep
-those physical tests unmeasured. The fitted carrier, cuts and complete wire
-routes remain required design work.
+those physical tests unmeasured. The narrow loom records bind the fitted carrier, cuts and complete wire
+routes. Require the full native fit and service checks before release.
 [Maker assembly instructions](https://learn.adafruit.com/adafruit-sparkle-motion/connecting-leds).
 
 Use **Adafruit PowerBoost 1000 Basic, PID 2030**, with no charger. The reviewed
@@ -181,8 +182,8 @@ reviewed diode/PTC input path. Do not feed an output power clamp instead. The
 retained Rev D source gives nominal 0.9 mm holes at [10.239, 10.922] and
 [4.339, 10.922] mm from the lower-left PCB corner, viewed from the component
 side. Verify actual wire/hole fit, inspect the reworked pads, and restrain the
-insulated wires near the board. Final joint envelopes and fitted restraint
-locations remain part of the open harness work. Removal of the connector does
+insulated wires near the board. The narrow native build checks the selected joint envelopes and fitted
+restraint locations against the retained source geometry. Removal of the connector does
 not qualify the electrical or thermal limits.
 
 Remove **R20**, the red low-battery LED's series resistor. Connect its **R20.2**
@@ -290,8 +291,9 @@ and PCM recovery remain unmeasured; do not infer them from the 10 A cell label.
 
 Use the specified 18 AWG main pair and 22 AWG branch pairs, with soldered joints,
 insulation and strain relief. Keep supply and return together and away from the
-magnetometer. Wire lengths and loaded module placement must come from each new
-native layout. They remain an explicit design error until that work is done.
+magnetometer. Use the fixed narrow loom definition and source-board placements.
+The electrical checker rejects missing or changed route bindings and cuts. The
+full native build must also check finished insulation, clearances and service.
 
 USB service is off-body with the cell removed and S1 OFF. Select only 5 V USB-PD.
 Do not connect another barrel supply or a live external interface at the same
@@ -428,7 +430,8 @@ Use M22759/16-18 for the main paths, /16-22 for protected power branches and
 20 °C resistance values. Convert the imperial maximum resistance column
 with exactly 304.8 m per 1000 ft; the printed metric column is rounded.
 Its wire masses are nominal. The JSON retains this
-distinction. Actual route lengths, joints and strain relief remain open.
+distinction. The narrow loom record owns actual route lengths, joints and
+strain relief. Its native check is separate from the physical tests.
 
 The 3.2–4.2 V bench sweep includes depletion. PowerBoost senses its own input,
 after the loaded input path. Its nominal 3.2 V threshold does not imply
@@ -436,8 +439,8 @@ operation down to 3.2 V at the cell contacts.
 
 The rear controls use separate printed mounts and the sourced open mounting
 nut/lockwasher. See [control-mounts.md](control-mounts.md) for the specified
-clamp stack and component-study command. Full enclosure integration remains
-open. GPS EN has a factory pull-down and is **high to disable**; retain that
+clamp stack and component-study command. The narrow native build checks these
+controls in the complete assembly. GPS EN has a factory pull-down and is **high to disable**; retain that
 default and the assigned PB7 control. No pull-up or new firmware is added.
 
 ### Retained Mode/Action and ADC filter
@@ -446,7 +449,7 @@ Keep Mode on BlackPill PB13 and Action on PB14. Each uses the same direct
 C&K PTS645SL70-2 actuator as START. Connect pin 1 to its assigned input and
 pin 3 to ground. Leave pins 2/4 externally unconnected and insulated. These
 are active-low inputs with the existing MCU pull-up configuration. Their
-mounts and wiring remain part of the unfinished fitted layout.
+mounts and wiring enter the complete narrow native fit and service checks.
 
 Retain a 100 nF capacitor from the PA4/divider midpoint to ground, beside
 BlackPill. Select **KEMET C315C104K5R5TA**, 100 nF, 50 V, ±10%, X7R, radial
@@ -484,7 +487,8 @@ before fitting. Leave P1, P2 and P3 header parts uninstalled and connect fixed
 wires directly to the selected pads. Use the source-based perimeter carrier
 and four removable edge retainers in [the carrier instructions](blackpill-mounts.md).
 The component study checks the nominal PCB, component spaces, retention and
-assembly motion. Joints, cut lists and fitted wire routes remain incomplete.
+assembly motion. The narrow native build adds the complete joints, cut list,
+wire paths and finished-insulation checks.
 Physical qualification remains unmeasured.
 
 ## Radio fixed-wire variant
@@ -499,7 +503,8 @@ through-pads and the three rounded corners, with no invented screw holes.
 Adafruit states that its RFM69 and RFM9X products share this source board and
 schematic. The U1 RFM69 source label does not change the selected RFM95W part.
 Keep nominal footprint checks separate from supplied-part fit and RF tests.
-Final installed antenna, joints, routes and strain relief remain incomplete.
+The complete narrow build checks the installed antenna, joints, routes and
+strain relief, including the declared rear and radio service states.
 
 ## Wire-mount cell contacts
 
@@ -510,3 +515,54 @@ and20mohm maximum component resistance under its stated test methods. These
 figures do not qualify the assembled cell interface, solder joints, fault
 withstand or enclosed temperature. See [the compartment study](battery-access.md)
 for clamp gauge targets, wire routing and the limits of the native checks.
+
+### Narrow output-capacitor lead forming
+
+Use the selected Panasonic EEUFR1A102. Keep the can and pressure-valve position
+shown by the source fixture. The1September2025 FR-A drawing, page1, gives at
+least14mm on the shorter lead and at least3mm additional positive-lead length.
+The retained can, pitch and lead-diameter ranges still apply.
+
+Form both leads before installation. Support each lead between the bend and the
+rubber seal. Do not apply forming force to the can. In the holder's local frame,
+the lead centres remainX=-2.5mm (positive) andX=+2.5mm (negative). Each lead runs
+fromY=-5mm,Z=8.85mm to the bend atY=-12.6mm, then turns upward toZ=13.45mm.
+Use the0.6mm bend-radius target. The rounded centreline uses11.9424777961mm of
+lead. The vertical3.5mm solder overlap starts atZ=9.95mm, above the bend.
+
+Fan all wire strands around the solid lead. Do not remove strands or drill a
+hole. Recover the selected sleeve over the lap and2mm of intact wire jacket.
+The finished sleeve target is3mm outside diameter. The upper holder has separate
+1.75mm-radius vertical sleeve channels. Keep the pressure-valve space open.
+These are fabrication targets. Lead forming, soldering, insulation, retention
+and heat remain physical qualification items.
+
+The narrow boost input pair has one separate printed relief. W006 and the
+continuous W044 negative conductor remain fitted during cell access. Use the
+curved1mm fitted VHB5952 pad and one70mm LC134 blank described by
+`end_supports.py`. The clip excludes the adhesive volume. The native check
+preserves the manufacturer bodies before allocating empty module reservation
+space. Inspect bond creep and tie retention physically. Release both clamps
+and remove the bridging loom before rear maintenance.
+
+### Selected narrow solder-face layout
+
+The bare IMU, GPS, BlackPill, radio and Sparkle through-hole power/signal leads
+exit the component face. Keep the original plated holes and all retained
+manufacturer components. Use the exact terminal map and routes in
+[harness-routing.json](harness-routing.json). The current targets use a 0.8 mm
+outer fillet, the full source PCB barrel and 0.10 mm far-face projection on 1.6 mm
+boards; GPS/Sparkle use 1.57 mm barrels and 0.13 mm far-face projection. Together
+these use the declared 2.5 mm strip target. These are fabrication gauges, not
+measured solder or guaranteed supplied fit. Do not trim strands or drill holes.
+
+The original 166 mm Fibonacci input pads remain on its rear face. Their front-view
+power/DI/ground coordinates retain the recovered photo map. The radio antenna
+keeps its separate source-pad feed and formed route. Latch control joints retain
+their underside exit. Factory screw clamps keep their side-entry directions.
+Do not replace those connections with the bare-module top-face convention.
+
+Form and insulate each lead to the complete route record. Keep the specified
+splice cores, sleeves, fixed carriers and lacing. The wire cut list includes
+stripped/insertion lengths; the blank trim allowance is not installed mass.
+All final soldering, insulation, supplied fit and retention remain unmeasured.

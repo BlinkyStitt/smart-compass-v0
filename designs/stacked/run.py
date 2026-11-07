@@ -14,6 +14,9 @@ from pathlib import Path
 
 from layout import HERE, ROOT
 from optics import cases, side_cases
+import prints
+import service
+import inventory_doc
 
 sys.path.insert(0, str(ROOT / "hardware/enclosure"))
 import native_publication
@@ -24,6 +27,8 @@ from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
 SHARED = (
+    "justfile", "validation.just", ".githooks/pre-commit", "design-v2.md",
+    "site/electrical-inputs.json", ".github/workflows/pages.yml",
     "hardware/enclosure/acrylic-optics.json",
     "hardware/enclosure/baffle.py",
     "hardware/enclosure/geometry.py",
@@ -38,6 +43,7 @@ SHARED = (
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/Fibonacci256voronoi.stl",
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/LICENSE.txt",
     "hardware/enclosure/vendor/evilgeniuslabs-fibonacci256/SOURCE.md",
+    "demo/run.py",
     "demo/mannequin.gd",
     "demo/main.gd",
     "demo/patterns.gd",
@@ -50,7 +56,7 @@ SHARED = (
     "demo/ring_diffusion.gdshaderinc",
     "demo/centre_diffusion.gdshaderinc",
     "demo/package.gdshader",
-    "hardware/enclosure/exports/scene.json",
+
 )
 EXPECTED = frozenset(
     {
@@ -78,6 +84,11 @@ EXPECTED = EXPECTED | frozenset(
 
 EXPECTED |= frozenset(f"infinity-rainbow-dark-{style}.mp4" for style in DARK_STYLES)
 
+# The wide design remains an archived reference. It is no longer a native
+# build dependency of the selected narrow prototype.
+EXPECTED |= prints.required_exports(json.loads((ROOT/'hardware/enclosure/print-spec.json').read_text()))
+EXPECTED |= frozenset({'parts.json','installed-fit-check.json','antenna-service-check.json','loom-check.json','necklace-fit-check.json','end-support-check.json','case-structure-check.json','inventory.md','slicing-check.json','service-guide.svg','assembly-dimensions.svg','service-guide.json','prototype-service.zip','infinity-rainbow-silver.mp4'})
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -104,7 +115,9 @@ def inputs():
         & {".build", "exports", "__pycache__", ".godot"}
         and p != MANIFEST
     ]
-    return sorted({*own, *(ROOT / p for p in SHARED)})
+    hardware=ROOT/'hardware/enclosure'
+    retained=[p for p in hardware.rglob('*') if p.is_file() and not set(p.relative_to(hardware).parts)&{'exports','.build','__pycache__'} and p.suffix in {'.py','.json','.md','.brd','.sch','.step','.stp','.pdf','.png','.jpg','.jpeg','.svg','.stl','.brep','.html','.FCMacro','.txt'} and p.name!='exports-manifest.json']
+    return sorted({*own,*retained,*(ROOT/p for p in SHARED)})
 
 
 def hashes(paths):
@@ -119,14 +132,15 @@ def check(staged=False, *, publishing=False):
         raise RuntimeError("Unsupported compact manifest")
     current_inputs = hashes(inputs())
     current_exports = hashes(EXPORTS / p for p in EXPECTED)
+    current_documents = hashes([ROOT/"design-v2.md"])
     if {p.name for p in EXPORTS.iterdir() if p.is_file()} != EXPECTED:
         raise RuntimeError("Missing or unexpected compact export")
-    if current_inputs != record["inputs"] or current_exports != record["exports"]:
+    if current_inputs != record["inputs"] or current_exports != record["exports"] or current_documents != record.get("documents"):
         raise RuntimeError(
             "Compact sources or exports are stale. Run the compact build."
         )
     if staged:
-        for name, wanted in {**current_inputs, **current_exports}.items():
+        for name, wanted in {**current_inputs, **current_exports, **current_documents}.items():
             data = subprocess.check_output(
                 ["git", "cat-file", "--filters", ":" + name], cwd=ROOT
             )
@@ -152,22 +166,21 @@ def build_lock():
 
 
 def execute(command, *, env=None, log=None, timeout=1800):
-    result = subprocess.run(
-        command,
-        cwd=ROOT,
-        env=env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        timeout=timeout,
-        check=False,
-    )
     if log:
-        log.write_text(result.stdout)
+        # Stream the actual command log to disk so long native work remains
+        # observable. Read it only after completion for the marker checks.
+        with log.open('w') as stream:
+            result=subprocess.run(command,cwd=ROOT,env=env,text=True,
+                stdout=stream,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        output=log.read_text()
+    else:
+        result=subprocess.run(command,cwd=ROOT,env=env,text=True,
+            stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+        output=result.stdout
     if result.returncode:
-        print(result.stdout[-18000:], flush=True)
+        print(output[-18000:], flush=True)
         raise RuntimeError("Command failed: " + str(command[0]))
-    return result.stdout
+    return output
 
 
 def prepare_preview():
@@ -334,13 +347,24 @@ def capture(assets, stage):
             verify_rainbow_motion(assets / f"infinity-{style}.mp4", assets / "scene.json")
         else:
             verify_masked_motion(assets / f"infinity-{style}.mp4", assets / "scene.json", style.removeprefix("rainbow-dark-"))
+    silver_frames=stage/'silver-frames';silver_frames.mkdir()
+    output=execute([shutil.which('godot') or 'godot','--path',str(project),'--script',str(HERE/'render_silver.gd'),'--','--assets',str(assets),'--material-scene',str(assets/'scene.json'),'--frames',str(silver_frames)],log=HERE/'.build/silver-capture.log',timeout=1800)
+    if 'SITE SILVER CAPTURE PASS' not in output or 'ERROR:' in output:raise RuntimeError('Narrow silver capture did not complete')
+    movie=assets/'infinity-rainbow-silver.mp4'
+    execute(['ffmpeg','-y','-v','error','-framerate','24','-i',str(silver_frames/'silver-%04d.png'),'-frames:v','384','-c:v','libx264','-pix_fmt','yuv420p','-crf','20','-movflags','+faststart',str(movie)])
+    stream=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(movie)]))['streams'][0]
+    if (stream['width'],stream['height'],stream['nb_frames'],stream['r_frame_rate'])!=(1280,720,'384','24/1') or abs(float(stream['duration'])-16)>.01:raise RuntimeError('Narrow silver loop dimensions or timing differ')
+    execute(['ffmpeg','-v','error','-xerror','-i',str(movie),'-f','null','-'])
+    verify_rainbow_motion(movie,assets/'scene.json')
     comparison = {
         "reference_commit": subprocess.check_output(
-            ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure", "demo"],
+            ["git", "log", "-1", "--format=%H", "--", "hardware/enclosure/exports-manifest.json"],
             cwd=ROOT,
             text=True,
         ).strip(),
         "reference_design": "hardware/enclosure/exports",
+        "reference_manifest_sha256":digest(ROOT/"hardware/enclosure/exports-manifest.json"),
+        "reference_status":"Inactive wide archive; export bytes preserved",
         "separate_files": True,
         "width_px": 1280,
         "height_px": 720,
@@ -376,6 +400,7 @@ def capture(assets, stage):
 def build():
     with build_lock():
         native_publication.recover(ROOT, HERE / '.build/publication')
+        execute([sys.executable,str(ROOT/'hardware/enclosure/electrical.py'),'check'])
         test()
         initial = hashes(inputs())
         original = hashes(
@@ -401,15 +426,24 @@ def build():
             output = execute(
                 [freecad, str(HERE / "Run.FCMacro")],
                 env=env,
-                log=HERE / ".build/native.log",
+                log=HERE / ".build/native.log", timeout=None,
             )
             if not complete.exists() or not json.loads(complete.read_text()).get(
                 "complete"
             ):
+                print(output[-18000:], flush=True)
                 raise RuntimeError("Native CAD did not complete")
             print(output[-1000:], flush=True)
+            native_record=json.loads(complete.read_text())
+            if 'STACKED CAD PASS:' not in output:raise RuntimeError('Narrow native completion marker missing')
+            parts=json.loads((out/'parts.json').read_text());spec=json.loads((ROOT/'hardware/enclosure/print-spec.json').read_text())
+            document=inventory_doc.update((ROOT/'design-v2.md').read_text(),parts)
+            (out/'inventory.md').write_text(inventory_doc.section(parts,'')+'\n')
+            prints.generate(out,parts,spec)
+            (out/'slicing-check.json').write_text(json.dumps(prints.check(out,parts,spec),indent=2)+'\n')
             preview_check(out)
             capture(out, stage)
+            service.package(out,parts,spec,[ROOT/'hardware/enclosure'/name for name in ['battery-access.md','electrical-design.md','electrical-design.json','harness-routing.json','harness-splices.json','necklace.json','qualification-plan.md','harness-assembly.md','control-mounts.md','latch-mounts.md','boost-mounts.md','capacitor-mounts.md','branch-fuses.md','sparkle-mounts.md','blackpill-mounts.md','gps-mounts.md','imu-mounts.md','radio-mounts.md','sources/fibonacci256-166/README.md','vendor/evilgeniuslabs-fibonacci256/LICENSE.txt']]+[HERE/'fasteners.json',HERE/'print-layout.json'])
             if initial != hashes(inputs()):
                 raise RuntimeError("Source changed during compact build")
             if original != hashes(
@@ -422,7 +456,8 @@ def build():
                 raise RuntimeError("Incomplete compact output set")
             record = {
                 "format_version": 1,
-                "inputs": initial,
+                "inputs": {**initial,"design-v2.md":hashlib.sha256(document.encode()).hexdigest()},
+                "documents": {"design-v2.md":hashlib.sha256(document.encode()).hexdigest()},
                 "exports": hashes(out / p for p in EXPECTED),
                 "tools": {
                     "freecad": json.loads(complete.read_text())["freecad"],
@@ -436,6 +471,7 @@ def build():
             }
             files = {str((EXPORTS / name).relative_to(ROOT)): (out / name).read_bytes()
                      for name in EXPECTED}
+            files["design-v2.md"]=document.encode()
             manifest_name = str(MANIFEST.relative_to(ROOT))
             files[manifest_name] = (json.dumps(record, indent=2) + '\n').encode()
             retired = {str(path.relative_to(ROOT)) for path in EXPORTS.iterdir()
@@ -452,7 +488,7 @@ def build():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "command", choices=("build", "check", "test", "preview", "preview-check")
+        "command", choices=("build", "check", "test", "preview", "preview-check", "print-check")
     )
     parser.add_argument("--staged", action="store_true")
     args = parser.parse_args()
@@ -462,6 +498,13 @@ def main():
         check(args.staged)
     elif args.command == "test":
         test()
+    elif args.command == 'print-check':
+        check()
+        parts=json.loads((EXPORTS/'parts.json').read_text())
+        spec=json.loads((ROOT/'hardware/enclosure/print-spec.json').read_text())
+        result=prints.check(EXPORTS,parts,spec)
+        if result!=json.loads((EXPORTS/'slicing-check.json').read_text()):raise RuntimeError('Delivered narrow slicing evidence differs')
+        print('NARROW SLICER PASS: exact delivered projects and source triangles')
     elif args.command == "preview-check":
         check()
         preview_check()
