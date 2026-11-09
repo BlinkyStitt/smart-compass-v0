@@ -15,42 +15,29 @@
   <a class="skip" href="#films">Skip to the animations</a>
   <header class="masthead wrap">
     <a class="wordmark" href="#"><span class="mark" aria-hidden="true">↗</span> smart compass</a>
-    <nav aria-label="Main navigation"><a href="#build">The build</a><a href="#compare">Compare sizes</a><a href="https://github.com/BlinkyStitt/smart-compass-v0">Source ↗</a></nav>
+    <nav aria-label="Main navigation"><a href="#build">The build</a><a href="#dimensions">Dimensions</a><a href="https://github.com/BlinkyStitt/smart-compass-v0">Source ↗</a></nav>
   </header>
   <main>
     <section class="intro wrap" aria-labelledby="title">
       <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Hardware in development</p>
       <h1 id="title">Smart compass.<br>Find your friends.</h1>
-      <p class="lede">We’re building a wearable medallion to help you find your friends. It’s designed to share locations by radio and use a compass to point you toward friends wearing one too. It also has a spiral of lights and an infinity-mirror effect. The active prototype is the 200 mm narrow design. It uses one removable protected XTAR 21700 cell. The wide simulations remain as an archived size and optical reference.</p>
+      <p class="lede">We’re building a wearable medallion to help you find your friends. It’s designed to share locations by radio and use a compass to point you toward friends wearing one too. It also has a spiral of lights and an infinity-mirror effect. The active prototype is the 200 mm narrow design. It uses one removable protected XTAR 21700 cell.</p>
     </section>
-    <section class="films wrap" id="films" data-comparison data-autoplay aria-label="Compare the wide and narrow smart compass simulations">
+    <section class="films wrap" id="films" data-player data-autoplay aria-label="Narrow smart compass simulation">
       <div class="film-grid">
         <article class="film">
-          <div class="film-heading"><h2><span>01</span> Wide archive</h2><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-          <video id="wide-video" muted loop playsinline preload="metadata" poster="{{wide_poster}}" aria-label="Wide enclosure simulation with a rotating rainbow and figure-eight camera path">
-            <source src="{{wide_movie}}" type="video/mp4">
-            <a href="{{wide_movie}}">Open the wide rainbow MP4</a>
-          </video>
-        </article>
-        <article class="film">
-          <div class="film-heading"><h2><span>02</span> Narrow prototype</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
-          <video id="narrow-video" muted loop playsinline preload="metadata" poster="{{narrow_poster}}" aria-label="Narrow enclosure simulation with a rotating rainbow and the same figure-eight camera path">
+          <div class="film-heading"><h2><span>01</span> Narrow prototype</h2><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
+          <video id="narrow-video" muted loop playsinline preload="metadata" poster="{{narrow_poster}}" aria-label="Narrow enclosure simulation with a rotating rainbow and a figure-eight camera path">
             <source src="{{narrow_movie}}" type="video/mp4">
             <a href="{{narrow_movie}}">Open the narrow rainbow MP4</a>
           </video>
         </article>
       </div>
       <div class="transport">
-        <div class="buttons"><button id="play-both" data-play-both type="button">Play both</button><button id="replay-both" data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+        <div class="buttons"><button id="play" data-play type="button">Play</button><button id="replay" data-replay class="secondary" type="button">Restart ↺</button></div>
         <p id="play-status" class="play-status" role="status"></p>
       </div>
       <div class="film-descriptions">
-        <section class="film-description" aria-labelledby="wide-description-title">
-          <h3 id="wide-description-title">Wide archive</h3>
-          <p class="stats-note">Earlier pouch-pack design. Its CAD and clips are retained as references. It has no current removable-cell, worn-mass or runtime acceptance.</p>
-          <p class="film-note">The mirror tunnel surrounds the <a href="https://www.evilgeniuslabs.org/fibonacci256">Fibonacci board</a>. A wider face keeps the body shallower.</p>
-          <a class="file-link" href="{{wide_movie}}">Open wide MP4 ↗</a>
-        </section>
         <section class="film-description" aria-labelledby="narrow-description-title">
           <h3 id="narrow-description-title">Active narrow prototype</h3>
           <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>{{narrow_worn_g}} <small>g · {{narrow_worn_lb}} lb</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
@@ -72,110 +59,88 @@
         <p><strong>Light patterns.</strong> We plan geometric and microphone-reactive patterns across the centre display and strips. These simulations show a rotating rainbow with an eight-second colour cycle.</p>
         <p><a href="https://blink.stitthappens.com/">I’m experimenting with light patterns over here</a>.</p>
         <p>Inside the narrow design, a black acrylic mirror in front of the board provides the reflective rear surface. A <a href="https://www.twowaymirrors.com/acrylic/">clear two-way mirror</a> closes the front. The inner LED ring sits between those mirrors.</p>
-        <p>The <a href="https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668">black acrylic</a> also absorbs light. These renders include that loss: the estimated coated black sheet transmits 9%, while the finished clear front mirror transmits 30%. Light from the narrow board passes through both sheets; the inner ring bypasses the black sheet. The wide design keeps its black front and its extra loss. A mirror coating does not act as a diffuser, so the model treats diffusion separately.</p>
+        <p>The <a href="https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668">black acrylic</a> also absorbs light. These renders include that loss: the estimated coated black sheet transmits 9%, while the finished clear front mirror transmits 30%. Light from the narrow board passes through both sheets; the inner ring bypasses the black sheet. A mirror coating does not act as a diffuser, so the model treats diffusion separately.</p>
         <p class="boundary">These are CAD and optical simulations. The clear mirror split comes from supplier data; the coated black mirror and printed diffuser response remain estimates. Firmware, finished brightness, fit, heat and radio performance still need physical validation.</p>
         <a class="text-link" href="https://github.com/BlinkyStitt/smart-compass-v0/blob/master/design-v2.md">Read the design specification ↗</a>
       </div>
     </section>
-    <section class="comparison wrap" id="compare" aria-labelledby="compare-title">
-      <div class="section-top"><div><p class="eyebrow">At the same scale</p><h2 id="compare-title">50 mm makes a difference.</h2></div><p>The narrow face is 20% smaller in diameter.<br>The narrow design is active. The wide view is archived.</p></div>
-      <figure class="comparison-figure"><a href="{{size_comparison}}"><img src="{{size_comparison}}" width="1500" height="800" loading="lazy" alt="Source body dimensions at the same front and side scale. Wide archive:250mm diameter. Active narrow:200mm diameter, with actual closed depth shown."></a><figcaption>Current source body dimensions and the narrow closed CAD bounds. <a href="{{archived_size_comparison}}">Earlier optical front-view comparison</a> (the archived image shows the older57.6mm narrow body).</figcaption></figure>
-      <div class="spec-table"><table><caption>Active narrow prototype and archived wide dimensions</caption><thead><tr><th scope="col">Design</th><th scope="col">Diameter</th><th scope="col">Body depth</th><th scope="col">Closed width × height × depth</th><th scope="col">Mirror gap</th><th scope="col">Total LEDs</th></tr></thead><tbody><tr><th scope="row">Wide archive</th><td>{{wide_width}} mm</td><td>{{wide_depth}} mm</td><td>Archived</td><td>{{wide_gap}} mm</td><td>{{wide_leds}}</td></tr><tr><th scope="row">Narrow</th><td>{{narrow_width}} mm</td><td>{{narrow_depth}} mm</td><td>{{narrow_closed_size}} mm</td><td>{{narrow_gap}} mm</td><td>{{narrow_leds}}</td></tr></tbody></table></div>
+    <section class="comparison wrap" id="dimensions" aria-labelledby="dimensions-title">
+      <div class="section-top"><div><p class="eyebrow">The narrow prototype</p><h2 id="dimensions-title">200 mm across.</h2></div><p>A smaller face with two outside light bands.</p></div>
+      <div class="spec-table"><table><caption>Active narrow prototype dimensions</caption><thead><tr><th scope="col">Diameter</th><th scope="col">Body depth</th><th scope="col">Closed width × height × depth</th><th scope="col">Mirror gap</th><th scope="col">Total LEDs</th></tr></thead><tbody><tr><td>{{narrow_width}} mm</td><td>{{narrow_depth}} mm</td><td>{{narrow_closed_size}} mm</td><td>{{narrow_gap}} mm</td><td>{{narrow_leds}}</td></tr></tbody></table></div>
     </section>
     <section class="details wrap" aria-labelledby="service-title"><p class="eyebrow">One removable cell</p><h2 id="service-title">Captive, tool-free battery access.</h2><p>Support the pendant. Put S1 fully OFF and disconnect external power. Open the captive door, hold the cell, release the independent keeper and extract the cell with its pull ribbon. Follow the permanent polarity marks when you insert one compatible protected XTAR 21700 6000 mAh button-top cell. Close the keeper and door, check the catch, select ON and press START.</p><p>OFF isolates the positive cell contact in the reviewed topology. Reset and discharge timing remain unmeasured. A rapid replacement can retain electronic state. Light output does not establish GPS, radio or navigation readiness.</p><figure class="comparison-figure"><a href="service-guide.svg"><img src="service-guide.svg" width="960" height="790" loading="lazy" alt="Six actual CAD poses show support and OFF, captive door opening, keeper release, deliberate cell extraction, compatible-cell insertion and latch plus START."></a><figcaption>The continuous model service envelope is {{narrow_service_size}} mm (width × height × depth), including door and keeper motion, 40 mm cell withdrawal and the specified finger approaches. It does not bound a full human hand. Physical fit, insulation, retention and operation remain unmeasured.</figcaption></figure><figure class="comparison-figure"><a href="assembly-dimensions.svg"><img src="assembly-dimensions.svg" width="960" height="790" loading="lazy" alt="Actual narrow CAD front and side at one scale, with body, closed projections, service bounds, suspension and conditional balance."></a><figcaption>Front and side use the same scale. Red marks show the calculated pendant centre and mass-allowance interval. These do not bound physical wearing angle.</figcaption></figure><p>Charge the removed cell off-body with a compatible 4.2 V-termination Li-ion charger. Do not charge in the pendant. Keep spare terminals individually insulated. After damage, heat or repeated darkness, stop and service the unit. Remove the cell before USB 5 V service; keep S1 OFF.</p><p><a href="prototype-service.zip">Review the narrow prototype files and print-service package</a>, <a href="inventory.md">installed inventory</a> and <a href="parts.json">raw mass and balance records</a>. The package includes fit samples, both alternative ring materials, source-linked print settings, assembly references and the full wire cut list.</p></section>
     <section class="details wrap" aria-labelledby="details-title">
       <p class="eyebrow">A closer look</p><h2 id="details-title">The parts behind the light.</h2>
       <div class="detail-grid">
-        <figure><video id="assembly-video" muted loop playsinline preload="metadata" poster="{{assembly_poster}}" aria-label="Wide enclosure simulation showing exploded assembly and reassembly"><source src="{{assembly_movie}}" type="video/mp4"><a href="{{assembly_movie}}">Open exploded assembly MP4</a></video><figcaption><strong>Archived wide assembly</strong><a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
+        <figure data-assembly><a href="{{assembly_animation}}"><picture><source media="(prefers-reduced-motion: reduce)" srcset="{{assembly_poster}}"><img id="assembly-image" src="{{assembly_animation}}" width="1280" height="720" loading="lazy" alt="The narrow prototype opens into its separate CAD parts, holds open, and closes again."></picture></a><figcaption><strong>Inside the narrow prototype</strong>The parts open and close in a repeating animation. Tap for a full-screen view. <button class="secondary" data-toggle-assembly type="button">Pause animation</button> <a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
         <figure><a href="{{narrow_side}}"><img src="{{narrow_side}}" width="1280" height="720" loading="lazy" alt="Simulated side view of the narrow enclosure and its two outside LED bands."></a><figcaption><strong>Two outside bands</strong>The 20 mm light band wraps the narrow case. The body is {{narrow_depth}} mm deep. The closed depth, including the rear guard, is {{narrow_closed_depth}} mm.</figcaption></figure>
-        <figure><a href="{{wide_worn}}"><img src="{{wide_worn}}" width="1280" height="720" loading="lazy" alt="Simulated full stationary mannequin wearing the wide medallion in the raised-hand and pointing-hand pose."></a><figcaption><strong>Wearing scale</strong>The {{wide_width}} mm wide version on the posed mannequin. The straps illustrate wearing context.</figcaption></figure>
-        <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="The same simulated mannequin and pose wearing the smaller, 200 mm narrow medallion."></a><figcaption><strong>Same wearer, smaller face</strong>The {{narrow_width}} mm narrow version uses the same pose and full-body framing.</figcaption></figure>
+        <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="Simulated mannequin wearing the 200 mm narrow medallion."></a><figcaption><strong>Wearing scale</strong>The {{narrow_width}} mm narrow version is shown on the posed mannequin.</figcaption></figure>
       </div>
-      <details id="dark-sectors" class="alternative" data-comparison>
+      <details id="dark-sectors" class="alternative" data-player>
         <summary>Rainbow • dark sectors</summary>
-        <p>Two dark sectors sweep around the rainbow. Both pendants use glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Two dark sectors sweep around the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
         <div class="film-grid">
-          <article class="film">
-            <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-            <video id="dark-sectors-wide-video" muted loop playsinline preload="none" poster="{{wide_dark_sectors_poster}}" aria-label="Wide enclosure simulation worn by the posed mannequin with rainbow dark sectors and glow PETG rings"><source src="{{wide_dark_sectors_movie}}" type="video/mp4"><a href="{{wide_dark_sectors_movie}}">Open wide dark sectors MP4</a></video>
-          </article>
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
             <video id="dark-sectors-narrow-video" muted loop playsinline preload="none" poster="{{narrow_dark_sectors_poster}}" aria-label="Narrow enclosure simulation worn by the posed mannequin with rainbow dark sectors and glow PETG rings"><source src="{{narrow_dark_sectors_movie}}" type="video/mp4"><a href="{{narrow_dark_sectors_movie}}">Open narrow dark sectors MP4</a></video>
           </article>
         </div>
         <div class="transport">
-          <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+          <div class="buttons"><button data-play type="button">Play</button><button data-replay class="secondary" type="button">Restart ↺</button></div>
           <p class="play-status" role="status"></p>
         </div>
         <div class="film-descriptions">
-          <p class="film-description"><a class="file-link" href="{{wide_dark_sectors_movie}}">Open wide dark sectors MP4 ↗</a></p>
           <p class="film-description"><a class="file-link" href="{{narrow_dark_sectors_movie}}">Open narrow dark sectors MP4 ↗</a></p>
         </div>
       </details>
-      <details id="dark-spirals" class="alternative" data-comparison>
+      <details id="dark-spirals" class="alternative" data-player>
         <summary>Rainbow • dark spirals</summary>
-        <p>Curved dark bands wind across the rainbow. Both pendants use glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Curved dark bands wind across the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
         <div class="film-grid">
-          <article class="film">
-            <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-            <video id="dark-spirals-wide-video" muted loop playsinline preload="none" poster="{{wide_dark_spirals_poster}}" aria-label="Wide enclosure simulation worn by the posed mannequin with rainbow dark spirals and glow PETG rings"><source src="{{wide_dark_spirals_movie}}" type="video/mp4"><a href="{{wide_dark_spirals_movie}}">Open wide dark spirals MP4</a></video>
-          </article>
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
             <video id="dark-spirals-narrow-video" muted loop playsinline preload="none" poster="{{narrow_dark_spirals_poster}}" aria-label="Narrow enclosure simulation worn by the posed mannequin with rainbow dark spirals and glow PETG rings"><source src="{{narrow_dark_spirals_movie}}" type="video/mp4"><a href="{{narrow_dark_spirals_movie}}">Open narrow dark spirals MP4</a></video>
           </article>
         </div>
         <div class="transport">
-          <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+          <div class="buttons"><button data-play type="button">Play</button><button data-replay class="secondary" type="button">Restart ↺</button></div>
           <p class="play-status" role="status"></p>
         </div>
         <div class="film-descriptions">
-          <p class="film-description"><a class="file-link" href="{{wide_dark_spirals_movie}}">Open wide dark spirals MP4 ↗</a></p>
           <p class="film-description"><a class="file-link" href="{{narrow_dark_spirals_movie}}">Open narrow dark spirals MP4 ↗</a></p>
         </div>
       </details>
-      <details id="dark-diagonals" class="alternative" data-comparison>
+      <details id="dark-diagonals" class="alternative" data-player>
         <summary>Rainbow • dark diagonals</summary>
-        <p>Dark diagonal bands travel across the rainbow. Both pendants use glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Dark diagonal bands travel across the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
         <div class="film-grid">
-          <article class="film">
-            <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-            <video id="dark-diagonals-wide-video" muted loop playsinline preload="none" poster="{{wide_dark_diagonals_poster}}" aria-label="Wide enclosure simulation worn by the posed mannequin with rainbow dark diagonals and glow PETG rings"><source src="{{wide_dark_diagonals_movie}}" type="video/mp4"><a href="{{wide_dark_diagonals_movie}}">Open wide dark diagonals MP4</a></video>
-          </article>
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
             <video id="dark-diagonals-narrow-video" muted loop playsinline preload="none" poster="{{narrow_dark_diagonals_poster}}" aria-label="Narrow enclosure simulation worn by the posed mannequin with rainbow dark diagonals and glow PETG rings"><source src="{{narrow_dark_diagonals_movie}}" type="video/mp4"><a href="{{narrow_dark_diagonals_movie}}">Open narrow dark diagonals MP4</a></video>
           </article>
         </div>
         <div class="transport">
-          <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+          <div class="buttons"><button data-play type="button">Play</button><button data-replay class="secondary" type="button">Restart ↺</button></div>
           <p class="play-status" role="status"></p>
         </div>
         <div class="film-descriptions">
-          <p class="film-description"><a class="file-link" href="{{wide_dark_diagonals_movie}}">Open wide dark diagonals MP4 ↗</a></p>
           <p class="film-description"><a class="file-link" href="{{narrow_dark_diagonals_movie}}">Open narrow dark diagonals MP4 ↗</a></p>
         </div>
       </details>
-      <details class="alternative" data-comparison>
+      <details id="silver-rings" class="alternative" data-player>
         <summary>Silver PETG rings</summary>
         <p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p>
         <div class="film-grid">
-          <article class="film">
-            <div class="film-heading"><h3>Wide</h3><p>{{wide_width}} mm across <i>×</i> {{wide_depth}} mm deep</p></div>
-            <video id="silver-wide-video" muted loop playsinline preload="none" poster="{{silver_poster}}" aria-label="Wide enclosure simulation with a rotating rainbow and silver PETG rings"><source src="{{silver_movie}}" type="video/mp4"><a href="{{silver_movie}}">Open wide silver PETG MP4</a></video>
-          </article>
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
             <video id="silver-narrow-video" muted loop playsinline preload="none" poster="{{silver_narrow_poster}}" aria-label="Narrow enclosure simulation with a rotating rainbow and silver PETG rings"><source src="{{silver_narrow_movie}}" type="video/mp4"><a href="{{silver_narrow_movie}}">Open narrow silver PETG MP4</a></video>
           </article>
         </div>
         <div class="transport">
-          <div class="buttons"><button data-play-both type="button">Play both</button><button data-replay-both class="secondary" type="button">Restart together ↺</button></div>
+          <div class="buttons"><button data-play type="button">Play</button><button data-replay class="secondary" type="button">Restart ↺</button></div>
           <p class="play-status" role="status"></p>
         </div>
         <div class="film-descriptions">
-          <p class="film-description"><a class="file-link" href="{{silver_movie}}">Open wide silver PETG MP4 ↗</a></p>
           <p class="film-description"><a class="file-link" href="{{silver_narrow_movie}}">Open narrow silver PETG MP4 ↗</a></p>
         </div>
       </details>

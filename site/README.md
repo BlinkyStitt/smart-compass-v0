@@ -1,9 +1,9 @@
 # Smart compass on GitHub Pages
 
-The narrow removable-cell prototype is the active design. Wide files and media
-remain a pinned archive. They have no current removable-cell, mass or runtime
-acceptance. The page retains the paired rainbow, three dark-pattern comparisons,
-silver comparison, night lighting and player controls.
+The page shows only the narrow removable-cell prototype. Wide files remain a
+pinned source archive. The page includes the rainbow, three dark patterns, silver
+PETG, night lighting and player controls. Tap any image or video to open a
+full-screen viewer. Close or Escape returns to the page and restores focus.
 
 The site uses plain HTML, CSS and JavaScript. It needs Python 3.9+, Git LFS,
 FFmpeg/FFprobe, Godot 4, Node 20+ and the locked Playwright driver with its matching
@@ -106,17 +106,26 @@ establish internal PWM, radio-burst, inrush, fault or thermal limits.
 ## Media and browser checks
 
 Each rainbow/dark/silver loop uses 1280 × 720 pixels, 384 frames at 24 fps and 16 seconds.
-The archived exploded assembly loops in 24 seconds. The build checks decoding,
-spatial colour motion, dark-mask identity and loop joins. Each asset gets a
-content-hashed URL. The current same-scale SVG uses the actual narrow body and
-closed dimensions. The older optical comparison image is labelled as archived.
+The narrow exploded assembly opens, holds and closes in a 24-second loop.
+It uses an animated PNG at 12 fps, with a direct MP4 link. Reduced motion starts
+with a still frame. Play/Pause animation also controls the image explicitly.
+Rebuild its MP4 from the current narrow CAD with:
 
-Play both waits for both clips to buffer at the shared position, then starts
-both. Failure pauses both and restores retry controls. Playback corrects drift
-over 100 ms. Closing a collapsed comparison cancels pending startup and pauses
-both clips. Reduced motion starts paused. Direct MP4 links provide recovery.
-The primary videos remain paired at 320 CSS pixels. The dark and silver sections
-stack below 620 CSS pixels.
+```sh
+python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/assembly-frames
+```
+
+Use a new frame directory for each capture. The site build rejects a still loop
+or a loop that does not return to its closed pose. The build checks decoding,
+spatial colour motion, dark-mask identity and loop joins. Each asset gets a
+content-hashed URL. The dimension and service SVGs use the current narrow CAD.
+
+Each player has Play and Restart controls. Failure restores retry controls and
+announces the error. Closing a pattern disclosure cancels startup and pauses its
+clip. Reduced motion starts paused. Direct MP4 links provide recovery. The
+narrow rainbow uses the available width on phones and desktops. Full-screen
+videos have native playback controls. Where native fullscreen is unavailable,
+the same modal viewer fills the browser viewport.
 
 ```sh
 npm ci --prefix site --ignore-scripts --no-fund
@@ -126,8 +135,10 @@ python3 site/verify.py local --directory .build/compass-pages
 
 Use the locked Playwright version and its full Chromium headless runtime. The
 verifier checks desktop/mobile layout, keyboard controls, announced errors and
-results, calculator/CLI agreement, reset, stale responses, zero cases and paired
-playback recovery. Synthetic browser failure cases test software behavior only.
+results, calculator/CLI agreement, reset, stale responses, zero cases and
+playback recovery. Gallery checks cover narrow-only media, phone and desktop
+layouts, image/video fullscreen, touch, keyboard, focus restoration, reduced
+motion, disclosure playback and decoded animated-image motion. Synthetic browser failure cases test software behavior only.
 `site/verify.py study` is an isolated calculator/player test; it cannot replace
 complete local artifact verification. Servers and browser contexts close on
 success or failure. Missing browsers fail the check.
@@ -138,7 +149,10 @@ The build hashes the active native inputs, exports, inventory, sources and site
 model. It verifies the wide archive's export bytes against its retained manifest.
 It rejects pointers, missing/stale files, mixed generations and changes during a
 build. Posters and movie checks consume captured copies. `build-info.json`
-records the reviewed revision and each input/output hash.
+records the reviewed revision and each input/output hash. The artifact goes
+directly to Pages without Jekyll. It contains no `.nojekyll` marker, because the
+pinned upload action excludes dotfiles. A tar roundtrip checks that packaging
+preserves the complete verified inventory.
 
 A private sibling directory and per-output lock protect the previous complete
 artifact. The publication journal recovers from interruption during directory

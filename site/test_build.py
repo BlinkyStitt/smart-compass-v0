@@ -47,15 +47,15 @@ class MovieTests(unittest.TestCase):
 
     def test_native_dark_media_registration(self):
         movies = {key: value for key, value in MEDIA.items() if isinstance(value, Movie)}
-        self.assertEqual(len(movies), 11)
+        self.assertEqual(len(movies), 6)
         for style in ("sectors", "spirals", "diagonals"):
-            for design, folder in (("wide", WIDE), ("narrow", NARROW)):
+            for design, folder in (("narrow", NARROW),):
                 movie = movies[f"{design}_dark_{style}_movie"]
                 self.assertEqual(movie.source, folder / f"infinity-rainbow-dark-{style}.mp4")
                 self.assertEqual(movie.rainbow_scene, folder / "scene.json")
                 self.assertEqual((movie.seconds, movie.masked_style), (16, style))
         self.assertEqual(sum(m.masked_style is None and m.rainbow_scene is not None
-                             for m in movies.values()), 4)
+                             for m in movies.values()), 2)
 
     @patch("build.verify_masked_motion", side_effect=RuntimeError("mask mismatch"))
     @patch("build.verify_rainbow_motion")
@@ -137,6 +137,22 @@ class MovieTests(unittest.TestCase):
                 self.assertEqual(records['clip_movie']['sha256'], provenance['site-assets/clip.mp4'])
                 self.assertEqual(output / values['clip_movie'], captured.source)
                 self.assertFalse(list(output.glob('.*-scene.json')))
+
+
+class AssemblyMotionTests(unittest.TestCase):
+    def test_opening_and_closing_are_required(self):
+        closed = bytes([40]) * (160 * 90 * 3)
+        opened = bytes([80]) * len(closed)
+        for frames, valid in ((closed + opened + closed, True),
+                              (closed * 3, False), (closed + opened * 2, False),
+                              (closed + opened, False)):
+            with self.subTest(valid=valid, length=len(frames)), patch(
+                    'build.subprocess.check_output', return_value=frames):
+                if valid:
+                    build.verify_assembly_motion(Path('assembly.mp4'))
+                else:
+                    with self.assertRaises(RuntimeError):
+                        build.verify_assembly_motion(Path('assembly.mp4'))
 
 
 class BuildInputTests(unittest.TestCase):

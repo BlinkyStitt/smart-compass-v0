@@ -7,14 +7,20 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "demo"))
-from run import godot
+sys.path.insert(0, str(ROOT / "designs/stacked"))
+from run import execute, prepare_preview
 
 
 def render(frames):
     frames = frames.resolve()
     frames.mkdir(parents=True, exist_ok=False)
-    godot("--script", str(ROOT / "site/render_assembly.gd"),
-          "--", "--frames", str(frames), marker="SITE ASSEMBLY CAPTURE PASS")
+    project = prepare_preview()
+    result = execute([
+        "godot", "--path", str(project), "--script", str(ROOT / "site/render_assembly.gd"),
+        "--", "--assets", str(ROOT / "designs/stacked/exports"), "--frames", str(frames),
+    ], log=frames / "capture.log", timeout=900)
+    if "SITE ASSEMBLY CAPTURE PASS" not in result or "ERROR:" in result:
+        raise RuntimeError("Narrow assembly capture failed: " + result[-4000:])
     output = ROOT / "site/assets/exploded-assembly.mp4"
     subprocess.run([
         "ffmpeg", "-y", "-v", "error", "-framerate", "24",
