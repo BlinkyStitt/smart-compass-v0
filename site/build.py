@@ -198,7 +198,6 @@ def render(output, provenance):
             continue
         if not (output / reference).is_file():
             raise RuntimeError("Missing site asset: " + reference)
-    (output / ".nojekyll").touch()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     seal(output, {"commit": commit, "media": records, "dimensions_m": dimensions,
                   "inputs": provenance})

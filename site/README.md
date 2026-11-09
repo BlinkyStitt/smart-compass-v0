@@ -149,7 +149,10 @@ The build hashes the active native inputs, exports, inventory, sources and site
 model. It verifies the wide archive's export bytes against its retained manifest.
 It rejects pointers, missing/stale files, mixed generations and changes during a
 build. Posters and movie checks consume captured copies. `build-info.json`
-records the reviewed revision and each input/output hash.
+records the reviewed revision and each input/output hash. The artifact goes
+directly to Pages without Jekyll. It contains no `.nojekyll` marker, because the
+pinned upload action excludes dotfiles. A tar roundtrip checks that packaging
+preserves the complete verified inventory.
 
 A private sibling directory and per-output lock protect the previous complete
 artifact. The publication journal recovers from interruption during directory

@@ -67,7 +67,6 @@ class LiveVerificationTests(unittest.TestCase):
         self.expected.mkdir()
         (self.expected / 'index.html').write_text('complete fixture')
         (self.expected / 'estimates.json').write_text('{"hours":2.61664}')
-        (self.expected / '.nojekyll').touch()
         publication.seal(self.expected, {'commit': 'a' * 40, 'inputs': {'fixture': 'source hash'}})
         self.remote = Path(temporary.name) / 'remote'
         shutil.copytree(self.expected, self.remote)

@@ -13,7 +13,6 @@ import publication
 def render(directory, value='new'):
     (directory/'index.html').write_text(value)
     (directory/'estimates.json').write_text(json.dumps({'value': value}))
-    (directory/'.nojekyll').touch()
     publication.seal(directory, {'commit': 'fixture', 'value': value})
 
 
@@ -39,6 +38,25 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(publication.verify(self.output)['value'], 'new')
         self.assertFalse((self.output.parent/'.pages.previous').exists())
         self.assertFalse((self.output.parent/'.pages.transaction.json').exists())
+
+    def test_pages_tar_roundtrip_preserves_the_complete_inventory(self):
+        # The pinned upload-pages-artifact action excludes dotfiles. The Pages
+        # artifact bypasses Jekyll, so it must not depend on a .nojekyll marker.
+        archive = self.output.parent / 'artifact.tar'
+        extracted = self.output.parent / 'extracted'
+        extracted.mkdir()
+        # List root entries explicitly: BSD tar also matches the dot root
+        # itself with this GNU-action exclusion pattern. File filtering agrees.
+        entries = [path.name for path in self.output.iterdir()]
+        subprocess.run(['tar', '--exclude=.[^/]*', '-cf', str(archive),
+                        '-C', str(self.output), *entries], check=True, capture_output=True)
+        subprocess.run(['tar', '-xf', str(archive), '-C', str(extracted)],
+                       check=True, capture_output=True)
+        self.assertEqual(publication.verify(extracted), publication.verify(self.output))
+        self.assertEqual(publication.inventory(extracted), publication.inventory(self.output))
+        (extracted / 'index.html').unlink()
+        with self.assertRaisesRegex(RuntimeError, 'inventory/hash mismatch'):
+            publication.verify(extracted)
 
     def test_explicit_whole_artifact_rollback_restores_values_and_provenance(self):
         publication.publish(self.output, render, lambda: None)

@@ -41,7 +41,7 @@ def verify(directory):
         raise RuntimeError('Pages directory lacks the publication inventory: ' + str(directory))
     if record['files'] != inventory(directory):
         raise RuntimeError('Pages file inventory/hash mismatch: ' + str(directory))
-    if not {'index.html', 'estimates.json', '.nojekyll'} <= set(record['files']):
+    if not {'index.html', 'estimates.json'} <= set(record['files']):
         raise RuntimeError('Incomplete Pages release: ' + str(directory))
     return record
 
