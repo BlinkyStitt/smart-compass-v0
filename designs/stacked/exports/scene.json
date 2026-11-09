@@ -2391,7 +2391,7 @@
           0.009
         ]
       ],
-      "volume_cm3": 39.47986325426511,
+      "volume_cm3": 37.22412958799546,
       "explosion_offset_m": -0.035
     },
     {
@@ -2407,11 +2407,11 @@
         ],
         [
           0.1,
-          0.09999394786362183,
-          0.0592
+          0.1,
+          0.05920000000000001
         ]
       ],
-      "volume_cm3": 93.04562953630062,
+      "volume_cm3": 93.50871801637611,
       "explosion_offset_m": 0.0
     },
     {
@@ -17281,10 +17281,10 @@
   },
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 893.6068798178378,
+      "nominal_g": 891.3302204313712,
       "range_g": [
-        667.1632068790445,
-        1124.9318993749678
+        665.569545308518,
+        1122.473107237584
       ]
     },
     "necklace": {
@@ -17295,39 +17295,39 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 898.2179327119486,
+      "nominal_g": 895.941273325482,
       "range_g": [
-        670.2651265690051,
-        1130.7684321915688
+        668.6714649984785,
+        1128.309640054185
       ]
     },
-    "upper_worn_g": 1130.7684321915688,
+    "upper_worn_g": 1128.309640054185,
     "limit_g": 1133.980925,
-    "margin_g": 3.212492808431307,
+    "margin_g": 5.6712849458151595,
     "ceiling_pass": true,
     "margin_target_g": 50,
     "margin_target_pass": false,
     "basis": "Complete installed one-cell estimate. Sum independent low/high allowances without rounding; these are not confidence intervals. Exclude tools, charger, spares, retail stock and removed print supports. Physical mass is unmeasured."
   },
   "balance": {
-    "pendant_mass_g": 893.6068798178378,
+    "pendant_mass_g": 891.3302204313712,
     "centre_mm": [
-      0.16823886717668823,
-      -6.275292040837904,
-      26.842215165603292
+      0.17216665308352994,
+      -5.884565596326245,
+      27.70168017884311
     ],
     "centre_mass_allowance_range_mm": [
       [
-        -3.949763500612967,
-        4.199985006989639
+        -3.9552328038712794,
+        4.211763006530248
       ],
       [
-        -11.77829130525814,
-        -1.827362051673636
+        -11.472356712183323,
+        -1.437466009468365
       ],
       [
-        23.721589196476337,
-        30.588539100649236
+        24.34166259388156,
+        31.292549103185614
       ]
     ],
     "suspension_midpoint_mm": [
@@ -17335,18 +17335,18 @@
       76.99325112124319,
       8.1
     ],
-    "centre_below_suspension_mm": 83.2685431620811,
-    "minimum_model_drop_mm": 78.82061317291682,
-    "lateral_moment_g_mm": 150.339409161848,
-    "fore_aft_moment_g_mm": 16748.172415009318,
-    "nominal_tilt_deg": 12.684832313814606,
+    "centre_below_suspension_mm": 82.87781671756943,
+    "minimum_model_drop_mm": 78.43071713071156,
+    "lateral_moment_g_mm": 153.45734084387416,
+    "fore_aft_moment_g_mm": 17471.569914633466,
+    "nominal_tilt_deg": 13.306674571605543,
     "tilt_mass_allowance_range_deg": [
-      9.980450578040301,
-      15.924132541246925
+      10.403248811350737,
+      16.473342067846026
     ],
     "left_right_load_fraction": [
-      0.49854988030237063,
-      0.5014501196976294
+      0.4985160251070334,
+      0.5014839748929666
     ],
     "positive_two_point_support_for_mass_range": true,
     "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."

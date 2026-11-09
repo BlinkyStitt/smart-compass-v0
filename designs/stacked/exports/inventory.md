@@ -10,8 +10,8 @@ Body: 200mm diameter x 60.6mm depth. Fitted assembly pose: 200 x 204.004 x 80.6m
 
 | Ring material | Pendant nominal g | Necklace nominal g | Total worn nominal g | Worn low–high g | Margin to2.5lb g | Separate50g target |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| glow | 893.607 | 4.611 | 898.218 | 670.265–1130.768 | 3.212 | not met |
-| silver | 886.589 | 4.611 | 891.200 | 665.352–1123.189 | 10.792 | not met |
+| glow | 891.330 | 4.611 | 895.941 | 668.671–1128.310 | 5.671 | not met |
+| silver | 884.312 | 4.611 | 888.923 | 663.759–1120.730 | 13.251 | not met |
 
 The raw limit is1133.980925g. Raw arithmetic determines acceptance; display rounding does not.
 Low/high allowances are added independently. They are not confidence intervals or guaranteed physical assembly bounds.
@@ -145,8 +145,8 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | ZS755M3X6; finished under-head target 6.0mm | 1 | 0.502494 | 0.326621–0.753741 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/ampg.pdf |
 | RearWasher5 | 1 | 0.132271 | 0.0859759–0.198406 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | RearNut5 | 1 | 0.36268 | 0.235742–0.54402 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| RearCover | 1 | 50.1394 | 35.0976–54.1506 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ElectronicsShell | 1 | 118.168 | 82.7176–127.621 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| RearCover | 1 | 47.2746 | 33.0923–51.0566 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| ElectronicsShell | 1 | 118.756 | 83.1293–128.257 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardEdgeClip0 | 1 | 0.0490708 | 0.0343495–0.0529964 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardClipWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 8.0mm | 1 | 0.211342 | 0.137373–0.317014 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |

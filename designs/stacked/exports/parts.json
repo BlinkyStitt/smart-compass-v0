@@ -953,7 +953,7 @@
         200.00000036213203,
         57.20000036213204
       ],
-      "source_volume_cm3": 93.04562953630062,
+      "source_volume_cm3": 93.50871801637611,
       "rotation": {
         "axis": [
           0,
@@ -962,7 +962,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "da6c75b375d7f74ed89037884892a6901d3dcf9347a2f6246a5d4993e5d5add7",
+      "sha256": "2d85029596d2937c009043ec689aa49c1a388e9b5c26646d126ab04c9f204da5",
       "mesh_bed_translation_z_mm": -2.1213203638126288e-07,
       "physical_acceptance": "unmeasured"
     },
@@ -1541,7 +1541,7 @@
         200.00000039999998,
         9.000000350000008
       ],
-      "source_volume_cm3": 39.47986325426511,
+      "source_volume_cm3": 37.22412958799546,
       "rotation": {
         "axis": [
           0,
@@ -1550,7 +1550,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "504d3443d034d2858c84ce076f15e2c0cf14bb5f11528f256f14d8eb0f51698b",
+      "sha256": "c706d127cf6ace4976b6326e488bd6fba6dcffd56e2272d1f5d78876b986fc1c",
       "mesh_bed_translation_z_mm": -2.0000000233721948e-07,
       "physical_acceptance": "unmeasured"
     },
@@ -1959,11 +1959,11 @@
       "file": "FitSuspensionLeft.stl",
       "source_part": "ElectronicsShell",
       "print_bounds_mm": [
-        28.00000030000002,
-        26.802305339716156,
+        28.000000300000007,
+        26.80230533971615,
         16.0000003
       ],
-      "source_volume_cm3": 2.8267756693805794,
+      "source_volume_cm3": 2.658123212847932,
       "rotation": {
         "axis": [
           0,
@@ -1972,7 +1972,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "f4d446e02bcba7e4489fb678932b3ffca09131f3755fe68f16f47ea3a44cb340",
+      "sha256": "8b286e412d9afa4b6dfe5ecf912ff0ad66f9d5880be1444980704d300ee43f53",
       "mesh_bed_translation_z_mm": -1.500000053056283e-07,
       "physical_acceptance": "unmeasured"
     },
@@ -1984,7 +1984,7 @@
         26.80230533971617,
         16.0000003
       ],
-      "source_volume_cm3": 2.8267756693817865,
+      "source_volume_cm3": 2.65812321284797,
       "rotation": {
         "axis": [
           0,
@@ -1993,7 +1993,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "e1b7eafb88a2e38aaca219fb33d99aaeec8f792ce8c56003cabe5df8a69638c7",
+      "sha256": "e30a338e8612a5d0774d70bdf42119992c937573abbd20720016731e10612c85",
       "mesh_bed_translation_z_mm": -1.500000053056283e-07,
       "physical_acceptance": "unmeasured"
     },
@@ -2047,7 +2047,7 @@
         16.00000030000003,
         8.000000300000004
       ],
-      "source_volume_cm3": 0.5759172492215158,
+      "source_volume_cm3": 0.5759172492215161,
       "rotation": {
         "axis": [
           0,
@@ -2056,7 +2056,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "fc7765b23d740097d032745ecdd862b7eb05b9e6c1a71b1fb5cbaf3ec72fb36a",
+      "sha256": "9275e6c993afbf11ddd296417f0e6460420ccc5ae79ead1bc0e32c4a1279d104",
       "mesh_bed_translation_z_mm": -1.500000053056283e-07,
       "physical_acceptance": "unmeasured"
     }
@@ -4728,10 +4728,10 @@
       "id": "RearCover",
       "label": "RearCover",
       "installed_quantity": 1,
-      "mass_g_per_unit": 50.13942633291669,
+      "mass_g_per_unit": 47.27464457675424,
       "mass_range_g_per_unit": [
-        35.09759843304168,
-        54.15058043955003
+        33.09225120372797,
+        51.05661614289458
       ],
       "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
       "group": "pendant",
@@ -4739,9 +4739,9 @@
         "RearCover"
       ],
       "mass_centre_mm": [
-        -0.538349401610462,
-        5.4271196990022466,
-        1.1728775763005537
+        -0.4686881233025807,
+        5.766577119173972,
+        1.159114253802275
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4749,10 +4749,10 @@
       "id": "ElectronicsShell",
       "label": "ElectronicsShell",
       "installed_quantity": 1,
-      "mass_g_per_unit": 118.1679495111018,
+      "mass_g_per_unit": 118.75607188079766,
       "mass_range_g_per_unit": [
-        82.71756465777125,
-        127.62138547198995
+        83.12925031655836,
+        128.25655763126147
       ],
       "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
       "group": "pendant",
@@ -4760,9 +4760,9 @@
         "ElectronicsShell"
       ],
       "mass_centre_mm": [
-        -0.06024590409569385,
-        2.816758430442343,
-        25.888433298900537
+        -0.07441024992150648,
+        5.851518428027682,
+        31.730169854592226
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -12540,10 +12540,10 @@
   },
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 893.6068798178378,
+      "nominal_g": 891.3302204313712,
       "range_g": [
-        667.1632068790445,
-        1124.9318993749678
+        665.569545308518,
+        1122.473107237584
       ]
     },
     "necklace": {
@@ -12554,15 +12554,15 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 898.2179327119486,
+      "nominal_g": 895.941273325482,
       "range_g": [
-        670.2651265690051,
-        1130.7684321915688
+        668.6714649984785,
+        1128.309640054185
       ]
     },
-    "upper_worn_g": 1130.7684321915688,
+    "upper_worn_g": 1128.309640054185,
     "limit_g": 1133.980925,
-    "margin_g": 3.212492808431307,
+    "margin_g": 5.6712849458151595,
     "ceiling_pass": true,
     "margin_target_g": 50,
     "margin_target_pass": false,
@@ -12570,24 +12570,24 @@
   },
   "physical_acceptance": "unmeasured",
   "balance": {
-    "pendant_mass_g": 893.6068798178378,
+    "pendant_mass_g": 891.3302204313712,
     "centre_mm": [
-      0.16823886717668823,
-      -6.275292040837904,
-      26.842215165603292
+      0.17216665308352994,
+      -5.884565596326245,
+      27.70168017884311
     ],
     "centre_mass_allowance_range_mm": [
       [
-        -3.949763500612967,
-        4.199985006989639
+        -3.9552328038712794,
+        4.211763006530248
       ],
       [
-        -11.77829130525814,
-        -1.827362051673636
+        -11.472356712183323,
+        -1.437466009468365
       ],
       [
-        23.721589196476337,
-        30.588539100649236
+        24.34166259388156,
+        31.292549103185614
       ]
     ],
     "suspension_midpoint_mm": [
@@ -12595,18 +12595,18 @@
       76.99325112124319,
       8.1
     ],
-    "centre_below_suspension_mm": 83.2685431620811,
-    "minimum_model_drop_mm": 78.82061317291682,
-    "lateral_moment_g_mm": 150.339409161848,
-    "fore_aft_moment_g_mm": 16748.172415009318,
-    "nominal_tilt_deg": 12.684832313814606,
+    "centre_below_suspension_mm": 82.87781671756943,
+    "minimum_model_drop_mm": 78.43071713071156,
+    "lateral_moment_g_mm": 153.45734084387416,
+    "fore_aft_moment_g_mm": 17471.569914633466,
+    "nominal_tilt_deg": 13.306674571605543,
     "tilt_mass_allowance_range_deg": [
-      9.980450578040301,
-      15.924132541246925
+      10.403248811350737,
+      16.473342067846026
     ],
     "left_right_load_fraction": [
-      0.49854988030237063,
-      0.5014501196976294
+      0.4985160251070334,
+      0.5014839748929666
     ],
     "positive_two_point_support_for_mass_range": true,
     "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."
@@ -14385,11 +14385,11 @@
     {
       "name": "RearCover",
       "group": "Manufactured",
-      "volume_cm3": 39.47986325426511,
+      "volume_cm3": 37.22412958799546,
       "centre_mm": [
-        -0.538349401610462,
-        5.4271196990022466,
-        1.1728775763005537
+        -0.46868812330258075,
+        5.766577119173972,
+        1.159114253802275
       ],
       "bounds_mm": [
         200.0000004,
@@ -14400,11 +14400,11 @@
     {
       "name": "ElectronicsShell",
       "group": "Manufactured",
-      "volume_cm3": 93.04562953630062,
+      "volume_cm3": 93.50871801637611,
       "centre_mm": [
-        -0.06024590409569385,
-        2.816758430442343,
-        25.888433298900537
+        -0.07441024992150648,
+        5.851518428027682,
+        31.730169854592226
       ],
       "bounds_mm": [
         200.0000003,
@@ -24281,10 +24281,10 @@
           "id": "RearCover",
           "label": "RearCover",
           "installed_quantity": 1,
-          "mass_g_per_unit": 50.13942633291669,
+          "mass_g_per_unit": 47.27464457675424,
           "mass_range_g_per_unit": [
-            35.09759843304168,
-            54.15058043955003
+            33.09225120372797,
+            51.05661614289458
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -24292,9 +24292,9 @@
             "RearCover"
           ],
           "mass_centre_mm": [
-            -0.538349401610462,
-            5.4271196990022466,
-            1.1728775763005537
+            -0.4686881233025807,
+            5.766577119173972,
+            1.159114253802275
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -24302,10 +24302,10 @@
           "id": "ElectronicsShell",
           "label": "ElectronicsShell",
           "installed_quantity": 1,
-          "mass_g_per_unit": 118.1679495111018,
+          "mass_g_per_unit": 118.75607188079766,
           "mass_range_g_per_unit": [
-            82.71756465777125,
-            127.62138547198995
+            83.12925031655836,
+            128.25655763126147
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -24313,9 +24313,9 @@
             "ElectronicsShell"
           ],
           "mass_centre_mm": [
-            -0.06024590409569385,
-            2.816758430442343,
-            25.888433298900537
+            -0.07441024992150648,
+            5.851518428027682,
+            31.730169854592226
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -32093,10 +32093,10 @@
       },
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 893.6068798178378,
+          "nominal_g": 891.3302204313712,
           "range_g": [
-            667.1632068790445,
-            1124.9318993749678
+            665.569545308518,
+            1122.473107237584
           ]
         },
         "necklace": {
@@ -32107,15 +32107,15 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 898.2179327119486,
+          "nominal_g": 895.941273325482,
           "range_g": [
-            670.2651265690051,
-            1130.7684321915688
+            668.6714649984785,
+            1128.309640054185
           ]
         },
-        "upper_worn_g": 1130.7684321915688,
+        "upper_worn_g": 1128.309640054185,
         "limit_g": 1133.980925,
-        "margin_g": 3.212492808431307,
+        "margin_g": 5.6712849458151595,
         "ceiling_pass": true,
         "margin_target_g": 50,
         "margin_target_pass": false,
@@ -32123,24 +32123,24 @@
       },
       "physical_acceptance": "unmeasured",
       "balance": {
-        "pendant_mass_g": 893.6068798178378,
+        "pendant_mass_g": 891.3302204313712,
         "centre_mm": [
-          0.16823886717668823,
-          -6.275292040837904,
-          26.842215165603292
+          0.17216665308352994,
+          -5.884565596326245,
+          27.70168017884311
         ],
         "centre_mass_allowance_range_mm": [
           [
-            -3.949763500612967,
-            4.199985006989639
+            -3.9552328038712794,
+            4.211763006530248
           ],
           [
-            -11.77829130525814,
-            -1.827362051673636
+            -11.472356712183323,
+            -1.437466009468365
           ],
           [
-            23.721589196476337,
-            30.588539100649236
+            24.34166259388156,
+            31.292549103185614
           ]
         ],
         "suspension_midpoint_mm": [
@@ -32148,18 +32148,18 @@
           76.99325112124319,
           8.1
         ],
-        "centre_below_suspension_mm": 83.2685431620811,
-        "minimum_model_drop_mm": 78.82061317291682,
-        "lateral_moment_g_mm": 150.339409161848,
-        "fore_aft_moment_g_mm": 16748.172415009318,
-        "nominal_tilt_deg": 12.684832313814606,
+        "centre_below_suspension_mm": 82.87781671756943,
+        "minimum_model_drop_mm": 78.43071713071156,
+        "lateral_moment_g_mm": 153.45734084387416,
+        "fore_aft_moment_g_mm": 17471.569914633466,
+        "nominal_tilt_deg": 13.306674571605543,
         "tilt_mass_allowance_range_deg": [
-          9.980450578040301,
-          15.924132541246925
+          10.403248811350737,
+          16.473342067846026
         ],
         "left_right_load_fraction": [
-          0.49854988030237063,
-          0.5014501196976294
+          0.4985160251070334,
+          0.5014839748929666
         ],
         "positive_two_point_support_for_mass_range": true,
         "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."
@@ -34832,10 +34832,10 @@
           "id": "RearCover",
           "label": "RearCover",
           "installed_quantity": 1,
-          "mass_g_per_unit": 50.13942633291669,
+          "mass_g_per_unit": 47.27464457675424,
           "mass_range_g_per_unit": [
-            35.09759843304168,
-            54.15058043955003
+            33.09225120372797,
+            51.05661614289458
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -34843,9 +34843,9 @@
             "RearCover"
           ],
           "mass_centre_mm": [
-            -0.538349401610462,
-            5.4271196990022466,
-            1.1728775763005537
+            -0.4686881233025807,
+            5.766577119173972,
+            1.159114253802275
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34853,10 +34853,10 @@
           "id": "ElectronicsShell",
           "label": "ElectronicsShell",
           "installed_quantity": 1,
-          "mass_g_per_unit": 118.1679495111018,
+          "mass_g_per_unit": 118.75607188079766,
           "mass_range_g_per_unit": [
-            82.71756465777125,
-            127.62138547198995
+            83.12925031655836,
+            128.25655763126147
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -34864,9 +34864,9 @@
             "ElectronicsShell"
           ],
           "mass_centre_mm": [
-            -0.06024590409569385,
-            2.816758430442343,
-            25.888433298900537
+            -0.07441024992150648,
+            5.851518428027682,
+            31.730169854592226
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -42644,10 +42644,10 @@
       },
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 886.5888282090457,
+          "nominal_g": 884.3121688225791,
           "range_g": [
-            662.2505707528901,
-            1117.3524036374724
+            660.6569091823635,
+            1114.8936115000884
           ]
         },
         "necklace": {
@@ -42658,15 +42658,15 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 891.1998811031566,
+          "nominal_g": 888.92322171669,
           "range_g": [
-            665.3524904428507,
-            1123.1889364540734
+            663.7588288723241,
+            1120.7301443166893
           ]
         },
-        "upper_worn_g": 1123.1889364540734,
+        "upper_worn_g": 1120.7301443166893,
         "limit_g": 1133.980925,
-        "margin_g": 10.791988545926642,
+        "margin_g": 13.250780683310722,
         "ceiling_pass": true,
         "margin_target_g": 50,
         "margin_target_pass": false,
@@ -42674,24 +42674,24 @@
       },
       "physical_acceptance": "unmeasured",
       "balance": {
-        "pendant_mass_g": 886.5888282090457,
+        "pendant_mass_g": 884.3121688225791,
         "centre_mm": [
-          0.1695706108383292,
-          -6.324965939269274,
-          26.815691878836304
+          0.17353299689202956,
+          -5.93126650863567,
+          27.681909468303857
         ],
         "centre_mass_allowance_range_mm": [
           [
-            -3.975686330569273,
-            4.227485346690109
+            -3.9812469158344506,
+            4.239399166856787
           ],
           [
-            -11.85394107108732,
-            -1.8413852370570587
+            -11.546195364787021,
+            -1.4485261197456545
           ],
           [
-            23.685622271109438,
-            30.575843861196503
+            24.310365443087285,
+            31.28521437727759
           ]
         ],
         "suspension_midpoint_mm": [
@@ -42699,18 +42699,18 @@
           76.99325112124319,
           8.1
         ],
-        "centre_below_suspension_mm": 83.31821706051247,
-        "minimum_model_drop_mm": 78.83463635830024,
-        "lateral_moment_g_mm": 150.3394091618464,
-        "fore_aft_moment_g_mm": 16593.12333197903,
-        "nominal_tilt_deg": 12.660152102596454,
+        "centre_below_suspension_mm": 82.92451762987886,
+        "minimum_model_drop_mm": 78.44177724098884,
+        "lateral_moment_g_mm": 153.45734084387254,
+        "fore_aft_moment_g_mm": 17316.52083160318,
+        "nominal_tilt_deg": 13.286508808376608,
         "tilt_mass_allowance_range_deg": [
-          9.949622915187007,
-          15.912910790198552
+          10.37516712923597,
+          16.466218345644826
         ],
         "left_right_load_fraction": [
-          0.49853840145834166,
-          0.5014615985416584
+          0.4985042480301683,
+          0.5014957519698316
         ],
         "positive_two_point_support_for_mass_range": true,
         "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."

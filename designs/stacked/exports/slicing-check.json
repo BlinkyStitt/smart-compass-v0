@@ -282,9 +282,9 @@
     },
     {
       "project": "ElectronicsShell.3mf",
-      "source_stl_sha256": "da6c75b375d7f74ed89037884892a6901d3dcf9347a2f6246a5d4993e5d5add7",
-      "layers": 418,
-      "toolpath_mass_g": 184.27,
+      "source_stl_sha256": "2d85029596d2937c009043ec689aa49c1a388e9b5c26646d126ab04c9f204da5",
+      "layers": 421,
+      "toolpath_mass_g": 195.39,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
@@ -543,9 +543,9 @@
     },
     {
       "project": "RearCover.3mf",
-      "source_stl_sha256": "504d3443d034d2858c84ce076f15e2c0cf14bb5f11528f256f14d8eb0f51698b",
+      "source_stl_sha256": "c706d127cf6ace4976b6326e488bd6fba6dcffd56e2272d1f5d78876b986fc1c",
       "layers": 45,
-      "toolpath_mass_g": 51.02,
+      "toolpath_mass_g": 48.21,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -732,8 +732,8 @@
     },
     {
       "project": "FitSuspensionLeft.3mf",
-      "source_stl_sha256": "f4d446e02bcba7e4489fb678932b3ffca09131f3755fe68f16f47ea3a44cb340",
-      "layers": 103,
+      "source_stl_sha256": "8b286e412d9afa4b6dfe5ecf912ff0ad66f9d5880be1444980704d300ee43f53",
+      "layers": 108,
       "toolpath_mass_g": 4.48,
       "material": "glow",
       "temporary_support_toolpaths": true,
@@ -741,9 +741,9 @@
     },
     {
       "project": "FitSuspensionRight.3mf",
-      "source_stl_sha256": "e1b7eafb88a2e38aaca219fb33d99aaeec8f792ce8c56003cabe5df8a69638c7",
-      "layers": 103,
-      "toolpath_mass_g": 4.51,
+      "source_stl_sha256": "e30a338e8612a5d0774d70bdf42119992c937573abbd20720016731e10612c85",
+      "layers": 108,
+      "toolpath_mass_g": 4.55,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
@@ -786,7 +786,7 @@
     },
     {
       "project": "FitBoardEdgeSeat.3mf",
-      "source_stl_sha256": "fc7765b23d740097d032745ecdd862b7eb05b9e6c1a71b1fb5cbaf3ec72fb36a",
+      "source_stl_sha256": "9275e6c993afbf11ddd296417f0e6460420ccc5ae79ead1bc0e32c4a1279d104",
       "layers": 59,
       "toolpath_mass_g": 1.31,
       "material": "glow",
