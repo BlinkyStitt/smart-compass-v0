@@ -30,22 +30,18 @@ class Movie:
 
 
 MEDIA = {
-    "wide_movie": Movie(WIDE / "infinity-rainbow.mp4", 16, rainbow_scene=WIDE / "scene.json"),
     "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
-    "silver_movie": Movie(WIDE / "infinity-rainbow-silver.mp4", 16, rainbow_scene=WIDE / "scene.json"),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
-    "wide_worn": SITE / "assets/wide-worn.png",
     "narrow_worn": NARROW / "night-mannequin.png",
     "narrow_side": NARROW / "night-side.png",
-    "size_comparison": SITE / "assets/size-comparison.png",
     **{
         f"{design}_dark_{style}_movie": Movie(
             folder / f"infinity-rainbow-dark-{style}.mp4", 16,
             rainbow_scene=folder / "scene.json", masked_style=style,
         )
         for style in DARK_STYLES
-        for design, folder in (("wide", WIDE), ("narrow", NARROW))
+        for design, folder in (("narrow", NARROW),)
     },
 }
 SAMPLES = ROOT / '.build/energy-samples'
@@ -68,6 +64,23 @@ def verify_movie(movie):
         verify_masked_motion(movie.source, movie.rainbow_scene, movie.masked_style)
     elif movie.rainbow_scene:
         verify_rainbow_motion(movie.source, movie.rainbow_scene)
+
+
+def verify_assembly_motion(source):
+    """Reject a still, missing opening, or a loop that does not close again."""
+    frames = subprocess.check_output([
+        "ffmpeg", "-v", "error", "-i", str(source),
+        "-vf", r"select=eq(n\,0)+eq(n\,288)+eq(n\,575),scale=160:90",
+        "-fps_mode", "passthrough", "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
+    ])
+    size = 160 * 90 * 3
+    if len(frames) != size * 3:
+        raise RuntimeError("Assembly must include closed, open and reclosed frames")
+    first, middle, last = [frames[i * size:(i + 1) * size] for i in range(3)]
+    difference = lambda a, b: sum(abs(x - y) for x, y in zip(a, b)) / size
+    opening = difference(first, middle)
+    if opening < 3 or difference(middle, last) < 3 or difference(first, last) > opening * .1:
+        raise RuntimeError("Assembly animation must open and return to the closed pose")
 
 
 def checked_bytes(source):
@@ -115,6 +128,16 @@ def render_media(output, provenance):
                 "-frames:v", "1", "-q:v", "3", str(poster)
             ], check=True)
             values[key.replace("movie", "poster")] = "assets/" + poster.name
+            if key == "assembly_movie":
+                verify_assembly_motion(destination)
+                animation = destination.with_suffix(".apng")
+                subprocess.run([
+                    "ffmpeg", "-y", "-v", "error", "-i", str(destination),
+                    "-filter_complex", "fps=12,scale=960:540,split[a][b];[a]palettegen[p];[b][p]paletteuse=dither=bayer:bayer_scale=3",
+                    "-c:v", "apng",
+                    "-plays", "0", str(animation),
+                ], check=True)
+                values['assembly_animation'] = "assets/" + animation.name
     return values, records
 
 
@@ -133,10 +156,6 @@ def render(output, provenance):
         gap = (metadata["optics"]["front_z"] - metadata["optics"]["rear_z"]) * 1000
         values[name + "_gap"] = f"{gap:.1f}".removesuffix(".0")
     parts=json.loads(read_input(NARROW/'parts.json',provenance))
-    from dimensions import comparison
-    (output/'size-comparison.svg').write_text(comparison(dimensions['wide'],dimensions['narrow'],parts))
-    values['archived_size_comparison']=values['size_comparison']
-    values['size_comparison']='size-comparison.svg'
     variants=estimate_masses(parts);mass=variants['glow']['mass_estimate'];cell=next(row for row in variants['glow']['components'] if row['id']=='cell')
     study=subprocess.run(['node',str(SITE/'sample_check.mjs'),str(SAMPLES/'manifest.json')],text=True,capture_output=True,check=True)
     energy=json.loads(study.stdout)

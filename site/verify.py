@@ -107,42 +107,42 @@ def fixture(directory):
         if Path(record['file']).name != record['file']:
             raise ValueError('Unsafe study sample path')
         shutil.copyfile(samples / record['file'], directory / 'pattern-data' / record['file'])
-    for name, source in [('wide', 'hardware/enclosure/exports/infinity-rainbow.mp4'),
-                         ('narrow', 'designs/stacked/exports/infinity-rainbow.mp4'),
-                         ('silver', 'hardware/enclosure/exports/infinity-rainbow-silver.mp4')]:
+    for name, source in [('narrow', 'designs/stacked/exports/infinity-rainbow.mp4'),
+                         ('silver', 'designs/stacked/exports/infinity-rainbow-silver.mp4')]:
         shutil.copyfile(ROOT / source, directory / (name + '.mp4'))
     (directory / 'index.html').write_text('''<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Calculator study fixture</title>
 <link rel="stylesheet" href="styles.css"><script src="app.js" defer></script>
 <script src="calculator.js" type="module"></script><main class="wrap">
 <h1>Isolated calculator and playback study — not a release</h1>
-<section id="films" data-comparison data-autoplay><div class="film"><video controls muted loop playsinline preload="metadata" src="wide.mp4" aria-label="Wide rainbow"></video><a href="wide.mp4">Open wide MP4</a></div>
-<div class="film"><video controls muted loop playsinline preload="metadata" src="narrow.mp4" aria-label="Narrow rainbow"></video><a href="narrow.mp4">Open narrow MP4</a></div>
-<a href="silver.mp4">Open silver MP4</a><button id="play-both" data-play-both>Play both</button><button id="replay-both" data-replay-both>Restart together</button>
-<p id="play-status" class="play-status" role="status"></p></section><video id="assembly-video" hidden muted loop src="silver.mp4"></video><section id="energy-calculator" class="energy-calculator" aria-label="One-cell energy calculator"></section>
+<section id="films" data-player data-autoplay><div class="film"><video controls muted loop playsinline preload="metadata" src="narrow.mp4" aria-label="Narrow rainbow"></video><a href="narrow.mp4">Open narrow MP4</a></div>
+<a href="silver.mp4">Open silver MP4</a><button id="play" data-play>Play</button><button id="replay" data-replay>Restart</button>
+<p id="play-status" class="play-status" role="status"></p></section><section id="energy-calculator" class="energy-calculator" aria-label="One-cell energy calculator"></section>
 </main></html>''')
 
 
-def probe(url, directory):
+def probe(url, directory, *, study=False):
     env = dict(os.environ)
     env.setdefault('PLAYWRIGHT_BROWSERS_PATH', str(ROOT / '.build/browser-cache'))
-    command = ['node', str(HERE / 'browser_verify.mjs'), url, str(directory)]
-    with subprocess.Popen(command, cwd=ROOT, env=env) as process:
-        try:
-            result = process.wait(timeout=180)
-        except BaseException:
-            # Playwright's SIGTERM handler closes its detached browser group.
-            # subprocess.run(timeout=...) sends SIGKILL and bypasses that cleanup.
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
-            raise
-        if result:
-            raise subprocess.CalledProcessError(result, command)
+    scripts = ['browser_verify.mjs'] if study else ['browser_verify.mjs', 'test_layout.cjs']
+    for script in scripts:
+        command = ['node', str(HERE / script), url, str(directory)]
+        with subprocess.Popen(command, cwd=ROOT, env=env) as process:
+            try:
+                result = process.wait(timeout=180)
+            except BaseException:
+                # Playwright's SIGTERM handler closes its detached browser group.
+                # subprocess.run(timeout=...) sends SIGKILL and bypasses that cleanup.
+                if process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait()
+                raise
+            if result:
+                raise subprocess.CalledProcessError(result, command)
 
 
 def live(url, expected):
@@ -194,7 +194,7 @@ def main():
                 directory = Path(temporary)
                 fixture(directory)
                 with server(directory) as url:
-                    probe(url, directory)
+                    probe(url, directory, study=True)
             print('STUDY BROWSER PASS: isolated calculator/playback fixtures; no assembly or release acceptance')
 
 

@@ -1,6 +1,6 @@
 extends SceneTree
 
-# Reuse the demo's complete explosion and reassembly motion with current CAD.
+# Render the active narrow CAD with the original open/hold/close timing.
 func _initialize():
 	_render.call_deferred()
 
@@ -16,17 +16,23 @@ func _render():
 	assembly.automated = true
 	assembly.paused = true
 	assembly.panel.visible = false
+	assembly.caption.visible = false
 	assembly._set_presentation(2)
-	assembly._set_ring_material(0)
-	assembly._reset_glow(0.35, 0.20)
-	assembly._set_finish(0)
 	assembly.pattern = 0
 	assembly.environment.background_mode = Environment.BG_COLOR
 	assembly.environment.background_color = Color("#404040")
 	RenderingServer.render_loop_enabled = false
 	RenderingServer.viewport_set_update_mode(root.get_viewport_rid(), RenderingServer.VIEWPORT_UPDATE_ALWAYS)
 	for frame in range(576):
-		assembly._exploded_pose(frame / 576.0)
+		var phase = frame / 576.0
+		var amount = smoothstep(0.08, 0.38, phase) * (1.0 - smoothstep(0.62, 0.92, phase))
+		assembly._explode(amount)
+		assembly.distance = 0.60 + 0.25 * amount
+		assembly.target = Vector3(0, 0, 0.0367 + 0.075 * amount)
+		assembly.yaw = 35.0 + 30.0 * amount
+		assembly.pitch_angle = -16.0
+		assembly.pattern_time = 2.0
+		assembly._update_camera()
 		assembly._update_colours()
 		await assembly._settle()
 		var error = root.get_texture().get_image().save_png(frames.path_join("assembly-%04d.png" % frame))

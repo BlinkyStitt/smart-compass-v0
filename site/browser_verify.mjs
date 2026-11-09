@@ -8,7 +8,7 @@ const [url, directory] = process.argv.slice(2);
 const expectedHTML = await readFile(resolve(directory, 'index.html'), 'utf8');
 const expectedMovies = [...new Set([...expectedHTML.matchAll(/href="([^"]+\.mp4)"/g)]
   .map(match => new URL(match[1], url).href))].sort();
-assert.ok(expectedMovies.length >= 3, 'Expected artifact must include primary and comparison MP4 links');
+assert.ok(expectedMovies.length >= 2, 'Expected artifact must include primary and comparison MP4 links');
 const model = JSON.parse(await readFile(resolve(directory, 'electrical-inputs.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(resolve(directory, 'pattern-samples.json'), 'utf8'));
 const pin = JSON.parse(await readFile(new URL('./node_modules/playwright/package.json', import.meta.url), 'utf8'));
@@ -148,35 +148,22 @@ try {
       await page.waitForFunction(() => window.studyOldFinished);
       assert.equal((await agreement(page)).pattern, 'dark-spirals');
 
-      // Exercise the shipped paired-player handlers with actual MP4 decoding.
-      assert.ok(await page.locator('#films video').evaluateAll(videos => videos.every(video => video.paused)));
-      await page.locator('#play-both').click();
-      await page.waitForFunction(() => [...document.querySelectorAll('#films video')].every(video => !video.paused && video.currentTime > 0));
-      await page.locator('#films video').evaluateAll(videos => { videos[1].currentTime = videos[0].currentTime + .8; });
-      await page.waitForFunction(() => { const v = document.querySelectorAll('#films video'); return Math.abs(v[0].currentTime - v[1].currentTime) < .15; });
-      const beforeBuffer = await page.locator('#films video').last().evaluate(video => {
-        Object.defineProperty(video, 'readyState', {configurable: true, value: 2});
-        video.currentTime = document.querySelector('#films video').currentTime + .8;
-        video.dispatchEvent(new Event('waiting'));
-        return [...document.querySelectorAll('#films video')].map(v => ({time: v.currentTime, ready: v.readyState, seeking: v.seeking, paused: v.paused}));
-      });
-      // Wait two animation frames so the normal synchronizer observes buffering.
-      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      const duringBuffer = await page.locator('#films video').evaluateAll(videos => videos.map(v => ({time: v.currentTime, ready: v.readyState, seeking: v.seeking, paused: v.paused})));
-      assert.ok(Math.abs(duringBuffer[0].time - duringBuffer[1].time) > .15, JSON.stringify({beforeBuffer, duringBuffer}));
-      await page.locator('#films video').last().evaluate(video => { delete video.readyState; video.dispatchEvent(new Event('canplay')); });
-      await page.waitForFunction(() => { const v = document.querySelectorAll('#films video'); return Math.abs(v[0].currentTime - v[1].currentTime) < .15; });
-      await page.locator('#play-both').click();
-      assert.ok(await page.locator('#films video').evaluateAll(videos => videos.every(video => video.paused)));
-      await page.locator('#films video').evaluateAll(videos => videos.forEach(video => { video.currentTime = 5; }));
-      await page.locator('#replay-both').click();
-      await page.waitForFunction(() => [...document.querySelectorAll('#films video')].every(video => !video.paused && video.currentTime > 0 && video.currentTime < 2));
-      await page.locator('#play-both').click();
-      await page.locator('#films video').first().evaluate(video => { video.originalPlay = video.play; video.play = () => Promise.reject(new DOMException('fixture rejection', 'NotAllowedError')); });
-      await page.locator('#play-both').click();
+      // Exercise the shipped narrow player with actual MP4 decoding.
+      assert.equal(await page.locator('#films video').count(), 1);
+      assert.ok(await page.locator('#films video').evaluate(video => video.paused));
+      await page.locator('#play').click();
+      await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0; });
+      await page.locator('#play').click();
+      assert.ok(await page.locator('#films video').evaluate(video => video.paused));
+      await page.locator('#films video').evaluate(video => { video.currentTime = 5; });
+      await page.locator('#replay').click();
+      await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0 && v.currentTime < 2; });
+      await page.locator('#play').click();
+      await page.locator('#films video').evaluate(video => { video.originalPlay = video.play; video.play = () => Promise.reject(new DOMException('fixture rejection', 'NotAllowedError')); });
+      await page.locator('#play').click();
       await page.waitForFunction(() => document.querySelector('#play-status').textContent.includes('Playback did not start'));
-      assert.ok(await page.locator('#films video').evaluateAll(videos => videos.every(video => video.paused)));
-      await page.locator('#films video').first().evaluate(video => { video.play = video.originalPlay; video.dispatchEvent(new Event('error')); });
+      assert.ok(await page.locator('#films video').evaluate(video => video.paused));
+      await page.locator('#films video').evaluate(video => { video.play = video.originalPlay; video.dispatchEvent(new Event('error')); });
       assert.ok((await page.locator('#play-status').innerText()).includes('could not load'));
       const movies = [...new Set(await page.locator('a[href$=".mp4"]').evaluateAll(links => links.map(link => link.href)))].sort();
       assert.deepEqual(movies, expectedMovies, 'Every reviewed MP4 must retain its recovery link');

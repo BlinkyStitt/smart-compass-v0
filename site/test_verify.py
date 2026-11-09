@@ -14,7 +14,7 @@ import verify
 
 
 class StudyFixtureTests(unittest.TestCase):
-    def test_fixture_matches_the_shipped_comparison_player_contract(self):
+    def test_fixture_matches_the_shipped_narrow_player_contract(self):
         class PlayerElements(HTMLParser):
             def __init__(self):
                 super().__init__()
@@ -28,7 +28,7 @@ class StudyFixtureTests(unittest.TestCase):
                     self.primary = True
                 if self.primary and tag == 'video':
                     self.videos += 1
-                if attrs.get('id') in ('films', 'play-both', 'replay-both', 'play-status', 'assembly-video'):
+                if attrs.get('id') in ('films', 'play', 'replay', 'play-status'):
                     self.elements[attrs['id']] = attrs
 
             def handle_endtag(self, tag):
@@ -40,8 +40,7 @@ class StudyFixtureTests(unittest.TestCase):
             samples = root / '.build/energy-samples'
             samples.mkdir(parents=True)
             (samples / 'manifest.json').write_text('{"sets": []}')
-            for name in ('hardware/enclosure/exports/infinity-rainbow.mp4',
-                         'hardware/enclosure/exports/infinity-rainbow-silver.mp4',
+            for name in ('designs/stacked/exports/infinity-rainbow-silver.mp4',
                          'designs/stacked/exports/infinity-rainbow.mp4'):
                 source = root / name
                 source.parent.mkdir(parents=True, exist_ok=True)
@@ -53,12 +52,11 @@ class StudyFixtureTests(unittest.TestCase):
             for markup in ((output / 'index.html').read_text(), (verify.HERE / 'index.html').read_text()):
                 parser = PlayerElements()
                 parser.feed(markup)
-                self.assertEqual(parser.videos, 2)
-                for element, attribute in (('films', 'data-comparison'), ('films', 'data-autoplay'),
-                                           ('play-both', 'data-play-both'), ('replay-both', 'data-replay-both')):
+                self.assertEqual(parser.videos, 1)
+                for element, attribute in (('films', 'data-player'), ('films', 'data-autoplay'),
+                                           ('play', 'data-play'), ('replay', 'data-replay')):
                     self.assertIn(attribute, parser.elements[element])
                 self.assertIn('play-status', parser.elements['play-status']['class'].split())
-                self.assertIn('assembly-video', parser.elements)
 
 
 class LiveVerificationTests(unittest.TestCase):
