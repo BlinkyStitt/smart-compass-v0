@@ -4,17 +4,40 @@
     91.66784829954797,
     93.16784829954797
   ],
-  "frame_inner_outer_mm": [
+  "front_mirror_collar_inner_outer_mm": [
     93.8,
     95.66784829954798
   ],
+  "flush_perimeter": {
+    "outer_radius_mm": 100.0,
+    "wall_mm": 1.5,
+    "cavity_wall_mm": 1.0,
+    "inner_strip_backing_radial_mm": [
+      93.8,
+      94.8
+    ],
+    "inner_strip_backing_missing_mm3": 0.0,
+    "rear_wall_z_mm": [
+      2,
+      14.0
+    ],
+    "front_wall_z_mm": [
+      34.0,
+      59.2
+    ],
+    "missing_outer_skin_mm3": [
+      0.0,
+      0.0
+    ],
+    "side_band_added_opaque_mm3": 0.0,
+    "front_nut_loading_passages": 6
+  },
   "front_nut_land_bottom_mm": 53.7,
   "front_nut_floor_mm": 1.5,
   "front_nut_lands_preserved": 6,
-  "side_band_outline_obstruction_mm3": 0.0,
   "rear_skin_mm": 0.8,
   "rear_rib_mm": 3,
-  "rear_pocket_count": 101,
+  "rear_pocket_count": 81,
   "rear_rib_layout": {
     "radial_count": 24,
     "angle_pitch_deg": 15,
@@ -143,9 +166,6 @@
     },
     {
       "mount": "RearNut5"
-    },
-    {
-      "mount": "ElectronicsShell"
     },
     {
       "mount": "ElectronicsShell"
@@ -380,63 +400,43 @@
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 143.10538796387195
+      "preserved_contact_mm2": 3.7375493792072625
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 119.91550810371065
+      "preserved_contact_mm2": 81.32865909439971
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 118.54026660289962
+      "preserved_contact_mm2": 36.61989896343367
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.004189123461821425
+      "preserved_contact_mm2": 0.0608804930384687
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.004189123461787846
+      "preserved_contact_mm2": 0.591708545063538
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 41.44533391583941
+      "preserved_contact_mm2": 0.062199816607189526
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.09857248771206886
+      "preserved_contact_mm2": 151.2917564554144
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.10276161117408807
+      "preserved_contact_mm2": 236.0813629276923
     },
     {
       "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.09857248771207869
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 309.6323020096559
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 208.68964326956205
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 118.54026660290582
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 75.15310327745382
+      "preserved_contact_mm2": 5.780694929752738
     },
     {
       "part": "ElectronicsShell",
       "preserved_contact_mm2": 0.004189123461727901
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.0041891234617291925
     },
     {
       "part": "ElectronicsShell",
@@ -452,6 +452,10 @@
     },
     {
       "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.0041891234617291925
+    },
+    {
+      "part": "ElectronicsShell",
       "preserved_contact_mm2": 0.1027616111741003
     },
     {
@@ -460,7 +464,99 @@
     },
     {
       "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461787846
+    },
+    {
+      "part": "ElectronicsShell",
       "preserved_contact_mm2": 0.10276161117409807
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461821425
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 3.7375493792111807
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 36.61989896343419
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 30.151223427416884
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 2.688924866032912
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771206886
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117408807
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.09857248771207869
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 41.44533391583941
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 81.3286590944102
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.062199816607261565
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.5917085450631414
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.060880493038380674
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 238.77028779386168
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 172.78847516238866
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 30.151223427398115
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461789395
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.1027616111740987
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.1027616111740881
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 5.780694929753915
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.10276161117411929
+    },
+    {
+      "part": "ElectronicsShell",
+      "preserved_contact_mm2": 0.004189123461789134
     },
     {
       "part": "ElectronicsShell",
@@ -473,38 +569,6 @@
     {
       "part": "ElectronicsShell",
       "preserved_contact_mm2": 0.09857248771165719
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 316.5866826207102
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 126.22916973094225
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 228.26349370914008
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.004189123461789395
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.004189123461789134
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.1027616111740987
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.1027616111740881
-    },
-    {
-      "part": "ElectronicsShell",
-      "preserved_contact_mm2": 0.10276161117411929
     },
     {
       "part": "LatchCarrier",
@@ -523,6 +587,6 @@
     0.0,
     0.0
   ],
-  "case_saved_mm3": 42479.84805740607,
-  "rear_saved_mm3": 16428.108563470603
+  "case_saved_mm3": 41771.393793654745,
+  "rear_saved_mm3": 18683.84222974025
 }

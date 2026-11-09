@@ -5,6 +5,69 @@ sealing and suspension remain physical qualification items.
 """
 import math
 
+
+def flush_perimeter(shell,p,d):
+    """Replace recessed walls with hollow walls at the diffuser's radius."""
+    import FreeCAD as App,Part
+    from hardware_spec import hexagon,nut_dimensions
+    def cyl(r,h,z):return Part.makeCylinder(r,h,App.Vector(0,0,z))
+    def ann(a,b,h,z):return cyl(b,h,z).cut(cyl(a,h,z))
+    radius=d['case_radius'];inner=radius-1.5
+    band_end=p['side_bottom_z']+d['side_height']
+    top=d['front_z']+p['front_mirror_thickness']
+    nut_floor=d['front_z']-2.5
+    original=shell
+    # Keep the six rear clamp columns, both suspension lands and the actual
+    # boost-input pad backing. The other lower carrier material moves outward.
+    lower=ann(d['rear_fastener_radius'],inner,p['side_bottom_z']-3.5,2)
+    for side in (-1,1):
+        lower=lower.cut(Part.makeBox(20,20,11,App.Vector(side*d['suspension_x']-10,d['suspension_y']-10,2)))
+    for i in range(6):
+        a=i*math.tau/6
+        lower=lower.cut(Part.makeCylinder(4,11,App.Vector(d['rear_fastener_radius']*math.cos(a),d['rear_fastener_radius']*math.sin(a),2)))
+    lower=lower.cut(Part.makeBox(8,6.6,11.7,App.Vector(-94,-13.7,2.1)))
+    shell=shell.cut(lower).fuse(ann(inner,radius,p['side_bottom_z']-2,2))
+    # Keep the inward strip's original backing radius. Two1mm walls separated
+    # by an air space replace the solid cavity rim. The mirror collars and
+    # nut-pocket floors retain their original material.
+    backing_outer=d['mirror_seat_radius']+1
+    shell=shell.fuse(ann(inner,radius,top-band_end,band_end))
+    shell=shell.cut(ann(backing_outer,radius-1,nut_floor-d['rear_z'],d['rear_z']))
+    backing=original.common(ann(d['mirror_seat_radius'],backing_outer,nut_floor-d['rear_z'],d['rear_z']))
+    backing_missing=backing.cut(shell).Volume
+    if backing_missing>1e-6:raise ValueError('Flush case loses inner LED strip backing')
+    core_outer=d['side_radius']+p['strip_thickness']/2+p['ring_led_depth']+.2
+    shell=shell.fuse(ann(core_outer-.4,radius,1.5,band_end))
+    # The outer wall must not close the six radial nut-loading passages.
+    flats,height=nut_dimensions('M2',pocket=True);ports=[]
+    for i in range(6):
+        angle=i*60;a=math.radians(angle)
+        x=d['front_fastener_radius']*math.cos(a);y=d['front_fastener_radius']*math.sin(a)
+        z=d['front_z']-1
+        points=[App.Vector(x+dx,y+dy,z) for dx,dy in hexagon(0,0,flats)]
+        pocket=Part.Face(Part.makePolygon(points+[points[0]])).extrude(App.Vector(0,0,height))
+        entry=Part.makeBox(radius+1-d['front_fastener_radius'],flats,height,App.Vector(d['front_fastener_radius'],-flats/2,z))
+        entry.rotate(App.Vector(),App.Vector(0,0,1),angle)
+        ports.append(pocket.fuse(entry))
+    access=Part.makeCompound(ports);shell=shell.cut(access)
+    if not shell.isValid() or len(shell.Solids)!=1:raise ValueError('Flush case disconnected or invalid')
+    # A continuous skin, rather than six projecting lands, defines the outline.
+    # Only the documented nut-loading passages may interrupt the front skin.
+    lower_skin=ann(radius-.05,radius,p['side_bottom_z']-2,2)
+    front_skin=ann(radius-.05,radius,top-band_end,band_end).cut(access)
+    missing=[probe.cut(shell).Volume for probe in (lower_skin,front_skin)]
+    if max(missing)>1e-6:raise ValueError('Flush case has a recessed or broken outer skin '+str(missing))
+    band=cyl(radius+1,d['side_height'],p['side_bottom_z'])
+    added=shell.common(band).cut(original).Volume
+    if added>1e-6:raise ValueError('Flush case adds opaque material inside the glow band')
+    return shell,{'outer_radius_mm':radius,'wall_mm':1.5,
+        'cavity_wall_mm':1.0,'inner_strip_backing_radial_mm':[d['mirror_seat_radius'],backing_outer],
+        'inner_strip_backing_missing_mm3':backing_missing,
+        'rear_wall_z_mm':[2,p['side_bottom_z']], 'front_wall_z_mm':[band_end,top],
+        'missing_outer_skin_mm3':missing,'side_band_added_opaque_mm3':added,
+        'front_nut_loading_passages':len(ports)}
+
+
 def lighten(shell,rear,parts,p,d):
     import FreeCAD as App,Part
     def cyl(r,h,z):return Part.makeCylinder(r,h,App.Vector(0,0,z))
@@ -38,10 +101,8 @@ def lighten(shell,rear,parts,p,d):
     transition_h=transition_top-34
     inner=Part.makeCone(d['side_radius']-p['strip_thickness']/2-.5,d['mirror_seat_radius'],transition_h,App.Vector(0,0,34))
     shell=shell.cut(inner.cut(cyl(91,transition_h+.2,33.9)))
-    # Keep one smooth outline in front of the side diffuser. The old full-depth
-    # fastener lands cut black notches into the far side of the glowing ring.
-    # Cover the LED-package tips with0.2mm radial margin; retain the nut lands
-    # only where the pockets need their1.5mm floor below the front fasteners.
+    # Prepare the thin mirror-support core and short nut lands. The hollow
+    # outer wall below joins them into one flush circular perimeter.
     frame_outer=d['side_radius']+p['strip_thickness']/2+p['ring_led_depth']+.2
     nut_land_bottom=d['front_z']-1-1.5
     frame_top=d['front_z']+p['front_mirror_thickness']
@@ -56,7 +117,7 @@ def lighten(shell,rear,parts,p,d):
     for land in nut_lands:
         if land.cut(shell).Volume>1e-6:raise ValueError('Front nut land or pocket floor lost')
     outline_probe=ann(frame_outer,101,nut_land_bottom-34,34)
-    if shell.common(outline_probe).Volume>1e-6:raise ValueError('Fastener land interrupts smooth side-band outline')
+    if shell.common(outline_probe).Volume>1e-6:raise ValueError('Unused full-height front fastener material retained')
     # Three-sided board ledges retain the unchanged source clip and nut bosses.
     # Keep the continuous0.5mm PCB edge bearing and three24mm-wide radial ribs.
     ledge_tool=ann(84.5,91,2,p['circle_back_z']-2)
@@ -80,6 +141,9 @@ def lighten(shell,rear,parts,p,d):
     shell=shell.cut(box(140,22,12,-0,-72,1.9))
     # The outer switch-guard washer/nut stack sits atX93.5,Y-12.
     shell=shell.cut(box(9,9,5,93.5,-12,1.9))
+    shell,flush=flush_perimeter(shell,p,d)
+    for land in nut_lands:
+        if land.cut(shell).Volume>1e-6:raise ValueError('Flush wall loses front nut support')
     if not shell.isValid() or len(shell.Solids)!=1:raise ValueError('Lightened case disconnected or invalid')
     shell.check(True)
     suspension=[]
@@ -153,10 +217,10 @@ def lighten(shell,rear,parts,p,d):
                 if old>1e-7:bearing.append({'part':name,'preserved_contact_mm2':new/.02})
     return shell,newrear,{'scope':'Non-optical printed case structure; physical strength and print quality unmeasured',
       'lower_wall_radial_mm':[inner_r,d['side_radius']-p['strip_thickness']/2],
-      'frame_inner_outer_mm':[d['mirror_seat_radius'],frame_outer],
+      'front_mirror_collar_inner_outer_mm':[d['mirror_seat_radius'],frame_outer],
+      'flush_perimeter':flush,
       'front_nut_land_bottom_mm':nut_land_bottom,'front_nut_floor_mm':1.5,
       'front_nut_lands_preserved':len(nut_lands),
-      'side_band_outline_obstruction_mm3':shell.common(outline_probe).Volume,
       'rear_skin_mm':.8,'rear_rib_mm':3,
       'rear_pocket_count':len(tool.Solids),'rear_rib_layout':{'radial_count':24,'angle_pitch_deg':15,'circular_radius_mm':50},'rear_grid_kept_for_mounts':kept,'bearing_faces':bearing,
       'suspension_removed_mm3':suspension,

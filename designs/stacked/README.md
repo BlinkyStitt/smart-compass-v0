@@ -62,11 +62,19 @@ RMS scatter scale is 7.5 mm, scaled by the diffusion control. This is an
 unmeasured material assumption, not a prediction for the printed sleeve.
 The outside rows form one 140-LED side chain. The CAD keeps the board clips
 inside that chain; actual jumper routing and fastening still need physical checks.
-The opaque frame has a continuous circular outline in front of the side band.
-Its radius covers the outside LED-package tips with 0.2 mm radial margin.
-The six front nut lands extend 1.5 mm below the nut pockets. They retain their
-original seats without projecting down the full frame and notching the glow band.
-Native checks verify the smooth outline and the retained nut lands.
+The rear body ring, side diffuser, front barrel and bezel share one 100mm outer
+radius. The structural outer walls are1.5mm thick, reducing to1mm across the
+hollow cavity section. A separate1mm inner wall keeps the inward LED strip's
+original backing radius. Both walls join the full mirror collars and nut-pocket
+floors above and below that section. The inner mirror supports,
+six front nut seats, rear clamp columns and boost-input relief backing remain.
+The six front nut-loading passages and the fitted cable/strap openings remain
+accessible. Controls and textile attachments retain their functional projections.
+Native checks require a continuous outer skin apart from the declared nut
+passages before the fitted cable and strap channels are cut. They also reject
+new opaque material inside the glow band. The actual fitted assembly then passes
+the complete collision, cable, bearing and service checks. Printed strength and
+physical fit remain unmeasured.
 
 ## Build and view
 
