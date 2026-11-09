@@ -123,7 +123,7 @@ try {
       assert.equal(await page.locator('#energy-result').getAttribute('data-result'), null);
       await page.getByRole('button', {name: 'Reset calculator'}).click();
       await agreement(page);
-      assert.ok((await page.locator('#energy-video-note').innerText()).includes('fixed full-rainbow'));
+      assert.ok((await page.locator('#energy-video-note').innerText()).includes('recorded moving spiral'));
 
       // A late response from a previous selection must never replace the current result.
       await page.evaluate(async () => {

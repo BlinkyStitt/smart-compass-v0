@@ -30,7 +30,8 @@ class Movie:
 
 
 MEDIA = {
-    "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16, rainbow_scene=NARROW / "scene.json"),
+    "narrow_movie": Movie(NARROW / "infinity-rainbow-dark-spirals.mp4", 16,
+                          rainbow_scene=NARROW / "scene.json", masked_style="spirals"),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
     "narrow_worn": NARROW / "night-mannequin.png",

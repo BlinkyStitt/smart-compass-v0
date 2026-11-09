@@ -19,6 +19,10 @@ async function check() {
         const primary = await page.locator('#films video').boundingBox();
         assert.ok(primary.width >= Math.min(width - 40, 950), 'Primary narrow view uses the available width');
         assert.ok(await page.locator('#films video').evaluate(video => video.paused));
+        await page.waitForFunction(() => document.querySelector('#narrow-video').readyState >= 1);
+        assert.equal(await page.locator('#narrow-video').evaluate(video => video.duration), 16,
+          'First preview keeps one complete moving-spiral loop');
+        assert.match(await page.locator('#narrow-video').getAttribute('aria-label'), /moving spiral light pattern/);
 
         // Every still and the animated diagram opens in place, including SVGs.
         const links = page.locator('main a:has(img)');
