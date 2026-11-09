@@ -39,7 +39,7 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
     </form>
     <p id="energy-error" role="alert"></p>
     <div id="energy-result" role="status" aria-live="polite" aria-atomic="true"></div>
-    <p id="energy-video-note">The videos remain fixed full-rainbow previews; calculator selections do not change them.</p>`;
+    <p id="energy-video-note">The preview shows a recorded moving spiral; calculator selections do not change the video.</p>`;
   const form = root.querySelector('form');
   const result = root.querySelector('#energy-result');
   const error = root.querySelector('#energy-error');

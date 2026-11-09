@@ -55,7 +55,25 @@ class MovieTests(unittest.TestCase):
                 self.assertEqual(movie.rainbow_scene, folder / "scene.json")
                 self.assertEqual((movie.seconds, movie.masked_style), (16, style))
         self.assertEqual(sum(m.masked_style is None and m.rainbow_scene is not None
-                             for m in movies.values()), 2)
+                             for m in movies.values()), 1)
+
+    def test_first_preview_uses_one_moving_spiral(self):
+        movie = MEDIA['narrow_movie']
+        self.assertEqual(movie.source, NARROW / 'infinity-rainbow-dark-spirals.mp4')
+        self.assertEqual(movie.rainbow_scene, NARROW / 'scene.json')
+        self.assertEqual((movie.seconds, movie.masked_style), (16, 'spirals'))
+
+    @patch("build.verify_masked_motion", side_effect=RuntimeError("Frozen spiral"))
+    @patch("build.verify_rainbow_motion")
+    @patch("build.subprocess.run")
+    @patch("build.subprocess.check_output")
+    def test_frozen_first_spiral_blocks_build(self, probe, run, rainbow, masked):
+        probe.return_value = self.probe(384, 16)
+        with self.assertRaisesRegex(RuntimeError, "Frozen spiral"):
+            verify_movie(MEDIA['narrow_movie'])
+        masked.assert_called_once_with(MEDIA['narrow_movie'].source,
+                                       MEDIA['narrow_movie'].rainbow_scene, 'spirals')
+        rainbow.assert_not_called()
 
     @patch("build.verify_masked_motion", side_effect=RuntimeError("mask mismatch"))
     @patch("build.verify_rainbow_motion")
