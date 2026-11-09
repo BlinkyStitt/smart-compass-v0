@@ -6,8 +6,12 @@
   ],
   "frame_inner_outer_mm": [
     93.8,
-    95.3
+    95.66784829954798
   ],
+  "front_nut_land_bottom_mm": 53.7,
+  "front_nut_floor_mm": 1.5,
+  "front_nut_lands_preserved": 6,
+  "side_band_outline_obstruction_mm3": 0.0,
   "rear_skin_mm": 0.8,
   "rear_rib_mm": 3,
   "rear_pocket_count": 101,
@@ -519,6 +523,6 @@
     0.0,
     0.0
   ],
-  "case_saved_mm3": 43271.96237565625,
+  "case_saved_mm3": 42479.84805740607,
   "rear_saved_mm3": 16428.108563470603
 }

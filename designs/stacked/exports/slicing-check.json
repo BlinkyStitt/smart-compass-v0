@@ -282,9 +282,9 @@
     },
     {
       "project": "ElectronicsShell.3mf",
-      "source_stl_sha256": "eb0b8a674438ebe02e10fe1b15029857360be5a3f15f9ad496bc93c182590b2b",
-      "layers": 411,
-      "toolpath_mass_g": 183.01,
+      "source_stl_sha256": "da6c75b375d7f74ed89037884892a6901d3dcf9347a2f6246a5d4993e5d5add7",
+      "layers": 418,
+      "toolpath_mass_g": 184.27,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"

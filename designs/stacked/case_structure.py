@@ -38,12 +38,25 @@ def lighten(shell,rear,parts,p,d):
     transition_h=transition_top-34
     inner=Part.makeCone(d['side_radius']-p['strip_thickness']/2-.5,d['mirror_seat_radius'],transition_h,App.Vector(0,0,34))
     shell=shell.cut(inner.cut(cyl(91,transition_h+.2,33.9)))
-    trim=ann(95.3,101,d['front_z']+p['front_mirror_thickness']-34,34)
+    # Keep one smooth outline in front of the side diffuser. The old full-depth
+    # fastener lands cut black notches into the far side of the glowing ring.
+    # Cover the LED-package tips with0.2mm radial margin; retain the nut lands
+    # only where the pockets need their1.5mm floor below the front fasteners.
+    frame_outer=d['side_radius']+p['strip_thickness']/2+p['ring_led_depth']+.2
+    nut_land_bottom=d['front_z']-1-1.5
+    frame_top=d['front_z']+p['front_mirror_thickness']
+    trim=ann(frame_outer,101,frame_top-34,34)
+    nut_lands=[]
     for i in range(6):
-        land=box(9,9,30,d['front_fastener_radius'],0,33.9)
+        land=box(9,9,frame_top-nut_land_bottom,d['front_fastener_radius'],0,nut_land_bottom)
         land.rotate(App.Vector(),App.Vector(0,0,1),i*60)
+        nut_lands.append(shell.common(land))
         trim=trim.cut(land)
     shell=shell.cut(trim)
+    for land in nut_lands:
+        if land.cut(shell).Volume>1e-6:raise ValueError('Front nut land or pocket floor lost')
+    outline_probe=ann(frame_outer,101,nut_land_bottom-34,34)
+    if shell.common(outline_probe).Volume>1e-6:raise ValueError('Fastener land interrupts smooth side-band outline')
     # Three-sided board ledges retain the unchanged source clip and nut bosses.
     # Keep the continuous0.5mm PCB edge bearing and three24mm-wide radial ribs.
     ledge_tool=ann(84.5,91,2,p['circle_back_z']-2)
@@ -140,7 +153,11 @@ def lighten(shell,rear,parts,p,d):
                 if old>1e-7:bearing.append({'part':name,'preserved_contact_mm2':new/.02})
     return shell,newrear,{'scope':'Non-optical printed case structure; physical strength and print quality unmeasured',
       'lower_wall_radial_mm':[inner_r,d['side_radius']-p['strip_thickness']/2],
-      'frame_inner_outer_mm':[d['mirror_seat_radius'],95.3],'rear_skin_mm':.8,'rear_rib_mm':3,
+      'frame_inner_outer_mm':[d['mirror_seat_radius'],frame_outer],
+      'front_nut_land_bottom_mm':nut_land_bottom,'front_nut_floor_mm':1.5,
+      'front_nut_lands_preserved':len(nut_lands),
+      'side_band_outline_obstruction_mm3':shell.common(outline_probe).Volume,
+      'rear_skin_mm':.8,'rear_rib_mm':3,
       'rear_pocket_count':len(tool.Solids),'rear_rib_layout':{'radial_count':24,'angle_pitch_deg':15,'circular_radius_mm':50},'rear_grid_kept_for_mounts':kept,'bearing_faces':bearing,
       'suspension_removed_mm3':suspension,
       'case_saved_mm3':original.Volume-shell.Volume,'rear_saved_mm3':rear.Volume-newrear.Volume}
