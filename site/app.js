@@ -165,18 +165,16 @@ document.querySelectorAll('a:has(img)').forEach(link => {
   });
 });
 document.querySelectorAll('video').forEach(video => {
-  const frame = document.createElement('div');
-  frame.className = 'media-frame';
-  video.before(frame);
-  frame.append(video);
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'media-expand';
-  button.setAttribute('aria-label', `Open full screen: ${video.getAttribute('aria-label')}`);
-  button.setAttribute('aria-haspopup', 'dialog');
-  const label = document.createElement('span');
-  label.textContent = 'Full screen ↗';
-  button.append(label);
-  frame.append(button);
-  button.addEventListener('click', () => openViewer(button, video, video.currentSrc || video.src));
+  video.classList.add('media-expand');
+  video.tabIndex = 0;
+  video.setAttribute('role', 'button');
+  video.setAttribute('aria-description', 'Open full screen');
+  video.setAttribute('aria-haspopup', 'dialog');
+  const open = () => openViewer(video, video, video.currentSrc || video.src);
+  video.addEventListener('click', open);
+  video.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    open();
+  });
 });
