@@ -12,7 +12,9 @@ async function check() {
         const page = await context.newPage();
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
+        await page.route('**/app.js', route => route.fulfill({contentType: 'application/javascript', body: 'throw new Error("stale player script fixture")'}));
         await page.goto(url);
+        assert.match(await page.locator('script[src*="app-"]').getAttribute('src'), /app-script-[0-9a-f]{12}\.js$/, 'Player script URL changes with its content');
         assert.equal(await page.locator('#films video').count(), 1);
         assert.equal(await page.locator('[id*=wide]').count(), 0);
         assert.ok(!(await page.locator('main').innerText()).match(/wide archive|wide design|compare sizes|play both/i));
