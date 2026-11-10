@@ -118,15 +118,21 @@ establish internal PWM, radio-burst, inrush, fault or thermal limits.
 ## Media and browser checks
 
 Each rainbow/dark/silver loop uses 1280 × 720 pixels, 384 frames at 24 fps and 16 seconds.
-The first preview requires both spatial rainbow colour rotation and a travelling
-intensity crest on the board and outer ring. Registered CAD samples reject a
-global hue cycle or a frozen bright spiral. The intensity wave repeats every
-four seconds, while rainbow hues repeat every eight seconds. The energy
+The first preview requires the indexed Pride colour and brightness chase on
+the board and outer ring. Registered CAD samples reject the former gradient
+and a frozen light field. The energy
 calculator retains its stated full-rainbow reference. Calculator settings do
 not change the recording.
-The narrow exploded assembly opens, holds and closes in a 24-second loop.
-Its display-only layer offsets are three times the CAD viewer offsets. The
-capture checks that CAD bounds stay in frame throughout representative poses.
+The narrow exploded assembly opens into a fully separated layout, visits eight
+closer views, and closes again in a 48-second loop. Each fitted part has its own
+position. Eleven soldered PCB/LED-strip assemblies remain intact. The display
+keeps CAD size and orientation; it does not describe a physical removal sequence.
+An air-space clearance gauge is excluded because it is not a fitted part.
+`explosion.py` checks complete coverage and disjoint projected component bounds.
+The GPU capture also checks actual mesh visibility, framing, separation and a
+minimum eight-pixel extent during each part's closer view. `exploded-assembly.json`
+binds the recording and part census to the exact source CAD and capture scripts;
+stale geometry, layout or movies block publication.
 It uses the H.264 MP4 inline, with a direct MP4 link. Both the first preview and diagram use native muted inline autoplay and start
 as soon as they can play on screen, including with reduced motion enabled.
 The full-screen versions also start automatically. Pause and Restart remain
@@ -158,7 +164,8 @@ A frozen light field or the former angular/radial hue cycle fails this check.
 The engineering runtime calculator retains its separate canonical full-rainbow
 reference; this preview does not establish a new battery runtime.
 
-Rebuild the exploded MP4 from the current narrow CAD with:
+Preview all exploded views without replacing the movie with `python3 site/render_assembly.py --preview --frames <new-external-directory>`.
+Rebuild the exploded MP4 and its coverage manifest from the current narrow CAD with:
 
 ```sh
 python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/assembly-frames

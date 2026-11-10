@@ -58,6 +58,7 @@ async function check() {
         await page.emulateMedia({reducedMotion: 'no-preference'});
         await page.emulateMedia({reducedMotion: 'reduce'});
         assert.ok(await assembly.locator('video').evaluate(v => !v.paused), 'The requested assembly autoplay survives motion-preference changes');
+        assert.equal(await assembly.locator('video').evaluate(v => v.duration), 48, 'Complete disassembly includes every fitted-part detail view');
         await assembly.locator('video').click();
         await page.getByRole('dialog').waitFor({state: 'visible'});
         assert.ok(await assembly.locator('video').evaluate(v => v.paused));
