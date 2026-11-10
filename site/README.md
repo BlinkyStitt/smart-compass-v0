@@ -4,8 +4,10 @@ The page shows only the narrow removable-cell prototype. Wide files remain a
 pinned source archive. The page includes the rainbow, three dark patterns, silver
 PETG, night lighting and player controls. Tap any image or video to open a
 full-screen viewer. Close or Escape returns to the page and restores focus.
-The first preview shows the full moving rainbow, without black sections, on a
-figure-eight camera loop. It uses the current narrow full-rainbow recording.
+The first preview shows one travelling spiral of brighter LEDs over an always-lit
+rainbow, on the figure-eight camera loop. Its dedicated recording is
+`site/assets/rainbow-spiral.mp4`. Each LED stays between 45% and 100% of the
+pattern peak; no section turns off.
 
 The site uses plain HTML, CSS and JavaScript. It needs Python 3.9+, Git LFS,
 FFmpeg/FFprobe, Godot 4, Node 20+ and the locked Playwright driver with its matching
@@ -115,10 +117,12 @@ establish internal PWM, radio-burst, inrush, fault or thermal limits.
 ## Media and browser checks
 
 Each rainbow/dark/silver loop uses 1280 × 720 pixels, 384 frames at 24 fps and 16 seconds.
-The first preview uses the full moving rainbow. The builder checks spatial
-colour rotation on the board and outer ring against registered CAD locations,
-so camera motion alone cannot satisfy validation. Calculator settings do not change the recording; the
-displayed runtime remains the stated full-rainbow reference.
+The first preview requires both spatial rainbow colour rotation and a travelling
+intensity crest on the board and outer ring. Registered CAD samples reject a
+global hue cycle or a frozen bright spiral. The intensity wave repeats every
+four seconds, while rainbow hues repeat every eight seconds. The energy
+calculator retains its stated full-rainbow reference. Calculator settings do
+not change the recording.
 The narrow exploded assembly opens, holds and closes in a 24-second loop.
 Its display-only layer offsets are three times the CAD viewer offsets. The
 capture checks that CAD bounds stay in frame throughout representative poses.
@@ -130,7 +134,17 @@ A rejected start keeps playback intent, allowing media-ready, page-return and
 user-gesture retries. Manual pause survives those retries. Play is called
 synchronously from its button handler for Safari. Browser power policies can
 still require a tap; the page retains Play controls and direct MP4 links.
-Rebuild its MP4 from the current narrow CAD with:
+Rebuild the first preview from the current narrow CAD with:
+
+```sh
+python3 site/render_rainbow.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/rainbow-frames
+```
+
+The capture also saves fixed-camera witness frames. Inspect these to separate
+light travel from camera motion. The generator keeps the canonical CAD,
+materials and figure-eight camera. Its pattern function is `rainbow_spiral.gd`.
+
+Rebuild the exploded MP4 from the current narrow CAD with:
 
 ```sh
 python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/assembly-frames

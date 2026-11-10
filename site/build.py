@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 from estimates import estimate_masses
 from publication import publish, seal
+from spiral_motion import verify_spiral_wave
 
 
 @dataclass(frozen=True)
@@ -28,12 +29,13 @@ class Movie:
     poster_time: int = 0
     rainbow_scene: Path = None
     masked_style: str = None
+    travelling_spiral: bool = False
 
 
 MEDIA = {
     "app_script": SITE / "app.js",
-    "narrow_movie": Movie(NARROW / "infinity-rainbow.mp4", 16,
-                          rainbow_scene=NARROW / "scene.json"),
+    "narrow_movie": Movie(SITE / "assets/rainbow-spiral.mp4", 16,
+                          rainbow_scene=NARROW / "scene.json", travelling_spiral=True),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
     "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
     "narrow_worn": NARROW / "night-mannequin.png",
@@ -67,6 +69,8 @@ def verify_movie(movie):
         verify_masked_motion(movie.source, movie.rainbow_scene, movie.masked_style)
     elif movie.rainbow_scene:
         verify_rainbow_motion(movie.source, movie.rainbow_scene)
+    if movie.travelling_spiral:
+        verify_spiral_wave(movie.source, movie.rainbow_scene)
 
 
 def verify_assembly_motion(source):
