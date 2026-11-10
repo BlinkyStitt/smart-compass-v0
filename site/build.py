@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -131,14 +132,29 @@ def render_media(output, provenance):
             values[key.replace("movie", "poster")] = "assets/" + poster.name
             if key == "assembly_movie":
                 verify_assembly_motion(destination)
-                animation = destination.with_suffix(".apng")
-                subprocess.run([
-                    "ffmpeg", "-y", "-v", "error", "-i", str(destination),
-                    "-filter_complex", "fps=12,scale=960:540,split[a][b];[a]palettegen[p];[b][p]paletteuse=dither=bayer:bayer_scale=3",
-                    "-c:v", "apng",
-                    "-plays", "0", str(animation),
-                ], check=True)
-                values['assembly_animation'] = "assets/" + animation.name
+    return values, records
+
+
+def render_diagrams(output, provenance):
+    """Rasterize captured CAD at build time; phones never decode native SVGs."""
+    values, records = {}, {}
+    for name in ('service-guide', 'assembly-dimensions'):
+        source = NARROW / (name + '.svg')
+        data = read_input(source, provenance)
+        png = subprocess.check_output(['node', str(SITE / 'render_diagram.mjs')], input=data)
+        if len(png) < 24 or png[:16] != b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR':
+            raise RuntimeError('Diagram renderer did not produce a PNG: ' + name)
+        width, height = struct.unpack('>II', png[16:24])
+        if width != 1600 or not 0 < height <= 1600 or len(png) > 2_000_000:
+            raise RuntimeError('Diagram preview exceeds its image budget: ' + name)
+        digest = hashlib.sha256(png).hexdigest()
+        url = 'assets/' + name + '-' + digest[:12] + '.png'
+        (output / url).write_bytes(png)
+        key = name.replace('-', '_')
+        values[key] = url
+        records[key] = {'source': source.relative_to(ROOT).as_posix(),
+                        'source_sha256': hashlib.sha256(data).hexdigest(),
+                        'sha256': digest, 'url': url}
     return values, records
 
 
@@ -147,6 +163,9 @@ def render(output, provenance):
     # Render only into the private staging directory supplied by publish().
     output.mkdir(parents=True, exist_ok=True)
     values, records = render_media(output, provenance)
+    diagrams, diagram_records = render_diagrams(output, provenance)
+    values.update(diagrams)
+    records.update(diagram_records)
     dimensions = {}
     for name, folder in (("wide", WIDE), ("narrow", NARROW)):
         metadata = json.loads(read_input(folder / "scene.json", provenance))

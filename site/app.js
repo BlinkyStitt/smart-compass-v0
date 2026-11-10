@@ -1,4 +1,6 @@
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const players = new Map();
+let viewerOpen = false;
 
 function player(container) {
   const video = container.querySelector('video');
@@ -7,6 +9,12 @@ function player(container) {
   const status = container.querySelector('.play-status');
   const disclosure = container.matches('details') ? container : null;
   let attempt = null;
+  let wanted = container.hasAttribute('data-autoplay') && !reducedMotion.matches;
+  let visible = false;
+
+  function eligible() {
+    return wanted && visible && !document.hidden && !viewerOpen && (!disclosure || disclosure.open);
+  }
 
   function stop(message = '') {
     attempt = null;
@@ -16,9 +24,9 @@ function player(container) {
     status.textContent = message;
   }
 
-  function start(restart = false) {
-    if (attempt || (disclosure && !disclosure.open)) return;
-    if (restart) video.currentTime = 0;
+  function sync() {
+    if (!eligible()) { stop(); return; }
+    if (attempt || !video.paused) return;
     const current = {};
     attempt = current;
     video.muted = true;
@@ -27,52 +35,59 @@ function player(container) {
     playButton.disabled = restartButton.disabled = true;
     status.textContent = 'Loading clip…';
     if (video.error) video.load();
-    Promise.resolve().then(() => video.play()).then(() => {
+    Promise.resolve().then(() => {
+      if (attempt === current && eligible()) return video.play();
+    }).then(() => {
       if (attempt !== current) return;
       attempt = null;
-      if (disclosure && !disclosure.open) { stop(); return; }
+      if (!eligible()) { stop(); return; }
       playButton.disabled = restartButton.disabled = false;
       playButton.textContent = 'Pause';
       status.textContent = '';
     }, () => {
-      if (attempt === current) stop('Playback did not start. Use Play or open the MP4 link.');
+      if (attempt === current) {
+        wanted = false;
+        stop('Playback did not start. Use Play or open the MP4 link.');
+      }
     });
   }
 
-  playButton.addEventListener('click', () => video.paused ? start() : stop());
-  restartButton.addEventListener('click', () => { stop(); start(true); });
+  playButton.addEventListener('click', () => { wanted = !wanted; sync(); });
+  restartButton.addEventListener('click', () => {
+    stop();
+    video.currentTime = 0;
+    wanted = true;
+    sync();
+  });
   video.addEventListener('pause', () => { if (!attempt && video.paused) playButton.textContent = 'Play'; });
   video.addEventListener('play', () => {
-    if (disclosure && !disclosure.open) stop();
+    if (!eligible()) stop();
     else if (!attempt) playButton.textContent = 'Pause';
   });
-  video.addEventListener('error', () => stop('The clip could not load. Use Play or open its MP4 link.'), true);
-  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) stop(); });
-  if (disclosure) disclosure.addEventListener('toggle', () => {
-    if (!disclosure.open) stop();
-    else if (!reducedMotion.matches) start(true);
+  video.addEventListener('error', () => {
+    wanted = false;
+    stop('The clip could not load. Use Play or open its MP4 link.');
+  }, true);
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) { wanted = false; sync(); }
   });
-  else if (container.hasAttribute('data-autoplay') && !reducedMotion.matches) start(true);
+  if (disclosure) disclosure.addEventListener('toggle', () => {
+    wanted = disclosure.open && !reducedMotion.matches;
+    sync();
+  });
+  const observer = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    sync();
+  });
+  observer.observe(video);
+  players.set(video, {sync});
 }
 
 document.querySelectorAll('[data-player]').forEach(player);
-
-const assembly = document.querySelector('[data-assembly]');
-if (assembly) {
-  const image = assembly.querySelector('img');
-  const source = assembly.querySelector('source');
-  const button = assembly.querySelector('[data-toggle-assembly]');
-  const motion = image.src;
-  const poster = source.srcset;
-  let paused = reducedMotion.matches;
-  function update() {
-    image.src = source.srcset = paused ? poster : motion;
-    button.textContent = paused ? 'Play animation' : 'Pause animation';
-  }
-  button.addEventListener('click', () => { paused = !paused; update(); });
-  reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; update(); });
-  update();
-}
+document.addEventListener('visibilitychange', () => {
+  players.forEach(controller => controller.sync());
+  if (document.hidden && activeMedia instanceof HTMLVideoElement) activeMedia.pause();
+});
 
 // A modal fills the viewport on every client. The Fullscreen API also hides
 // browser chrome where supported. Direct image and MP4 links work without JS.
@@ -89,8 +104,6 @@ message.setAttribute('role', 'status');
 viewer.append(closeButton, caption, message);
 document.body.append(viewer);
 let activeMedia = null;
-let inlineVideo = null;
-let resumeInline = false;
 let opener = null;
 let nativeFullscreen = false;
 
@@ -109,14 +122,16 @@ viewer.addEventListener('keydown', event => {
   controls[next].focus();
 });
 viewer.addEventListener('close', () => {
-  if (activeMedia instanceof HTMLVideoElement) activeMedia.pause();
+  if (activeMedia instanceof HTMLVideoElement) {
+    activeMedia.pause();
+    activeMedia.removeAttribute('src');
+    activeMedia.load();
+  }
   activeMedia?.remove();
   activeMedia = null;
   nativeFullscreen = false;
-  if (resumeInline && inlineVideo && (!inlineVideo.closest('details') || inlineVideo.closest('details').open)) {
-    inlineVideo.play().catch(() => {});
-  }
-  inlineVideo = null;
+  viewerOpen = false;
+  players.forEach(controller => controller.sync());
   opener?.focus({preventScroll: true});
 });
 document.addEventListener('fullscreenchange', () => {
@@ -126,15 +141,14 @@ document.addEventListener('fullscreenchange', () => {
 
 function openViewer(trigger, original, src) {
   opener = trigger;
+  viewerOpen = true;
+  players.forEach(controller => controller.sync());
   message.textContent = '';
   const isVideo = original instanceof HTMLVideoElement;
   const media = document.createElement(isVideo ? 'video' : 'img');
   const label = original.getAttribute('alt') || original.getAttribute('aria-label') || 'Prototype view';
   caption.textContent = label;
   if (isVideo) {
-    inlineVideo = original;
-    resumeInline = !original.paused;
-    original.pause();
     media.controls = true;
     media.tabIndex = 0;
     media.loop = true;
@@ -142,7 +156,6 @@ function openViewer(trigger, original, src) {
     media.playsInline = true;
     media.addEventListener('loadedmetadata', () => { media.currentTime = original.currentTime; }, {once: true});
   } else {
-    resumeInline = false;
     media.alt = label;
   }
   media.addEventListener('error', () => { message.textContent = 'This view could not load. Close it and use the direct file link to retry.'; });

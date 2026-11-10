@@ -173,6 +173,45 @@ class AssemblyMotionTests(unittest.TestCase):
                         build.verify_assembly_motion(Path('assembly.mp4'))
 
 
+class DiagramTests(unittest.TestCase):
+    def test_captured_svg_becomes_a_bounded_content_addressed_png(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            native = root / 'cad'
+            native.mkdir()
+            output = root / 'stage'
+            (output / 'assets').mkdir(parents=True)
+            svg = b'<svg xmlns="http://www.w3.org/2000/svg" width="960" height="790"><rect width="960" height="790" fill="red"/></svg>'
+            provenance = {}
+            for name in ('service-guide', 'assembly-dimensions'):
+                source = native / (name + '.svg')
+                source.write_bytes(svg)
+                provenance[source.relative_to(root).as_posix()] = hashlib.sha256(svg).hexdigest()
+            with patch.object(build, 'ROOT', root), patch.object(build, 'NARROW', native):
+                values, records = build.render_diagrams(output, provenance)
+                for key, url in values.items():
+                    png = (output / url).read_bytes()
+                    self.assertEqual(build.struct.unpack('>II', png[16:24]), (1600, 1317))
+                    digest = hashlib.sha256(png).hexdigest()
+                    self.assertIn(digest[:12], url)
+                    self.assertEqual(records[key]['sha256'], digest)
+                    self.assertEqual(records[key]['source_sha256'], hashlib.sha256(svg).hexdigest())
+                (native / 'service-guide.svg').write_bytes(b'concurrent edit')
+                with self.assertRaisesRegex(RuntimeError, 'Input changed before use'):
+                    build.render_diagrams(output, provenance)
+
+    def test_bad_or_oversized_previews_fail_the_build(self):
+        import struct
+        header = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR'
+        for png in (b'not an image', header, header + struct.pack('>II', 3200, 2633),
+                    header + struct.pack('>II', 1600, 1601),
+                    header + struct.pack('>II', 1600, 1317) + b'x' * 2_000_000):
+            with self.subTest(size=len(png)), patch.object(build, 'read_input', return_value=b'svg'), \
+                    patch.object(build.subprocess, 'check_output', return_value=png):
+                with self.assertRaisesRegex(RuntimeError, 'Diagram'):
+                    build.render_diagrams(Path('unused'), {})
+
+
 class BuildInputTests(unittest.TestCase):
     def test_active_module_design_and_sources_are_required_hashed_inputs(self):
         for path in ('electrical-design.json', 'electrical_design.py', 'electrical-design.md',

@@ -1,8 +1,9 @@
 const assert = require('node:assert/strict');
-const {chromium} = require('playwright');
+const {chromium, webkit} = require('playwright');
+const engine = process.env.GALLERY_BROWSER || 'chromium';
 
 async function check() {
-  const browser = await chromium.launch({headless: true, channel: 'chromium'});
+  const browser = await (engine === 'webkit' ? webkit : chromium).launch({headless: true, ...(engine === 'webkit' ? {} : {channel: 'chromium'})});
   const url = process.argv[2] || 'http://127.0.0.1:8080';
   try {
     for (const width of [320, 390, 620, 1280, 1920]) {
@@ -24,9 +25,9 @@ async function check() {
           'First preview keeps one complete moving-spiral loop');
         assert.match(await page.locator('#narrow-video').getAttribute('aria-label'), /moving spiral light pattern/);
 
-        // Every still and the animated diagram opens in place, including SVGs.
+        // Every bounded still preview opens in place.
         const links = page.locator('main a:has(img)');
-        assert.equal(await links.count(), 5);
+        assert.equal(await links.count(), 4);
         for (let i = 0; i < await links.count(); i++) {
           const link = links.nth(i);
           const href = page.url();
@@ -44,13 +45,21 @@ async function check() {
           assert.ok(await link.evaluate(element => element === document.activeElement), 'Focus returns to the image');
         }
 
-        // Reduced motion uses a still. Explicit playback and pause remain available.
-        const image = page.locator('#assembly-image');
-        assert.ok((await image.evaluate(i => i.currentSrc)).endsWith('.jpg'));
-        await page.getByRole('button', {name: 'Play animation', exact: true}).click();
-        await page.waitForFunction(() => document.querySelector('#assembly-image').currentSrc.endsWith('.apng'));
-        await page.getByRole('button', {name: 'Pause animation', exact: true}).click();
-        await page.waitForFunction(() => document.querySelector('#assembly-image').currentSrc.endsWith('.jpg'));
+        // Reduced motion uses the assembly poster. Explicit playback still works.
+        const assembly = page.locator('[data-assembly]');
+        await assembly.scrollIntoViewIfNeeded();
+        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
+        await assembly.locator('[data-play]').click();
+        await page.waitForFunction(() => { const v = document.querySelector('#assembly-video'); return !v.paused && v.currentTime > 0; });
+        await assembly.locator('video').click();
+        await page.getByRole('dialog').waitFor({state: 'visible'});
+        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
+        const expanded = await page.getByRole('dialog').locator('video').elementHandle();
+        await page.getByRole('button', {name: 'Close ×'}).click();
+        await page.waitForFunction(() => !document.querySelector('#assembly-video').paused);
+        assert.ok(await expanded.evaluate(v => !v.hasAttribute('src') && v.readyState === 0), 'Closing releases the full-screen decoder');
+        await assembly.locator('[data-play]').click();
+        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
 
         // A browser that denies native fullscreen still gets a full viewport dialog.
         await page.evaluate(() => { HTMLDialogElement.prototype.requestFullscreen = () => Promise.reject(new Error('Fixture: fullscreen unavailable')); });
@@ -85,19 +94,50 @@ async function check() {
     const context = await browser.newContext({reducedMotion: 'no-preference'});
     try {
       const page = await context.newPage();
+      const requests = [];
+      const errors = [];
+      page.on('request', request => requests.push(request.url()));
+      page.on('pageerror', error => errors.push(error.message));
+      page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
       await page.goto(url);
       await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0; });
-      await page.locator('#assembly-image').scrollIntoViewIfNeeded();
-      await page.waitForFunction(() => { const i = document.querySelector('#assembly-image'); return i.complete && i.currentSrc.endsWith('.apng') && i.naturalWidth > 0; });
-      // Canvas drawImage uses an animated image's default frame. Compare the
-      // browser's painted image instead so this check observes actual motion.
-      const first = await page.locator('#assembly-image').screenshot();
+      const assembly = page.locator('#assembly-video');
+      await assembly.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => document.querySelector('#narrow-video').paused && !document.querySelector('#assembly-video').paused && document.querySelector('#assembly-video').currentTime > 0);
+      const first = await assembly.screenshot();
       await page.waitForTimeout(4000);
-      const opened = await page.locator('#assembly-image').screenshot();
-      assert.ok(!first.equals(opened), 'Animated image changes its rendered CAD pose');
+      const opened = await assembly.screenshot();
+      assert.ok(!first.equals(opened), 'Exploded video changes its painted CAD pose');
+      await page.locator('[data-assembly] [data-play]').click();
+      for (let repeat = 0; repeat < 2; repeat++) {
+        for (const image of await page.locator('main img').all()) {
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate(i => i.decode());
+          const dimensions = await image.evaluate(i => [i.naturalWidth, i.naturalHeight]);
+          assert.ok(dimensions.every(n => n > 0 && n <= 1600), 'Inline images have bounded decoded dimensions');
+        }
+        await assembly.scrollIntoViewIfNeeded();
+        assert.ok(await assembly.evaluate(v => v.paused), 'Manual pause survives scrolling away and back');
+      }
+      assert.ok(!requests.some(url => /\.(svg|apng)(?:[?#]|$)/.test(url) && !url.endsWith('/icon.svg')), 'Scrolling never loads tessellated SVGs or animated PNGs');
+      assert.equal(await page.locator('img[src$=".svg"],img[src$=".apng"]').count(), 0);
+      await page.locator('#narrow-video').scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => !document.querySelector('#narrow-video').paused);
+      // Synthetic visibility transition exercises the browser lifecycle event.
+      await page.evaluate(() => {
+        Object.defineProperty(document, 'hidden', {configurable: true, value: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      assert.ok(await page.locator('#narrow-video').evaluate(v => v.paused));
+      await page.evaluate(() => {
+        delete document.hidden;
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      await page.waitForFunction(() => !document.querySelector('#narrow-video').paused);
       await page.emulateMedia({reducedMotion: 'reduce'});
-      await page.waitForFunction(() => document.querySelector('#films video').paused && document.querySelector('#assembly-image').currentSrc.endsWith('.jpg'));
-      console.log('MOTION PASS: autoplay, decoded animated image motion, dynamic reduced-motion preference');
+      await page.waitForFunction(() => [...document.querySelectorAll('video')].every(v => v.paused));
+      assert.deepEqual(errors, []);
+      console.log(`MOTION/MEMORY PASS (${engine}): painted assembly motion, bounded images, repeated scroll, offscreen pause/resume, manual pause, visibility and reduced motion`);
     } finally { await context.close(); }
   } finally { await browser.close(); }
 }
