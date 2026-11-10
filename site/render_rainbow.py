@@ -1,7 +1,7 @@
 """Capture a visibly travelling, always-lit rainbow spiral on the current CAD."""
 import argparse
+import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
@@ -9,13 +9,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'demo'))
 sys.path.insert(0, str(ROOT / 'designs/stacked'))
 from run import execute, prepare_preview
+from pride import pride_frames
 
 
 def render(frames):
     frames = frames.resolve()
     frames.mkdir(parents=True, exist_ok=False)
     project = prepare_preview()
-    shutil.copyfile(ROOT / 'site/rainbow_spiral.gd', project / 'site_spiral.gd')
+    metadata = json.loads((ROOT / 'designs/stacked/exports/scene.json').read_text())
+    counts = [sum(int(led['group']) == group for led in metadata['leds'])
+              for group in range(len(metadata['counts']))]
+    (frames / 'colours.json').write_text(json.dumps(pride_frames(counts)))
     result = execute(['godot', '--path', str(project), '--script', str(ROOT / 'site/render_rainbow.gd'),
                       '--', '--assets', str(ROOT / 'designs/stacked/exports'), '--frames', str(frames)],
                      log=frames / 'capture.log', timeout=900)
