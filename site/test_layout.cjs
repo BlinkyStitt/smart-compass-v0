@@ -47,15 +47,17 @@ async function check() {
           assert.ok(await link.evaluate(element => element === document.activeElement), 'Focus returns to the image');
         }
 
-        // Reduced motion uses the assembly poster. Explicit playback still works.
+        // The assembly starts without a tap, including with reduced motion enabled.
         const assembly = page.locator('[data-assembly]');
         await assembly.scrollIntoViewIfNeeded();
-        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
-        await assembly.locator('[data-play]').click();
         await page.waitForFunction(() => { const v = document.querySelector('#assembly-video'); return !v.paused && v.currentTime > 0; });
+        await page.emulateMedia({reducedMotion: 'no-preference'});
+        await page.emulateMedia({reducedMotion: 'reduce'});
+        assert.ok(await assembly.locator('video').evaluate(v => !v.paused), 'The requested assembly autoplay survives motion-preference changes');
         await assembly.locator('video').click();
         await page.getByRole('dialog').waitFor({state: 'visible'});
         assert.ok(await assembly.locator('video').evaluate(v => v.paused));
+        await page.waitForFunction(() => { const v = document.querySelector('.media-viewer video'); return !v.paused && v.currentTime > 0; });
         const expanded = await page.getByRole('dialog').locator('video').elementHandle();
         await page.getByRole('button', {name: 'Close ×'}).click();
         await page.waitForFunction(() => !document.querySelector('#assembly-video').paused);
@@ -93,6 +95,21 @@ async function check() {
         console.log(`GALLERY PASS: ${width}px, narrow only, image/video fullscreen, touch/keyboard/focus, reduced motion, pattern playback`);
       } finally { await context.close(); }
     }
+    // Native muted autoplay starts the diagram even before the player script runs.
+    const native = await browser.newContext({javaScriptEnabled: false, reducedMotion: 'reduce', viewport: {width: 390, height: 844}});
+    try {
+      const page = await native.newPage();
+      await page.goto(url);
+      await page.locator('#assembly-video').scrollIntoViewIfNeeded();
+      // Page-side timer/rAF polling is disabled in this context too.
+      let moving = false;
+      for (let attempt = 0; attempt < 150 && !moving; attempt++) {
+        moving = await page.locator('#assembly-video').evaluate(v => !v.paused && v.currentTime > 0);
+        if (!moving) await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      assert.ok(moving, 'Native autoplay advances the diagram without the player script');
+      console.log(`NATIVE AUTOPLAY PASS (${engine}): muted inline assembly starts without JavaScript or a tap`);
+    } finally { await native.close(); }
     const context = await browser.newContext({reducedMotion: 'no-preference'});
     try {
       const page = await context.newPage();

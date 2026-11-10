@@ -113,8 +113,10 @@ light mask against registered CAD locations, so camera motion alone cannot
 satisfy validation. Calculator settings do not change the recording; the
 displayed runtime remains the stated full-rainbow reference.
 The narrow exploded assembly opens, holds and closes in a 24-second loop.
-It uses the H.264 MP4 inline, with a direct MP4 link. Reduced motion starts
-with a still poster. Play and Restart control the animation explicitly.
+It uses the H.264 MP4 inline, with a direct MP4 link. The diagram starts muted
+as soon as it can play on screen, including with reduced motion enabled.
+The full-screen diagram also starts automatically. Pause and Restart remain
+available. Other previews still follow the reduced-motion preference.
 Rebuild its MP4 from the current narrow CAD with:
 
 ```sh
@@ -134,7 +136,7 @@ Each player has Play and Restart controls. Failure restores retry controls and
 announces the error. Closing a pattern disclosure cancels startup and pauses its
 clip. Offscreen clips and hidden pages pause playback. Scrolling back resumes
 a clip only if the user has not paused it. Closing the full-screen viewer releases
-its video source. Reduced motion starts paused. Direct MP4 links provide recovery.
+its video source. Reduced motion starts other previews paused. Direct MP4 links provide recovery.
 The narrow rainbow uses the available width on phones and desktops. Full-screen
 videos have native playback controls. Where native fullscreen is unavailable,
 the same modal viewer fills the browser viewport.
