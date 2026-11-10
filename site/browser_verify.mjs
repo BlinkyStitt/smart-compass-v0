@@ -35,7 +35,11 @@ async function agreement(page) {
     assert.ok(Math.abs(actual[key] - wanted[key]) < 1e-9, key);
   assert.equal(actual.runtime.state, wanted.runtime.state);
   assert.ok(Math.abs(actual.runtime.hours - wanted.runtime.hours) < 1e-9);
-  assert.ok((await page.locator('#energy-result').innerText()).includes(wanted.runtime.hours.toFixed(2)));
+  const visibleTime = await page.locator('#energy-result strong').innerText();
+  const hours = Number(visibleTime.match(/(\d+) h/)?.[1] || 0);
+  const minutes = Number(visibleTime.match(/(\d+) min/)?.[1] || 0);
+  assert.ok(Math.abs(hours * 60 + minutes - wanted.runtime.hours * 60) <= .5,
+    'Readable runtime agrees with the model to the nearest minute');
   return actual;
 }
 
@@ -53,27 +57,38 @@ try {
       await page.goto(url);
       const initial = await agreement(page);
       assert.equal(initial.design, 'narrow');
-      assert.deepEqual(await page.locator('[name=design] option').evaluateAll(rows => rows.map(row => row.value)), ['narrow']); assert.equal(initial.pattern, 'rainbow');
-      assert.ok((await page.locator('#energy-reference').innerText()).includes('2.94'));
-      assert.ok((await page.locator('#energy-reference').innerText()).includes('2.62'));
+      assert.equal(await page.locator('[name=design]').getAttribute('type'), 'hidden');
+      assert.equal(initial.pattern, 'rainbow');
+      assert.equal(await page.locator('#energy-advanced').getAttribute('open'), null);
+      assert.equal(await page.getByLabel('Cell capacity (Ah)', {exact: true}).isVisible(), false);
+      assert.equal(await page.locator('#energy-result strong').innerText(), 'About 2 h 14 min per battery');
+      const initialCopy = await page.locator('#energy-result').innerText();
+      assert.ok(initialCopy.includes('Full rainbow at 2% brightness.'));
+      assert.ok(initialCopy.length < 100, 'The default result is brief');
+      assert.doesNotMatch(initialCopy, /sampled|PWM|inrush|Fibonacci|0\.0%|battery input/i);
+      assert.equal(await page.locator('#energy-reference').count(), 0, 'Historical comparison stays out of the page');
       assert.equal(await page.locator('#energy-result').getAttribute('aria-live'), 'polite');
       assert.equal(await page.locator('#energy-error').getAttribute('role'), 'alert');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Viewport overflow');
-      await page.getByLabel('Design', {exact: true}).focus();
+      await page.getByLabel('Pattern', {exact: true}).focus();
       await page.keyboard.press('Tab');
-      assert.equal(await page.locator(':focus').getAttribute('name'), 'pattern');
+      assert.equal(await page.locator(':focus').getAttribute('name'), 'brightness');
       for (const design of ['narrow']) {
-        await page.getByLabel('Design', {exact: true}).selectOption(design);
+        assert.equal(await page.locator('[name=design]').inputValue(), design);
         for (const pattern of ['rainbow', 'dark-sectors', 'dark-spirals', 'dark-diagonals']) {
           await page.getByLabel('Pattern', {exact: true}).selectOption(pattern);
           const changed = await agreement(page);
           assert.equal(changed.design, design); assert.equal(changed.pattern, pattern);
-          if (pattern !== 'rainbow') assert.ok(changed.savings.watts > 0);
+          if (pattern !== 'rainbow') {
+            assert.ok(changed.savings.watts > 0);
+            assert.match(await page.locator('#energy-result').innerText(), /Uses about \d+% less power/);
+          }
         }
       }
       // The selected dark pattern can be feasible while its rainbow baseline
       // is not. Keep its current/runtime visible without inventing savings.
-      await page.getByLabel('Design', {exact: true}).selectOption('narrow');
+      await page.getByText('Advanced settings', {exact: true}).click();
+      assert.ok(await page.getByLabel('Cell capacity (Ah)', {exact: true}).isVisible());
       await page.getByLabel('Pattern', {exact: true}).selectOption('dark-sectors');
       await page.getByLabel('Controller, sensors and radio output (W)', {exact: true}).fill('0.5');
       // Synthetic UI failure scenario, derived from the actual sampled load.
@@ -83,7 +98,7 @@ try {
       const dark = await expected('narrow', 'dark-sectors', unimpeded);
       const failureResistance = unimpeded.cell_v ** 2 / 8 * (1 / full.sampled_peak_battery_w + 1 / dark.sampled_peak_battery_w);
       await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).fill(String(failureResistance));
-      await page.getByLabel('Electrical brightness (%)', {exact: true}).fill('50');
+      await page.getByLabel('Brightness (%)', {exact: true}).fill('50');
       const comparison = await agreement(page);
       assert.equal(comparison.savings.state, 'unavailable');
       assert.equal(comparison.savings.watts, null);
@@ -94,7 +109,7 @@ try {
       assert.equal(await page.getByLabel('Contact and wiring resistance (Ω)', {exact: true}).getAttribute('aria-invalid'), null);
       await page.getByRole('button', {name: 'Reset calculator'}).click();
       assert.equal((await agreement(page)).savings.state, 'available');
-      for (const [label, value] of [['Electrical brightness (%)', '0'], ['Cell capacity (Ah)', '10.4'],
+      for (const [label, value] of [['Brightness (%)', '0'], ['Cell capacity (Ah)', '10.4'],
                                   ['Usable cell energy (Wh, after reserve)', '12'], ['Conversion efficiency (%)', '90'],
                                   ['Reserve and cutoff allowance (%)', '20'], ['Controller, sensors and radio output (W)', '0.3']]) {
         await page.getByLabel(label, {exact: true}).fill(value);
@@ -103,6 +118,8 @@ try {
       }
       const black = await agreement(page);
       assert.ok(black.average_led_a > 0, 'Black must retain idle demand');
+      assert.doesNotMatch(await page.locator('#energy-result').innerText(), /less power/,
+        'Omit zero-savings comparisons when every pattern is at zero brightness');
       await page.getByLabel('Cell capacity (Ah)', {exact: true}).fill('0');
       assert.equal((await agreement(page)).runtime.hours, 0);
       for (const invalid of ['0', '-1', '']) {
@@ -123,7 +140,7 @@ try {
       assert.equal(await page.locator('#energy-result').getAttribute('data-result'), null);
       await page.getByRole('button', {name: 'Reset calculator'}).click();
       await agreement(page);
-      assert.ok((await page.locator('#energy-video-note').innerText()).includes('recorded full moving rainbow'));
+      assert.ok((await page.locator('#energy-video-note').innerText()).includes('Calculator settings do not change the video'));
 
       // A late response from a previous selection must never replace the current result.
       await page.evaluate(async () => {
@@ -188,7 +205,7 @@ try {
     await page.goto(url);
     const value = await settled(page);
     assert.equal(value.runtime.state, 'unbounded'); assert.equal(value.runtime.hours, null);
-    assert.ok((await page.locator('#energy-result').innerText()).includes('no finite runtime'));
+    assert.ok((await page.locator('#energy-result').innerText()).includes('No finite runtime'));
     assert.ok(!(await page.locator('#energy-result').innerText()).match(/NaN|Infinity/));
   } finally { await zeroContext.close(); }
   const damagedContext = await browser.newContext({reducedMotion: 'reduce'});

@@ -1,7 +1,7 @@
-import {evaluate, referenceCases, runtime, savings, usableEnergy, InputError, PowerEquilibriumError} from './energy.mjs';
+import {evaluate, savings, usableEnergy, InputError, PowerEquilibriumError} from './energy.mjs';
 
 const fields = [
-  ['brightness', 'Electrical brightness (%)', 0, 100, .1],
+  ['brightness', 'Brightness (%)', 0, 100, .1],
   ['capacity_ah', 'Cell capacity (Ah)', 0, '', .1],
   ['energy_wh', 'Usable cell energy (Wh, after reserve)', 0, '', .01],
   ['efficiency', 'Conversion efficiency (%)', .01, 100, .1],
@@ -28,25 +28,30 @@ export async function loadSample(set) {
 }
 
 export function mountCalculator(root, model, manifest, loader = loadSample) {
-  root.innerHTML = `<h2>One-cell energy calculator</h2>
-    <p id="energy-basis"></p><p id="energy-reference"></p><p>Changing these assumptions does not change the compatible cell or qualify a higher brightness.</p>
+  const fieldMarkup = ([id, label, min, max, step]) => `<label for="energy-${id}">${label}<input id="energy-${id}" name="${id}" type="number" min="${min}" ${max === '' ? '' : `max="${max}"`} step="${step}" required aria-describedby="energy-error"></label>`;
+  root.innerHTML = `<h2>Battery life</h2>
+    <p>Estimate how long one battery will last. Actual runtime has not been measured.</p>
     <form id="energy-form" novalidate>
+      <input name="design" type="hidden" value="narrow">
       <div class="energy-fields">
-        <div><label for="energy-design">Design</label><select id="energy-design" name="design"><option value="narrow">Active narrow prototype</option></select></div>
         <div><label for="energy-pattern">Pattern</label><select id="energy-pattern" name="pattern">${patterns.map((pattern, i) => `<option value="${pattern}">${names[i]}</option>`).join('')}</select></div>
-        ${fields.map(([id, label, min, max, step]) => `<label for="energy-${id}">${label}<input id="energy-${id}" name="${id}" type="number" min="${min}" ${max === '' ? '' : `max="${max}"`} step="${step}" required aria-describedby="energy-error"></label>`).join('')}
-      </div><button type="reset">Reset calculator</button>
+        ${fieldMarkup(fields[0])}
+      </div>
+      <details id="energy-advanced"><summary>Advanced settings</summary>
+        <p id="energy-basis"></p>
+        <p>These settings estimate battery life; they do not set safe operating limits.</p>
+        <div class="energy-fields">${fields.slice(1).map(fieldMarkup).join('')}</div>
+      </details>
+      <button type="reset">Reset calculator</button>
     </form>
     <p id="energy-error" role="alert"></p>
     <div id="energy-result" role="status" aria-live="polite" aria-atomic="true"></div>
-    <p id="energy-video-note">The preview shows a recorded full moving rainbow; calculator selections do not change the video.</p>`;
+    <p id="energy-video-note">Calculator settings do not change the video above.</p>`;
   const form = root.querySelector('form');
   const result = root.querySelector('#energy-result');
   const error = root.querySelector('#energy-error');
   const inputs = Object.fromEntries([...form.elements].filter(element => element.name).map(element => [element.name, element]));
-  root.querySelector('#energy-basis').textContent = `${model.cell.name}. ${model.uncertainty}`;
-  const references = referenceCases(model);
-  root.querySelector('#energy-reference').textContent = `Selected-cell reference: ${references.selected_cell.hours.toFixed(2)} calculated hours at ${model.reference.output_w} W and ${model.reference.efficiency * 100}% efficiency, before reserve and other losses. Historical Efest comparison: ${references.legacy_efest.hours.toFixed(2)} hours under the same assumptions. Swaps interrupt operation and startup.`;
+  root.querySelector('#energy-basis').textContent = `Battery: ${model.cell.name}.`;
   let generation = 0;
   const cache = new Map();
   const numeric = key => {
@@ -96,20 +101,36 @@ export function mountCalculator(root, model, manifest, loader = loadSample) {
                  explanation: 'Full-rainbow comparison unavailable: its load has no constant-power equilibrium at these settings.'};
       }
       result.dataset.result = JSON.stringify({design, pattern, settings: values, ...value, savings: saved});
-      const hours = value.runtime.state === 'unbounded' ? value.runtime.explanation : `${value.runtime.hours.toFixed(2)} calculated hours per cell`;
-      result.textContent = `${design === 'wide' ? 'Wide' : 'Narrow'} · ${names[patterns.indexOf(pattern)]} · ${values.brightness * 100}% electrical brightness: ${hours}. `
-        + `Estimated LED current ${value.average_led_a.toFixed(3)} A average, ${value.sampled_peak_led_a.toFixed(3)} A sampled peak. `
-        + `Total output ${value.average_output_w.toFixed(3)} W; battery input ${value.average_battery_w.toFixed(3)} W / ${value.average_battery_a.toFixed(3)} A at ${values.cell_v} V. `
-        + (saved.state === 'available'
-          ? `Savings against full rainbow at the same settings: ${saved.watts.toFixed(3)} W (${saved.percent.toFixed(1)}%). `
-          : `${saved.explanation} `)
-        + `${value.groups.map(group => `${group.name}: ${group.average_a.toFixed(3)} A`).join('; ')}. `
-        + `Sampled every ${value.sample_interval_s} s over ${value.sample_period_s} s. Sampled peaks are not PWM, radio, inrush or fault ratings.`;
+      const duration = document.createElement('strong');
+      if (value.runtime.state === 'unbounded') {
+        duration.textContent = 'No finite runtime at zero power demand.';
+      } else if (value.runtime.hours >= 1e6) {
+        duration.textContent = `About ${value.runtime.hours.toPrecision(3)} h per battery`;
+      } else {
+        const minutes = Math.round(value.runtime.hours * 60);
+        const hours = Math.floor(minutes / 60), remainder = minutes % 60;
+        const time = hours ? `${hours} h${remainder ? ` ${remainder} min` : ''}` : `${remainder} min`;
+        duration.textContent = `About ${time} per battery`;
+      }
+      const context = document.createElement('p');
+      context.textContent = `${names[patterns.indexOf(pattern)]} at ${display(values.brightness * 100)}% brightness.`;
+      result.replaceChildren(duration, context);
+      if (pattern !== 'rainbow' && (saved.state === 'unavailable' || saved.percent >= .5)) {
+        const comparison = document.createElement('p');
+        comparison.textContent = saved.state === 'available'
+          ? `Uses about ${saved.percent.toFixed(0)}% less power than full rainbow at the same brightness.`
+          : 'Full-rainbow comparison unavailable at these settings.';
+        result.append(comparison);
+      }
       result.hidden = false;
     } catch (reason) {
       if (current !== generation) return;
       const field = inputs[reason.field];
-      if (field) field.setAttribute('aria-invalid', 'true');
+      if (field) {
+        field.setAttribute('aria-invalid', 'true');
+        const advanced = field.closest('details');
+        if (advanced) advanced.open = true;
+      }
       error.textContent = reason.message || 'Calculation failed; check inputs and try Reset.';
     } finally {
       if (current === generation) root.setAttribute('aria-busy', 'false');
