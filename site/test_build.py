@@ -65,7 +65,7 @@ class MovieTests(unittest.TestCase):
         self.assertEqual((movie.seconds, movie.masked_style), (16, None))
 
     @patch("build.verify_masked_motion")
-    @patch("build.verify_rainbow_motion", side_effect=RuntimeError("Static rainbow"))
+    @patch("build.verify_pride_motion", side_effect=RuntimeError("Static rainbow"))
     @patch("build.subprocess.run")
     @patch("build.subprocess.check_output")
     def test_frozen_first_rainbow_blocks_build(self, probe, run, rainbow, masked):
@@ -76,13 +76,13 @@ class MovieTests(unittest.TestCase):
                                         MEDIA['narrow_movie'].rainbow_scene)
         masked.assert_not_called()
 
-    @patch("build.verify_spiral_wave", side_effect=RuntimeError("No travelling wave"))
+    @patch("build.verify_pride_motion", side_effect=RuntimeError("No indexed Pride chase"))
     @patch("build.verify_rainbow_motion")
     @patch("build.subprocess.run")
     @patch("build.subprocess.check_output")
-    def test_hue_rotation_without_light_travel_blocks_first_preview(self, probe, run, rainbow, wave):
+    def test_missing_indexed_chase_blocks_first_preview(self, probe, run, rainbow, wave):
         probe.return_value = self.probe(384, 16)
-        with self.assertRaisesRegex(RuntimeError, "No travelling wave"):
+        with self.assertRaisesRegex(RuntimeError, "No indexed Pride chase"):
             verify_movie(MEDIA['narrow_movie'])
         wave.assert_called_once_with(MEDIA['narrow_movie'].source, MEDIA['narrow_movie'].rainbow_scene)
 

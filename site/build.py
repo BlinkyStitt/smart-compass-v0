@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 from estimates import estimate_masses
 from publication import publish, seal
-from spiral_motion import verify_spiral_wave
+from spiral_motion import verify_pride_motion
 
 
 @dataclass(frozen=True)
@@ -67,10 +67,10 @@ def verify_movie(movie):
                     "-f", "null", "-"], check=True)
     if movie.masked_style:
         verify_masked_motion(movie.source, movie.rainbow_scene, movie.masked_style)
+    elif movie.travelling_spiral:
+        verify_pride_motion(movie.source, movie.rainbow_scene)
     elif movie.rainbow_scene:
         verify_rainbow_motion(movie.source, movie.rainbow_scene)
-    if movie.travelling_spiral:
-        verify_spiral_wave(movie.source, movie.rainbow_scene)
 
 
 def verify_assembly_motion(source):

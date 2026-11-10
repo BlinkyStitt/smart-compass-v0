@@ -4,10 +4,11 @@ The page shows only the narrow removable-cell prototype. Wide files remain a
 pinned source archive. The page includes the rainbow, three dark patterns, silver
 PETG, night lighting and player controls. Tap any image or video to open a
 full-screen viewer. Close or Escape returns to the page and restores focus.
-The first preview shows one travelling spiral of brighter LEDs over an always-lit
-rainbow, on the figure-eight camera loop. Its dedicated recording is
-`site/assets/rainbow-spiral.mp4`. Each LED stays between 45% and 100% of the
-pattern peak; no section turns off.
+The first preview shows a Pride rainbow chase on the physical LED wiring,
+on the figure-eight camera loop. Its dedicated recording is
+`site/assets/rainbow-spiral.mp4`. Every LED remains lit; no section is masked off.
+This matches the indexed, pulsing motion requested in
+[Jason Coon's Fibonacci256 Pride video](https://youtu.be/-Sviv3m11AY).
 
 The site uses plain HTML, CSS and JavaScript. It needs Python 3.9+, Git LFS,
 FFmpeg/FFprobe, Godot 4, Node 20+ and the locked Playwright driver with its matching
@@ -140,9 +141,22 @@ Rebuild the first preview from the current narrow CAD with:
 python3 site/render_rainbow.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/rainbow-frames
 ```
 
-The capture also saves fixed-camera witness frames. Inspect these to separate
+The capture also saves four seconds of fixed-camera witness frames. Inspect these to separate
 light travel from camera motion. The generator keeps the canonical CAD,
-materials and figure-eight camera. Its pattern function is `rainbow_spiral.gd`.
+materials and figure-eight camera. Its pattern source is `pride.py`, a floating-point adaptation of
+[Mark Kriegsman's Pride2015](https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino).
+The maker's [Fibonacci256 firmware](https://github.com/jasoncoon/esp8266-fastled-webserver/blob/7f3ef47d9217ac3dfcd2a309d025987fc0d0ba5a/esp8266-fastled-webserver.ino#L1245)
+uses the same original algorithm in physical zigzag order. The preview retains
+that order, the beat rates (including Q8.8 BPM), hue increments, brightness
+oscillators, reverse write and RGB trail blend. It uses standard HSV rather
+than FastLED's integer rainbow conversion. A one-second moving crossfade makes
+the 16-second recording loop without a hard cut. See `PRIDE-LICENSE.txt`.
+
+The decoded movie check registers board and outer-ring LED locations through
+the moving camera and checks their RGB values against the indexed sequence.
+A frozen light field or the former angular/radial hue cycle fails this check.
+The engineering runtime calculator retains its separate canonical full-rainbow
+reference; this preview does not establish a new battery runtime.
 
 Rebuild the exploded MP4 from the current narrow CAD with:
 
