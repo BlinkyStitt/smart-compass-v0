@@ -3,7 +3,7 @@ const players = new Map();
 let viewerOpen = false;
 
 function autoplayAllowed(container) {
-  return container?.hasAttribute('data-assembly') || !reducedMotion.matches;
+  return container?.hasAttribute('data-autoplay') || !reducedMotion.matches;
 }
 
 function player(container) {
@@ -14,7 +14,11 @@ function player(container) {
   const disclosure = container.matches('details') ? container : null;
   let attempt = null;
   let wanted = container.hasAttribute('data-autoplay') && autoplayAllowed(container);
-  let visible = false;
+  const bounds = video.getBoundingClientRect();
+  let visible = bounds.bottom > 0 && bounds.top < innerHeight && bounds.right > 0 && bounds.left < innerWidth;
+  video.defaultMuted = true;
+  video.muted = true;
+  video.playsInline = true;
 
   function eligible() {
     return wanted && visible && !document.hidden && !viewerOpen && (!disclosure || disclosure.open);
@@ -22,6 +26,7 @@ function player(container) {
 
   function stop(message = '') {
     attempt = null;
+    video.autoplay = false;
     video.pause();
     playButton.textContent = 'Play';
     playButton.disabled = restartButton.disabled = false;
@@ -34,35 +39,38 @@ function player(container) {
     const current = {};
     attempt = current;
     video.muted = true;
+    video.autoplay = true;
     video.preload = 'auto';
     playButton.textContent = 'Loading…';
     playButton.disabled = restartButton.disabled = true;
     status.textContent = 'Loading clip…';
     if (video.error) video.load();
-    Promise.resolve().then(() => {
-      if (attempt === current && eligible()) return video.play();
-    }).then(() => {
+    const failed = () => {
+      if (attempt === current) {
+        stop('Tap Play to start.');
+      }
+    };
+    // Keep play() inside a button or touch handler when Safari needs a gesture.
+    let playing;
+    try { playing = video.play(); } catch { failed(); return; }
+    Promise.resolve(playing).then(() => {
       if (attempt !== current) return;
       attempt = null;
       if (!eligible()) { stop(); return; }
       playButton.disabled = restartButton.disabled = false;
       playButton.textContent = 'Pause';
       status.textContent = '';
-    }, () => {
-      if (attempt === current) {
-        wanted = false;
-        stop('Playback did not start. Use Play or open the MP4 link.');
-      }
-    });
+    }, failed);
   }
 
-  playButton.addEventListener('click', () => { wanted = !wanted; sync(); });
+  playButton.addEventListener('click', () => { wanted = video.paused || !wanted; sync(); });
   restartButton.addEventListener('click', () => {
     stop();
     video.currentTime = 0;
     wanted = true;
     sync();
   });
+  for (const event of ['loadeddata', 'canplay']) video.addEventListener(event, sync);
   video.addEventListener('pause', () => { if (!attempt && video.paused) playButton.textContent = 'Play'; });
   video.addEventListener('play', () => {
     if (!eligible()) stop();
@@ -88,6 +96,11 @@ function player(container) {
 }
 
 document.querySelectorAll('[data-player]').forEach(player);
+window.addEventListener('pageshow', () => players.forEach(controller => controller.sync()));
+for (const type of ['touchend', 'click', 'keydown']) document.addEventListener(type, event => {
+  if (event.target instanceof Element && event.target.closest('[data-play], [data-replay], .media-expand, .media-close')) return;
+  players.forEach(controller => controller.sync());
+}, {passive: true});
 document.addEventListener('visibilitychange', () => {
   players.forEach(controller => controller.sync());
   if (document.hidden && activeMedia instanceof HTMLVideoElement) activeMedia.pause();
@@ -157,6 +170,7 @@ function openViewer(trigger, original, src) {
     media.controls = true;
     media.tabIndex = 0;
     media.loop = true;
+    media.defaultMuted = true;
     media.muted = true;
     media.playsInline = true;
     media.addEventListener('loadedmetadata', () => { media.currentTime = original.currentTime; }, {once: true});

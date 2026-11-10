@@ -167,6 +167,9 @@ try {
 
       // Exercise the shipped narrow player with actual MP4 decoding.
       assert.equal(await page.locator('#films video').count(), 1);
+      await page.locator('#films video').scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0; });
+      await page.locator('#play').click();
       assert.ok(await page.locator('#films video').evaluate(video => video.paused));
       await page.locator('#play').click();
       await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0; });
@@ -178,7 +181,7 @@ try {
       await page.locator('#play').click();
       await page.locator('#films video').evaluate(video => { video.originalPlay = video.play; video.play = () => Promise.reject(new DOMException('fixture rejection', 'NotAllowedError')); });
       await page.locator('#play').click();
-      await page.waitForFunction(() => document.querySelector('#play-status').textContent.includes('Playback did not start'));
+      await page.waitForFunction(() => document.querySelector('#play-status').textContent.includes('Tap Play to start'));
       assert.ok(await page.locator('#films video').evaluate(video => video.paused));
       await page.locator('#films video').evaluate(video => { video.play = video.originalPlay; video.dispatchEvent(new Event('error')); });
       assert.ok((await page.locator('#play-status').innerText()).includes('could not load'));

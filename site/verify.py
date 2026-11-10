@@ -115,7 +115,7 @@ def fixture(directory):
 <link rel="stylesheet" href="styles.css"><script src="app.js" defer></script>
 <script src="calculator.js" type="module"></script><main class="wrap">
 <h1>Isolated calculator and playback study — not a release</h1>
-<section id="films" data-player data-autoplay><div class="film"><video controls muted loop playsinline preload="metadata" src="narrow.mp4" aria-label="Narrow rainbow"></video><a href="narrow.mp4">Open narrow MP4</a></div>
+<section id="films" data-player data-autoplay><div class="film"><video controls autoplay muted loop playsinline preload="metadata" src="narrow.mp4" aria-label="Narrow rainbow"></video><a href="narrow.mp4">Open narrow MP4</a></div>
 <a href="silver.mp4">Open silver MP4</a><button id="play" data-play>Play</button><button id="replay" data-replay>Restart</button>
 <p id="play-status" class="play-status" role="status"></p></section><section id="energy-calculator" class="energy-calculator" aria-label="One-cell energy calculator"></section>
 </main></html>''')

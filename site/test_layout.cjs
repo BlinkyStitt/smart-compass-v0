@@ -21,7 +21,11 @@ async function check() {
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
         const primary = await page.locator('#films video').boundingBox();
         assert.ok(primary.width >= Math.min(width - 40, 950), 'Primary narrow view uses the available width');
-        assert.ok(await page.locator('#films video').evaluate(video => video.paused));
+        await page.locator('#narrow-video').scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => { const v = document.querySelector('#narrow-video'); return !v.paused && v.currentTime > 0; });
+        await page.emulateMedia({reducedMotion: 'no-preference'});
+        await page.emulateMedia({reducedMotion: 'reduce'});
+        assert.ok(await page.locator('#narrow-video').evaluate(v => !v.paused), 'Requested primary autoplay survives Reduce Motion');
         await page.waitForFunction(() => document.querySelector('#narrow-video').readyState >= 1);
         assert.equal(await page.locator('#narrow-video').evaluate(video => video.duration), 16,
           'First preview keeps one complete full-rainbow loop');
@@ -95,21 +99,69 @@ async function check() {
         console.log(`GALLERY PASS: ${width}px, narrow only, image/video fullscreen, touch/keyboard/focus, reduced motion, pattern playback`);
       } finally { await context.close(); }
     }
-    // Native muted autoplay starts the diagram even before the player script runs.
+    // Both requested animations start without JavaScript or a priming tap.
     const native = await browser.newContext({javaScriptEnabled: false, reducedMotion: 'reduce', viewport: {width: 390, height: 844}});
     try {
       const page = await native.newPage();
       await page.goto(url);
-      await page.locator('#assembly-video').scrollIntoViewIfNeeded();
-      // Page-side timer/rAF polling is disabled in this context too.
-      let moving = false;
-      for (let attempt = 0; attempt < 150 && !moving; attempt++) {
-        moving = await page.locator('#assembly-video').evaluate(v => !v.paused && v.currentTime > 0);
-        if (!moving) await new Promise(resolve => setTimeout(resolve, 100));
+      for (const id of ['narrow-video', 'assembly-video']) {
+        await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+        // Page-side timer/rAF polling is disabled in this context too.
+        let moving = false;
+        for (let attempt = 0; attempt < 150 && !moving; attempt++) {
+          moving = await page.locator(`#${id}`).evaluate(v => v.autoplay && v.muted && v.playsInline && !v.paused && v.currentTime > 0);
+          if (!moving) await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        assert.ok(moving, `${id} native autoplay advances without a script or tap`);
       }
-      assert.ok(moving, 'Native autoplay advances the diagram without the player script');
-      console.log(`NATIVE AUTOPLAY PASS (${engine}): muted inline assembly starts without JavaScript or a tap`);
+      console.log(`NATIVE AUTOPLAY PASS (${engine}): both muted inline videos start without JavaScript or a tap`);
     } finally { await native.close(); }
+    const recovery = await browser.newContext({reducedMotion: 'reduce', viewport: {width: 390, height: 844}, hasTouch: true});
+    try {
+      await recovery.addInitScript(() => {
+        const add = EventTarget.prototype.addEventListener;
+        EventTarget.prototype.addEventListener = function(type, handler, options) {
+          if (type === 'click' && this instanceof Element && this.hasAttribute('data-play') && typeof handler === 'function') {
+            const button = this, original = handler;
+            handler = function(event) {
+              const v = button.closest('[data-player]').querySelector('video');
+              v.inClick = true;
+              try { return original.call(this, event); } finally { v.inClick = false; }
+            };
+          }
+          return add.call(this, type, handler, options);
+        };
+      });
+      const page = await recovery.newPage();
+      await page.goto(url);
+      for (const id of ['narrow-video', 'assembly-video']) {
+        const video = page.locator(`#${id}`);
+        await video.scrollIntoViewIfNeeded();
+        await page.waitForFunction(id => !document.getElementById(id).paused, id);
+        await video.evaluate(v => {
+          v.autoplay = false;
+          v.pause();
+          v.originalPlay = v.play;
+          v.play = () => Promise.reject(new DOMException('Autoplay policy fixture', 'NotAllowedError'));
+          document.dispatchEvent(new Event('visibilitychange'));
+        });
+        const player = video.locator('xpath=ancestor::*[@data-player][1]');
+        await page.waitForFunction(id => document.getElementById(id).closest('[data-player]').querySelector('.play-status').textContent.includes('Tap Play'), id);
+        await video.evaluate(v => { v.play = v.originalPlay; v.dispatchEvent(new Event('canplay')); });
+        await page.waitForFunction(id => { const v = document.getElementById(id); return !v.paused && v.currentTime > 0; }, id);
+        await player.locator('[data-play]').click();
+        assert.ok(await video.evaluate(v => v.paused));
+        // A button retry must call play() before the gesture handler returns.
+        await video.evaluate(v => {
+          v.play = function() { this.playWasInClick = this.inClick; return this.originalPlay(); };
+        });
+        await player.locator('[data-play]').click();
+        await page.waitForFunction(id => !document.getElementById(id).paused, id);
+        assert.ok(await video.evaluate(v => v.playWasInClick), 'Play stays inside the Safari user gesture');
+        await video.evaluate(v => { v.play = v.originalPlay; });
+      }
+      console.log(`AUTOPLAY RECOVERY PASS (${engine}): both videos retry a denied start and retain synchronous Play`);
+    } finally { await recovery.close(); }
     const context = await browser.newContext({reducedMotion: 'no-preference'});
     try {
       const page = await context.newPage();
@@ -154,7 +206,13 @@ async function check() {
       });
       await page.waitForFunction(() => !document.querySelector('#narrow-video').paused);
       await page.emulateMedia({reducedMotion: 'reduce'});
-      await page.waitForFunction(() => [...document.querySelectorAll('video')].every(v => v.paused));
+      assert.ok(await page.locator('#narrow-video').evaluate(v => !v.paused), 'Requested primary autoplay overrides Reduce Motion');
+      await page.locator('#play').click();
+      await page.evaluate(() => {
+        document.querySelector('#narrow-video').dispatchEvent(new Event('canplay'));
+        window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
+      });
+      assert.ok(await page.locator('#narrow-video').evaluate(v => v.paused), 'Manual pause survives media-ready and page-return retries');
       assert.deepEqual(errors, []);
       console.log(`MOTION/MEMORY PASS (${engine}): painted assembly motion, bounded images, repeated scroll, offscreen pause/resume, manual pause, visibility and reduced motion`);
     } finally { await context.close(); }
