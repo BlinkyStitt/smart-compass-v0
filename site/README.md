@@ -123,8 +123,8 @@ python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-co
 
 Use a new frame directory for each capture. The site build rejects a still loop
 or a loop that does not return to its closed pose. The build checks decoding,
-spatial colour motion, dark-mask identity and loop joins. Each asset gets a
-content-hashed URL. The dimension and service previews use the current narrow CAD.
+spatial colour motion, dark-mask identity and loop joins. Each asset and the gallery player script get a
+content-hashed URL. This prevents cached player code from using newer markup. The dimension and service previews use the current narrow CAD.
 The build renders their native SVGs to PNG with the pinned MPL-2.0 resvg-js
 renderer. Each preview is at most 1600 × 1600 pixels and 2 MB. Native SVGs remain
 in the downloadable package. Neither the page nor its full-screen viewer loads

@@ -31,6 +31,7 @@ class Movie:
 
 
 MEDIA = {
+    "app_script": SITE / "app.js",
     "narrow_movie": Movie(NARROW / "infinity-rainbow-dark-spirals.mp4", 16,
                           rainbow_scene=NARROW / "scene.json", masked_style="spirals"),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
@@ -206,7 +207,7 @@ def render(output, provenance):
     if "{{" in rendered:
         raise RuntimeError("Unresolved site template values")
     (output / "index.html").write_text(rendered)
-    for name in ("styles.css", "app.js", "icon.svg", "calculator.js", "energy.mjs", "electrical-inputs.json"):
+    for name in ("styles.css", "icon.svg", "calculator.js", "energy.mjs", "electrical-inputs.json"):
         (output / name).write_bytes(read_input(SITE / name, provenance))
     sample_manifest = read_input(SAMPLES / 'manifest.json', provenance)
     (output / 'pattern-samples.json').write_bytes(sample_manifest)
