@@ -91,11 +91,18 @@ rounding. The sampler calculates its demand from the shared functions and
 layout; it does not apply a second fixed rainbow discount.
 
 The selected no-reserve reference is 21.6 Wh at 6.25 W and 85% efficiency:
-**2.9376 h**, displayed as 2.94 h. The historical Efest 19.24 Wh reference remains an
-arithmetic regression case: 2.61664 h, displayed as 2.62 h. The page's pattern result
+**2.9376 h**. The historical Efest 19.24 Wh reference remains an
+arithmetic regression case: 2.61664 h. These reference cases remain in the model
+tests rather than the product page. The page's pattern result
 also includes its stated non-LED and loss assumptions. It therefore differs from
 these reference cases. Higher brightness requires another load review. The 2%
 default is a bench scenario, not a delivered firmware ceiling.
+
+The calculator shows estimated battery life in hours and minutes, with the selected
+pattern and brightness. It shows a power comparison only for alternative patterns
+with meaningful savings. Battery and loss assumptions are under Advanced settings.
+The complete numeric result remains available to the browser verification checks;
+the page omits per-strip current, sample timing and reference-case diagnostics.
 
 Runtime equals usable energy divided by average battery-input power. Zero
 usable energy gives zero runtime. Positive energy with zero demand gives a

@@ -21,7 +21,7 @@
     <section class="intro wrap" aria-labelledby="title">
       <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Hardware in development</p>
       <h1 id="title">Smart compass.<br>Find your friends.</h1>
-      <p class="lede">We’re building a wearable medallion to help you find your friends. It’s designed to share locations by radio and use a compass to point you toward friends wearing one too. It also has a spiral of lights and an infinity-mirror effect. The active prototype is the 200 mm narrow design. It uses one removable protected XTAR 21700 cell.</p>
+      <p class="lede">A light-up medallion designed to point you toward friends wearing one too. It will share locations by radio, so you won’t need a phone or internet connection. This 200 mm prototype combines a spiral of lights with an infinity mirror.</p>
     </section>
     <section class="films wrap" id="films" data-player data-autoplay aria-label="Narrow smart compass simulation">
       <div class="film-grid">
@@ -39,46 +39,48 @@
       </div>
       <div class="film-descriptions">
         <section class="film-description" aria-labelledby="narrow-description-title">
-          <h3 id="narrow-description-title">Active narrow prototype</h3>
-          <dl class="film-stats"><div><dt>Est. total worn weight</dt><dd>{{narrow_worn_g}} <small>g · {{narrow_worn_lb}} lb</small></dd></div><div><dt>Calculated runtime</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
-          <p class="stats-note">Complete worn estimate: pendant, one {{battery_weight}} g nominal cell ({{battery_upper_g}} g published upper) and the complete sewn necklace. Upper estimate {{narrow_upper_g}} g; margin {{narrow_margin_g}} g below 2.5 lb. The separate 50 g margin target is {{narrow_margin_target}}.</p>
-          <p class="film-note">The full rainbow moves without black sections while the camera follows a figure-eight path.</p>
+          <h3 id="narrow-description-title">Weight and battery life</h3>
+          <dl class="film-stats"><div><dt>Estimated worn weight</dt><dd>{{narrow_worn_g}} <small>g · {{narrow_worn_lb}} lb</small></dd></div><div><dt>Estimated battery life</dt><dd>~{{runtime}} <small>hours</small></dd></div></dl>
+          <p class="stats-note">Weight includes the pendant, battery and necklace. Battery life assumes the full rainbow at 2% brightness.</p>
           <a class="file-link" href="{{narrow_movie}}">Open narrow MP4 ↗</a>
         </section>
       </div>
-      <div class="estimate-note"><p>The narrow estimate uses its complete installed CAD census and its own component, wire, fastener, cell and necklace records. Estimated worn bounds are <strong>{{narrow_weight_range}} g</strong>. The glow upper estimate is {{narrow_upper_g}} g; silver is {{narrow_silver_upper_g}} g. These are sums of engineering allowances, not confidence intervals or a measured worn mass.</p><p>The displayed runtime uses the actual full-rainbow samples at <strong>2% electrical brightness</strong>, 2 W non-LED output, 85% conversion efficiency, 0.12 Ω path resistance and a 25% energy allowance for cutoff, reserve and aging. These are adjustable planning assumptions. Average savings do not establish PWM, radio, inrush or fault limits. Optical glow and screen brightness do not enter the electrical calculation.</p><p>Only the narrow removable-cell prototype is active. All physical electrical, thermal, fit, retention, runtime and wearing outcomes remain unmeasured. <a href="parts.json">Read the complete mass ledger</a>.</p></div>
+      <div class="estimate-note"><p>This is a design preview. Weight, brightness, battery life, fit and radio range still need physical testing. <a href="estimates.json">View the estimate data</a>.</p></div>
 
     </section>
-    <section class="wrap energy-calculator" id="energy-calculator" aria-label="One-cell energy calculator"></section>
+    <section class="wrap energy-calculator" id="energy-calculator" aria-label="Battery life calculator"></section>
     <section class="story wrap" id="build" aria-labelledby="build-title">
-      <div class="section-label"><span class="eyebrow">The build</span><h2 id="build-title">Light you can wear.<br>Direction you can share.</h2></div>
+      <div class="section-label"><span class="eyebrow">The build</span><h2 id="build-title">How it works.</h2></div>
       <div class="story-copy">
-        <p class="large">The planned build: a 256-LED centre display, three additional LED strips and two controller boards.</p>
-        <p>The <a href="https://www.evilgeniuslabs.org/fibonacci256">Evil Genius Labs Fibonacci256</a> forms the centre spiral. The narrow design adds one inward ring with 70 LEDs and two outside rows with 70 LEDs each. The outside rows form one 140-LED chain; the assembly has 466 LEDs. <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> will drive the lights; an <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> will read the sensors and handle the LoRa radio.</p>
-        <p><strong>Navigation.</strong> We plan a compass mode that points north and toward live peers, plus a separate map mode showing peers relative to you. The goal is to navigate and exchange live locations without a phone or internet connection.</p>
-        <p><strong>Light patterns.</strong> We plan geometric and microphone-reactive patterns across the centre display and strips. These simulations show a rotating rainbow with an eight-second colour cycle.</p>
-        <p><a href="https://blink.stitthappens.com/">I’m experimenting with light patterns over here</a>.</p>
-        <p>Inside the narrow design, a black acrylic mirror in front of the board provides the reflective rear surface. A <a href="https://www.twowaymirrors.com/acrylic/">clear two-way mirror</a> closes the front. The inner LED ring sits between those mirrors.</p>
-        <p>The <a href="https://www.tapplastics.com/product/plastics/cut_to_size_plastic/black_led_sheet/668">black acrylic</a> also absorbs light. These renders include that loss: the estimated coated black sheet transmits 9%, while the finished clear front mirror transmits 30%. Light from the narrow board passes through both sheets; the inner ring bypasses the black sheet. A mirror coating does not act as a diffuser, so the model treats diffusion separately.</p>
-        <p class="boundary">These are CAD and optical simulations. The clear mirror split comes from supplier data; the coated black mirror and printed diffuser response remain estimates. Firmware, finished brightness, fit, heat and radio performance still need physical validation.</p>
+        <p>The planned compass mode points north or toward a friend. A map mode shows nearby friends relative to you. Location sharing uses LoRa radio.</p>
+        <p>The 256-LED <a href="https://www.evilgeniuslabs.org/fibonacci256">Fibonacci256</a> spiral and three LED strips put 466 lights across the face and rim. <a href="https://www.adafruit.com/product/6100">Adafruit Sparkle Motion</a> drives the lights; an <a href="https://www.adafruit.com/product/4877">STM32 BlackPill</a> handles the sensors and radio.</p>
+        <p>Two mirrors create the infinity effect. A reflective black acrylic sheet sits in front of the LED board, and a <a href="https://www.twowaymirrors.com/acrylic/">partly reflective front mirror</a> lets light out.</p>
+        <p>Planned light patterns include geometric animations and patterns that react to sound. <a href="https://blink.stitthappens.com/">Try the light-pattern experiments ↗</a></p>
         <a class="text-link" href="https://github.com/BlinkyStitt/smart-compass-v0/blob/master/design-v2.md">Read the design specification ↗</a>
       </div>
     </section>
     <section class="comparison wrap" id="dimensions" aria-labelledby="dimensions-title">
-      <div class="section-top"><div><p class="eyebrow">The narrow prototype</p><h2 id="dimensions-title">200 mm across.</h2></div><p>A smaller face with two outside light bands.</p></div>
+      <div class="section-top"><div><p class="eyebrow">The narrow prototype</p><h2 id="dimensions-title">200 mm across.</h2></div><p>Two light bands wrap the outer ring.</p></div>
       <div class="spec-table"><table><caption>Active narrow prototype dimensions</caption><thead><tr><th scope="col">Diameter</th><th scope="col">Body depth</th><th scope="col">Closed width × height × depth</th><th scope="col">Mirror gap</th><th scope="col">Total LEDs</th></tr></thead><tbody><tr><td>{{narrow_width}} mm</td><td>{{narrow_depth}} mm</td><td>{{narrow_closed_size}} mm</td><td>{{narrow_gap}} mm</td><td>{{narrow_leds}}</td></tr></tbody></table></div>
     </section>
-    <section class="details wrap" aria-labelledby="service-title"><p class="eyebrow">One removable cell</p><h2 id="service-title">Captive, tool-free battery access.</h2><p>Support the pendant. Put S1 fully OFF and disconnect external power. Open the captive door, hold the cell, release the independent keeper and extract the cell with its pull ribbon. Follow the permanent polarity marks when you insert one compatible protected XTAR 21700 6000 mAh button-top cell. Close the keeper and door, check the catch, select ON and press START.</p><p>OFF isolates the positive cell contact in the reviewed topology. Reset and discharge timing remain unmeasured. A rapid replacement can retain electronic state. Light output does not establish GPS, radio or navigation readiness.</p><figure class="comparison-figure"><a href="{{service_guide}}"><img src="{{service_guide}}" decoding="async" width="960" height="790" loading="lazy" alt="Six actual CAD poses show support and OFF, captive door opening, keeper release, deliberate cell extraction, compatible-cell insertion and latch plus START."></a><figcaption>The continuous model service envelope is {{narrow_service_size}} mm (width × height × depth), including door and keeper motion, 40 mm cell withdrawal and the specified finger approaches. It does not bound a full human hand. Physical fit, insulation, retention and operation remain unmeasured.</figcaption></figure><figure class="comparison-figure"><a href="{{assembly_dimensions}}"><img src="{{assembly_dimensions}}" decoding="async" width="960" height="790" loading="lazy" alt="Actual narrow CAD front and side at one scale, with body, closed projections, service bounds, suspension and conditional balance."></a><figcaption>Front and side use the same scale. The body has a smooth, flush outer ring. Strap loops and rear controls project beyond it. Red marks show the calculated pendant centre and mass-allowance interval. These do not bound physical wearing angle.</figcaption></figure><p>Charge the removed cell off-body with a compatible 4.2 V-termination Li-ion charger. Do not charge in the pendant. Keep spare terminals individually insulated. After damage, heat or repeated darkness, stop and service the unit. Remove the cell before USB 5 V service; keep S1 OFF.</p><p><a href="prototype-service.zip">Review the narrow prototype files and print-service package</a>, <a href="inventory.md">installed inventory</a> and <a href="parts.json">raw mass and balance records</a>. The package includes fit samples, both alternative ring materials, source-linked print settings, assembly references and the full wire cut list.</p></section>
+    <section class="details wrap" aria-labelledby="service-title">
+      <p class="eyebrow">One removable battery</p><h2 id="service-title">Tool-free battery access.</h2>
+      <p>Switch off and disconnect external power. Open the door, release the keeper and pull the battery out with its ribbon. Insert a protected XTAR 21700 6000 mAh button-top cell as marked, then close the keeper and door. Switch on and press START.</p>
+      <figure class="comparison-figure"><a href="{{service_guide}}"><img src="{{service_guide}}" decoding="async" width="960" height="790" loading="lazy" alt="Six steps for removing and replacing the battery through the captive door."></a><figcaption>The door and keeper stay attached during a battery swap.</figcaption></figure>
+      <figure class="comparison-figure"><a href="{{assembly_dimensions}}"><img src="{{assembly_dimensions}}" decoding="async" width="960" height="790" loading="lazy" alt="Front and side views of the narrow prototype, drawn at the same scale."></a><figcaption>The outer ring is smooth and flush. Strap loops and rear controls extend beyond the body.</figcaption></figure>
+      <p>The current design requires charging the battery outside the pendant. Use a compatible 4.2 V Li-ion charger and keep spare battery terminals covered. Stop using the unit if it is damaged or unusually hot. Remove the battery and leave the switch off before connecting USB for service.</p>
+      <p><a href="prototype-service.zip">Download the CAD and assembly files</a> · <a href="inventory.md">Parts list</a> · <a href="parts.json">Weight calculations</a></p>
+    </section>
     <section class="details wrap" aria-labelledby="details-title">
-      <p class="eyebrow">A closer look</p><h2 id="details-title">The parts behind the light.</h2>
+      <p class="eyebrow">A closer look</p><h2 id="details-title">Inside the prototype.</h2>
       <div class="detail-grid">
-        <figure data-assembly data-player data-autoplay><video id="assembly-video" autoplay muted loop playsinline preload="metadata" poster="{{assembly_poster}}" aria-label="The narrow prototype opens into its separate CAD parts, holds open, and closes again."><source src="{{assembly_movie}}" type="video/mp4"></video><figcaption><strong>Inside the narrow prototype</strong>The parts open and close in a repeating animation. Tap for a full-screen view. <div class="buttons"><button data-play type="button">Play</button><button class="secondary" data-replay type="button">Restart ↺</button></div><p class="play-status" role="status"></p><a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
-        <figure><a href="{{narrow_side}}"><img src="{{narrow_side}}" width="1280" height="720" loading="lazy" alt="Simulated side view of the narrow enclosure and its two outside LED bands."></a><figcaption><strong>Two outside bands</strong>The 20 mm light band wraps the narrow case. The body is {{narrow_depth}} mm deep. The closed depth, including the rear guard, is {{narrow_closed_depth}} mm.</figcaption></figure>
-        <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="Simulated mannequin wearing the 200 mm narrow medallion."></a><figcaption><strong>Wearing scale</strong>The {{narrow_width}} mm narrow version is shown on the posed mannequin.</figcaption></figure>
+        <figure data-assembly data-player data-autoplay><video id="assembly-video" autoplay muted loop playsinline preload="metadata" poster="{{assembly_poster}}" aria-label="The narrow prototype opens into its separate CAD parts, holds open, and closes again."><source src="{{assembly_movie}}" type="video/mp4"></video><figcaption><strong>Inside the narrow prototype</strong>Tap to explore the assembly full screen. <div class="buttons"><button data-play type="button">Play</button><button class="secondary" data-replay type="button">Restart ↺</button></div><p class="play-status" role="status"></p><a class="file-link" href="{{assembly_movie}}">Open exploded assembly MP4 ↗</a></figcaption></figure>
+        <figure><a href="{{narrow_side}}"><img src="{{narrow_side}}" width="1280" height="720" loading="lazy" alt="Simulated side view of the narrow enclosure and its two outside LED bands."></a><figcaption><strong>Two outside bands</strong>Two rows of lights fill a 20 mm band around the case.</figcaption></figure>
+        <figure><a href="{{narrow_worn}}"><img src="{{narrow_worn}}" width="1280" height="720" loading="lazy" alt="Simulated mannequin wearing the 200 mm narrow medallion."></a><figcaption><strong>Wearing scale</strong>A {{narrow_width}} mm face, shown at wearing scale.</figcaption></figure>
       </div>
       <details id="dark-sectors" class="alternative" data-player>
         <summary>Rainbow • dark sectors</summary>
-        <p>Two dark sectors sweep around the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Two dark sectors sweep around the rainbow. The glow material stays faintly lit as the dark bands pass.</p>
         <div class="film-grid">
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
@@ -95,7 +97,7 @@
       </details>
       <details id="dark-spirals" class="alternative" data-player>
         <summary>Rainbow • dark spirals</summary>
-        <p>Curved dark bands wind across the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Curved dark bands wind across the rainbow. The glow material stays faintly lit as the dark bands pass.</p>
         <div class="film-grid">
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
@@ -112,7 +114,7 @@
       </details>
       <details id="dark-diagonals" class="alternative" data-player>
         <summary>Rainbow • dark diagonals</summary>
-        <p>Dark diagonal bands travel across the rainbow. The narrow pendant uses glow PETG and the same eight-second pattern cycle. Stored glow can remain visible where LEDs are off. These optical simulations do not establish power savings or battery runtime.</p>
+        <p>Dark diagonal bands travel across the rainbow. The glow material stays faintly lit as the dark bands pass.</p>
         <div class="film-grid">
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
@@ -129,7 +131,7 @@
       </details>
       <details id="silver-rings" class="alternative" data-player>
         <summary>Silver PETG rings</summary>
-        <p>The same geometry and rainbow timing, with neutral silver rings in place of the glow material.</p>
+        <p>The same rainbow with silver rings instead of glow material.</p>
         <div class="film-grid">
           <article class="film">
             <div class="film-heading"><h3>Narrow</h3><p>{{narrow_width}} mm across <i>×</i> {{narrow_depth}} mm deep</p></div>
