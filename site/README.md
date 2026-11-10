@@ -120,10 +120,16 @@ colour rotation on the board and outer ring against registered CAD locations,
 so camera motion alone cannot satisfy validation. Calculator settings do not change the recording; the
 displayed runtime remains the stated full-rainbow reference.
 The narrow exploded assembly opens, holds and closes in a 24-second loop.
-It uses the H.264 MP4 inline, with a direct MP4 link. The diagram starts muted
-as soon as it can play on screen, including with reduced motion enabled.
-The full-screen diagram also starts automatically. Pause and Restart remain
-available. Other previews still follow the reduced-motion preference.
+Its display-only layer offsets are three times the CAD viewer offsets. The
+capture checks that CAD bounds stay in frame throughout representative poses.
+It uses the H.264 MP4 inline, with a direct MP4 link. Both the first preview and diagram use native muted inline autoplay and start
+as soon as they can play on screen, including with reduced motion enabled.
+The full-screen versions also start automatically. Pause and Restart remain
+available. Optional pattern previews follow the reduced-motion preference.
+A rejected start keeps playback intent, allowing media-ready, page-return and
+user-gesture retries. Manual pause survives those retries. Play is called
+synchronously from its button handler for Safari. Browser power policies can
+still require a tap; the page retains Play controls and direct MP4 links.
 Rebuild its MP4 from the current narrow CAD with:
 
 ```sh
