@@ -13,7 +13,7 @@ from build import MEDIA, NARROW, WIDE, Movie, verify_movie
 
 
 class MovieTests(unittest.TestCase):
-    def probe(self, frames=576, seconds=24):
+    def probe(self, frames=1152, seconds=48):
         return json.dumps({"streams": [{"width": 1280, "height": 720,
                                        "r_frame_rate": "24/1", "avg_frame_rate": "24/1",
                                        "nb_frames": str(frames), "duration": str(seconds)}]})
@@ -21,20 +21,20 @@ class MovieTests(unittest.TestCase):
     @patch("build.verify_rainbow_motion")
     @patch("build.subprocess.run")
     @patch("build.subprocess.check_output")
-    def test_assembly_accepts_24_seconds_and_checks_decoding(self, probe, run, rainbow):
+    def test_assembly_accepts_48_seconds_and_checks_decoding(self, probe, run, rainbow):
         probe.return_value = self.probe()
-        verify_movie(Movie(Path("assembly.mp4"), 24, poster_time=12))
+        verify_movie(Movie(Path("assembly.mp4"), 48, poster_time=8))
         self.assertIn("-xerror", run.call_args.args[0])
         rainbow.assert_not_called()
 
     @patch("build.subprocess.run")
     @patch("build.subprocess.check_output")
     def test_shortened_assembly_is_rejected(self, probe, run):
-        for frames, seconds in ((384, 24), (576, 16)):
+        for frames, seconds in ((576, 48), (1152, 24)):
             with self.subTest(frames=frames, seconds=seconds):
                 probe.return_value = self.probe(frames, seconds)
                 with self.assertRaises(RuntimeError):
-                    verify_movie(Movie(Path("assembly.mp4"), 24))
+                    verify_movie(Movie(Path("assembly.mp4"), 48))
         run.assert_not_called()
 
     @patch("build.verify_rainbow_motion", side_effect=RuntimeError("Static rainbow"))
@@ -123,7 +123,7 @@ class MovieTests(unittest.TestCase):
 
     def test_movie_rules_and_posters_use_captured_media_and_scene(self):
         for seconds, poster_time, scene_name, style in (
-            (24, 12, None, None),
+            (48, 8, None, None),
             (16, 0, 'native/scene.json', None),
             (16, 0, 'native/scene.json', 'sectors'),
         ):

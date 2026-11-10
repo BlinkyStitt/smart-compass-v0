@@ -20,6 +20,7 @@ from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 from estimates import estimate_masses
 from publication import publish, seal
 from spiral_motion import verify_pride_motion
+from explosion import CAPTURE_INPUTS, FRAMES as ASSEMBLY_FRAMES, SECONDS as ASSEMBLY_SECONDS, verify_capture
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,7 @@ MEDIA = {
     "narrow_movie": Movie(SITE / "assets/rainbow-spiral.mp4", 16,
                           rainbow_scene=NARROW / "scene.json", travelling_spiral=True),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
-    "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", 24, poster_time=12),
+    "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", ASSEMBLY_SECONDS, poster_time=8),
     "narrow_worn": NARROW / "night-mannequin.png",
     "narrow_side": NARROW / "night-side.png",
     **{
@@ -77,7 +78,7 @@ def verify_assembly_motion(source):
     """Reject a still, missing opening, or a loop that does not close again."""
     frames = subprocess.check_output([
         "ffmpeg", "-v", "error", "-i", str(source),
-        "-vf", r"select=eq(n\,0)+eq(n\,288)+eq(n\,575),scale=160:90",
+        "-vf", rf"select=eq(n\,0)+eq(n\,192)+eq(n\,{ASSEMBLY_FRAMES - 1}),scale=160:90",
         "-fps_mode", "passthrough", "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
     ])
     size = 160 * 90 * 3
@@ -137,6 +138,13 @@ def render_media(output, provenance):
             values[key.replace("movie", "poster")] = "assets/" + poster.name
             if key == "assembly_movie":
                 verify_assembly_motion(destination)
+                proof = json.loads(read_input(SITE / 'assets/exploded-assembly.json', provenance))
+                inputs = {name: hashlib.sha256(read_input(ROOT / name, provenance)).hexdigest()
+                          for name in CAPTURE_INPUTS}
+                scene = json.loads(read_input(NARROW / 'scene.json', provenance))
+                verify_capture(proof, scene, digest, inputs)
+                records[key]['fitted_cad_parts'] = proof['fitted_cad_parts']
+                records[key]['separate_units'] = proof['separate_units']
     return values, records
 
 

@@ -1,0 +1,23 @@
+{
+  "movie_sha256": "789c463acb7a323f92da7fecd0138568092b65e0e43a4816e146948055026bd7",
+  "inputs": {
+    "site/explosion.py": "7b905dfcf7036bd0b1921ee010f352572de1545af876324251a5746b908ce158",
+    "site/render_assembly.py": "473149be2acd0ecf8354f38a817fff4fe437487fa0cdf995f0fcda89c9faa687",
+    "site/render_assembly.gd": "cfadf7cac1ec1e0d1816f735b54bc2903f9a9b5f5ae78f06c8fb5b8d14be6fce",
+    "designs/stacked/exports/scene.json": "7df08d1d773f20171b557509ff81f29fb1ced575db8890402954d18256c20c97",
+    "designs/stacked/exports/amulet.glb": "7da8b4f56c32e146974842b7646e5261eea3c2704b1f2423d7014b3eb1972422"
+  },
+  "fitted_cad_parts": 599,
+  "separate_units": 582,
+  "seconds": 48,
+  "detail_frames": [
+    258,
+    342,
+    426,
+    510,
+    594,
+    678,
+    762,
+    846
+  ]
+}
