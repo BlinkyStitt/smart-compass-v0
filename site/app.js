@@ -2,6 +2,10 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const players = new Map();
 let viewerOpen = false;
 
+function autoplayAllowed(container) {
+  return container?.hasAttribute('data-assembly') || !reducedMotion.matches;
+}
+
 function player(container) {
   const video = container.querySelector('video');
   const playButton = container.querySelector('[data-play]');
@@ -9,7 +13,7 @@ function player(container) {
   const status = container.querySelector('.play-status');
   const disclosure = container.matches('details') ? container : null;
   let attempt = null;
-  let wanted = container.hasAttribute('data-autoplay') && !reducedMotion.matches;
+  let wanted = container.hasAttribute('data-autoplay') && autoplayAllowed(container);
   let visible = false;
 
   function eligible() {
@@ -69,7 +73,7 @@ function player(container) {
     stop('The clip could not load. Use Play or open its MP4 link.');
   }, true);
   reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches) { wanted = false; sync(); }
+    if (!autoplayAllowed(container)) { wanted = false; sync(); }
   });
   if (disclosure) disclosure.addEventListener('toggle', () => {
     wanted = disclosure.open && !reducedMotion.matches;
@@ -149,6 +153,7 @@ function openViewer(trigger, original, src) {
   const label = original.getAttribute('alt') || original.getAttribute('aria-label') || 'Prototype view';
   caption.textContent = label;
   if (isVideo) {
+    media.autoplay = original.autoplay;
     media.controls = true;
     media.tabIndex = 0;
     media.loop = true;
@@ -165,7 +170,7 @@ function openViewer(trigger, original, src) {
   viewer.showModal();
   closeButton.focus();
   if (viewer.requestFullscreen) viewer.requestFullscreen().catch(() => {});
-  if (isVideo && !reducedMotion.matches) media.play().catch(() => {});
+  if (isVideo && autoplayAllowed(original.closest('[data-player]'))) media.play().catch(() => {});
 }
 
 document.querySelectorAll('a:has(img)').forEach(link => {
