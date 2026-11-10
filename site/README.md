@@ -4,8 +4,8 @@ The page shows only the narrow removable-cell prototype. Wide files remain a
 pinned source archive. The page includes the rainbow, three dark patterns, silver
 PETG, night lighting and player controls. Tap any image or video to open a
 full-screen viewer. Close or Escape returns to the page and restores focus.
-The first preview shows one moving spiral light pattern on a figure-eight
-camera loop. It uses the current narrow dark-spiral recording.
+The first preview shows the full moving rainbow, without black sections, on a
+figure-eight camera loop. It uses the current narrow full-rainbow recording.
 
 The site uses plain HTML, CSS and JavaScript. It needs Python 3.9+, Git LFS,
 FFmpeg/FFprobe, Godot 4, Node 20+ and the locked Playwright driver with its matching
@@ -108,9 +108,9 @@ establish internal PWM, radio-burst, inrush, fault or thermal limits.
 ## Media and browser checks
 
 Each rainbow/dark/silver loop uses 1280 × 720 pixels, 384 frames at 24 fps and 16 seconds.
-The first preview uses the moving dark spiral. The builder checks its moving
-light mask against registered CAD locations, so camera motion alone cannot
-satisfy validation. Calculator settings do not change the recording; the
+The first preview uses the full moving rainbow. The builder checks spatial
+colour rotation on the board and outer ring against registered CAD locations,
+so camera motion alone cannot satisfy validation. Calculator settings do not change the recording; the
 displayed runtime remains the stated full-rainbow reference.
 The narrow exploded assembly opens, holds and closes in a 24-second loop.
 It uses the H.264 MP4 inline, with a direct MP4 link. The diagram starts muted
