@@ -59,7 +59,8 @@ class MovieTests(unittest.TestCase):
 
     def test_first_preview_uses_full_moving_rainbow(self):
         movie = MEDIA['narrow_movie']
-        self.assertEqual(movie.source, NARROW / 'infinity-rainbow.mp4')
+        self.assertEqual(movie.source, build.SITE / 'assets/rainbow-spiral.mp4')
+        self.assertTrue(movie.travelling_spiral)
         self.assertEqual(movie.rainbow_scene, NARROW / 'scene.json')
         self.assertEqual((movie.seconds, movie.masked_style), (16, None))
 
@@ -74,6 +75,16 @@ class MovieTests(unittest.TestCase):
         rainbow.assert_called_once_with(MEDIA['narrow_movie'].source,
                                         MEDIA['narrow_movie'].rainbow_scene)
         masked.assert_not_called()
+
+    @patch("build.verify_spiral_wave", side_effect=RuntimeError("No travelling wave"))
+    @patch("build.verify_rainbow_motion")
+    @patch("build.subprocess.run")
+    @patch("build.subprocess.check_output")
+    def test_hue_rotation_without_light_travel_blocks_first_preview(self, probe, run, rainbow, wave):
+        probe.return_value = self.probe(384, 16)
+        with self.assertRaisesRegex(RuntimeError, "No travelling wave"):
+            verify_movie(MEDIA['narrow_movie'])
+        wave.assert_called_once_with(MEDIA['narrow_movie'].source, MEDIA['narrow_movie'].rainbow_scene)
 
     @patch("build.verify_masked_motion", side_effect=RuntimeError("mask mismatch"))
     @patch("build.verify_rainbow_motion")

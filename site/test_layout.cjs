@@ -29,7 +29,7 @@ async function check() {
         await page.waitForFunction(() => document.querySelector('#narrow-video').readyState >= 1);
         assert.equal(await page.locator('#narrow-video').evaluate(video => video.duration), 16,
           'First preview keeps one complete full-rainbow loop');
-        assert.match(await page.locator('#narrow-video').getAttribute('aria-label'), /full moving rainbow without dark sections/);
+        assert.match(await page.locator('#narrow-video').getAttribute('aria-label'), /travelling rainbow spiral, all sections lit/);
 
         // Every bounded still preview opens in place.
         const links = page.locator('main a:has(img)');
