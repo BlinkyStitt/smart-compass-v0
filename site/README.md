@@ -113,8 +113,8 @@ light mask against registered CAD locations, so camera motion alone cannot
 satisfy validation. Calculator settings do not change the recording; the
 displayed runtime remains the stated full-rainbow reference.
 The narrow exploded assembly opens, holds and closes in a 24-second loop.
-It uses an animated PNG at 12 fps, with a direct MP4 link. Reduced motion starts
-with a still frame. Play/Pause animation also controls the image explicitly.
+It uses the H.264 MP4 inline, with a direct MP4 link. Reduced motion starts
+with a still poster. Play and Restart control the animation explicitly.
 Rebuild its MP4 from the current narrow CAD with:
 
 ```sh
@@ -124,12 +124,18 @@ python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-co
 Use a new frame directory for each capture. The site build rejects a still loop
 or a loop that does not return to its closed pose. The build checks decoding,
 spatial colour motion, dark-mask identity and loop joins. Each asset gets a
-content-hashed URL. The dimension and service SVGs use the current narrow CAD.
+content-hashed URL. The dimension and service previews use the current narrow CAD.
+The build renders their native SVGs to PNG with the pinned MPL-2.0 resvg-js
+renderer. Each preview is at most 1600 × 1600 pixels and 2 MB. Native SVGs remain
+in the downloadable package. Neither the page nor its full-screen viewer loads
+the tessellated SVGs. This avoids large vector decodes on phones.
 
 Each player has Play and Restart controls. Failure restores retry controls and
 announces the error. Closing a pattern disclosure cancels startup and pauses its
-clip. Reduced motion starts paused. Direct MP4 links provide recovery. The
-narrow rainbow uses the available width on phones and desktops. Full-screen
+clip. Offscreen clips and hidden pages pause playback. Scrolling back resumes
+a clip only if the user has not paused it. Closing the full-screen viewer releases
+its video source. Reduced motion starts paused. Direct MP4 links provide recovery.
+The narrow rainbow uses the available width on phones and desktops. Full-screen
 videos have native playback controls. Where native fullscreen is unavailable,
 the same modal viewer fills the browser viewport.
 
@@ -138,6 +144,11 @@ npm ci --prefix site --ignore-scripts --no-fund
 PLAYWRIGHT_BROWSERS_PATH="$PWD/.build/browser-cache" node site/node_modules/playwright/cli.js install --with-deps chromium
 python3 site/verify.py local --directory .build/compass-pages
 ```
+
+For a local Safari-engine check, install the pinned WebKit runtime with
+`node site/node_modules/playwright/cli.js install webkit`, then run
+`GALLERY_BROWSER=webkit node site/test_layout.cjs <served-site-url>`.
+This checks the desktop WebKit engine; it does not replace an iPhone test.
 
 Use the locked Playwright version and its full Chromium headless runtime. The
 verifier checks desktop/mobile layout, keyboard controls, announced errors and
