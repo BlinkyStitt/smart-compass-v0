@@ -1,94 +1,90 @@
-"""Fixed suspension posts and fully retained textile attachment regions.
-
-The loose neck span has no fixed rigid envelope. For battery service, lay that
-span above the pendant, clear of the door and controls; leave attachments fitted.
-Seam strength, tension, layer adhesion and wearing remain unmeasured.
-"""
-import math,json
+"""Direct strap returns through the two shell-integral suspension eyelets."""
+import json
 from pathlib import Path
+
+PART_NAMES = frozenset(f'NecklaceAttachmentReturn{i}' for i in range(2))
 
 
 def definition(source):
-    spec=json.loads(Path(source).read_text())
-    width=max(spec['tape']['width_mm']);thick=max(spec['tape']['thickness_mm'])
-    # Fold the width once at the two suspension passages. Use all tape stock.
-    return {'tape':spec,'folded_width_mm':width/2,'folded_thickness_mm':2*thick,
-      'post_tangent_width_mm':9,'post_outward_span_mm':[0,4],
-      'post_height_mm':[2,13],'port_centres_tangent_mm':[-6,6],
-      'port_width_mm':3,'port_height_mm':[4.6,11.6],'port_radial_mm':[-3,10],
-      'wear_loop_bend_target_mm':1.3,'wear_loop_z_mm':8.1,
-      'wear_loop_inner_radial_mm':-1,'wear_loop_tangent_width_mm':12,
-      'wear_loop_overlap_mm':20,'physical_acceptance':'unmeasured'}
+    spec = json.loads(Path(source).read_text())
+    if spec['revision'] != 'narrow-direct-necklace-2':
+        raise ValueError('Select the direct strap attachment')
+    return {
+        'tape': spec,
+        'folded_width_mm': max(spec['tape']['width_mm']) / 2,
+        'folded_thickness_mm': 2 * max(spec['tape']['thickness_mm']),
+        'anchor_z_mm': 8.1,
+    }
 
 
-def native_shapes(shell,p,d,spec):
-    import FreeCAD as App,Part
+def native_shapes(shell, d, spec):
+    import FreeCAD as App
+    import Part
     import harness_route as geo
-    result={};cuts=[];posts=[];probes=[];loops={};frames=[]
-    def rectangle(w,l,h,x,y,z):return Part.makeBox(w,l,h,App.Vector(x-w/2,y-l/2,z))
-    def place(shape,side):
-        # Reversing the right slot tangent preserves its symmetric143degree
-        #axis while making local+Y point radially outward on both sides.
-        angle=-37 if side==1 else 37
-        shape.rotate(App.Vector(),App.Vector(0,0,1),angle)
-        shape.translate(App.Vector(side*d['suspension_x'],d['suspension_y'],0))
-        return shape
-    for i,side in enumerate((-1,1)):
-        post=rectangle(9,4,11,0,2,2)
-        probe=rectangle(7.8,2.8,6,0,1.6,5)
-        posts.append(place(post,side));probes.append(place(probe,side))
-        for x in [-6,6]:cuts.append(place(rectangle(3,13,7,x,3.5,4.6),side))
-        R=spec['wear_loop_bend_target_mm'];inside=spec['wear_loop_inner_radial_mm'];span=spec['wear_loop_tangent_width_mm'];overlap=spec['wear_loop_overlap_mm']
-        total=spec['tape']['tape']['wear_loop_cut_targets_mm'][i]
-        # Rounded rectangle closed centreline plus its real sewn overlap uses
-        # exactly the selected100mm blank, without a second mass owner.
-        perimeter=total-overlap
-        outside=(perimeter-(2*math.pi-8)*R)/2-span+inside
-        z=spec['wear_loop_z_mm'];half=span/2
-        points=[[0,outside,z],[-half,outside,z],[-half,inside,z],[half,inside,z],[half,outside,z],[0,outside,z]]
-        segments=geo.segments(points,R);edges=[]
-        for row in segments:
-            ps=[App.Vector(*q) for q in row['points']]
-            edges.append(Part.makeLine(*ps) if row['kind']=='line' else Part.Arc(*ps).toShape())
-        path=Part.Wire(edges)
-        if abs(path.Length-perimeter)>1e-6:raise ValueError('Wear loop stock length mismatch')
-        w=spec['folded_width_mm'];t=spec['folded_thickness_mm']
-        corners=[App.Vector(0,outside+a*t/2,z+b*w/2) for a,b in [(-1,-1),(1,-1),(1,1),(-1,1),(-1,-1)]]
-        loop=path.makePipeShell([Part.Wire(Part.makePolygon(corners))],True,False)
-        seam=rectangle(t,overlap,w,half+t,outside-R-overlap/2,z-w/2)
-        loop=loop.fuse(seam).removeSplitter()
-        if not loop.isValid() or len(loop.Solids)!=1:raise ValueError('Wear loop invalid or disconnected')
-        loops['NecklaceWearLoop'+str(i)]=place(loop,side)
-        # Each main end returns under the outer wear-loop bridge, then
-        #converges into a real30mm two-layer sewn overlap above that bridge.
-        rr=1.5;cy=outside;zz=z;ww=max(spec['tape']['tape']['width_mm']);tt=max(spec['tape']['tape']['thickness_mm'])
-        bottom=zz-w/2-.6;join_z=16;overlap=spec['tape']['seams']['main_end_overlap_mm']
-        left=[[0,cy-tt/2,join_z],[0,cy-tt/2,join_z-.5],[0,cy-rr,12],[0,cy-rr,bottom]]
-        right=[[0,cy+rr,bottom],[0,cy+rr,12],[0,cy+tt/2,join_z-.5],[0,cy+tt/2,join_z]]
-        edges=[]
-        for row in geo.segments(left,1.3):
-            ps=[App.Vector(*q) for q in row['points']]
-            edges.append(Part.makeLine(*ps) if row['kind']=='line' else Part.Arc(*ps).toShape())
-        edges.append(Part.Arc(App.Vector(*left[-1]),App.Vector(0,cy,bottom-rr),App.Vector(*right[0])).toShape())
-        for row in geo.segments(right,1.3):
-            ps=[App.Vector(*q) for q in row['points']]
-            edges.append(Part.makeLine(*ps) if row['kind']=='line' else Part.Arc(*ps).toShape())
-        path=Part.Wire(edges)
-        cs=[App.Vector(xx*ww/2,cy-tt/2+yy*tt/2,join_z) for xx,yy in [(-1,-1),(1,-1),(1,1),(-1,1),(-1,-1)]]
-        bend=path.makePipeShell([Part.Wire(Part.makePolygon(cs))],True,False)
-        seam=rectangle(ww,2*tt,overlap,0,cy,join_z)
-        stub=bend.fuse(seam).removeSplitter()
-        if not stub.isValid() or len(stub.Solids)!=1:raise ValueError('Necklace main return invalid')
-        loops['NecklaceAttachmentReturn'+str(i)]=place(stub,side)
-        main_end_stock=path.Length+2*overlap
-        frames.append({'side':side,'anchor_z_mm':z,'wear_loop_closed_centreline_mm':perimeter,'wear_loop_overlap_mm':overlap,'outer_radial_mm':outside,'main_end_stock_mm':main_end_stock,'main_overlap_mm':overlap,'free_span_entry_local_mm':[0,cy,join_z+overlap]})
-    new=shell.fuse(Part.makeCompound(posts)).cut(Part.makeCompound(cuts))
-    if not new.isValid() or len(new.Solids)!=1:raise ValueError('Suspension post cuts split the case')
-    new.check(True)
+
+    posts, ports, probes, frames, returns = [], [], [], [], {}
+    width, thick, z = (spec[key] for key in ('folded_width_mm', 'folded_thickness_mm', 'anchor_z_mm'))
+    overlap = spec['tape']['seams']['main_end_overlap_mm']
+    join = 17
+    for i, side in enumerate((-1, 1)):
+        rotation = -37 if side == 1 else 37
+        datum = App.Vector(side * d['suspension_x'], d['suspension_y'], 0)
+
+        def place(shape):
+            shape.rotate(App.Vector(), App.Vector(0, 0, 1), rotation)
+            shape.translate(datum)
+            return shape
+
+        posts.append(place(Part.makeBox(9, 4, 11, App.Vector(-4.5, 0, 2))))
+        probes.append(place(Part.makeBox(7.8, 2.8, 6, App.Vector(-3.9, .2, 5))))
+        # Radius on the strap-facing passage corners. Retain the original
+        # full post section and do not extend the cut into the optical band.
+        r = .5
+        for x in (-6, 6):
+            port = Part.makeBox(3 - 2*r, 13, 7, App.Vector(x-1.5+r,-3,z-3.5))
+            port = port.fuse(Part.makeBox(3,13,7-2*r,App.Vector(x-1.5,-3,z-3.5+r)))
+            for u in (x-1.5+r, x+1.5-r):
+                for v in (z-3.5+r, z+3.5-r):
+                    port = port.fuse(Part.makeCylinder(r,13,App.Vector(u,-3,v),App.Vector(0,1,0)))
+            ports.append(place(port.removeSplitter()))
+
+        # Each main end turns directly around the eyelet. The width is
+        # folded only in this attachment region and its single sewn overlap.
+        points = [[-thick/2,join,z],[-thick/2,14,z],[-6,8,z],[-6,-1,z],
+                  [6,-1,z],[6,8,z],[thick/2,14,z],[thick/2,join,z]]
+        edges = []
+        for segment in geo.segments(points, 1.3):
+            ps = [App.Vector(*point) for point in segment['points']]
+            edges.append(Part.makeLine(*ps) if segment['kind'] == 'line' else Part.Arc(*ps).toShape())
+        path = Part.Wire(edges)
+        corners = [App.Vector(x,join,z+y*width/2) for x,y in
+                   [(-thick,-1),(0,-1),(0,1),(-thick,1),(-thick,-1)]]
+        bend = path.makePipeShell([Part.makePolygon(corners)], True, False)
+        seam = Part.makeBox(2*thick,overlap+.05,width,App.Vector(-thick,join-.05,z-width/2))
+        fitted = place(bend.fuse(seam).removeSplitter())
+        if not fitted.isValid() or len(fitted.Solids) != 1:
+            raise ValueError('Direct strap return is invalid or disconnected')
+        returns[f'NecklaceAttachmentReturn{i}'] = fitted
+        entry = App.Vector(0,join+overlap,z)
+        entry = App.Rotation(App.Vector(0,0,1),rotation).multVec(entry) + datum
+        frames.append({'side':side,'anchor_z_mm':z,'main_end_stock_mm':path.Length+2*overlap,
+                       'main_overlap_mm':overlap,'free_span_entry_mm':list(entry)})
+
+    # Preserve the curved shell topology; same-domain refinement can
+    # invalidate its original curved board-seat faces in FreeCAD 1.1.
+    case = shell.fuse(Part.makeCompound(posts)).cut(Part.makeCompound(ports))
+    if not case.isValid() or len(case.Solids) != 1:
+        raise ValueError('Direct eyelet cuts split the case')
+    case.check(True)
     for probe in probes:
-        if probe.cut(new).Volume>1e-6:raise ValueError('Suspension post cross-section lost')
-    remaining=spec['tape']['tape']['main_cut_target_mm']-sum(f['main_end_stock_mm'] for f in frames)
-    if remaining<=0:raise ValueError('Main sewn returns exceed selected strap stock')
-    return {'free_main_span_target_mm':remaining,'case':new,'products':loops,'post_probes':probes,'frames':frames,
-      'service_condition':'Keep free necklace span above the supported pendant and clear of the door/controls; both formed attachment regions remain fitted.',
-      'physical_acceptance':'unmeasured'}
+        if probe.cut(case).Volume > 1e-6:
+            raise ValueError('Suspension post cross-section lost')
+    for name, fitted in returns.items():
+        if fitted.common(case).Volume > 1e-5:
+            raise ValueError('Direct strap return intersects its eyelet: ' + name)
+    remaining = spec['tape']['tape']['main_cut_target_mm'] - sum(f['main_end_stock_mm'] for f in frames)
+    if remaining <= 0:
+        raise ValueError('Direct returns exceed selected strap stock')
+    return {'case':case,'products':returns,'frames':frames,'free_main_span_target_mm':remaining,
+            'service_condition':'Lay the loose strap above the supported pendant during cell service.',
+            'physical_acceptance':'unmeasured'}

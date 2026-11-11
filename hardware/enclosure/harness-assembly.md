@@ -29,6 +29,48 @@ All coordinates use the native CAD frame in millimetres. A rear view reverses
 the apparent left and right directions. Follow the physical pad names and
 polarity marks. Do not mirror the coordinates to match a photograph.
 
+## Hand assembly requirements
+
+The current circuit is not released as a beginner hand-build kit. Its R20.2
+low-battery tap requires small surface-mount rework. A CAD clearance pass does
+not prove that this step is easy to solder. Keep this limitation visible until
+the replacement circuit and its fitted connections pass review.
+
+The charging revision must meet these requirements:
+
+- Use assembled modules and their labeled through-hole pads or stock connectors.
+  Do not require a wire on an IC leg, an individual USB contact or a small
+  surface-mount resistor pad. Keep the factory surface-mount parts installed.
+- Replace the R20 removal and tap with an interface at the PowerBoost LBO
+  header. Check the input load, logic polarity and power-loss behavior of that
+  interface. A motor-driver module with an input pull-down is not an automatic
+  substitute for a high-impedance logic input.
+- Use a dedicated input connector for charging and external power. Do not tap
+  Sparkle Q1 or R5 to obtain USB input power. Select the complete power path
+  before assigning those connections.
+- Prefer purchased, keyed cable assemblies for connections that need removal.
+  Do not require the builder to crimp small connector contacts. Check the
+  selected cable gauge, connector rating and actual fitted cable length.
+- Put one supported conductor in each screw clamp. Use a separate supported
+  distribution connection where a rail needs more branches. Do not tin a wire
+  that will enter a screw clamp.
+- Solder module headers and wire leads on the bench before fitting the modules
+  in their carriers. Both the joint and the iron tip need access. Do not plan
+  to solder through a narrow gap in the assembled case.
+- Assemble axial fuses, resistors and their insulated joints outside the case.
+  Fit the sleeves before soldering. Support the leads during soldering, let
+  the joints cool, then fit the assembly in its carrier and strain relief.
+- Mark both ends of every lead with its wire ID and terminal name. Keep a
+  component-side connector view in the assembly drawing. Do not rely on wire
+  color alone.
+
+Before calling the revised design hand-build ready, assemble a sample of its
+smallest through-hole joint, its largest wire joint and each connector type.
+Check actual wire insertion, access, insulation, continuity and retention.
+Then assemble one complete unit in the documented order. Record problems and
+revise the owning geometry or connection. These physical checks remain
+unmeasured. No current CAD or source check supplies that evidence.
+
 ## Prepare and fit
 
 1. Keep the cell and external power disconnected. Support the assembly on a

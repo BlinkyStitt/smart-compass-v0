@@ -12,7 +12,7 @@ def flush_perimeter(shell,p,d):
     from hardware_spec import hexagon,nut_dimensions
     def cyl(r,h,z):return Part.makeCylinder(r,h,App.Vector(0,0,z))
     def ann(a,b,h,z):return cyl(b,h,z).cut(cyl(a,h,z))
-    radius=d['case_radius'];inner=radius-1.5
+    radius=d['case_radius'];inner=radius-1.35
     band_end=p['side_bottom_z']+d['side_height']
     top=d['front_z']+p['front_mirror_thickness']
     nut_floor=d['front_z']-2.5
@@ -60,7 +60,7 @@ def flush_perimeter(shell,p,d):
     band=cyl(radius+1,d['side_height'],p['side_bottom_z'])
     added=shell.common(band).cut(original).Volume
     if added>1e-6:raise ValueError('Flush case adds opaque material inside the glow band')
-    return shell,{'outer_radius_mm':radius,'wall_mm':1.5,
+    return shell,{'outer_radius_mm':radius,'wall_mm':1.35,
         'cavity_wall_mm':1.0,'inner_strip_backing_radial_mm':[d['mirror_seat_radius'],backing_outer],
         'inner_strip_backing_missing_mm3':backing_missing,
         'rear_wall_z_mm':[2,p['side_bottom_z']], 'front_wall_z_mm':[band_end,top],
@@ -152,7 +152,7 @@ def lighten(shell,rear,parts,p,d):
         if missing>1e-6:raise ValueError('Suspension material removed '+str(missing))
         suspension.append(missing)
     # Keep complete 2mm mounting faces. Grid pockets open toward electronics;
-    # a continuous0.8mm external skin remains, with3mm ribs and3mm outer rim.
+    # a continuous0.8mm external skin remains, with2.25mm ribs and3mm outer rim.
     retained=[(name,shell if name=='ElectronicsShell' else shape) for name,shape in parts if name!='RearCover']
     support_band=Part.makeBox(204,204,.1,App.Vector(-102,-102,1.95))
     feet=[]
@@ -182,15 +182,15 @@ def lighten(shell,rear,parts,p,d):
                 keep=expanded.extrude(App.Vector(0,0,2))
                 if not keep.isValid() or not keep.Solids:raise ValueError('Invalid extruded source-foot clearance '+name)
                 keepouts.append((name,keep))
-    # A continuous0.8mm skin with24radial3mm ribs and one3mm circular
+    # A continuous0.8mm skin with24radial2.25mm ribs and one2.25mm circular
     #rib carries the unchanged mounting islands to the retained outer rim.
     # It prints flat on the skin; no removable support fills these pockets.
     spokes=[]
     for i in range(24):
-        rib=box(97,3,2,48.5,0,0)
+        rib=box(97,2.25,2,48.5,0,0)
         rib.rotate(App.Vector(),App.Vector(0,0,1),i*15)
         spokes.append(rib)
-    ribs=spokes[0].multiFuse(spokes[1:]+[ann(48.5,51.5,2,0)]).removeSplitter()
+    ribs=spokes[0].multiFuse(spokes[1:]+[ann(48.875,51.125,2,0)]).removeSplitter()
     if not ribs.isValid():raise ValueError('Rear radial rib network invalid')
     tool=cyl(97,1.2,.8).cut(ribs);kept=[]
     for name,keep in keepouts:
@@ -221,7 +221,7 @@ def lighten(shell,rear,parts,p,d):
       'flush_perimeter':flush,
       'front_nut_land_bottom_mm':nut_land_bottom,'front_nut_floor_mm':1.5,
       'front_nut_lands_preserved':len(nut_lands),
-      'rear_skin_mm':.8,'rear_rib_mm':3,
+      'rear_skin_mm':.8,'rear_rib_mm':2.25,
       'rear_pocket_count':len(tool.Solids),'rear_rib_layout':{'radial_count':24,'angle_pitch_deg':15,'circular_radius_mm':50},'rear_grid_kept_for_mounts':kept,'bearing_faces':bearing,
       'suspension_removed_mm3':suspension,
       'case_saved_mm3':original.Volume-shell.Volume,'rear_saved_mm3':rear.Volume-newrear.Volume}

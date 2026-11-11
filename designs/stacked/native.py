@@ -119,12 +119,12 @@ def build(out):
     cell_parts=battery_access.native_shapes(access,'narrow')
     controls=control_fixture.native_shapes(
         *((p['control_'+key+'_x'],p['control_'+key+'_y']) for key in ('switch','start','mode','action')),
-        switch_rotation_deg=p['control_switch_rotation_deg'],guard_mount_offset_mm=p['control_guard_mount_offset'])
+        switch_rotation_deg=p['control_switch_rotation_deg'],guard_mount_offset_mm=p['control_guard_mount_offset'],design='narrow')
     rear=rear_cover.native_blank(R,rear_points,p['rear_vents_xy_mm'],cell_parts,controls)
-    for name in sorted(control_fixture.PRODUCT_NAMES):
-        add(name,controls[name],'Manufactured' if name in control_fixture.PRINTED_PARTS else 'Electronics',(.2,.3,.2),material='Selected rear control; specified assembly target, physical fit unmeasured')
-    for name in sorted(battery_access.PART_NAMES):
-        group='Manufactured' if name in battery_access.PRINTED_PARTS else 'Electronics'
+    for name in sorted(control_fixture.product_names('narrow')):
+        add(name,controls[name],'Manufactured' if name in control_fixture.printed_parts('narrow') else 'Electronics',(.2,.3,.2),material='Selected rear control; specified assembly target, physical fit unmeasured')
+    for name in sorted(battery_access.part_names('narrow')):
+        group='Manufactured' if name in battery_access.printed_parts('narrow') else 'Electronics'
         add(name,cell_parts[name],group,(.2,.25,.3),material='Candidate geometry; not a release')
     # Rear service uses six separate M3 clamp stacks. These are fitted assembly
     # targets, not a torque/strength qualification or a measured screw length.
@@ -583,11 +583,11 @@ def build(out):
         native_check_paths(paths,rear_obj.Shape,count)
     import necklace_fixture
     necklace_spec=necklace_fixture.definition(ROOT/'hardware/enclosure/necklace.json')
-    necklace_fit=necklace_fixture.native_shapes(body.Shape,p,d,necklace_spec)
+    necklace_fit=necklace_fixture.native_shapes(body.Shape,d,necklace_spec)
     body.Shape=necklace_fit['case']
     for name,shape in necklace_fit['products'].items():
         add(name,shape,'Electronics',(.025,.025,.03),material='Selected sewn nylon tape; stock counted once in necklace ledger; fitted textile targets and physical acceptance unmeasured')
-    necklace_record={key:value for key,value in necklace_fit.items() if key not in {'case','products','post_probes'}}
+    necklace_record={key:value for key,value in necklace_fit.items() if key not in {'case','products'}}
     (out/'necklace-fit-check.json').write_text(json.dumps(necklace_record,indent=2)+'\n')
     import end_supports
     input_relief=end_supports.boost_input_pair(body.Shape,p,d)
@@ -654,7 +654,7 @@ def build(out):
     # The200mm dimension describes the rigid body. The four explicit sewn
     #attachment targets can project beyond it and enter the full closed bounds
     #below. They are also checked in all-part fit and ordinary cell service.
-    textile_names={'NecklaceWearLoop0','NecklaceWearLoop1','NecklaceAttachmentReturn0','NecklaceAttachmentReturn1'}
+    textile_names=necklace_fixture.PART_NAMES
     if not textile_names<={obj.Name for obj in objects}:raise ValueError('Missing fixed necklace geometry')
     body_objects=[obj for obj in objects if obj.Name not in textile_names]
     if max(closed_bounds[o.Name].XMax for o in body_objects)-min(closed_bounds[o.Name].XMin for o in body_objects)>p['case_diameter']+.001:raise ValueError('Rigid narrow body exceeds selected diameter')
@@ -662,7 +662,7 @@ def build(out):
     Gui.activeDocument().activeView().viewAxonometric()
     Gui.activeDocument().activeView().fitAll()
     installed=[(o.Name,o.Shape) for o in objects]
-    cell_fixed=[(name,shape) for name,shape in installed if name not in battery_access.PART_NAMES]
+    cell_fixed=[(name,shape) for name,shape in installed if name not in battery_access.part_names('narrow')]
     records=[]
     for obj in objects:
         solids=obj.Shape.Solids
@@ -676,13 +676,13 @@ def build(out):
     variants={}
     for material in ['glow','silver']:
         inventory=narrow_inventory.resolve(records,p,loom,{name:lead for name in ['BatteryLeadP','BatteryLeadN']},material)
-        inventory['balance']=mass_core.balance(inventory['components'],[[-d['suspension_x'],d['suspension_y'],necklace_spec['wear_loop_z_mm']],[d['suspension_x'],d['suspension_y'],necklace_spec['wear_loop_z_mm']]])
+        inventory['balance']=mass_core.balance(inventory['components'],[[-d['suspension_x'],d['suspension_y'],necklace_spec['anchor_z_mm']],[d['suspension_x'],d['suspension_y'],necklace_spec['anchor_z_mm']]])
         if not inventory['mass_estimate']['ceiling_pass']:raise ValueError('Narrow worn upper mass exceeds limit for '+material+': '+str(inventory['mass_estimate']))
         if not inventory['balance']['positive_two_point_support_for_mass_range']:raise ValueError('Narrow conditional CG leaves its two suspension supports')
         variants[material]=inventory
         print('NARROW MASS: '+material+' '+json.dumps(inventory['mass_estimate']),flush=True)
     print_data=prints.native_export(doc,out,p,d)
-    inventory_record={**print_data,**variants['glow'],'products':records,'material_variants':variants,'parameters_for_inventory':p,'suspension_points_mm':[[-d['suspension_x'],d['suspension_y'],necklace_spec['wear_loop_z_mm']],[d['suspension_x'],d['suspension_y'],necklace_spec['wear_loop_z_mm']]],
+    inventory_record={**print_data,**variants['glow'],'products':records,'material_variants':variants,'parameters_for_inventory':p,'suspension_points_mm':[[-d['suspension_x'],d['suspension_y'],necklace_spec['anchor_z_mm']],[d['suspension_x'],d['suspension_y'],necklace_spec['anchor_z_mm']]],
                       'dimensions_mm':{'diameter':p['case_diameter'],'body_depth':d['depth'],
                       'closed_width':max(closed_bounds[o.Name].XMax for o in objects)-min(closed_bounds[o.Name].XMin for o in objects),
                       'closed_height':max(closed_bounds[o.Name].YMax for o in objects)-min(closed_bounds[o.Name].YMin for o in objects),
@@ -695,7 +695,7 @@ def build(out):
     (out/'parts.json').write_text(json.dumps(inventory_record,indent=2,allow_nan=False)+'\n')
     def control_states():
         states={}
-        for name in sorted(control_fixture.PRODUCT_NAMES):
+        for name in sorted(control_fixture.product_names('narrow')):
             original=controls[name];actual=doc.getObject(name).Shape
             states[name]={'generated_valid':original.isValid(),'generated_solids':len(original.Solids),
                 'installed_valid':actual.isValid(),'installed_solids':len(actual.Solids),
@@ -704,9 +704,9 @@ def build(out):
     controls_before=control_states()
     # Validate the products actually stored by add(), not stale factory
     # intermediates. Keep both states for diagnosis.
-    installed_controls={**controls,**{name:doc.getObject(name).Shape for name in control_fixture.PRODUCT_NAMES}}
+    installed_controls={**controls,**{name:doc.getObject(name).Shape for name in control_fixture.product_names('narrow')}}
     print('NARROW CHECK: rear controls before service queries',flush=True)
-    controls_early=control_fixture.native_check(installed_controls,installed)
+    controls_early=control_fixture.native_check(installed_controls,installed,design='narrow')
     print('NARROW CHECK: full installed battery service',flush=True)
     battery_result=battery_access.native_check(access,'narrow',cell_parts,surroundings=cell_fixed)
     negative_cut=next(row for row in loom_proof['cut_list'] if row.get('continuous_existing_part')=='BatteryLeadN')
@@ -717,7 +717,7 @@ def build(out):
         'physical_acceptance':'unmeasured'}
 
     controls_after=control_states()
-    control_result=control_fixture.native_check(installed_controls,installed)
+    control_result=control_fixture.native_check(installed_controls,installed,design='narrow')
     invalid=[obj.Name for obj in objects if not obj.Shape.isValid()]
     if invalid:raise ValueError('Final document geometry became invalid: '+str(invalid))
     for obj in groups['Manufactured'].Group:
@@ -811,9 +811,9 @@ def build(out):
             "closed_depth":inventory_record["dimensions_mm"]["closed_depth"]/1000,
         },
         "suspension": {
-            "anchor_x": (d["suspension_x"]+necklace_fit["frames"][0]["outer_radial_mm"]*math.sin(math.radians(37))) / 1000,
-            "anchor_y": (d["suspension_y"]+necklace_fit["frames"][0]["outer_radial_mm"]*math.cos(math.radians(37))) / 1000,
-            "anchor_z": necklace_fit["frames"][0]["free_span_entry_local_mm"][2]/1000,
+            "anchor_x": abs(necklace_fit["frames"][0]["free_span_entry_mm"][0]) / 1000,
+            "anchor_y": necklace_fit["frames"][0]["free_span_entry_mm"][1] / 1000,
+            "anchor_z": necklace_fit["frames"][0]["free_span_entry_mm"][2]/1000,
         },
         "comparison": {
             "brightness": p["brightness"],

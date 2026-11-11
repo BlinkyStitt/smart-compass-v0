@@ -3,6 +3,9 @@
   "scope": "Narrow reference print poses and removable structural supports. Physical printing, removal, fit and strength remain unmeasured.",
   "orientations": {
     "BatteryContactNFront": {"axis": [0, 1, 0], "angle_deg": -90},
+    "ActionBackplate": {"axis": [1, 0, 0], "angle_deg": 180},
+    "ModeBackplate": {"axis": [1, 0, 0], "angle_deg": 180},
+    "StartBackplate": {"axis": [1, 0, 0], "angle_deg": 180},
     "BatteryDoor": {"axis": [1, 0, 0], "angle_deg": 90},
     "BlackPillDrainBridge": {"axis": [1, 0, 0], "angle_deg": 180},
     "BlackPillSenseBridge": {"axis": [1, 0, 0], "angle_deg": 180},
@@ -11,6 +14,7 @@
   },
   "temporary_support_parts": [
     "BatteryCradle",
+    "BatteryDoor",
     "BlackPillCarrier",
     "ElectronicsShell",
     "HarnessSpliceCarrierAUX_3V3",

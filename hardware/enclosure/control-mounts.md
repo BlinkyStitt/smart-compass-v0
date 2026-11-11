@@ -90,7 +90,8 @@ are not an installed-enclosure or safe-to-wear result.
 ## Retained Mode and Action controls
 
 Use the same direct actuator and bolted clamp stack for START, Mode and
-Action. Each has its own bezel, backplate, two compression collars and two
+Action. Each has its own bezel and a backplate with two integral compression
+bosses. Each uses two
 screw/washer/nut sets. The full control census is 43 products: 13 printed
 parts, 24 ordinary fasteners, three momentary switches, and the DPDT switch
 with its nut and lockwasher. The Mode/Action circuit uses PB13/PB14 and

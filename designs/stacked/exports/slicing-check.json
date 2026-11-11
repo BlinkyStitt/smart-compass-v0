@@ -3,9 +3,9 @@
   "projects": [
     {
       "project": "ActionBackplate.3mf",
-      "source_stl_sha256": "5858037281648dc5cf054030709eb9780f72cfde616258c61e3a55e2f9e0b54b",
-      "layers": 7,
-      "toolpath_mass_g": 0.44,
+      "source_stl_sha256": "d8bbb6f72642653af238fcbb60d53d2d7e63b61ecbdc3f2c2d96ffba0b38d160",
+      "layers": 16,
+      "toolpath_mass_g": 0.59,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -15,24 +15,6 @@
       "source_stl_sha256": "5d125b47c41374a2d372d8137babe84c7d7a02b1a60579aaed7f6933b17f4e14",
       "layers": 21,
       "toolpath_mass_g": 0.41,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "ActionCompression0.3mf",
-      "source_stl_sha256": "89a5f4e1907efde528cb271c14bf245cb49039f04dd61cc314d6126205c94a88",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "ActionCompression1.3mf",
-      "source_stl_sha256": "534b00c2cd7c001ec8d308fa533edbea9358bbdd20813477255c8612702833a0",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -56,24 +38,6 @@
       "physical_acceptance": "unmeasured"
     },
     {
-      "project": "BatteryContactNSpacer0.3mf",
-      "source_stl_sha256": "6e10495bfc17b4daeab4aee46be0de11f374a29ac6dcf210dc1055a0a77a7120",
-      "layers": 12,
-      "toolpath_mass_g": 0.12,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "BatteryContactNSpacer1.3mf",
-      "source_stl_sha256": "bbc669ba1cfac9292773c2afe2a6e3f14f9fb2c42e0c99d19b9d20f980bb9d36",
-      "layers": 12,
-      "toolpath_mass_g": 0.12,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
       "project": "BatteryContactPBack.3mf",
       "source_stl_sha256": "86e038d13a92a3105b925ee2f2a33cd6a0683b5b481ab84f7408d561a0c00814",
       "layers": 9,
@@ -92,57 +56,21 @@
       "physical_acceptance": "unmeasured"
     },
     {
-      "project": "BatteryContactPSpacer0.3mf",
-      "source_stl_sha256": "484a33b720393a8b73c5c895bf60ba9196c9f1a25b962a413beb2a1ebe3d47be",
-      "layers": 12,
-      "toolpath_mass_g": 0.12,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "BatteryContactPSpacer1.3mf",
-      "source_stl_sha256": "f404d5e6ab104534ea41509580c37cb4f4d766cdfa9c7a90a73e5e28c1ea5b7b",
-      "layers": 12,
-      "toolpath_mass_g": 0.12,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
       "project": "BatteryCradle.3mf",
-      "source_stl_sha256": "241546e1c89754c4b8f2f5aa5b944e47ac8aaf186fa90b7eaab40ae6b5856008",
-      "layers": 225,
-      "toolpath_mass_g": 65.73,
+      "source_stl_sha256": "a82a05367f2eb664755800ebff7c8c614d7ca03acfbfdd19ecff7060ebe145b4",
+      "layers": 230,
+      "toolpath_mass_g": 65.48,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
     },
     {
       "project": "BatteryDoor.3mf",
-      "source_stl_sha256": "70f75e097f5f7626a353900d4701ac8d3ae5ae299c24eb2073479c79d8b9737f",
-      "layers": 267,
-      "toolpath_mass_g": 10.45,
+      "source_stl_sha256": "770814037fcc2c17876818c3b62838bb3311067b031f22fd61abf2501785acdb",
+      "layers": 380,
+      "toolpath_mass_g": 12.41,
       "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "BatteryHingeSpacer0.3mf",
-      "source_stl_sha256": "bebeff7f313659dad888146ea01a8e500a43a19f7112e1a53ed4a42bdcaeaca9",
-      "layers": 20,
-      "toolpath_mass_g": 0.19,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "BatteryHingeSpacer1.3mf",
-      "source_stl_sha256": "3f31290664f61da663cd102c8e4a427167ab53e3741453ac52414bb82297b23e",
-      "layers": 4,
-      "toolpath_mass_g": 0.08,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
+      "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
     },
     {
@@ -282,9 +210,9 @@
     },
     {
       "project": "ElectronicsShell.3mf",
-      "source_stl_sha256": "2d85029596d2937c009043ec689aa49c1a388e9b5c26646d126ab04c9f204da5",
-      "layers": 421,
-      "toolpath_mass_g": 195.39,
+      "source_stl_sha256": "feb2f657503e7d63a768132452fa36992403fe3f9937f91f2f6e3d824d5d9caf",
+      "layers": 408,
+      "toolpath_mass_g": 188.14,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
@@ -471,9 +399,9 @@
     },
     {
       "project": "ModeBackplate.3mf",
-      "source_stl_sha256": "fb61361f21dcf3daabf583531fe233e8ab5b9d39335bfb7697af1a910bf0fac8",
-      "layers": 7,
-      "toolpath_mass_g": 0.44,
+      "source_stl_sha256": "0779313722d53856f4c90e18e88f41ca874189919df6ed8f2a752545bc7e1824",
+      "layers": 16,
+      "toolpath_mass_g": 0.59,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -483,24 +411,6 @@
       "source_stl_sha256": "773fb87b257c7f58cac696ba12719155093a02211fcba4f993d36489016fcdd3",
       "layers": 21,
       "toolpath_mass_g": 0.41,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "ModeCompression0.3mf",
-      "source_stl_sha256": "fd28095cbc1cd2de8468b08e69b874b4072430ad4f7048aba1263367f660f178",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "ModeCompression1.3mf",
-      "source_stl_sha256": "34a7349487011380d03b85727dfb19ee511cd44dca9493e5272e31dd0bda76d6",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -543,9 +453,9 @@
     },
     {
       "project": "RearCover.3mf",
-      "source_stl_sha256": "c706d127cf6ace4976b6326e488bd6fba6dcffd56e2272d1f5d78876b986fc1c",
+      "source_stl_sha256": "fb0b006ae70ffc261d1fc7a6c89254531fa47e4b98d252ef27b741bf714c6920",
       "layers": 45,
-      "toolpath_mass_g": 48.21,
+      "toolpath_mass_g": 46.55,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -570,9 +480,9 @@
     },
     {
       "project": "StartBackplate.3mf",
-      "source_stl_sha256": "67555ef48560d6a7531bf31de588ba86081d4c2c58fa0d8b2760ffdea21e9e99",
-      "layers": 7,
-      "toolpath_mass_g": 0.44,
+      "source_stl_sha256": "10b71cdaf6e201387c9afcae696c571c2da0cefc91404efea94b81af2b3ccc39",
+      "layers": 16,
+      "toolpath_mass_g": 0.59,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -582,24 +492,6 @@
       "source_stl_sha256": "7d400e70faf8c2cc5ae9a779977ca861c9f9d840ddd4f978fc35e4b83db26e03",
       "layers": 21,
       "toolpath_mass_g": 0.41,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "StartCompression0.3mf",
-      "source_stl_sha256": "238e348e71bb1daf129359ba5bed1d141b5a9c34f465d78b5d4468ca5c99d17d",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
-      "material": "glow",
-      "temporary_support_toolpaths": false,
-      "physical_acceptance": "unmeasured"
-    },
-    {
-      "project": "StartCompression1.3mf",
-      "source_stl_sha256": "46a147c1f22d0bf7990c7f468641a1783453c53198d1ca13775f4758b7a0a057",
-      "layers": 8,
-      "toolpath_mass_g": 0.1,
       "material": "glow",
       "temporary_support_toolpaths": false,
       "physical_acceptance": "unmeasured"
@@ -660,20 +552,20 @@
     },
     {
       "project": "FitBatteryDoor.3mf",
-      "source_stl_sha256": "70f75e097f5f7626a353900d4701ac8d3ae5ae299c24eb2073479c79d8b9737f",
-      "layers": 267,
-      "toolpath_mass_g": 10.45,
+      "source_stl_sha256": "770814037fcc2c17876818c3b62838bb3311067b031f22fd61abf2501785acdb",
+      "layers": 380,
+      "toolpath_mass_g": 12.41,
       "material": "glow",
-      "temporary_support_toolpaths": false,
+      "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
     },
     {
-      "project": "FitBatteryHingeSpacer0.3mf",
-      "source_stl_sha256": "bebeff7f313659dad888146ea01a8e500a43a19f7112e1a53ed4a42bdcaeaca9",
-      "layers": 20,
-      "toolpath_mass_g": 0.19,
+      "project": "FitBatteryCradle.3mf",
+      "source_stl_sha256": "a82a05367f2eb664755800ebff7c8c614d7ca03acfbfdd19ecff7060ebe145b4",
+      "layers": 230,
+      "toolpath_mass_g": 65.48,
       "material": "glow",
-      "temporary_support_toolpaths": false,
+      "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
     },
     {
@@ -732,18 +624,18 @@
     },
     {
       "project": "FitSuspensionLeft.3mf",
-      "source_stl_sha256": "8b286e412d9afa4b6dfe5ecf912ff0ad66f9d5880be1444980704d300ee43f53",
+      "source_stl_sha256": "97a271565eee3bad639eccdd7218c1fe4887d12495865208cc5b5e7f1f01897d",
       "layers": 108,
-      "toolpath_mass_g": 4.48,
+      "toolpath_mass_g": 4.47,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"
     },
     {
       "project": "FitSuspensionRight.3mf",
-      "source_stl_sha256": "e30a338e8612a5d0774d70bdf42119992c937573abbd20720016731e10612c85",
+      "source_stl_sha256": "a64822a4ad2c31c2113287dd617750bcd06d51f44b76c17923c1823fefdaff75",
       "layers": 108,
-      "toolpath_mass_g": 4.55,
+      "toolpath_mass_g": 4.53,
       "material": "glow",
       "temporary_support_toolpaths": true,
       "physical_acceptance": "unmeasured"

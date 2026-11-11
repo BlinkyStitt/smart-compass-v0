@@ -1,7 +1,7 @@
 {
-  "revision": "narrow-fixed-loom-2",
-  "scope": "Selected full narrow wire paths; independent installed finish/source/service check required by native build",
-  "definition_sha256": "400a438df93d93d3672e8266677ef32b79705ae018b7525bc917d74ade182183",
+  "revision": "narrow-fixed-loom-3",
+  "scope": "Selected full narrow wire paths; independent installed finish/source/service check required by native build; inward-ring joint approaches follow the2mm mirror stack",
+  "definition_sha256": "423ea828aeb0f2dc389e1cd9bacaa2861666f5aff784f174b663b56f72d8ee3d",
   "routes": {
     "W001": {
       "id": "W001",
@@ -2556,13 +2556,13 @@
         [
           -0.8,
           94.85,
-          49.60000000000001
+          48.60000000000001
         ]
       ],
       "bend_radius_target_mm": 4.1148,
-      "insulated_length_mm": 263.3891272549564,
-      "finished_cut_target_mm": 271.43224915808406,
-      "blank_cut_target_mm": 291.43224915808406,
+      "insulated_length_mm": 262.3891272549564,
+      "finished_cut_target_mm": 270.43224915808406,
+      "blank_cut_target_mm": 290.43224915808406,
       "physical_acceptance": "unmeasured"
     },
     "W032": {
@@ -3521,13 +3521,13 @@
         [
           0,
           96.1,
-          48.400000000000006
+          47.400000000000006
         ]
       ],
       "bend_radius_target_mm": 2.5908,
-      "insulated_length_mm": 168.7607270196513,
-      "finished_cut_target_mm": 177.653848922779,
-      "blank_cut_target_mm": 197.653848922779,
+      "insulated_length_mm": 167.7607270196513,
+      "finished_cut_target_mm": 176.653848922779,
+      "blank_cut_target_mm": 196.653848922779,
       "physical_acceptance": "unmeasured"
     },
     "W042": {
@@ -4198,13 +4198,13 @@
         [
           0.8,
           94.85,
-          47.2
+          46.2
         ]
       ],
       "bend_radius_target_mm": 4.1148,
-      "insulated_length_mm": 291.7684320063806,
-      "finished_cut_target_mm": 301.41155390950826,
-      "blank_cut_target_mm": 321.41155390950826,
+      "insulated_length_mm": 290.7684320063806,
+      "finished_cut_target_mm": 300.41155390950826,
+      "blank_cut_target_mm": 320.41155390950826,
       "physical_acceptance": "unmeasured"
     },
     "W049": {
@@ -7592,7 +7592,7 @@
       "points_mm": [
         [
           -19.404500335693374,
-          -6.506499603271499,
+          -6.5064996032715,
           10.4
         ],
         [
@@ -7707,7 +7707,7 @@
         ],
         [
           -55.88,
-          31.58,
+          31.580000000000002,
           11.4
         ]
       ],
