@@ -1,0 +1,17 @@
+import os
+from pathlib import Path
+import sys
+import traceback
+
+sys.path.insert(0, os.environ["COMPASS_CARRIER_SOURCE"])
+destination = Path(os.environ["COMPASS_CARRIER_OUTPUT"])
+try:
+    import native
+    native.Gui = Gui
+    native.build(destination)
+    print("CARRIER MECHANICAL FIT PASS", flush=True)
+except Exception:
+    (destination / "error.log").write_text(traceback.format_exc())
+    print(traceback.format_exc(), flush=True)
+finally:
+    Gui.getMainWindow().close()
