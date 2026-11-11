@@ -33,6 +33,29 @@ The socket reference is the [Mill-Max 315/415 and 335/435 mated stack](https://w
 The drawings give 3.94 mm between the boards. Check supplied hole sizes,
 soldered pin insertion, and module retention on the physical gauge.
 
+## Harness slack and assembly
+
+The fit report lists the installed slack allowance for each of the 13 off-board
+cables. Allow 20–25 mm on local leads and 40 mm on the four LED cables that cross
+to the front. These lengths stay in the finished harness. Measure the route
+between the actual connector exits with its ordinary bends, then add the
+service allowance and the wire inside each connector. Make the first cables
+against the fitted hardware before setting the final cut list.
+
+Lift the rear cover straight back and support it about 30 mm off the case. The LED leads
+have a further 10 mm of handling allowance to reach their plugs. Unplug those
+leads before taking the cover away. Keep some play at each connector and
+support the lead near its exit. Lay the excess into the blue service-fold
+spaces in the CAD as separate flat U-bends. Keep the wires free to slide against
+each other through the turn and use a removable soft tie to keep each fold in
+its space. Keep the door, cover rim, screw seats, and LED board clear.
+
+The slots use the largest specified individual wire diameter for each cable
+and at least three times that diameter for the wire centreline bend radius. Use the
+larger bend radius if the selected cable or connector requires one. Check the
+actual lead exits and the opened and closed assembly with the first set of
+cables. [Wire support and bend-radius reference](https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf)
+
 ## Build a fit sample
 
 From the repository root, set the destination to a new output folder on the

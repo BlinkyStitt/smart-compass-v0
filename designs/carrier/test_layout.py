@@ -5,6 +5,7 @@ import unittest
 
 from layout import DOCK_HEADERS, read_layout, schedule
 from pcb_placement import pcb_coordinates, pcb_text
+from service_slack import plan as service_slack_plan
 
 
 class LayoutTests(unittest.TestCase):
@@ -31,6 +32,17 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(terminals["SPARKLE", "JP3.1"], "GND")
         self.assertEqual(terminals["SPARKLE", "X7.PWR"], "LOAD_5V")
         self.assertEqual(terminals["SPARKLE", "JP1.9"], "LED_DISTRIBUTION")
+
+    def test_service_folds_cover_every_wire_and_store_the_opening_reserve(self):
+        service = service_slack_plan(self.spec)
+        runs = service["runs"]
+        self.assertEqual(len(runs), 13)
+        self.assertEqual(sum(run["conductors"] for run in runs), 36)
+        pixels = [run for run in runs if run["group"] == "pixels"]
+        self.assertEqual(len(pixels), 4)
+        reserve = service["supported_cover_opening_mm"] + service["plug_handling_reserve_mm"]
+        self.assertTrue(all(run["minimum_slack_mm"] >= reserve for run in pixels))
+        self.assertGreater(service["added_wire_mass_allowance_g"], 0)
 
     def test_board_keeps_the_cad_datum_and_pin_spacing(self):
         self.assertEqual(pcb_coordinates(-12, 40), (88, 60))

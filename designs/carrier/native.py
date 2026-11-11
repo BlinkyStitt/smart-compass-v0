@@ -19,6 +19,7 @@ from led_retention import board_washers
 from pcb_placement import CARRIER_MOUNT_DRILL_MM, SOCKET_DRILL_MM, pcb_text
 import rear_cover
 import sparkle_mount
+from service_slack import plan as service_slack_plan
 
 Vector = App.Vector
 Z_AXIS = Vector(0, 0, 1)
@@ -180,8 +181,14 @@ def model(baseline, spec):
                                           if name != "SPARKLE"}))
     for a, b in itertools.combinations(module_shapes, 2):
         overlaps.extend(intersections({a: module_shapes[a]}, {b: module_shapes[b]}))
+    slack = {row["name"] + "ServiceFold": box(row["storage_bounds_mm"])
+             for row in service_slack_plan(spec)["runs"]}
+    overlaps.extend(intersections(slack, {**products, **fixed}))
+    for a, b in itertools.combinations(slack, 2):
+        overlaps.extend(intersections({a: slack[a]}, {b: slack[b]}))
     if overlaps:
         raise ValueError("Carrier floorplan collisions: " + json.dumps(overlaps))
+    products.update(slack)
 
     for name, shape in products.items():
         if shape.BoundBox.ZMax > 30:
@@ -215,6 +222,7 @@ def mass_budget(board, rear, spec):
     copper = board.Volume / spec["board_thickness_mm"] * 4 * .035 * 8.96 / 1000
     panel_delta = rear.Volume * 1.27 / 1000 - mass("RearCover")
     removed_mass = sum(mass(name) for name in sorted(removed | loom))
+    slack_mass = service_slack_plan(spec)["added_wire_mass_allowance_g"]
     return {
         "baseline_worn_g": inventory["mass_estimate"]["total_worn"]["nominal_g"],
         "retained_baseline_prints": len(retained),
@@ -223,8 +231,9 @@ def mass_budget(board, rear, spec):
         "carrier_laminate_g": substrate,
         "carrier_copper_allowance_g": copper,
         "rear_panel_change_g": panel_delta,
+        "service_slack_wire_allowance_g": slack_mass,
         "break_even_allowance_for_new_harness_hardware_and_parts_g":
-            removed_mass - substrate - copper - panel_delta,
+            removed_mass - substrate - copper - panel_delta - slack_mass,
     }
 
 
@@ -244,8 +253,11 @@ def build(destination):
         try:
             items = []
             for name, shape in products.items():
-                transparency = 70 if name.endswith("Exit") or name.endswith("Button") else 0
-                items.append(add_part(doc, name, shape, (.22, .56, .36), transparency))
+                if name.endswith("ServiceFold"):
+                    items.append(add_part(doc, name, shape, (.20, .57, .82), 75))
+                else:
+                    transparency = 70 if name.endswith(("Exit", "Button")) else 0
+                    items.append(add_part(doc, name, shape, (.22, .56, .36), transparency))
             for name, shape in washers.items():
                 items.append(add_part(doc, name, shape, (.8, .8, .68)))
             for name in ("CarrierRearPanel", "BatteryCradle", "BatteryDoor", "ElectronicsShell", "FibonacciPCB"):
@@ -273,6 +285,7 @@ def build(destination):
                 "mass_budget": mass_budget(gauge, rear, spec),
                 "module_top_z_mm": {name: shape.BoundBox.ZMax for name, shape in products.items()},
                 "carrier_loom_conductors_target": sum(spec["external_harnesses"].values()),
+                "service_slack": service_slack_plan(spec),
                 "socket_pin_positions": sum(row["connection"] == "dock socket" for row in ports),
                 "closed_collisions": [],
                 "led_washer_minimum_nominal_bearing_mm2": min(washer_bearing),
