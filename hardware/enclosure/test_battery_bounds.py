@@ -23,7 +23,7 @@ class Shape:
 class ClosedBoundsTests(unittest.TestCase):
     def test_display_bounds_cannot_hide_closed_component_collision(self):
         shapes={name:Shape(name,box(100+10*i,101+10*i),box(100+10*i,101+10*i))
-                for i,name in enumerate(sorted(subject.PART_NAMES))}
+                for i,name in enumerate(sorted(subject.part_names('narrow')))}
         shapes['BatteryCell']=Shape('BatteryCell',box(0,1),box(0,1))
         shapes['BatteryCradle']=Shape('BatteryCradle',box(2,3),box(.9,1.9))
         shapes['rear_interface']=Shape('rear_interface',box(10000,10001),box(10000,10001))

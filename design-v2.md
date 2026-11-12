@@ -69,13 +69,13 @@ It includes one protected XTAR21700 6000mAh button-top cell and the complete sew
 Masses use published component data, net CAD volumes, full installed wire cuts and stated engineering allowances.
 Physical fit, strength, heat, electrical recovery and worn mass remain unmeasured.
 
-Body: 200mm diameter x 60.6mm depth. Fitted assembly pose: 200 x 204.004 x 80.6mm (width x height x depth). The free neck span has no rigid envelope.
+Body: 200mm diameter x 58.6mm depth. Fitted assembly pose: 200 x 215.293 x 78.6mm (width x height x depth). The free neck span has no rigid envelope.
 [Raw census, accounting owners and bounds](designs/stacked/exports/parts.json) · [Service and print package](designs/stacked/exports/prototype-service.zip).
 
 | Ring material | Pendant nominal g | Necklace nominal g | Total worn nominal g | Worn low–high g | Margin to2.5lb g | Separate50g target |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| glow | 891.330 | 4.611 | 895.941 | 668.671–1128.310 | 5.671 | not met |
-| silver | 884.312 | 4.611 | 888.923 | 663.759–1120.730 | 13.251 | not met |
+| glow | 815.101 | 3.979 | 819.080 | 601.791–1043.925 | 90.056 | met |
+| silver | 808.083 | 3.979 | 812.062 | 596.879–1036.346 | 97.635 | met |
 
 The raw limit is1133.980925g. Raw arithmetic determines acceptance; display rounding does not.
 Low/high allowances are added independently. They are not confidence intervals or guaranteed physical assembly bounds.
@@ -104,10 +104,8 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | C&K PTS645SL70-2 | 1 | 1 | 0.5–3 | Existing component-inventory.json#buttons allowance per fitted switch |
 | C&K PTS645SL70-2 | 1 | 1 | 0.5–3 | Existing component-inventory.json#buttons allowance per fitted switch |
 | C&K PTS645SL70-2 | 1 | 1 | 0.5–3 | Existing component-inventory.json#buttons allowance per fitted switch |
-| ActionBackplate | 1 | 0.358919 | 0.251243–0.387633 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| ActionBackplate | 1 | 0.460037 | 0.322026–0.49684 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | ActionBezel | 1 | 0.30666 | 0.214662–0.331193 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ActionCompression0 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ActionCompression1 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | ActionMountNut0 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | ActionMountNut1 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 7.95mm | 1 | 0.210648 | 0.136921–0.315972 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
@@ -120,20 +118,16 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | SSCF-M2-8-TI5; finished under-head target 7.2mm | 1 | 0.200234 | 0.130152–0.300351 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
 | GuardMountWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | GuardMountWasher1 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| ModeBackplate | 1 | 0.358919 | 0.251243–0.387633 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| ModeBackplate | 1 | 0.460037 | 0.322026–0.49684 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | ModeBezel | 1 | 0.30666 | 0.214662–0.331193 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ModeCompression0 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ModeCompression1 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | ModeMountNut0 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | ModeMountNut1 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 7.95mm | 1 | 0.210648 | 0.136921–0.315972 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
 | SSCF-M2-8-TI5; finished under-head target 7.95mm | 1 | 0.210648 | 0.136921–0.315972 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
 | ModeMountWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | ModeMountWasher1 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| StartBackplate | 1 | 0.358919 | 0.251243–0.387633 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| StartBackplate | 1 | 0.460037 | 0.322026–0.49684 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | StartBezel | 1 | 0.30666 | 0.214662–0.331193 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| StartCompression0 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| StartCompression1 | 1 | 0.050559 | 0.0353913–0.0546038 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | StartMountNut0 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | StartMountNut1 | 1 | 0.127096 | 0.0826125–0.190644 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 7.95mm | 1 | 0.210648 | 0.136921–0.315972 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
@@ -161,8 +155,6 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | SSCF-M2-16-TI5; finished under-head target 13.0mm | 1 | 0.280772 | 0.182502–0.421158 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-16-datasheet.pdf |
 | BatteryContactNShim0 | 1 | 0.00831265 | 0.00581886–0.012469 | Selected polyester shim; nominal CAD volume x1.4g/cm3 with engineering70..150% allowance |
 | BatteryContactNShim1 | 1 | 0.00831265 | 0.00581886–0.012469 | Selected polyester shim; nominal CAD volume x1.4g/cm3 with engineering70..150% allowance |
-| BatteryContactNSpacer0 | 1 | 0.0720716 | 0.0504501–0.0778373 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| BatteryContactNSpacer1 | 1 | 0.0720716 | 0.0504501–0.0778373 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BatteryContactNWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryContactNWasher1 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryContactPBack | 1 | 1.44707 | 1.01295–1.56283 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
@@ -173,16 +165,12 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | SSCF-M2-16-TI5; finished under-head target 13.0mm | 1 | 0.280772 | 0.182502–0.421158 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-16-datasheet.pdf |
 | BatteryContactPShim0 | 1 | 0.00831265 | 0.00581886–0.012469 | Selected polyester shim; nominal CAD volume x1.4g/cm3 with engineering70..150% allowance |
 | BatteryContactPShim1 | 1 | 0.00831265 | 0.00581886–0.012469 | Selected polyester shim; nominal CAD volume x1.4g/cm3 with engineering70..150% allowance |
-| BatteryContactPSpacer0 | 1 | 0.0720716 | 0.0504501–0.0778373 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| BatteryContactPSpacer1 | 1 | 0.0720716 | 0.0504501–0.0778373 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BatteryContactPWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryContactPWasher1 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| BatteryCradle | 1 | 31.2314 | 21.862–33.73 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| BatteryDoor | 1 | 10.4847 | 7.33931–11.3235 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| BatteryCradle | 1 | 31.0306 | 21.7214–33.513 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| BatteryDoor | 1 | 9.43179 | 6.60225–10.1863 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BatteryHingeNut | 1 | 0.344215 | 0.22374–0.516322 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryHingePin | 1 | 5.97973 | 3.88682–8.96959 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| BatteryHingeSpacer0 | 1 | 0.141838 | 0.0992867–0.153185 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| BatteryHingeSpacer1 | 1 | 0.0269313 | 0.0188519–0.0290858 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BatteryHingeWasher0 | 1 | 0.132271 | 0.0859759–0.198406 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryHingeWasher1 | 1 | 0.132271 | 0.0859759–0.198406 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | BatteryKeeper | 1 | 0.402528 | 0.28177–0.434731 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
@@ -209,8 +197,8 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | ZS755M3X6; finished under-head target 6.0mm | 1 | 0.502494 | 0.326621–0.753741 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/ampg.pdf |
 | RearWasher5 | 1 | 0.132271 | 0.0859759–0.198406 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | RearNut5 | 1 | 0.36268 | 0.235742–0.54402 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
-| RearCover | 1 | 47.2746 | 33.0923–51.0566 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ElectronicsShell | 1 | 118.756 | 83.1293–128.257 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| RearCover | 1 | 45.7292 | 32.0105–49.3876 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| ElectronicsShell | 1 | 111.162 | 77.8131–120.054 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardEdgeClip0 | 1 | 0.0490708 | 0.0343495–0.0529964 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardClipWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 8.0mm | 1 | 0.211342 | 0.137373–0.317014 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
@@ -239,8 +227,8 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | SideDiffuser | 1 | 37.3221 | 26.1255–40.3079 | CAD net solid volume x1.5g/cm3; existing material allowances; actual part mass unmeasured |
 | InnerDiffuser | 1 | 12.8068 | 8.96477–13.8314 | CAD net solid volume x1.5g/cm3; existing material allowances; actual part mass unmeasured |
 | EGLStencil | 1 | 8.18447 | 5.72913–8.83923 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| RearCouplingMirror | 1 | 98.0486 | 88.2437–107.853 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
-| FrontMirror | 1 | 98.0486 | 88.2437–107.853 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
+| RearCouplingMirror | 1 | 65.3657 | 58.8291–71.9023 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
+| FrontMirror | 1 | 65.3657 | 58.8291–71.9023 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
 | LatchCarrier | 1 | 2.97761 | 2.08433–3.21582 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | LatchClamp0 | 1 | 0.045471 | 0.0318297–0.0491086 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | LatchClamp1 | 1 | 0.045471 | 0.0318297–0.0491086 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
@@ -461,7 +449,7 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | M22759/16-22-2 | 1 | 0.30372 | 0.212604–0.45558 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.618773 | 0.433141–0.928159 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.175167 | 0.122617–0.262751 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/16-22-2 | 1 | 1.4223 | 0.995613–2.13346 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/16-22-2 | 1 | 1.41706 | 0.991945–2.1256 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.892413 | 0.624689–1.33862 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.773066 | 0.541146–1.1596 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.363223 | 0.254256–0.544834 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
@@ -471,14 +459,14 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | M22759/16-22-2 | 1 | 0.530248 | 0.371174–0.795372 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.629891 | 0.440924–0.944836 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.48291 | 0.338037–0.724365 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/18-26-9 | 1 | 0.401498 | 0.281048–0.602247 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/18-26-9 | 1 | 0.399238 | 0.279466–0.598857 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.428552 | 0.299987–0.642829 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.468977 | 0.328284–0.703465 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-18-0 | 1 | 2.19191 | 1.53433–3.28786 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.736086 | 0.51526–1.10413 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.642602 | 0.449821–0.963902 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.763162 | 0.534214–1.14474 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/16-22-0 | 1 | 1.5794 | 1.10558–2.36909 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/16-22-0 | 1 | 1.57416 | 1.10191–2.36123 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.96638 | 0.676466–1.44957 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-0 | 1 | 0.376567 | 0.263597–0.56485 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-0 | 1 | 0.124166 | 0.086916–0.186249 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
@@ -537,7 +525,7 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | Insulated solder splice SPI_MOSI | 1 | 0.364 | 0.1798–1.171 | Selected18AWG continuous core cut once plus0.1..1g solder/sleeve allowance per completed splice; actual fabrication unmeasured |
 | Insulated solder splice SPI_MISO | 1 | 0.364 | 0.1798–1.171 | Selected18AWG continuous core cut once plus0.1..1g solder/sleeve allowance per completed splice; actual fabrication unmeasured |
 | Selected100mm insulating pull ribbon | 1 | 0.5 | 0.2–1.5 | Engineering complete fitted ribbon allowance |
-| WayneMills5038 TypeIII Class1A3/8 nylon,1.1m main+2x0.1m wearloops | 1 | 4.11105 | 2.90192–4.83653 | MIL-DTL5038K2016 TableIII maximum0.12oz/yd conditional on conforming stock; includes sewn overlaps |
+| WayneMills5038 TypeIII Class1A3/8 nylon, 1.1 m direct strap | 1 | 3.47858 | 2.45547–4.09245 | MIL-DTL5038K2016 TableIII maximum0.12oz/yd conditional on conforming stock; includes both sewn returns |
 | Bonded nylon sewing thread, completed box-X seams | 1 | 0.5 | 0.2–1 | Engineering installed stitching allowance; seams and wearing unmeasured |
 | Fitted solder,3M5413 joint insulation and labels | 1 | 3 | 1.5–6 | Retained component-inventory wire_finish allowance; splice sleeve/solder allowances above separate; measure finished assembly |
 | Front two-way coating | 1 | 1 | 0.3–3 | Engineering allowance; weigh installed item; retained unresolved allowance, source: hardware/enclosure/exports/front-coating.svg |
@@ -1714,11 +1702,14 @@ outside rows give466pixels. The outside rows form one140LED side chain. This
 hardware delivery does not implement or qualify a new firmware display profile.
 The existing protocol and software plans remain separate from physical acceptance.
 
-The default14mm mirror gap and3mm optical sheets remain. The PCB moves toZ31mm;
-the cradle roof atZ26.5 leaves4.5mm of loom space. The body is60.6mm deep. Generated
-CAD/STEP/GLB, source census and drawings own complete closed/service projections.
-Opaque case material is reduced; mirror coefficients, original stencil, whole
-circles,2mm outside diffuser, patterns and night-glare repair are preserved.
+The mirror gap is 14 mm. The optical sheets are 2 mm thick. The PCB is at
+Z31 mm. The cradle roof at Z26.5 mm leaves 4.5 mm for the loom. Use the
+generated inventory and drawings for the closed and service dimensions.
+
+The cradle integrates the contact and hinge spacers. The switch backplates
+integrate their compression sleeves. The strap passes directly through the
+shell eyelets and uses two sewn returns. The outer ring has a continuous
+surface. The printed case and battery panels use thinner walls and ribs.
 
 Support the pendant, put S1 fully OFF and remove external power before opening.
 Hold the cell, open the captive door, release its keeper and extract with the

@@ -18,13 +18,13 @@ def source_parts():
     """The selected narrow manufactured census, independently of exports."""
     import battery_access,control_fixture,latch_mount,blackpill_mount,radio_mount,branch_fuses,harness_plan,end_supports
     names={'RearCover','ElectronicsShell','FrontBezel','SideDiffuser','InnerDiffuser','EGLStencil','CapacitorCover',*('BoardEdgeClip'+str(i) for i in range(3))}
-    names.update(end_supports.PRINTED_PARTS|battery_access.PRINTED_PARTS|control_fixture.PRINTED_PARTS|latch_mount.PRINTED_PARTS|blackpill_mount.PRINTED_PARTS|radio_mount.PRINTED_PARTS|branch_fuses.PRINTED_PARTS)
+    names.update(end_supports.PRINTED_PARTS|battery_access.printed_parts('narrow')|control_fixture.printed_parts('narrow')|latch_mount.PRINTED_PARTS|blackpill_mount.PRINTED_PARTS|radio_mount.PRINTED_PARTS|branch_fuses.PRINTED_PARTS)
     names.update('HarnessSpliceCarrier'+name for name in harness_plan.HUBS)
     return frozenset(names)
 
 
 def sample_parts():
-    return {'Fit'+name:name for name in ['BatteryContactPFront','BatteryContactPBack','BatteryContactNFront','BatteryContactNBack','BatteryKeeper','BatteryDoor','BatteryHingeSpacer0','BoardEdgeClip0','LatchCarrier','StartBezel','HarnessSpliceCarrierGND','HarnessSpliceCarrierSENSE','BoostInputRelief']} | {'FitSuspensionLeft':'ElectronicsShell','FitSuspensionRight':'ElectronicsShell','FitBoardEdgeSeat':'ElectronicsShell',**{'Fit'+name:name for name in RINGS}}
+    return {'Fit'+name:name for name in ['BatteryContactPFront','BatteryContactPBack','BatteryContactNFront','BatteryContactNBack','BatteryKeeper','BatteryDoor','BatteryCradle','BoardEdgeClip0','LatchCarrier','StartBezel','HarnessSpliceCarrierGND','HarnessSpliceCarrierSENSE','BoostInputRelief']} | {'FitSuspensionLeft':'ElectronicsShell','FitSuspensionRight':'ElectronicsShell','FitBoardEdgeSeat':'ElectronicsShell',**{'Fit'+name:name for name in RINGS}}
 
 
 def print_layout(path=None):
@@ -130,7 +130,7 @@ def native_export(doc,out,p,d):
     for name,shape in sorted(manufactured.items()):write(name,name,shape)
     # Whole small interface parts are exact disposable first prints. They are
     # not additional installed products or a second copy in worn mass.
-    for parent in ['BatteryContactPFront','BatteryContactPBack','BatteryContactNFront','BatteryContactNBack','BatteryKeeper','BatteryDoor','BatteryHingeSpacer0','BoardEdgeClip0','LatchCarrier','StartBezel','HarnessSpliceCarrierGND','HarnessSpliceCarrierSENSE','BoostInputRelief']:
+    for parent in ['BatteryContactPFront','BatteryContactPBack','BatteryContactNFront','BatteryContactNBack','BatteryKeeper','BatteryDoor','BatteryCradle','BoardEdgeClip0','LatchCarrier','StartBezel','HarnessSpliceCarrierGND','HarnessSpliceCarrierSENSE','BoostInputRelief']:
         if parent not in manufactured:raise ValueError('Missing narrow fit interface '+parent)
         write('Fit'+parent,parent,manufactured[parent],True)
     for side,x in [('Left',-d['suspension_x']),('Right',d['suspension_x'])]:

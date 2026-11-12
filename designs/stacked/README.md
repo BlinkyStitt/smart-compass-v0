@@ -28,10 +28,10 @@ viewing is not a completion gate.
 
 This is the selected enclosure. The original250mm design remains an inactive
 archive in `hardware/enclosure`; it is not a build dependency. The narrow body
-is200mm wide and60.6mm deep. Complete closed projections and the continuous
+is200mm wide and58.6mm deep. Complete closed projections and the continuous
 service envelope come from [the generated census](exports/parts.json). It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,
-a 3 mm coated black LED acrylic rear mirror, a full-face 14 mm mirror cavity,
+a 2 mm coated black LED acrylic rear mirror, a full-face 14 mm mirror cavity,
 a 70-LED inward ring,
 and two 70-LED outside strips behind one continuous 20 mm side diffuser. The GPS footprint rotates 90 degrees; all
 component envelopes keep their original dimensions.
@@ -47,13 +47,13 @@ into the cavity and reflects returning light. Both coatings face the cavity.
 The inward ring has 6.17 mm nominal clearance from the full 166 mm source.
 Both mirror sheets are 187 mm in diameter; the front opening is 179 mm.
 The strip loops move outward by 5.31 mm from the 190 mm design. The optical envelope stays unchanged. The opaque carrier and upper frame use
-1.5mm walls, full mounting lands and a ribbed0.8mm rear skin. Native checks retain
+full mounting lands and a ribbed0.8mm rear skin. Native checks retain
 the mirror bearing faces and every module mounting interface. Print strength
 and supplied fit remain unmeasured. The original board sits atZ31mm; selected
 source module fixtures set the actual component positions.
 The 20 mm side band spans Z=14 to 34 mm. Its two 10 mm strips sit side by side
 across the case depth, with LED rows at Z=19 and 29 mm. The case stays
-200mm wide and60.6mm deep. One side-band switch controls both rows; the
+200mm wide and58.6mm deep. One side-band switch controls both rows; the
 preview blends their emitted light through the full sleeve and blends stored
 afterglow without tripling it. The outside sleeve has its own broad axial scatter
 profile; the inner mirror ring keeps its narrow profile. The outside model
@@ -63,7 +63,7 @@ unmeasured material assumption, not a prediction for the printed sleeve.
 The outside rows form one 140-LED side chain. The CAD keeps the board clips
 inside that chain; actual jumper routing and fastening still need physical checks.
 The rear body ring, side diffuser, front barrel and bezel share one 100mm outer
-radius. The structural outer walls are1.5mm thick, reducing to1mm across the
+radius. The structural outer walls are 1.35 mm thick, reducing to1mm across the
 hollow cavity section. A separate1mm inner wall keeps the inward LED strip's
 original backing radius. Both walls join the full mirror collars and nut-pocket
 floors above and below that section. The inner mirror supports,
@@ -73,8 +73,19 @@ accessible. Controls and textile attachments retain their functional projections
 Native checks require a continuous outer skin apart from the declared nut
 passages before the fitted cable and strap channels are cut. They also reject
 new opaque material inside the glow band. The actual fitted assembly then passes
-the complete collision, cable, bearing and service checks. Printed strength and
-physical fit remain unmeasured.
+the complete collision, cable, bearing and service checks. The rear ribs are 2.25 mm wide, with the full mounting islands and outer rim retained.
+The battery cradle keeps its 1.35 mm side walls, contact supports, four mounting
+flanges, hinge and latch. Four shallow roof pockets retain a continuous 1 mm
+insulating skin, full edges and 3 mm cross ribs. The door pockets retain 1.35 mm
+skin and full hinge/latch ends. Printed strength and physical fit remain unmeasured.
+
+Both mirror sheets now use a 2 mm fabrication target. Each retains its continuous
+edge seat. The 14 mm optical cavity, original source board and stencil remain.
+The front 2 mm sheet is commercially available, but its finished coating split
+needs confirmation. The coated black rear sheet is a custom fabrication target.
+The retained 70/30 front and 70/9 rear optical values are simulation assumptions
+for these thin sheets. They do not establish supplier tolerances or thin-sheet
+flatness. Inspect reflection distortion and clamping on a physical sample.
 
 ## Build and view
 
@@ -144,7 +155,7 @@ do not establish brightness, runtime, insulation, strength or wearing safety.
 
 The outer clear acrylic mirror uses nominal 70% reflection and 30% transmission
 from [Two Way Mirrors](https://www.twowaymirrors.com/acrylic/). The inner mirror
-combines the black cover and rear mirror in one 3 mm nominal sheet. Its coating
+combines the black cover and rear mirror in one 2 mm nominal sheet. Its coating
 faces the cavity. No separate clear rear mirror or black filter remains.
 
 The coated black sheet uses an **engineering estimate**, requested by Bryan:
@@ -159,7 +170,7 @@ no published measurement establishes the custom coated black sheet.
 The first cell image passes both mirrors: 0.09 × 0.30 = 2.7% before other losses.
 The black-mirror value already includes substrate absorption; applying 29%
 again would count it twice. The inner ring bypasses the black substrate. The
-source brightness stays fixed. The case is 200mm wide and60.6mm deep, with
+source brightness stays fixed. The case is 200mm wide and58.6mm deep, with
 1 mm between the original stencil and coated black sheet. The default mirror gap is 14 mm. The continuous outside band is 20 mm.
 
 A mirror coating does not diffuse the LEDs. Scattering remains a qualitative
@@ -179,7 +190,7 @@ the exact source contours and volume, including the open perimeter cells.
 Set `mirror_gap` in `parameters.json` in millimetres, then rebuild. The front
 mirror, cavity, frame, bezel and total body depth follow that value. The board
 and electronics do not move when you change the gap. With the PCB atZ31,
-12,14,16 and20mm gaps give58.6,60.6,62.6 and66.6mm body depths.
+12, 14, 16 and 20 mm gaps give 56.6, 58.6, 60.6 and 64.6 mm body depths.
 The default 14 mm allows 2 mm clearance at each side of the 10 mm inner strip.
 A 20 mm gap is an appearance choice, not an optical optimum proven by data.
 
@@ -246,7 +257,7 @@ specified narrow START-wire passage before physical acceptance.
 ## Cell service and mass
 
 The [print layout](print-layout.json) selects the bed poses and temporary
-build-plate supports for seven structural parts and their samples. Both optical
+build-plate supports for the specified structural parts and their samples. Both optical
 rings and their samples stay upright without supports. The delivered projects
 must retain the source mesh and settings and slice without warnings. Their
 toolpaths must include supports exactly where the selected profile requires them.
@@ -275,11 +286,13 @@ upper limit is1133.980925g; the separate50g margin is a target. No component or
 finished worn mass is physically measured. Brims, samples, stock, spares and
 charger are excluded. Do not install both alternative ring materials.
 
-The selected necklace uses one1,100mm main tape and two100mm folded wear
-loops. The actual attachment returns and sewn overlap regions remain fitted
-for battery access. Use the stock and four301 box-X seams in
-[`necklace.json`](../../hardware/enclosure/necklace.json). The loose neck span
-has no fixed rigid envelope. Keep it above the supported pendant during service.
+Use one 1,100 mm tape. Thread each folded end directly through its rounded
+shell eyelet and sew it back to itself. There are two sewn returns and no
+intermediate loops. Use the stock and seam settings in
+[`necklace.json`](../../hardware/enclosure/necklace.json). Print the eyelet
+samples first. Check threading and edge finish, then test seam and anchor
+strength with the pendant supported off-body. Keep the free span clear during
+cell service.
 
 Print `BoostInputRelief` on its flat tangent face with90degree X rotation.
 The print generator applies that orientation. Fit the specified curved1mm

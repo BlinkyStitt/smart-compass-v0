@@ -24,9 +24,9 @@ try:
  def snapshot():return {str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
  before=snapshot();results={}
  for design,diameter,args,options in [('wide',250,((79,-70),(20,-16),(-18,-16),(-47,-16)),{'switch_rotation_deg':90,'guard_mount_offset_mm':13.5}),('narrow',200,((79,-18),(-5,7.5),(-51,-8),(5,-16)),{})]:
-  shapes=control_fixture.native_shapes(*args,**options)
+  shapes=control_fixture.native_shapes(*args,design=design,**options)
   rear=Part.makeCylinder(diameter/2,2).fuse(shapes['rear_addition']).cut(shapes['rear_cutout'])
-  products={name:shapes[name] for name in control_fixture.PRODUCT_NAMES}
+  products={name:shapes[name] for name in control_fixture.product_names(design)}
   products['RearPlate' if design=='wide' else 'RearCover']=rear
   checked=list(products.items())
   for i,(a,sa) in enumerate(checked):
@@ -34,25 +34,27 @@ try:
     if sa.BoundBox.intersect(sb.BoundBox):
      overlap=sa.common(sb).Volume
      if overlap>1e-5:raise ValueError('Control interference: '+design+' '+a+'/'+b+' '+str(overlap))
-  for missing in ('StartMountScrew0','PowerDisconnectNut','StartCompression1','ModeSwitch','ActionBackplate'):
+  missing_parts=('StartMountScrew0','PowerDisconnectNut','ModeSwitch','ActionBackplate')
+  if design=='wide':missing_parts+=('StartCompression1',)
+  for missing in missing_parts:
    broken=dict(shapes);del broken[missing]
-   try:control_fixture.native_check(broken,checked)
+   try:control_fixture.native_check(broken,checked,design=design)
    except ValueError as e:
     if 'component census differs' not in str(e):raise
    else:raise ValueError('Missing rear control component accepted: '+missing)
-  try:control_fixture.native_check({**shapes,'StartSwitch2':shapes['StartSwitch']},checked)
+  try:control_fixture.native_check({**shapes,'StartSwitch2':shapes['StartSwitch']},checked,design=design)
   except ValueError as e:
    if 'component census differs' not in str(e):raise
   else:raise ValueError('Duplicate START component accepted')
   for installed in ([item for item in checked if item[0]!='ModeSwitch'],[*checked,checked[0]]):
-   try:control_fixture.native_check(shapes,installed)
+   try:control_fixture.native_check(shapes,installed,design=design)
    except ValueError as e:
     if 'Installed rear control product census differs' not in str(e):raise
    else:raise ValueError('Incomplete or duplicate installed controls accepted')
-  results[design]=control_fixture.native_check(shapes,checked)
+  results[design]=control_fixture.native_check(shapes,checked,design=design)
   results[design]['volumes_cm3']={name:shape.Volume/1000 for name,shape in checked}
   blocked=[*checked,('ThinFingerObstruction',Part.makeBox(.1,.1,.1,App.Vector(args[1][0]-.05,args[1][1]-.05,-10)))]
-  try:control_fixture.native_check(shapes,blocked)
+  try:control_fixture.native_check(shapes,blocked,design=design)
   except ValueError as e:
    if 'finger approach blocked' not in str(e):raise
   else:raise ValueError('Thin control obstruction accepted')

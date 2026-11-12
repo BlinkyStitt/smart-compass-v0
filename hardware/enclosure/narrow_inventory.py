@@ -86,12 +86,13 @@ def resolve(products,parameters,loom,contact_leads,ring_material=None):
         nominal=core+.25;upper=core*1.5+1
         row('splice_'+name,'Insulated solder splice '+name,['HarnessSplice'+name],nominal,[core*.7+.1,upper],'Selected18AWG continuous core cut once plus0.1..1g solder/sleeve allowance per completed splice; actual fabrication unmeasured')
     row('battery_ribbon','Selected100mm insulating pull ribbon',['BatteryPullRibbon'],.5,[.2,1.5],'Engineering complete fitted ribbon allowance')
-    # The necklace has no separate metal rings/clasp. Two sewn wear loops join
-    # the continuous main strap directly to the two12x4mm rounded case slots.
-    tape_upper=1.3/.9144*.12*28.349523125
-    necklace_parts={name for name in geometry if name.startswith(('NecklaceWearLoop','NecklaceAttachmentReturn'))}
-    if necklace_parts!={'NecklaceWearLoop0','NecklaceWearLoop1','NecklaceAttachmentReturn0','NecklaceAttachmentReturn1'}:raise ValueError('Missing actual necklace attachment products')
-    row('necklace_tape','WayneMills5038 TypeIII Class1A3/8 nylon,1.1m main+2x0.1m wearloops',sorted(necklace_parts),tape_upper*.85,[tape_upper*.6,tape_upper],'MIL-DTL5038K2016 TableIII maximum0.12oz/yd conditional on conforming stock; includes sewn overlaps',group='necklace',centre=[0,0,0])
+    # Count the single stock cut once, including both direct sewn returns.
+    tape = json.loads((HERE/'necklace.json').read_text())['tape']
+    tape_upper = tape['main_cut_target_mm'] / 1000 / .9144 * tape['published_max_mass_oz_yd'] * 28.349523125
+    necklace_parts = {name for name in geometry if name.startswith('Necklace')}
+    if necklace_parts != {'NecklaceAttachmentReturn0','NecklaceAttachmentReturn1'}:
+        raise ValueError('Missing direct necklace returns')
+    row('necklace_tape','WayneMills5038 TypeIII Class1A3/8 nylon, 1.1 m direct strap',sorted(necklace_parts),tape_upper*.85,[tape_upper*.6,tape_upper],'MIL-DTL5038K2016 TableIII maximum0.12oz/yd conditional on conforming stock; includes both sewn returns',group='necklace',centre=[0,0,0])
     row('necklace_thread','Bonded nylon sewing thread, completed box-X seams',[],.5,[.2,1],'Engineering installed stitching allowance; seams and wearing unmeasured',group='necklace',centre=[0,0,0])
     row('joint_finish','Fitted solder,3M5413 joint insulation and labels',[name for name in geometry if name.startswith(('Joint','HarnessJoint','HarnessFinish','SwitchLugBoot'))],3,[1.5,6],'Retained component-inventory wire_finish allowance; splice sleeve/solder allowances above separate; measure finished assembly',centre=[0,0,15])
     legacy=json.loads((HERE/'component-inventory.json').read_text())

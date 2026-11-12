@@ -36,7 +36,7 @@ quality, strain relief and temperatures remain unmeasured.
 Set the unloaded contact-tip gap to **73.9 +/-0.1 mm**. Set the fixed negative
 insulating stop for **1.82 +/-0.05 mm** negative-contact compression. These are
 assembly acceptance targets. They are not achieved print dimensions or vendor
-guarantees. Each clamp has compression tubes and nominal 0.25 mm insulating shim washers.
+guarantees. The narrow cradle has four integral compression bosses and nominal 0.25 mm insulating shim washers. Retain the four removable clamp plates for contact installation and adjustment.
 Replace matched shim stacks to set the actual tip gap, then lock and gauge the
 carriers. Finish/shim the negative bearing face to its specified measured setting.
 These initial setup operations do not occur during ordinary cell replacement.
@@ -73,8 +73,9 @@ The four case mounts use ZS755M3X10 screws at 10 mm, M3 washers and M3 nuts.
 Keep the other selected hinge/keeper hardware and all washers and nuts. Gauge
 the actual stock, finished lengths, threads and full engagement. The case-mount
 clamp stack bears on a 2 mm rear interface without a floating flange. The hinge
-pin has a head and retained nut larger than its bore. Two printed spacers and two M3
-washers limit its nominal axial play to 0.2 mm. The keeper uses a button-head screw
+pin has a head and retained nut larger than its bore. The narrow cradle has integral hinge shoulders. Place the two M3 thrust
+washers under the pin head and retaining nut. The stack retains the nominal
+0.2 mm axial play; gauge the actual assembly. The keeper uses a button-head screw
 and jammed nuts with specified rotational play. These parts remain installed
 during ordinary access. Verify actual hardware, thread retention, clearances
 and compass disturbance before physical acceptance.
@@ -273,3 +274,13 @@ Do not trap a lead when fitting the rear. Fit and inspect the removable cable
 seals. The existing seal allowance remains in worn mass; no dust/water rating
 is established. Inspect insulation, supplied fit and all physical outcomes
 under [the qualification procedure](qualification-plan.md).
+
+## Narrow panel pockets
+
+The narrow cradle retains its 1.35 mm side walls and full contact supports,
+mounting flanges, hinge and latch. Four pockets in the flat roof retain a
+continuous 1 mm insulating skin. The perimeter and 3 mm cross ribs stay full depth.
+The permanent polarity marks stay outside the pockets. Door pockets retain a
+1.35mm continuous skin and full hinge/latch ends. The archived wide geometry
+keeps its original panels. These dimensions reduce calculated solid volume.
+They do not prove impact strength, print bonding, cell retention or fatigue.

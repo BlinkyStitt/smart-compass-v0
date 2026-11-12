@@ -21,6 +21,15 @@ PRODUCT_NAMES=PRINTED_PARTS | HARDWARE_PARTS | {
     'PowerDisconnect','PowerDisconnectNut','PowerDisconnectLockwasher'}
 
 
+def printed_parts(design):
+    return frozenset(name for name in PRINTED_PARTS
+                     if design != 'narrow' or 'Compression' not in name)
+
+
+def product_names(design):
+    return (PRODUCT_NAMES - PRINTED_PARTS) | printed_parts(design)
+
+
 def placement(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2):
     if (any(len(xy)!=2 for xy in (switch_xy,start_xy,mode_xy,action_xy))
             or any(isinstance(v,bool) or not isinstance(v,(float,int)) or not math.isfinite(v)
@@ -37,7 +46,7 @@ def placement(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2):
             'finger_radius_mm':12}
 
 
-def native_shapes(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2, *, switch_rotation_deg=0, guard_mount_offset_mm=6):
+def native_shapes(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2, *, switch_rotation_deg=0, guard_mount_offset_mm=6, design='wide'):
     """Return actual products, rear additions/cuts and service probes.
 
     The guard and three button bezels bolt to full-height panel lands. The direct actuator
@@ -111,7 +120,12 @@ def native_shapes(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2, *, 
             products[prefix+'MountScrew'+str(i)]=cylinder(1,7.95,x,y,-.6).fuse(cylinder(1.9,2,x,y,-2.6))
             products[prefix+'MountWasher'+str(i)]=washer(WASHERS['M2']['od']/2,WASHERS['M2']['id']/2,.35,x,y,5.15)
             products[prefix+'MountNut'+str(i)]=nut('M2',x,y,5.50)
-            products[prefix+'Compression'+str(i)]=washer(3.8,2.6,1.65,x,y,2)
+            if design == 'narrow':
+                # Preserve the existing panel bearing and switch datum.
+                # Overlap the existing backplate cylinder to make one solid.
+                back = back.fuse(washer(3.8,2.6,1.8,x,y,2)).removeSplitter()
+            else:
+                products[prefix+'Compression'+str(i)]=washer(3.8,2.6,1.65,x,y,2)
             rear_lands.append(cylinder(4.5,2,x,y,0))
             cuts=cuts.fuse(cylinder(2.6,4,x,y,-1))
             button_bearing.append((prefix+str(i),washer(3.8,2.6,.05,x,y,1.95)))
@@ -151,18 +165,19 @@ def native_shapes(switch_xy, start_xy, mode_xy, action_xy, rear_thickness=2, *, 
     return {**products,'panel_bearing':bearing,'rear_addition':Part.makeCompound(rear_lands).cut(cuts),'rear_cutout':cuts,
             'finger_probes':probes,'settings':settings}
 
-def native_check(shapes, surroundings):
+def native_check(shapes, surroundings, *, design='wide'):
     from solid_clearance import distance
+    expected = product_names(design)
     actual={name for name in shapes if name.startswith((*BUTTONS,'GuardMount','PowerDisconnect','SwitchGuard'))}
-    if actual!=PRODUCT_NAMES:
+    if actual!=expected:
         raise ValueError('Rear control component census differs')
-    for name in PRODUCT_NAMES:
+    for name in expected:
         shape=shapes[name]
-        if not shape.isValid() or shape.Volume<=0 or (name in PRINTED_PARTS and len(shape.Solids)!=1):
+        if not shape.isValid() or shape.Volume<=0 or (name in printed_parts(design) and len(shape.Solids)!=1):
             raise ValueError('Invalid rear control product: '+name)
     surroundings=list(surroundings)
     installed_names=[name for name,_ in surroundings]
-    if len(set(installed_names))!=len(installed_names) or not PRODUCT_NAMES<=set(installed_names):
+    if len(set(installed_names))!=len(installed_names) or not expected<=set(installed_names):
         raise ValueError('Installed rear control product census differs')
     panels=[shape for name,shape in surroundings if name in ('RearPlate','RearCover')]
     if len(panels)!=1:raise ValueError('Control bearing check requires one actual rear panel')

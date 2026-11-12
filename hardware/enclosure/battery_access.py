@@ -27,6 +27,18 @@ PROTECTION_PARTS=frozenset({'BatteryMainFuse'})|battery_leads.FUSE_TIE_NAMES
 PART_NAMES = PRINTED_PARTS | SHIM_PARTS | METAL_PARTS | WIRE_PARTS | PROTECTION_PARTS | {'BatteryCell','BatteryPullRibbon'}
 
 
+# The archived wide model still owns the original loose-spacer geometry.
+INTEGRATED_NARROW = frozenset(name for name in PRINTED_PARTS if 'Spacer' in name)
+
+
+def printed_parts(design):
+    return PRINTED_PARTS - INTEGRATED_NARROW if design == 'narrow' else PRINTED_PARTS
+
+
+def part_names(design):
+    return PART_NAMES - INTEGRATED_NARROW if design == 'narrow' else PART_NAMES
+
+
 def contact_source(directory=Path(__file__).parent):
     """Read the retained manufacturer sheet for the one selected wire contact."""
     source = Path(directory) / 'sources/battery-contact-0854'
@@ -206,9 +218,19 @@ def native_shapes(spec, design):
     m3_washer=WASHERS['M3']
     wt=m3_washer['thickness']
     for i,start,end in ((0,-48.5,-44-wt),(1,44+wt,45.3)):
-        hinge_spacing['BatteryHingeSpacer'+str(i)]=cylinder(3.4,end-start,cx+start,hy,hz,(1,0,0)).cut(
-            cylinder(1.6,end-start+.2,cx+start-.1,hy,hz,(1,0,0)))
-    for i,start in enumerate((-44-wt,44)):
+        if design == 'narrow':
+            # Grow the fixed knuckles out to the original stack ends. Put
+            # the same metal thrust washers under the pin head and nut.
+            start, end = ((start+wt, -43.9) if i == 0 else (43.9, end-wt))
+            extension = cylinder(3.4,end-start,cx+start,hy,hz,(1,0,0))
+            extension = extension.cut(cylinder(door['hinge_bore_radius_mm'],end-start+.2,
+                                               cx+start-.1,hy,hz,(1,0,0)))
+            frame = frame.fuse(extension)
+        else:
+            hinge_spacing['BatteryHingeSpacer'+str(i)]=cylinder(3.4,end-start,cx+start,hy,hz,(1,0,0)).cut(
+                cylinder(1.6,end-start+.2,cx+start-.1,hy,hz,(1,0,0)))
+    washer_starts = (-48.5,45.3-wt) if design == 'narrow' else (-44-wt,44)
+    for i,start in enumerate(washer_starts):
         hinge_spacing['BatteryHingeWasher'+str(i)]=cylinder(m3_washer['od']/2,wt,cx+start,hy,hz,(1,0,0)).cut(
             cylinder(m3_washer['id']/2,wt+.2,cx+start-.1,hy,hz,(1,0,0)))
     px, py = cx+keeper['pivot_x_mm'], cy+keeper['pivot_y_offset_mm']
@@ -344,7 +366,13 @@ def native_shapes(spec, design):
                 return cylinder(outer,height,cx+side*start,cy+y,c['cell_axis_z_mm']+z,(side,0,0)).cut(
                     cylinder(inner,height+.2,cx+side*(start-.1),cy+y,c['cell_axis_z_mm']+z,(side,0,0)))
             contact_parts[f'BatteryContact{suffix}Shim{i}']=ring(3,1.2,back_end,.25)
-            contact_parts[f'BatteryContact{suffix}Spacer{i}']=ring(3,1.2,spacer_start,inner_end-spacer_start)
+            if design == 'narrow':
+                # Join the compression boss to the end wall. The shim face,
+                # clamp plates, contact travel and screw stack stay put.
+                boss = ring(3,1.2,spacer_start,inner_end-spacer_start+.15)
+                frame = frame.fuse(boss)
+            else:
+                contact_parts[f'BatteryContact{suffix}Spacer{i}']=ring(3,1.2,spacer_start,inner_end-spacer_start)
             m2_washer=WASHERS['M2']
             contact_parts[f'BatteryContact{suffix}Washer{i}']=ring(
                 m2_washer['od']/2,m2_washer['id']/2,inner_end+c['wall_mm'],m2_washer['thickness'])
@@ -427,6 +455,8 @@ def native_shapes(spec, design):
     length = spec['cell']['length_mm'][1]
     cell = cylinder(spec['cell']['diameter_mm'][1]/2, length,
                     cx-length/2, cy, c['cell_axis_z_mm'], (1, 0, 0))
+    if design=='narrow':
+        frame,lid=lighten_panels(frame,lid,spec)
     return {**{name:leads[name] for name in WIRE_PARTS|PROTECTION_PARTS},'wire_cuts':leads['wire_cuts'],'main_fuse_lacing':leads['main_fuse_lacing'],'main_fuse_ports_mm':leads['main_fuse_ports_mm'],**case_hardware, **hinge_spacing, **contact_parts, 'BatteryCradle': frame.removeSplitter(), 'BatteryDoor': lid.removeSplitter(),
             'BatteryKeeper': bar.removeSplitter(), 'BatteryHingePin': pin,
             'BatteryHingeNut': hinge_nut, 'BatteryKeeperScrew': keeper_pin,
@@ -434,6 +464,54 @@ def native_shapes(spec, design):
             'BatteryCell': cell, 'BatteryPullRibbon': ribbon.removeSplitter(), 'contact_sleeves': contact_sleeves, 'rear_cutout': cutout, 'mounts': mounts, 'rear_interface': rear_interface,
             'hinge_axis': [cx, hy, hz], 'keeper_axis': [px, py, 0],
             'latch_hook': hook, 'latch_pad': pad, 'latch_axis': [-1, 0, 0]}
+
+
+
+def lighten_panels(frame,lid,spec):
+    """Pocket the broad panels; keep the insulating walls and all working ends.
+
+    The roof retains five0.2mm layers. The door retains three0.45mm lines
+    in its upright print pose. Full-depth3mm ribs divide the spans. These
+    are fabrication targets; retention, impact and fatigue need physical tests.
+    """
+    import FreeCAD as App,Part
+    c,door=spec['cradle'],spec['door']
+    cx,cy=spec['designs']['narrow']['cell_centre_xy_mm']
+    def pocket(x0,x1,y0,y1,z,h):
+        return Part.makeBox(x1-x0,y1-y0,h,App.Vector(cx+x0,cy+y0,z))
+    def rounded_pocket(x0,x1,y0,y1,z,h):
+        # Rounded inside corners avoid a sharp notch at the full-depth ribs.
+        radius=1.5
+        tool=pocket(x0+radius,x1-radius,y0,y1,z,h).fuse(
+            pocket(x0,x1,y0+radius,y1-radius,z,h))
+        for x in (x0+radius,x1-radius):
+            for y in (y0+radius,y1-radius):
+                tool=tool.fuse(Part.makeCylinder(radius,h,App.Vector(cx+x,cy+y,z)))
+        return tool
+    # Leave the contact ends and permanent polarity strokes at full thickness.
+    # Every pocket lies in the roof's flat centre, inside the side walls.
+    roof=[]
+    for x0,x1 in ((-26,-1.5),(1.5,26)):
+        for y0,y1 in ((-12,-1.5),(1.5,12)):
+            roof.append(rounded_pocket(x0,x1,y0,y1,c['top_z_mm']-.5,.6))
+    old_frame,old_lid=frame,lid
+    frame=frame.cut(Part.makeCompound(roof))
+    # Preserve a3mm perimeter, centre ribs, hinge barrels and latch mechanism.
+    door_pockets=[]
+    for x0,x1 in ((-39,-1.5),(1.5,39)):
+        for y0,y1 in ((-14,-1.5),(1.5,14)):
+            door_pockets.append(rounded_pocket(x0,x1,y0,y1,door['bottom_z_mm']+1.35,.55))
+    lid=lid.cut(Part.makeCompound(door_pockets))
+    for name,before,after in (('cradle',old_frame,frame),('door',old_lid,lid)):
+        if not after.isValid() or len(after.Solids)!=1 or after.Volume>=before.Volume:
+            raise ValueError('Lightened battery '+name+' invalid, disconnected or not lighter')
+    # The underside of the ceiling and exterior door skin remain continuous.
+    roof_skin=pocket(-26,26,-12,12,c['top_z_mm']-c['ceiling_mm']+.01,.98)
+    door_skin=pocket(-39,39,-14,14,door['bottom_z_mm']+.01,1.33)
+    for name,probe,before,after in (('roof',roof_skin,old_frame,frame),('door',door_skin,old_lid,lid)):
+        if probe.common(before).cut(after).Volume>1e-6:
+            raise ValueError('Battery panel loses continuous '+name+' skin')
+    return frame,lid
 
 
 def _released_door(spec,shapes):
@@ -464,10 +542,11 @@ def native_check(spec, design, shapes, *, surroundings=()):
     import Part
     from solid_clearance import bounds, distance, FixedObstacles
 
+    census = part_names(design)
     surroundings=list(surroundings)
     extra_names=[name for name, _ in surroundings]
     if (len(set(extra_names)) != len(extra_names)
-            or set(extra_names) & (PART_NAMES | {'rear_interface'})):
+            or set(extra_names) & (census | {'rear_interface'})):
         raise ValueError('Installed surroundings need distinct non-component names')
     for name, shape in surroundings:
         if not name or not shape.isValid() or shape.Volume <= 0:
@@ -483,11 +562,11 @@ def native_check(spec, design, shapes, *, surroundings=()):
             missing=ring.cut(rear_shape).Volume
             if missing>1e-6:raise ValueError('Missing full-height battery mount bearing: '+str((x,y,missing)))
             bearing.append({'centre_xy_mm':[x,y],'missing_bearing_mm3':missing})
-    names=tuple(sorted(PART_NAMES))
+    names=tuple(sorted(census))
     actual={name for name in shapes if name.startswith('Battery')}
-    if actual != PART_NAMES:
-        raise ValueError('Battery component census differs: missing='+str(sorted(PART_NAMES-actual))
-                         +', extra='+str(sorted(actual-PART_NAMES)))
+    if actual != census:
+        raise ValueError('Battery component census differs: missing='+str(sorted(census-actual))
+                         +', extra='+str(sorted(actual-census)))
     for name in names:
         shape = shapes[name]
         if not shape.isValid() or len(shape.Solids) != 1 or shape.Volume <= 0:
@@ -497,7 +576,7 @@ def native_check(spec, design, shapes, *, surroundings=()):
     checked.update(surroundings)
     checked_bounds={name:bounds(shape) for name,shape in checked.items()}
     for a, b in itertools.combinations(checked, 2):
-        if a not in PART_NAMES and b not in PART_NAMES:
+        if a not in census and b not in census:
             continue  # The complete native builder checks its fixed assembly.
         ab,bb=checked_bounds[a],checked_bounds[b]
         if any(min(getattr(ab,axis+'Max'),getattr(bb,axis+'Max'))
@@ -601,7 +680,7 @@ def native_check(spec, design, shapes, *, surroundings=()):
         raise ValueError('A 1 mm unseated cell clears the closed seating saddles')
     if min(gaps.values()) < removal['noncontact_clearance_mm']-1e-6:
         raise ValueError('Cell removal clearance failed: ' + str(gaps))
-    return {'main_fuse_lacing':shapes['main_fuse_lacing'],'main_fuse_ports_mm':shapes['main_fuse_ports_mm'],'physical_products':len(PART_NAMES),'contact_wire_cuts':shapes['wire_cuts'],'mount_bearing':bearing,'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
+    return {'main_fuse_lacing':shapes['main_fuse_lacing'],'main_fuse_ports_mm':shapes['main_fuse_ports_mm'],'physical_products':len(census),'contact_wire_cuts':shapes['wire_cuts'],'mount_bearing':bearing,'additional_fixed_parts':sorted(extra_names), 'closed_interference_mm3': 0, 'one_mm_unseated_cell_interference_mm3': unseated_interference, 'finger_approach_clearance_mm': finger_gap, 'door_continuous_clearance_mm': door_gap,
             'keeper_continuous_clearance_mm': keeper_gap,
             'cell_continuous_clearance_mm': gaps,
             'intended_insulating_stop_contact_mm3': sweep.common(stop_part).Volume,
