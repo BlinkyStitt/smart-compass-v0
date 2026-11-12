@@ -1,0 +1,25 @@
+{
+  "board_bottom_z_mm": 5.2,
+  "board_thickness_mm": 1.2,
+  "socket_stack_mm": 3.94,
+  "laminate_density_g_cm3": 1.9,
+  "outline_xy_mm": [
+    [-81,-19],[-74,-21],[-17,-21],[-13,-14],[22,-14],[26,-21],[59,-21],
+    [59,-10],[54,-8],[54,3],[42,3],[42,12],[36,14],[36,54],[33,59],
+    [22,60],[22,79],[18,85],[-29,85],[-35,78],[-35,61],[-31,55],
+    [-31,43],[-54,43],[-57,46],[-74,46],[-78,36],[-78,8],[-81,3]
+  ],
+  "mount_xy_mm": [[-74,5],[-62,38],[-31.5,64],[14,79],[28,48],[56,-18.3],[-27.5,-16]],
+  "modules": {
+    "IMU": {"datum_xy_mm": [-63.5,26.5], "rotation_deg": 90},
+    "BLACKPILL": {"datum_xy_mm": [-30.5,5.5], "rotation_deg": 90},
+    "GPS": {"datum_xy_mm": [-6,74], "rotation_deg": 0},
+    "RADIO": {"datum_xy_mm": [43.3,-3], "rotation_deg": 0},
+    "SPARKLE": {"datum_xy_mm": [6,45], "rotation_deg": 180},
+    "BOOST": {"datum_xy_mm": [-64,-10], "rotation_deg": 0}
+  },
+  "external_harnesses": {
+    "cell": 2, "disconnect": 5, "pushbuttons": 6, "pixels": 12,
+    "sparkle_barrel": 2, "sparkle_led_terminals": 5, "boost_power": 4
+  }
+}
