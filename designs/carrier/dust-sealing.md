@@ -35,8 +35,8 @@ STEP output is a fit part.
 | Path | Seal for the prototype |
 | --- | --- |
 | Rear cover seam | Fit the silicone face seal in the continuous rear-cover groove. Seal the six rear screws separately. |
-| Battery door | Use a replaceable perimeter gasket and even latch compression. Keep the pull ribbon entirely inside the seal. Check contact around both hinge corners and at the latch with the keeper and door fully seated. |
-| Front lens and glow ring | Give each exposed seam a continuous silicone seal or a continuous bonded joint. Keep the gasket outside the visible light path. |
+| Battery door | Seat the hatch gasket on the rear cover and tighten its four screws evenly. Keep the pull ribbon inside the gasket. |
+| Front lens and glow ring | Fit the lens cord in the bezel. Fill the two shell shoulder grooves with clear sealant. |
 | Buttons and disconnect | Use the supplied O-rings on the three APEM ICP3FAD2 buttons. Fit the C&K 759D02000 boot to the disconnect. Check the underside and fastener paths. |
 | Cable passages, strap mounts and fastener pockets | Inspect each opening for a path into the cavity. Close unused cable passages and keep strap hardware in blind features or outside the seal. |
 | Printed surfaces | Inspect for cracks, pinholes and layer gaps. Check that the gasket lands are flat and continuous. Verify the finished print as part of the assembly. |
@@ -54,6 +54,34 @@ fastener seals on the two guard mounts and the four cell cradle mounts.
 The seven carrier PCB screws use blind pilots.
 [Silicone cord source](https://cormanufacturing.com/o-ring-cord-and-custom-extrusions/),
 [Parker face seal guidance](https://www.parker.com/content/dam/Parker-com/Literature/O-Ring-Division-Literature/ORD-5700.pdf)
+
+## Fit the battery hatch
+
+Fit a joined 1 mm silicone cord loop in the hatch groove. The nominal
+centreline is a rounded rectangle 123.2 × 53.3 mm with 3.6 mm corner radii.
+Its length is about 347 mm. The groove is 1.2 mm wide and 0.8 mm deep.
+Keep the cradle and its four mounting screws inside the gasket perimeter.
+Tap the four blind pilots M3. Fit four M3 × 14 mm screws with 0.5 mm
+washers. Check screw depth and tighten evenly until the flange seats.
+
+Disconnect USB and set the disconnect switch to OFF before cell service.
+Remove the four screws and lift the hatch straight off. Turn the keeper
+only after you can hold the cell. Reseat the keeper before refitting the
+hatch. If the hatch rocks or stands proud, check the cell and ribbon
+positions before tightening.
+
+## Fit the lens and glow band
+
+Seat a joined 1 mm silicone cord loop in the bezel groove. The centreline
+diameter is 183 mm. Check full contact against the acrylic outside the
+opening. Fit the six bezel nuts and screws, then close the exposed nut
+loading slots with a removable bead of sealant.
+
+Dry fit the glow ring between its two shell shoulders. Apply a small
+continuous bead of clear, electronics-compatible neutral-cure silicone
+in each shoulder groove. Keep it off the lit wall and acrylic coatings.
+Use the sealant maker's cure conditions and check adhesion on PETG scraps.
+[DOWSIL 3145 RTV sealant](https://www.dow.com/en-us/pdp.dowsil-3145-rtv-mil-a-46146-adhesive--sealant.01059548z.html)
 
 ## Verify the assembled case
 

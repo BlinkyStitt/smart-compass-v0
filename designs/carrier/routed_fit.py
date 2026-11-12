@@ -27,6 +27,8 @@ from native import (
 
 from prints import normalize_stl_bed, orientation
 from solid_clearance import bounds
+from seals import LEGACY_HINGE, check_hatch, front_seals, hatch
+from retainer import build as build_retainer
 
 # Pitch, end overhang, cross-row bounds and mated height, in millimeters.
 # These reservations include housing tolerance. The first cable build must
@@ -162,7 +164,8 @@ def control_seals(rear):
 def export_print(directory, name, shape):
     require_solid(name, shape)
     solid = shape.copy()
-    axis, angle = orientation(name)
+    # Put the bezel seal groove and retainer contact toes above the bed.
+    axis, angle = ([1, 0, 0], 180) if name in {"CarrierRetainer", "FrontBezel"} else orientation(name)
     if angle:
         solid.rotate(App.Vector(), App.Vector(*axis), angle)
     bb = bounds(solid)
@@ -193,6 +196,8 @@ def check(output):
         rear, pigtail = pigtail_panel(fixed["CarrierRearPanel"])
         stock_shell = fixed["ElectronicsShell"]
         rear, shell = rear_seal(rear, stock_shell)
+        rear_seat = shell.cut(stock_shell)
+        bezel, shell = front_seals(baseline, shell)
         fixed["ElectronicsShell"] = shell
         seal_clearance = {
             name: baseline.getObject(name).Shape
@@ -202,6 +207,7 @@ def check(output):
         collisions.extend(intersections({"ElectronicsShell": shell}, products))
         battery = battery_access.definition()
         rear, battery_shapes = fit_battery(battery, rear)
+        lid, rear, lid_sweep = hatch(battery, rear)
         fixed["CarrierRearPanel"] = rear
         for name in ("BatteryDoor", "BatteryKeeper"):
             fixed[name] = battery_shapes[name]
@@ -219,11 +225,22 @@ def check(output):
         collisions.extend(intersections({"PigtailRearCover": rear}, products))
         for a, b in combinations(parts, 2):
             collisions.extend(intersections({a: parts[a]}, {b: parts[b]}))
+        hatch_obstacles = {name: shape for name, shape in {**fixed, **products, **parts}.items()
+                           if name not in LEGACY_HINGE | {"BatteryDoor"}}
+        hatch_obstacles.update({f"RearScrew{i}": baseline.getObject(f"RearScrew{i}").Shape
+                                for i in range(6)})
+        hatch_fit = check_hatch(battery, lid, lid_sweep, hatch_obstacles)
+        retainer_obstacles = {name: shape for name, shape in hatch_obstacles.items()
+                              if name != "CarrierRearPanel"}
+        rear, retainer, retainer_fit = build_retainer(
+            baseline, layout, products, retainer_obstacles, rear
+        )
         if collisions:
             raise ValueError(f"Rev A carrier interference: {collisions}")
         print(f"REV A CLOSED FIT PASS ({len(parts)} installed envelopes)", flush=True)
         rear.exportStep(str(output.with_name("pigtail-rear-cover.step")))
-        print_solids = {"RearCover": rear, **fixed}
+        print_solids = {**fixed, "RearCover": rear, "FrontBezel": bezel,
+                        "BatteryHatch": lid, "CarrierRetainer": retainer}
         print_parts = [export_print(output.parent, name, print_solids[name])
                        for name in sorted(REVISED_PRINTS)]
         motion = battery_access.native_check(
@@ -232,7 +249,8 @@ def check(output):
             battery_shapes,
             surroundings=[
                 ("RearCover", rear),
-                ("RearSealShellSeat", shell.cut(stock_shell)),
+                ("RearSealShellSeat", rear_seat),
+                ("CarrierRetainer", retainer),
                 *products.items(),
                 *parts.items(),
             ],
@@ -245,6 +263,12 @@ def check(output):
                 {
                     "closed_collisions": collisions,
                     "battery_motion": motion,
+                    "battery_motion_scope": (
+                        "Keeper and cell checks include the reference hinged door as an extra "
+                        "obstacle. The installed hatch has its own withdrawal check."
+                    ),
+                    "battery_hatch": hatch_fit,
+                    "carrier_retainer": retainer_fit,
                     "print_parts": print_parts,
                 },
                 indent=2,

@@ -5,8 +5,8 @@ enclosure. The board is 1.2 mm thick with four 35 µm copper layers. Keep the
 seven rear-cover mounts. Tap their blind 1.6 mm pilots M2 with a depth
 stop. Fit seven M2 × 4 mm screws with insulating washers. Check that the
 screws hold without bottoming out. The five stock boards plug into the
-low-profile sockets from the fit model. Keep a separate mechanical restraint for each
-board. Pull a connector by its housing and support the carrier near it.
+low-profile sockets from the fit model. Secure the boards with the common
+retainer. Pull a connector by its housing and support the carrier near it.
 
 Have the PCB assembler install the small surface-mount parts. Fit the socket
 strips, harness headers and axial fuses after reflow. Use a jig to keep the
@@ -15,6 +15,22 @@ uses its stock terminal-block and LBO header holes. Leave R20 and the factory
 red LED in place. Use the stock Sparkle Motion barrel jack and screw clamps.
 The LED board inputs, switch and cell contacts still need bench wiring. Make
 these as subassemblies so final assembly is screw and plug work.
+
+## Fit the carrier retainer
+
+Fit the seven boards and their plugs on the bench. Fit soft insulating
+silicone pads to the retainer toes. Use 1 mm stock for the 0.8 mm installed
+gap. The five round toes bear around stock mounting holes. The other
+three toes bear on the outer PCB edges of the radio, BlackPill and latch.
+Keep pads on those bearing faces and clear of headers and components.
+Check that each pad touches its PCB when all five feet sit on their stops.
+Check for PCB flex before tightening.
+
+Ream the five frame bores to 2.8 mm if needed. Tap the rear cover's 2.05 mm
+blind pilots M2.5 × 0.45. Use five M2.5 × 25 mm button-head screws with
+heads no wider than 4.5 mm and no taller than 1.6 mm. Tighten by hand until
+the frame feet seat. Move the local service folds clear before lifting
+the retainer during service. [Example M2.5 × 25 mm hardware](https://www.aspenfasteners.com/m2-5-0-45-x-25mm-iso-7380-1-metric-button-head-hex-socket-cap-screws-class-10-9-steel-plain/)
 
 ## Install the panel controls
 
@@ -110,8 +126,8 @@ placement or connector map.
 For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
 directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
-the pigtail hardware, the charger envelope and battery motion in
-`routed-fit.json`. It exports `pigtail-rear-cover.step` and the four revised
+the pigtail hardware, charger envelope, hatch and retainer fit and cell service in
+`routed-fit.json`. It exports `pigtail-rear-cover.step` and the six revised
 print solids as STLs. Make the complete print package with the
 [Rev A build instructions](README.md#make-the-rev-a-print-package).
 

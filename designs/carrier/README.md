@@ -12,9 +12,9 @@ housing uses the narrow design's 58.6 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
 three panel-mount buttons. The layout budgets 36 off-board conductors,
-compared with 92 in the current fixed loom. It retains 14 prints
-for the case, optics, cell bay and disconnect guard. Final restraints can add
-parts.
+compared with 92 in the current fixed loom. The print set has 15 parts.
+One removable retainer holds all seven boards on the rear cover. The
+gasketed battery hatch uses four screws and keeps the independent cell keeper.
 
 Three Keystone 3153 insulating washers take the place of the printed
 Fibonacci clips. The fit check includes movement around the screw shaft and
@@ -81,9 +81,9 @@ COMPASS_CARRIER_OUTPUT="$CARRIER_FIT" \
 python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS"
 ```
 
-The builder checks and slices the 14 installed parts. It uses the revised
-rear cover, shell, door and keeper from the routed fit and the matching narrow
-exports for the other parts. Read the [printing and first-fit guide](printing.md)
+The builder checks and slices the 15 installed parts. It uses the revised
+rear cover, shell, front bezel, hatch, keeper and retainer from the routed fit.
+It uses the matching narrow exports for the other parts. Read the [printing and first-fit guide](printing.md)
 before printing.
 
 Use `Run.FCMacro` for the socket drill gauge and legacy fit reference. It
@@ -93,8 +93,8 @@ writes the gauge, assembly, terminal schedule and unrouted placement board.
 
 Use the Rev A assembly and power guides for the bench build. Measure current
 and temperature at the contacts, copper, and LED circuits. Check the GPS
-and radio antennas with the carrier installed. Fit an independent restraint
-for each plug-in board. Check the APEM buttons, seals and lead exits on the
+and radio antennas with the carrier installed. Check the retainer pads,
+APEM buttons, seals and lead exits on the
 printed cover. Route and test the charger and external-power boards with
 and without the protected cell.
 
@@ -103,4 +103,4 @@ copper budget. The remaining allowance must cover sockets, replacement leads,
 new retention and panel hardware, and any changes to the power circuit. The
 finished assembly must be weighed. The current fit model retains the seven-print
 battery bay. To reach the original 9–12 print target, the battery contact mounts
-and final retention still need to be simplified and verified.
+still need to be simplified and verified.

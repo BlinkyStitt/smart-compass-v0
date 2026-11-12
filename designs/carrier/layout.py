@@ -24,7 +24,10 @@ RETAINED_PRINTS = frozenset({
     "RearCover", "ElectronicsShell", "FrontBezel", "InnerDiffuser", "SideDiffuser",
     "EGLStencil", "SwitchGuard",
 }) | battery_access.printed_parts("narrow")
-REVISED_PRINTS = frozenset({"RearCover", "ElectronicsShell", "BatteryDoor", "BatteryKeeper"})
+PRINT_PARTS = (RETAINED_PRINTS - {"BatteryDoor"}) | {"BatteryHatch", "CarrierRetainer"}
+REVISED_PRINTS = frozenset({
+    "RearCover", "ElectronicsShell", "FrontBezel", "BatteryHatch", "BatteryKeeper", "CarrierRetainer",
+})
 
 
 def transform(xy, origin, pose):

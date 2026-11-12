@@ -8,23 +8,47 @@ import shutil
 import sys
 import tempfile
 
-from layout import BASELINE, HARDWARE, RETAINED_PRINTS, REVISED_PRINTS, ROOT
+from layout import BASELINE, HARDWARE, PRINT_PARTS, REVISED_PRINTS, ROOT
 
 sys.path.insert(0, str(ROOT / "designs/stacked"))
 import prints
 
 
+def slice_projects(directory, inventory, spec):
+    # The retainer has three contact toes and a stepped stem. Give these
+    # localized overhangs organic supports without filling any seal grooves.
+    reports = []
+    for supported in (False, True):
+        rows = [row for row in inventory["print_parts"]
+                if (row["source_part"] == "CarrierRetainer") == supported]
+        subset = {**inventory, "print_parts": rows, "stl_files": [row["file"] for row in rows]}
+        profile = spec
+        if supported:
+            common = spec["common"] | {
+                "support_material": "1",
+                "support_material_style": "organic",
+                "support_material_buildplate_only": "0",
+            }
+            profile = spec | {"common": common}
+        prints.generate(directory, subset, profile)
+        reports.append(prints.check(directory, subset, profile))
+    return {**reports[0], "projects": reports[0]["projects"] + reports[1]["projects"]}
+
+
 def build(fit, destination):
     report = json.loads((fit / "routed-fit.json").read_text())
-    if report["closed_collisions"] or report["battery_motion"]["closed_interference_mm3"]:
-        raise ValueError("Complete the Rev A fit check before packaging")
     revised = {row["source_part"]: row for row in report["print_parts"]}
     if revised.keys() != REVISED_PRINTS:
-        raise ValueError("Rev A fit must supply the revised cover, shell, door and keeper")
+        raise ValueError("Rev A fit must supply every revised print solid")
+    if (report["closed_collisions"] or report["battery_motion"]["closed_interference_mm3"]
+            or report["battery_hatch"]["closed_and_withdrawal_interference_mm3"]
+            or report["carrier_retainer"]["collision_mm3"]):
+        raise ValueError("Complete the Rev A fit check before packaging")
 
     baseline = json.loads((BASELINE / "parts.json").read_text())
     original = {row["source_part"]: row for row in baseline["print_parts"]}
-    rows = [revised.get(name, original[name]) for name in sorted(RETAINED_PRINTS)]
+    by_name = original | revised
+    rows = [by_name[name] for name in sorted(PRINT_PARTS)]
     inventory = {
         "print_parts": rows,
         "stl_files": [row["file"] for row in rows],
@@ -44,8 +68,7 @@ def build(fit, destination):
             if hashlib.sha256(source.read_bytes()).hexdigest() != row["sha256"]:
                 raise ValueError(f"STL checksum differs from its fit inventory: {source}")
             shutil.copyfile(source, package / row["file"])
-        prints.generate(package, inventory, spec)
-        results = prints.check(package, inventory, spec)
+        results = slice_projects(package, inventory, spec)
         (package / "parts.json").write_text(json.dumps(inventory, indent=2) + "\n")
         (package / "slicer-check.json").write_text(json.dumps(results, indent=2) + "\n")
         shutil.copyfile(fit / "routed-fit.json", package / "routed-fit.json")

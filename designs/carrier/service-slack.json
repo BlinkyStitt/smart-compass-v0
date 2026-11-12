@@ -160,7 +160,7 @@
       "minimum_slack_mm": 20,
       "centre_xy_bottom_z_mm": [
         -78,
-        -10,
+        -7,
         24.5
       ],
       "turn_deg": 0
