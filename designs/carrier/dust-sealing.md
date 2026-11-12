@@ -8,7 +8,7 @@ plugs into the head. Fit its tethered cap when the cable is unplugged.
 ## Cable exit
 
 The Rev A rear cover fit model fills the four old 6 mm vents and adds a
-12 mm opening at X 75 mm, Y −44 mm. The opening has a 2.4 mm thick flat
+12 mm opening at X 74 mm, Y −44 mm. The opening has a 2.4 mm thick flat
 bearing land. Fit a **Heyco M4448** M12 right-angle cordgrip with its integral
 panel seal and supplied locknut. Point the elbow down from the lower-right rear of the case. The lead hangs
 below the bottom edge. Use a round,
@@ -34,12 +34,26 @@ STEP output is a fit part.
 
 | Path | Seal for the prototype |
 | --- | --- |
-| Rear cover seam | Use a one-piece silicone gasket on a continuous flat land. Give the fasteners even compression with hard stops. Use sealed washers on any through fastener that crosses the gasket boundary. |
+| Rear cover seam | Fit the silicone face seal in the continuous rear-cover groove. Seal the six rear screws separately. |
 | Battery door | Use a replaceable perimeter gasket and even latch compression. Keep the pull ribbon entirely inside the seal. Check contact around both hinge corners and at the latch with the keeper and door fully seated. |
 | Front lens and glow ring | Give each exposed seam a continuous silicone seal or a continuous bonded joint. Keep the gasket outside the visible light path. |
-| Buttons and disconnect | Use sealed panel controls with their mounting seals. Fit an approved sealed boot and panel gasket if retaining the toggle. Check the underside and fastener paths. |
+| Buttons and disconnect | Use the supplied O-rings on the three APEM ICP3FAD2 buttons. Fit the C&K 759D02000 boot to the disconnect. Check the underside and fastener paths. |
 | Cable passages, strap mounts and fastener pockets | Inspect each opening for a path into the cavity. Close unused cable passages and keep strap hardware in blind features or outside the seal. |
 | Printed surfaces | Inspect for cracks, pinholes and layer gaps. Check that the gasket lands are flat and continuous. Verify the finished print as part of the assembly. |
+
+## Fit the rear cover seal
+
+Fit a 1 mm silicone cord loop with a nominal 197.5 mm centreline diameter
+(about 620.5 mm circumference). Use a factory joined loop with a smooth
+joint. The groove is 1.4 mm wide and 0.8 mm deep. The revised shell has a
+continuous bearing face below its strap slots. The cover and shell meet
+at the rim and set the nominal seal compression to 20 percent.
+Check for full contact with the print seated. Tighten the six M3 screws
+evenly in a cross pattern and seal under their washers. Use removable
+fastener seals on the two guard mounts and the four cell cradle mounts.
+The seven carrier PCB screws use blind pilots.
+[Silicone cord source](https://cormanufacturing.com/o-ring-cord-and-custom-extrusions/),
+[Parker face seal guidance](https://www.parker.com/content/dam/Parker-com/Literature/O-Ring-Division-Literature/ORD-5700.pdf)
 
 ## Verify the assembled case
 

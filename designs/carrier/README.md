@@ -63,33 +63,40 @@ larger bend radius if the selected cable or connector requires one. Check the
 actual lead exits and the opened and closed assembly with the first set of
 cables. [Wire support and bend-radius reference](https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf)
 
-## Build a fit sample
+## Make the Rev A print package
 
-From the repository root, set the destination to a new output folder on the
-external drive and run FreeCAD. Confirm `fit-check.json` is present and the log
-reports `CARRIER MECHANICAL FIT PASS`.
+From the repository root, choose a new fit folder and a new package folder on
+the external drive. Set `CARRIER_FIT` and `CARRIER_PRINTS` to their absolute
+paths. Fetch the native assets with Git LFS. Run the routed fit macro in
+FreeCAD, then run the package builder with
+PrusaSlicer installed. Wait for `REV A BATTERY MOTION PASS` in the FreeCAD
+console and check for `routed-fit.json` before packaging.
 
 ```sh
-mkdir "$CARRIER_OUTPUT"
+mkdir "$CARRIER_FIT"
 COMPASS_CARRIER_SOURCE="$PWD/designs/carrier" \
-COMPASS_CARRIER_OUTPUT="$CARRIER_OUTPUT" \
-/Applications/FreeCAD.app/Contents/Resources/bin/freecad "$PWD/designs/carrier/Run.FCMacro"
+COMPASS_CARRIER_OUTPUT="$CARRIER_FIT" \
+/Applications/FreeCAD.app/Contents/Resources/bin/freecad "$PWD/designs/carrier/RunRoutedFit.FCMacro"
+
+python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS"
 ```
 
-The macro generates an installed FreeCAD assembly, a STEP file, a printable
-board outline and hole gauge, the rear panel, the terminal schedule, and a fit
-report. It also writes an unrouted KiCad board with the checked outline and
-socket positions. Print the gauge flat to check connector fit and access.
-Use the terminal schedule to assign the remaining connectors before routing.
+The builder checks and slices the 14 installed parts. It uses the revised
+rear cover, shell, door and keeper from the routed fit and the matching narrow
+exports for the other parts. Read the [printing and first-fit guide](printing.md)
+before printing.
+
+Use `Run.FCMacro` for the socket drill gauge and legacy fit reference. It
+writes the gauge, assembly, terminal schedule and unrouted placement board.
 
 ## Qualify the prototype
 
 Use the Rev A assembly and power guides for the bench build. Measure current
-and temperature at the contacts, copper, and LED circuits. Check the positions of the GPS and radio antennas with the
-carrier installed. Add independent board retention so the sockets are not the
-only restraints. Select the exact panel buttons and verify their mount and lead
-exits. The charger and external-power circuit still need a routed design and
-bench verification with and without the protected cell.
+and temperature at the contacts, copper, and LED circuits. Check the GPS
+and radio antennas with the carrier installed. Fit an independent restraint
+for each plug-in board. Check the APEM buttons, seals and lead exits on the
+printed cover. Route and test the charger and external-power boards with
+and without the protected cell.
 
 The report compares the old loom, removed prints, new rear cover, laminate and
 copper budget. The remaining allowance must cover sockets, replacement leads,

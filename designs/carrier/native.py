@@ -9,7 +9,7 @@ import FreeCAD as App
 import MeshPart
 import Part
 
-from layout import BASELINE, ROOT, read_layout, schedule, write_schedule
+from layout import BASELINE, RETAINED_PRINTS, ROOT, read_layout, schedule, write_schedule
 
 sys.path.insert(0, str(ROOT / "designs/stacked"))
 import battery_access
@@ -30,7 +30,9 @@ MODULE_OBJECTS = {
     "RADIO": ("Radio", "RadioPCB", "RadioUnderboardReservation", "RadioLoadedReservation"),
     "BOOST": ("Boost5V", "BoostPCB", "BoostComponents", "BoostTerminalX1", "BoostTerminalX2"),
 }
-BUTTONS = {"Start": (72, 22), "Mode": (-72, -39), "Action": (73, 1)}
+BUTTONS = {"Start": (72, 22), "Mode": (-72, -39), "Action": (73, 2.5)}
+BUTTON_PANEL_RADIUS = 6.8
+BUTTON_CUTOUT_HALF_WIDTH = 6.45
 
 
 def box(bounds):
@@ -40,6 +42,23 @@ def box(bounds):
 
 def cylinder(radius, bottom, top, xy):
     return Part.makeCylinder(radius, top - bottom, Vector(*xy, bottom))
+
+
+def button_opening(xy, radius, half_width, bottom, top):
+    x, y = xy
+    flat_limit = box(([x - half_width, y - radius, bottom],
+                      [x + half_width, y + radius, top]))
+    return cylinder(radius, bottom, top, xy).common(flat_limit)
+
+
+def panel_button(xy):
+    """APEM ICP3FAD2, with a wrench/nut and flying-lead reservation."""
+    face = cylinder(8.75, -5, 0, xy)
+    collar = button_opening(xy, 6.75, 6.4, 0, 2)
+    nut_and_tool = cylinder(9.5, 2, 4.5, xy)
+    body = cylinder(6, 4.5, 14, xy)
+    exit = cylinder(5.4, 14, 23, xy)
+    return Part.makeCompound([face, collar, nut_and_tool, body, exit])
 
 
 def at_pose(shape, entry, pose, z):
@@ -128,8 +147,8 @@ def model(baseline, spec):
     # The original latch is centred at (0, -77), with PCB underside at 12.2 mm.
     latch.translate(Vector(0, 81, z - 12.2))
     module_shapes["Latch"] = latch
-    for name, (x, y) in BUTTONS.items():
-        module_shapes[f"{name}Button"] = cylinder(9.5, 2, 24, (x, y))
+    for name, xy in BUTTONS.items():
+        module_shapes[f"{name}Button"] = panel_button(xy)
     board = make_board(spec, sockets)
     bottom = spec["board_bottom_z_mm"]
     stock_battery = battery_access.native_shapes(battery_access.definition(), "narrow")
@@ -145,8 +164,7 @@ def model(baseline, spec):
     rear_points = [(centre.x, centre.y) for centre in screw_centres]
     rear = rear_cover.native_blank(p["case_diameter"] / 2, rear_points, p["rear_vents_xy_mm"],
                                   stock_battery, old_controls)
-    # For the fit pilot, blank the obsolete button apertures and cut new
-    # nominal panel-mount holes. No new printed bezel is required.
+    # Replace the obsolete button mounts with direct sealed panel mounts.
     for key in ("start", "mode", "action"):
         xy = (p[f"control_{key}_x"], p[f"control_{key}_y"])
         rear = rear.fuse(cylinder(11, 0, 2, xy))
@@ -158,8 +176,11 @@ def model(baseline, spec):
     supports = [cylinder(2.7, .7, bottom, xy) for xy in spec["mount_xy_mm"]]
     supports.extend(cylinder(11, .7, 2, xy) for xy in BUTTONS.values())
     rear = rear.fuse(Part.makeCompound(supports))
-    holes = [cylinder(1, -.1, bottom + .1, xy) for xy in spec["mount_xy_mm"]]
-    holes.extend(cylinder(6.85, -.1, 2.1, xy) for xy in BUTTONS.values())
+    # M2 tap pilots open to the inside. Keep 1 mm of material to close
+    # each fastener path through the rear cover.
+    holes = [cylinder(.8, 1, bottom + .1, xy) for xy in spec["mount_xy_mm"]]
+    holes.extend(button_opening(xy, BUTTON_PANEL_RADIUS, BUTTON_CUTOUT_HALF_WIDTH, -.1, 2.1)
+                 for xy in BUTTONS.values())
     rear = rear.cut(Part.makeCompound(holes)).removeSplitter()
     require_solid("Carrier rear panel", rear)
 
@@ -199,13 +220,9 @@ def model(baseline, spec):
 def mass_budget(board, rear, spec):
     inventory = json.loads((BASELINE / "parts.json").read_text())
     prints = {row["source_part"] for row in inventory["print_parts"]}
-    retained = {
-        "RearCover", "ElectronicsShell", "FrontBezel", "InnerDiffuser", "SideDiffuser",
-        "EGLStencil", "SwitchGuard",
-    } | battery_access.printed_parts("narrow")
-    if not retained <= prints:
+    if not RETAINED_PRINTS <= prints:
         raise ValueError("Retained print census disagrees with baseline")
-    removed = prints - retained
+    removed = prints - RETAINED_PRINTS
     components = {row["id"]: row for row in inventory["components"]}
 
     def mass(name):
@@ -225,7 +242,7 @@ def mass_budget(board, rear, spec):
     slack_mass = service_slack_plan(spec)["added_wire_mass_allowance_g"]
     return {
         "baseline_worn_g": inventory["mass_estimate"]["total_worn"]["nominal_g"],
-        "retained_baseline_prints": len(retained),
+        "retained_baseline_prints": len(RETAINED_PRINTS),
         "prints_replaced_by_carrier_and_direct_mounts": len(removed),
         "old_loom_and_mounts_g": removed_mass,
         "carrier_laminate_g": substrate,
@@ -274,8 +291,6 @@ def build(destination):
             gauge.translate(Vector(0, 0, -spec["board_bottom_z_mm"]))
             MeshPart.meshFromShape(Shape=gauge, LinearDeflection=.05, AngularDeflection=.1,
                                    Relative=False).write(str(destination / "carrier-fit-gauge.stl"))
-            MeshPart.meshFromShape(Shape=rear, LinearDeflection=.05, AngularDeflection=.1,
-                                   Relative=False).write(str(destination / "carrier-rear-panel.stl"))
             write_schedule(destination / "terminal-schedule.csv", ports)
             (destination / "carrier-placement.kicad_pcb").write_text(pcb_text(spec, ports))
             result = {

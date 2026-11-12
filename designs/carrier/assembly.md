@@ -2,8 +2,10 @@
 
 Use the [routed KiCad board](carrier-a.kicad_pcb) with the 200 mm narrow
 enclosure. The board is 1.2 mm thick with four 35 µm copper layers. Keep the
-seven rear-cover mounts. The five stock boards plug into the low-profile
-sockets from the fit model. Keep a separate mechanical restraint for each
+seven rear-cover mounts. Tap their blind 1.6 mm pilots M2 with a depth
+stop. Fit seven M2 × 4 mm screws with insulating washers. Check that the
+screws hold without bottoming out. The five stock boards plug into the
+low-profile sockets from the fit model. Keep a separate mechanical restraint for each
 board. Pull a connector by its housing and support the carrier near it.
 
 Have the PCB assembler install the small surface-mount parts. Fit the socket
@@ -13,6 +15,23 @@ uses its stock terminal-block and LBO header holes. Leave R20 and the factory
 red LED in place. Use the stock Sparkle Motion barrel jack and screw clamps.
 The LED board inputs, switch and cell contacts still need bench wiring. Make
 these as subassemblies so final assembly is screw and plug work.
+
+## Install the panel controls
+
+Use three black, flat [APEM ICP3FAD2](https://www.apem.com/en-us/panel-switches/pushbutton-switches/ic/icp3fad2)
+normally open buttons with factory flying leads. Fit the supplied O-ring
+under each flange. The 2 mm panel lands have a 13.60 mm opening with flats
+12.90 mm apart. Hold the button against the flats while tightening the
+supplied nut. Check the seal seats fully and the button returns freely.
+APEM specifies a maximum nut torque of 1.5 N·m. Use only the torque needed
+to seat the seal against the printed land.
+
+Use the factory 20 AWG leads to make a bench harness. Join them to the
+26 AWG PH leads using insulated splices rated for the two wire sizes.
+Leave 20 mm of service slack. Fit the C&K 759D02000 sealing boot on the
+7201SYZQE disconnect in place of its external nut. Fit the guard and
+check that the boot moves freely in both positions. Check both switch
+poles with a continuity meter. [C&K switch and boot drawing](https://www.ckswitches.com/media/1394/7000toggle.pdf)
 
 ## Plugs
 
@@ -92,8 +111,9 @@ For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
 directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
 the pigtail hardware, the charger envelope and battery motion in
-`routed-fit.json`. It exports `pigtail-rear-cover.step` with the former
-vents filled and the cordgrip opening at the bottom.
+`routed-fit.json`. It exports `pigtail-rear-cover.step` and the four revised
+print solids as STLs. Make the complete print package with the
+[Rev A build instructions](README.md#make-the-rev-a-print-package).
 
 Use the [wall power design](wall-power.md) and [dust sealing plan](dust-sealing.md)
 before connecting the charger or a cell. First power up the carrier through

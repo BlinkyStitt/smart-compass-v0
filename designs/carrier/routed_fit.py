@@ -1,14 +1,22 @@
 """Check the Rev A carrier with mated harness connectors in FreeCAD."""
 
+import hashlib
 import json
 from itertools import combinations
 from pathlib import Path
 
 import FreeCAD as App
+import MeshPart
+import Part
+from layout import REVISED_PRINTS
 from native import (
     BASELINE,
+    BUTTONS,
+    BUTTON_CUTOUT_HALF_WIDTH,
+    BUTTON_PANEL_RADIUS,
     battery_access,
     box,
+    button_opening,
     cylinder,
     harness_plan,
     intersections,
@@ -16,6 +24,9 @@ from native import (
     read_layout,
     require_solid,
 )
+
+from prints import normalize_stl_bed, orientation
+from solid_clearance import bounds
 
 # Pitch, end overhang, cross-row bounds and mated height, in millimeters.
 # These reservations include housing tolerance. The first cable build must
@@ -53,7 +64,7 @@ def component_envelopes(z):
 
 def pigtail_panel(rear):
     # Heyco M4448 on the rear face, with the elbow pointing down.
-    centre = (75, -44)
+    centre = (74, -44)
     vent_points = harness_plan.parameters()["rear_vents_xy_mm"]
     for xy in vent_points:
         rear = rear.fuse(cylinder(3.3, 0, 2, xy))
@@ -79,19 +90,132 @@ def pigtail_panel(rear):
     return rear, envelopes
 
 
+def fit_battery(battery, rear):
+    shapes = battery_access.native_shapes(battery, "narrow")
+    x, y, z = shapes["hinge_axis"]
+    # Provide a local recess above the three moving knuckles. Preserve the
+    # fixed outer knuckles, battery mounts, and the positive door catch.
+    direction = App.Vector(1, 0, 0)
+    radius = battery["door"]["hinge_radius_mm"] + 0.45
+    relief = Part.makeCompound([
+        Part.makeCylinder(radius, 12.8, App.Vector(x + offset - 6.4, y, z), direction)
+        for offset in (-26, 0, 26)
+    ])
+    rear = rear.cut(relief).removeSplitter()
+    shapes["rear_interface"] = shapes["rear_interface"].cut(relief).removeSplitter()
+    bore = Part.makeCylinder(1.8, 110, App.Vector(x - 55, y, z), direction)
+    shapes["BatteryDoor"] = shapes["BatteryDoor"].cut(bore).removeSplitter()
+    pivot = shapes["keeper_axis"][:2]
+    shapes["BatteryKeeper"] = shapes["BatteryKeeper"].cut(
+        cylinder(1.8, -1, 2, pivot)
+    ).removeSplitter()
+    return rear, shapes
+
+
+def rear_seal(rear, shell):
+    # Keep a 0.55 mm outer lip. The 0.8 mm depth gives 20 percent nominal
+    # compression on a 1 mm silicone cord against the existing shell face.
+    def ring(bottom, top):
+        return cylinder(99.45, bottom, top, (0, 0)).cut(
+            cylinder(98.05, bottom - .1, top + .1, (0, 0))
+        )
+
+    # Bridge the interrupted lower shell seat below the suspension eyelets.
+    # The added ring stays within the 200 mm perimeter and below the straps.
+    shell_seat = cylinder(100, 2, 3.5, (0, 0)).cut(
+        cylinder(97.9, 1.9, 3.6, (0, 0))
+    )
+    shell = shell.fuse(shell_seat)
+    require_solid("Rear seal shell", shell)
+
+    groove = ring(1.2, 2)
+    contact = ring(2, 2.05)
+    if groove.cut(rear).Volume > 0.001 or contact.cut(shell).Volume > 0.001:
+        raise ValueError("Rear seal needs a continuous groove and shell bearing face")
+    rear = rear.cut(ring(1.2, 2.1)).removeSplitter()
+    floor = ring(1.1, 1.2)
+    if floor.cut(rear).Volume > 0.001:
+        raise ValueError("Rear seal groove has an interrupted floor")
+    return rear, shell
+
+
+def control_seals(rear):
+    # The APEM O-ring seats under the 17.5 mm flange. Require the full land.
+    for xy in BUTTONS.values():
+        land = cylinder(8.75, 0, 0.2, xy).cut(
+            button_opening(xy, BUTTON_PANEL_RADIUS, BUTTON_CUTOUT_HALF_WIDTH, -.1, .3)
+        )
+        if land.cut(rear).Volume > 0.001:
+            raise ValueError(f"Missing button seal land at {xy}")
+    params = harness_plan.parameters()
+    xy = params["control_switch_x"], params["control_switch_y"]
+    # C&K 759D02000 on the stock 7201SYZQE. The boot replaces its outer
+    # hex nut. This outer reservation includes room for the flexible skirt.
+    seat = cylinder(6.65, 0, .2, xy).cut(cylinder(3.4, -.1, .3, xy))
+    if seat.cut(rear).Volume > 0.001:
+        raise ValueError("Missing disconnect boot seal land")
+    return cylinder(6.65, -3.5, 0, xy).fuse(
+        cylinder(8.4, -16.7, -3.5, xy)
+    )
+
+
+def export_print(directory, name, shape):
+    require_solid(name, shape)
+    solid = shape.copy()
+    axis, angle = orientation(name)
+    if angle:
+        solid.rotate(App.Vector(), App.Vector(*axis), angle)
+    bb = bounds(solid)
+    solid.translate(App.Vector(-bb.XMin, -bb.YMin, -bb.ZMin))
+    mesh = MeshPart.meshFromShape(
+        Shape=solid, LinearDeflection=0.02, AngularDeflection=0.08, Relative=False
+    )
+    if not mesh.isSolid() or mesh.countComponents() != 1:
+        raise ValueError(f"{name} must produce one watertight mesh")
+    path = directory / f"{name}.stl"
+    mesh.write(str(path))
+    normalize_stl_bed(path)
+    return {
+        "file": path.name,
+        "source_part": name,
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "print_bounds_mm": [bb.XLength, bb.YLength, bb.ZLength],
+    }
+
+
 def check(output):
+    output.unlink(missing_ok=True)
     baseline = App.openDocument(str(BASELINE / "stacked-fibonacci.FCStd"))
     try:
         layout = read_layout()
         products, fixed, _ = model(baseline, layout)
         parts = component_envelopes(layout["board_top_z_mm"])
         rear, pigtail = pigtail_panel(fixed["CarrierRearPanel"])
+        stock_shell = fixed["ElectronicsShell"]
+        rear, shell = rear_seal(rear, stock_shell)
+        fixed["ElectronicsShell"] = shell
+        seal_clearance = {
+            name: baseline.getObject(name).Shape
+            for name in ("NecklaceAttachmentReturn0", "NecklaceAttachmentReturn1")
+        }
+        collisions = intersections({"ElectronicsShell": shell}, seal_clearance)
+        collisions.extend(intersections({"ElectronicsShell": shell}, products))
+        battery = battery_access.definition()
+        rear, battery_shapes = fit_battery(battery, rear)
         fixed["CarrierRearPanel"] = rear
+        for name in ("BatteryDoor", "BatteryKeeper"):
+            fixed[name] = battery_shapes[name]
         obstacles = {**fixed, **products}
         obstacles.pop("Carrier")  # The parts sit on the carrier's top face.
         parts["WallChargerEnvelope"] = box(([-14, -95, 3.5], [10, -67, 9.5]))
         parts.update(pigtail)
-        collisions = intersections(parts, obstacles)
+        parts["DisconnectBoot"] = control_seals(rear)
+        disconnect = obstacles.pop("PowerDisconnect")
+        collisions.extend(intersections(parts, obstacles))
+        collisions.extend(intersections(
+            {name: shape for name, shape in parts.items() if name != "DisconnectBoot"},
+            {"PowerDisconnect": disconnect},
+        ))
         collisions.extend(intersections({"PigtailRearCover": rear}, products))
         for a, b in combinations(parts, 2):
             collisions.extend(intersections({a: parts[a]}, {b: parts[b]}))
@@ -99,20 +223,31 @@ def check(output):
             raise ValueError(f"Rev A carrier interference: {collisions}")
         print(f"REV A CLOSED FIT PASS ({len(parts)} installed envelopes)", flush=True)
         rear.exportStep(str(output.with_name("pigtail-rear-cover.step")))
-        battery = battery_access.definition()
+        print_solids = {"RearCover": rear, **fixed}
+        print_parts = [export_print(output.parent, name, print_solids[name])
+                       for name in sorted(REVISED_PRINTS)]
         motion = battery_access.native_check(
             battery,
             "narrow",
-            battery_access.native_shapes(battery, "narrow"),
+            battery_shapes,
             surroundings=[
-                ("RearCover", fixed["CarrierRearPanel"]),
+                ("RearCover", rear),
+                ("RearSealShellSeat", shell.cut(stock_shell)),
                 *products.items(),
                 *parts.items(),
             ],
         )
+        if min(motion["door_continuous_clearance_mm"],
+               motion["keeper_continuous_clearance_mm"]) < 0.15:
+            raise ValueError(f"Rev A battery motion clearance is below 0.15 mm: {motion}")
         output.write_text(
             json.dumps(
-                {"closed_collisions": collisions, "battery_motion": motion}, indent=2
+                {
+                    "closed_collisions": collisions,
+                    "battery_motion": motion,
+                    "print_parts": print_parts,
+                },
+                indent=2,
             )
             + "\n"
         )
