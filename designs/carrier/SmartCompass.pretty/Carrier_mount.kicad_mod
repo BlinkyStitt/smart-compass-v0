@@ -1,0 +1,59 @@
+(footprint "Carrier_mount"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "H3"
+		(at 0 2 0)
+		(layer "Dwgs.User")
+		(hide yes)
+		(uuid "c8aa0c1a-4b47-4136-b195-d3de2000a2ce")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "15f246a9-520d-42bd-b677-501d82d0ca2a")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f49ddd1a-b557-4d67-8a78-72fc872974ee")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "93af235d-72bd-4859-b4b1-afb9fa316e3d")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(pad "" np_thru_hole circle
+		(at 0 0)
+		(size 2.2 2.2)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8e0b4e07-a264-426f-b71d-92b17e267675")
+	)
+	(embedded_fonts no)
+)

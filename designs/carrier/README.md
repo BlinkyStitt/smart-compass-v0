@@ -1,6 +1,12 @@
 # Plug-in carrier for the narrow compass
 
-This is a mechanical fit prototype for a single 1.2 mm carrier board. The
+Rev A has a [routed carrier PCB](carrier-a.kicad_pcb), a
+[plug and harness assembly guide](assembly.md), and a
+[USB-C power and charging design](wall-power.md). The charger is a separate
+assembly that plugs into the carrier. The compact charger board and the
+physical wall test remain open.
+
+The original fit model uses a single 1.2 mm carrier board. The
 housing uses the narrow design's 58.6 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
@@ -75,11 +81,10 @@ report. It also writes an unrouted KiCad board with the checked outline and
 socket positions. Print the gauge flat to check connector fit and access.
 Use the terminal schedule to assign the remaining connectors before routing.
 
-## Complete the carrier
+## Qualify the prototype
 
-Route and verify the board before sending it to a PCB assembler. Select keyed
-harnesses and verify the current ratings of the contacts, copper, and external
-LED circuits. Check the positions of the GPS and radio antennas with the
+Use the Rev A assembly and power guides for the bench build. Measure current
+and temperature at the contacts, copper, and LED circuits. Check the positions of the GPS and radio antennas with the
 carrier installed. Add independent board retention so the sockets are not the
 only restraints. Select the exact panel buttons and verify their mount and lead
 exits. The charger and external-power circuit still need a routed design and
