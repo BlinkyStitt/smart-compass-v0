@@ -90,11 +90,13 @@ placement or connector map.
 
 For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
-directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plug, proposed USB module envelope
-and battery motion checks in `routed-fit.json`.
+directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
+the pigtail hardware, the charger envelope and battery motion in
+`routed-fit.json`. It exports `pigtail-rear-cover.step` with the former
+vents filled and the cordgrip opening at the bottom.
 
-Use the [wall power design](wall-power.md) before connecting the charger or a
-cell. First power up the carrier through J1 SYS and GND on a current-limited
-bench supply at 3.6 V with the battery and charger disconnected. Check SYS
-at the latch plug and check for shorts. Install the latch and boost next.
+Use the [wall power design](wall-power.md) and [dust sealing plan](dust-sealing.md)
+before connecting the charger or a cell. First power up the carrier through
+J1 SYS and GND on a current-limited 3.6 V bench supply with the battery and
+charger disconnected. Check SYS at the latch plug and check for shorts. Install the latch and boost next.
 Measure the 5 V rail before installing the other modules and LED loads.

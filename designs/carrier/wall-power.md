@@ -1,15 +1,15 @@
 # Wall USB-C power and in-place charging
 
-The Rev A carrier uses a four-wire plug for a small charger board with a USB-C
-socket on the lower edge of the case. A 5 V source that advertises 3 A over
-USB-C is the input target. The [Raspberry Pi 15 W USB-C
+The Rev A carrier uses a four-wire plug for a small internal charger board.
+The USB-C socket hangs below the case on a captive pigtail. Use a 5 V
+source that advertises 3 A over USB-C. The [Raspberry Pi 15 W USB-C
 supply](https://www.raspberrypi.com/products/type-c-power-supply/) is a
 5.1 V, 3 A bench candidate. Confirm the actual CC advertisement and loaded
 voltage at the receptacle. This circuit uses Type-C current advertisement and
 keeps VBUS at 5 V.
 
 ```text
-USB-C 5 V ── STUSB4500L attach switch ── 3 A detect gate ── BQ25616 VBUS
+USB-C 5 V ── STUSB4500L attach switch ── 3 A detect gate ── sealed cable ── BQ25616 VBUS
                                                             │
 Fused, switched protected 21700 ─────────────────────── BQ25616 BAT
 Holder-mounted NTC ──────────────────────────────────── BQ25616 TS
@@ -35,9 +35,17 @@ blocking between its input and the cell/SYS path.
 
 ## USB input and charger circuit
 
-Use the ST reference USB-C connector, CC and ESD network, and attach-controlled
-VBUS switch. Take the protected `VSNK` output and the open-drain `RP_3A` flag.
-Add a second series switch so the charger starts only on the 3 A advertisement.
+Place the receptacle, CC and ESD network, attach-controlled switch and
+3 A gate in the pigtail head. Use the GCT USB4736-GF-A charging receptacle
+with its USBTJ-06 gasket and a tethered cap. Take only switched 5 V and
+ground through the rear cover. Keep the CC lines at the receptacle.
+The head is the device's inlet. Plug a standard C-to-C cable into it.
+Use a sealed cable exit at the head and a keyed 3 A service connector at
+the charger. [GCT receptacle and gasket](https://gct.co/connector/usb4736)
+
+Take the protected `VSNK` output and the open-drain `RP_3A` flag from the
+ST reference circuit. Add a second series switch so the charger starts
+only on the 3 A advertisement.
 Copy the layout and attach behavior from the [ST reference
 schematic](https://www.st.com/resource/en/schematic_pack/eval-scs002v1_schematic.pdf)
 and [STUSB4500L data sheet](https://www.st.com/resource/en/datasheet/stusb4500l.pdf).
@@ -45,8 +53,8 @@ and [STUSB4500L data sheet](https://www.st.com/resource/en/datasheet/stusb4500l.
 - Use a TPS22965N with VIN and VBIAS at VSNK, both VOUT pins feeding charger
   VBUS, and GND and the pad to ground. Use 1 µF input bypass at the switch
   and 1 nF on CT as the first inrush setting. Verify the total capacitance on
-  the receptacle side and the turn-on waveform. The ST attach switch must
-  drop VSNK on disconnect or an invalid voltage.
+  the receptacle side and the turn-on waveform with the actual pigtail.
+  The ST attach switch must drop VSNK on disconnect or an invalid voltage.
 - Use a PNP MMBT3906 from VSNK to the active-high ON pin. Connect the emitter
   to VSNK, collector to ON, and base through 47 kΩ to RP_3A. Pull base to
   emitter with 100 kΩ. Pull ON to ground with 100 kΩ. A low RP_3A enables
@@ -112,16 +120,13 @@ simulator and an electronic load before connecting the cell.
 
 ## Mounting and load limit
 
-Use the existing strap on a rated wall hook for the first fit. Add two shallow
-rear bumpers so the pendant sits level and air can move behind it. Use a
-downward-facing USB-C recess centered at the bottom of the pendant so the
-cable stays reachable on the wall. FreeCAD found room for a 28 × 24 × 6 mm
-module envelope at X ±12, Y −95 to −67, Z 3.5 to 9.5 mm from the rear
-datum, and a 13 mm-wide plug body outside it. The plug envelope crosses
-the shell at the proposed recess. Capture the receptacle PCB at its mounting points. Keep plug forces
-out of the carrier and battery door. Provide a cable relief loop below the case.
-The final charger PCB, port recess and retention need a fit and load check with
-the selected plug and wall hardware.
+Use the existing strap on a rated wall hook for the first fit. Provide at
+least 35 mm between the rear face and the wall for the cordgrip and cable.
+Keep the charging cable below the case with enough slack to keep its weight
+and plug forces off the connector. The internal charger has a 28 × 24 × 6 mm
+reservation at X −14 to 10, Y −95 to −67, Z 3.5 to 9.5 mm from the rear datum.
+See the [sealed pigtail and enclosure plan](dust-sealing.md) for the rear
+cover, cable gland and complete enclosure checks.
 
 The 2% rainbow mode draws about 5.7 W in the existing model. At 85% boost
 and 90% charger conversion efficiency, that is about 7.5 W at USB before

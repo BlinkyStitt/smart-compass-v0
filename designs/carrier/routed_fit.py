@@ -5,7 +5,17 @@ from itertools import combinations
 from pathlib import Path
 
 import FreeCAD as App
-from native import BASELINE, battery_access, box, intersections, model, read_layout
+from native import (
+    BASELINE,
+    battery_access,
+    box,
+    cylinder,
+    harness_plan,
+    intersections,
+    model,
+    read_layout,
+    require_solid,
+)
 
 # Pitch, end overhang, cross-row bounds and mated height, in millimeters.
 # These reservations include housing tolerance. The first cable build must
@@ -41,33 +51,54 @@ def component_envelopes(z):
     return parts
 
 
+def pigtail_panel(rear):
+    # Heyco M4448 on the rear face, with the elbow pointing down.
+    centre = (75, -44)
+    vent_points = harness_plan.parameters()["rear_vents_xy_mm"]
+    for xy in vent_points:
+        rear = rear.fuse(cylinder(3.3, 0, 2, xy))
+    reinforcement = cylinder(11.3, 0, 2.4, centre)
+    bore = cylinder(6, -0.1, 2.5, centre)
+    rear = rear.fuse(reinforcement).cut(bore).removeSplitter()
+    require_solid("Pigtail rear cover", rear)
+
+    for xy in vent_points:
+        if cylinder(3, 0, 2, xy).cut(rear).Volume > 0.001:
+            raise ValueError(f"Rear vent is still open at {xy}")
+    seal_land = cylinder(8.5, 0, 2.4, centre).cut(bore)
+    if seal_land.cut(rear).Volume > 0.001:
+        raise ValueError("Cordgrip needs a continuous flat bearing land")
+
+    # The 38.8 mm overall length includes 8.1 mm of mounting thread.
+    # Allow 33 mm behind the cover for the elbow body and its tolerance.
+    x, y = centre
+    envelopes = {
+        "PigtailThreadAndLocknut": cylinder(11.1, 2.4, 8.1, centre),
+        "DownwardPigtailCordgrip": box(([x - 10, y - 12, -33], [x + 10, y + 12, 0])),
+    }
+    return rear, envelopes
+
+
 def check(output):
     baseline = App.openDocument(str(BASELINE / "stacked-fibonacci.FCStd"))
     try:
         layout = read_layout()
         products, fixed, _ = model(baseline, layout)
         parts = component_envelopes(layout["board_top_z_mm"])
+        rear, pigtail = pigtail_panel(fixed["CarrierRearPanel"])
+        fixed["CarrierRearPanel"] = rear
         obstacles = {**fixed, **products}
         obstacles.pop("Carrier")  # The parts sit on the carrier's top face.
-        parts["WallChargerEnvelope"] = box(([-12, -95, 3.5], [12, -67, 9.5]))
+        parts["WallChargerEnvelope"] = box(([-14, -95, 3.5], [10, -67, 9.5]))
+        parts.update(pigtail)
         collisions = intersections(parts, obstacles)
-        # The future USB recess provides passage through the lower shell wall.
-        outside_plug = box(([-6.5, -116, 4.5], [6.5, -95, 13]))
-        collisions.extend(
-            intersections(
-                {"WallPlugEnvelope": outside_plug},
-                {
-                    name: shape
-                    for name, shape in obstacles.items()
-                    if name != "ElectronicsShell"
-                },
-            )
-        )
+        collisions.extend(intersections({"PigtailRearCover": rear}, products))
         for a, b in combinations(parts, 2):
             collisions.extend(intersections({a: parts[a]}, {b: parts[b]}))
         if collisions:
             raise ValueError(f"Rev A carrier interference: {collisions}")
         print(f"REV A CLOSED FIT PASS ({len(parts)} installed envelopes)", flush=True)
+        rear.exportStep(str(output.with_name("pigtail-rear-cover.step")))
         battery = battery_access.definition()
         motion = battery_access.native_check(
             battery,

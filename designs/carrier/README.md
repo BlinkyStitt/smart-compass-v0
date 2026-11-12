@@ -3,8 +3,9 @@
 Rev A has a [routed carrier PCB](carrier-a.kicad_pcb), a
 [plug and harness assembly guide](assembly.md), and a
 [USB-C power and charging design](wall-power.md). The charger is a separate
-assembly that plugs into the carrier. The compact charger board and the
-physical wall test remain open.
+assembly that plugs into the carrier. The [sealed pigtail](dust-sealing.md)
+uses a downward cable gland in the lower rear cover. The compact charger,
+pigtail head and complete enclosure seals still need physical verification.
 
 The original fit model uses a single 1.2 mm carrier board. The
 housing uses the narrow design's 58.6 mm optical stack and removable protected
