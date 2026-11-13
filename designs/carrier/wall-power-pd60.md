@@ -1,9 +1,10 @@
 # 60 W USB-C wall power
 
 Use a USB-C PD adapter and C-to-C cable that support 20 V at 3 A on the port
-in use. The gasketed USB-C head hangs below the compass. It accepts the
-20 V contract, then converts it to 5 V before the cable enters the case.
-Use the existing charger, cell holder, and thermistor.
+in use. A USB-C PD power bank works if its port offers that mode. Plug the
+cable into the downward-facing USB-C socket on the rear cover. The inlet
+board, 5 V converter, charger and LED power selector are inside the case.
+Use the existing cell holder and thermistor.
 
 | Condition | Operation |
 | --- | --- |
@@ -13,43 +14,42 @@ Use the existing charger, cell holder, and thermistor.
 | USB-C absent or below 20 V at 3 A, no cell | The display and charger stay off. |
 | S1 OFF | The display feed and positive cell contact open. |
 
-Hang the compass by its strap on a rated hook. Leave at least 35 mm behind
-the rear face for the cable elbow. Support the wall cable so it does not
-pull on the socket. Unplug USB and set S1 to OFF before cell service.
+Hang the compass by its strap on a rated hook. Allow 35 mm behind the
+rear face for the port, plug and cable. Keep the cable clear of the wall.
+Support the wall cable to keep its weight off the socket. Unplug USB and
+set S1 to OFF before cell service.
 
-## Prepare the USB-C head
+## Assemble the USB-C inlet and regulator
 
-1. Have the assembler reflow the [USB-C PCB](wall-power/README.md).
-   Program the STUSB4500 as described below. Fit the GCT USB4736-GF-A-KIT
-   and its USBTJ-06 gasket on the short wall of a Hammond 1551WYBK.
-2. Mount the USB PCB on insulating supports. Align the connector to the
-   GCT panel drawing and compress the 0.90 mm gasket by 35–45%. Leave
-   room to fully seat the USB plug. Fit the tethered cap.
-3. Mount the Pololu D24V90F5 behind the PCB along the long axis of the
-   head. Use the large power holes. Connect W1 and W2 to VIN and input
-   ground with 22 AWG. Connect VOUT and output ground to W3 and W4 with
-   18 AWG. Keep the paired leads short. Use an insulating mount that
-   clears the solder joints and holds both boards clear of each other.
-   Allow 8 mm between the boards and about 10 mm at the gland end for
-   flat leads and the locknut. The head measures 100 × 50 × 24 mm.
-4. Fit a Heyco M4332 straight M12 gland on the opposite end. Solder the
-   red and black leads of Q4560-1 round 18 AWG cable to W5 and W6. Fit a
-   Heyco M4450 elbow in the existing rear-cover hole. Clamp the jacket
-   at both ends and leave at least 25 mm of slack inside the cover.
-5. Fit a shrouded **two-position Mini-Fit Jr.** receptacle to the
-   powered lead after threading the gland. Use cavity 1 for 5 V and
-   cavity 2 for ground. Use 18 AWG contacts on both halves. Keep the
-   head-to-selector lead at or below 400 mm. Measure the dressed route
-   around the carrier before cutting. Include the 25 mm service fold.
+1. Have the assembler reflow the [USB-C PCB](wall-power/README.md). Program
+   it as described below. Use the 1.20 ± 0.10 mm board and the
+   USB4736-GF-A-KIT receptacle with its USBTJ-06 gasket.
+2. Finish the port and gasket pocket to the GCT panel drawing. Check the
+   9.10–9.14 × 3.32–3.36 mm opening, 0.60 ± 0.03 mm pocket depth, and
+   35–45% gasket compression on the printed sample. Remove support and
+   smooth the gasket land. Check plug seating before attaching any wires.
+3. On the bench, solder 22 AWG pairs between W1/W2 and regulator VIN and
+   ground. Solder 18 AWG pairs between regulator VOUT and ground and W3/W4.
+   Keep the leads flat and leave enough slack to lift both boards out
+   without pulling on the pads. Insulate the solder joints from the cover
+   and secure the leads inside the bay.
+4. Set the inlet into the lower opening from inside the rear cover. Slide
+   the socket forward to seat its gasket. Fit two M2 × 4 mm screws and
+   insulating washers in the blind pilots. Check that the panel takes the
+   plug load and the PCB stays flat. Seat the Pololu D24V90F5 in the upper
+   opening and use four short M2 screws with insulating washers. Check
+   screw depth and underside lead clearance before tightening.
+5. Terminate W5 and W6 with a shrouded two-position Mini-Fit Jr. Use 18 AWG
+   contacts, with cavity 1 for 5 V and cavity 2 for ground. Leave at least
+   25 mm of service slack and keep the full inlet-to-selector lead at or
+   below 400 mm. Fit a tethered dust cap to the USB-C receptacle.
 
-[Receptacle](https://gct.co/connector/usb4736),
-[Housing drawing](https://www.hammfg.com/files/parts/pdf/1551WYGY.pdf?v=1697661936),
-[Regulator](https://www.pololu.com/product/2866),
-[Cable specification](https://cdn.automationdirect.com/static/specs/18awgushctrlandsigcbl.pdf)
+[GCT panel drawing](https://datasheet.octopart.com/USB4736-GF-A-GCT-datasheet-189261393.pdf),
+[Regulator](https://www.pololu.com/product/2866)
 
-### Program the head once
+### Program the inlet once
 
-With no regulator or pigtail connected, use the four probe pads and a
+With no regulator or selector connected, use the four probe pads and a
 3.3 V I²C programmer. Connect 3.3 V to TP1, SDA to TP2, SCL to TP3, and
 ground to TP4. Leave USB unplugged. Use the included Arduino [provisioning
 sketch](wall-power/provision/provision.ino) with the
@@ -61,9 +61,9 @@ plugging in USB.
 The first sink profile stays at 5 V for negotiation. PDO2 matches only
 20 V with at least 3 A advertised and requests 3 A. POWER_OK2 asserts
 after the source accepts PDO2 and reports ready. U2 also requires about
-18 V at its input. The head supplies neither charging nor wall display
-power from a lower profile. The 5 V output eFuse blocks reverse current
-and disconnects the pigtail above its voltage window.
+18 V at its input. Charging and wall display power require this contract.
+The 5 V output eFuse blocks reverse current and disconnects the 5 V feed
+above its voltage window.
 [STUSB4500 decision algorithm](https://www.st.com/resource/en/datasheet/stusb4500.pdf),
 [TPS25947 eFuse and priority switching](https://www.ti.com/lit/ds/symlink/tps25947.pdf)
 
@@ -78,7 +78,7 @@ bench and secure its service folds with removable ties.
 
 | Selector lead | Connection |
 | --- | --- |
-| W1, W2 | Head connector cavities 1 and 2. |
+| W1, W2 | Inlet connector cavities 1 and 2. |
 | W3, W4 | Existing charger two-position Micro-Fit, 5 V and ground. |
 | W5 | Sparkle Motion JP1.9, the 5 V lead removed from the carrier side of the J7 harness. |
 | W6, W7 | J7.1 and J7.2, LED 5 V and return. Join the Sparkle clamp ground to J7.2 at the bench splice. |
@@ -141,5 +141,6 @@ python3 -m unittest discover -s designs/carrier/wall-power/firmware
 Board checks cover connection, design-rule and schematic parity.
 The current limits are estimates for the encoded rainbow. The assembled
 unit establishes sustained temperature, cable drop and source-change
-behavior. See [charger setup](wall-power.md) for the temperature sensor
-and cell sleeve.
+behavior. Check the regulator, rear pocket, wearer contact surface, charger
+and cell during sustained display plus charging in the closed case.
+See [charger setup](wall-power.md) for the temperature sensor and cell sleeve.

@@ -143,12 +143,12 @@ placement or connector map.
 For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
 directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
-the pigtail hardware, charger envelope, hatch and retainer fit and cell service in
-`routed-fit.json`. It exports `pigtail-rear-cover.step` and the seven revised
+the internal USB-C hardware, charger envelope, hatch and retainer fit and cell service in
+`routed-fit.json`. It exports `usb-c-rear-cover.step` and the seven revised
 print solids as STLs. Make the complete print package with the
 [Rev A build instructions](README.md#make-the-rev-a-print-package).
 
-Use the [wall power design](wall-power.md) and [dust sealing plan](dust-sealing.md)
+Use the [wall power design](wall-power-pd60.md) and [dust sealing plan](dust-sealing.md)
 before connecting the charger or a cell. First power up the carrier through
 J1 SYS and GND on a current-limited 3.6 V bench supply with the battery and
 charger disconnected. Check SYS at the latch plug and check for shorts. Install the latch and boost next.

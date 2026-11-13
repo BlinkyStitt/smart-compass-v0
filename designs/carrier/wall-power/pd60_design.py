@@ -11,7 +11,7 @@ HEAVY = "WallPower:Lead_18AWG"
 HOLE = "MountingHole:MountingHole_2.2mm_M2"
 TP = "TestPoint:TestPoint_Pad_D1.0mm"
 
-# Top side. The Pololu regulator fits next to this board in the external head.
+# Top side. The Pololu regulator fits next to this board in the rear cover.
 HEAD = {
     "J1": ("USB4736-GF-A", "WallPower:USB4736-GF-A", (14, 31, 0),
            {"A5": "CC1", "B5": "CC2", "A9": "RAW", "B9": "RAW",

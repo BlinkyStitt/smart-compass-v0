@@ -4,14 +4,14 @@
 | --- | --- | --- | --- |
 | Internal charger | [Charger PCB](charger.kicad_pcb) | [Charger schematic](charger.kicad_sch) | 24 × 26 mm, 1.60 mm thick |
 | Rev A 5 V external pigtail | [Pigtail PCB](usb-pigtail.kicad_pcb) | [Pigtail schematic](usb-pigtail.kicad_sch) | 28 × 31 mm, **1.20 ± 0.10 mm** thick |
-| 60 W USB-C head | [Head PCB](usb-pd60.kicad_pcb) | [Head schematic](usb-pd60.kicad_sch) | 28 × 31 mm, **1.20 ± 0.10 mm** thick |
+| 60 W USB-C inlet | [Inlet PCB](usb-pd60.kicad_pcb) | [Inlet schematic](usb-pd60.kicad_sch) | 28 × 31 mm, **1.20 ± 0.10 mm** thick |
 | LED power selector | [Selector PCB](led-power.kicad_pcb) | [Selector schematic](led-power.kicad_sch) | 28 × 28 mm, 1.60 mm thick |
 
-Build the 60 W head, selector and existing charger together. Use the
+Build the 60 W inlet, selector and existing charger together. Use the
 [60 W BOM](bom-pd60.csv) and [assembly guide](../wall-power-pd60.md).
-The 5 V pigtail is the earlier option. The 60 W head requires the
+The 5 V pigtail is the earlier option. The 60 W inlet requires the
 programmed STUSB4500 profile. Use the keyed connectors in the assembly
-guide to prevent mixing the two pigtail assemblies.
+guide to preserve the 5 V and return pin order.
 
 Use KiCad 10. Each board has four copper layers. Specify 35 µm finished
 outer copper and at least 35 µm on In2.Cu, which carries the power trunks.

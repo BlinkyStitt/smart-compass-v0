@@ -36,12 +36,11 @@ led-power,R7,56k,0603
 led-power,R8,47k,0603
 led-power,R9,27.4k 1%,0603
 led-power,R11,3.32k 1%,0603
-head,converter,D24V90F5,Pololu 2866
-head,case,1551WYBK,Hammond gasketed enclosure
-head,cable exit,M4332,Heyco M12 straight gland
-harness,rear exit,M4450,Heyco M12 right-angle gland
-harness,pigtail,Q4560-1,Quabbin jacketed 18 AWG pair
-harness,pigtail receptacle,39012020,Molex Mini-Fit Jr. two-position receptacle
+inlet,converter,D24V90F5,Pololu 2866
+inlet,mounts,M2 screws and insulating washers,Two inlet mounts and four regulator mounts
+inlet,cap,USB-C dust cap,Tethered cap for charging inlet
+harness,5 V feed,18 AWG pair,Internal inlet to selector
+harness,inlet receptacle,39012020,Molex Mini-Fit Jr. two-position receptacle
 harness,selector plug,39012021,Molex Mini-Fit Jr. two-position plug
-harness,pigtail female contacts,39000039,Mini-Fit Jr. 18 AWG receptacle terminal
+harness,inlet female contacts,39000039,Mini-Fit Jr. 18 AWG receptacle terminal
 harness,selector male contacts,39000041,Mini-Fit Jr. 18 AWG plug terminal
