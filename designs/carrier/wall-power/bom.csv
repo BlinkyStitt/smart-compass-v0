@@ -1,0 +1,42 @@
+Board,References,Quantity,Manufacturer,Part number,Description
+charger,U1,1,Texas Instruments,BQ25616RTWR,Standalone power-path charger (non-J variant)
+charger,L1,1,Coilcraft,XFL4020-102MEC,1 uH shielded power inductor
+charger,C1,1,Murata,GRM21BR71H105KA12L,1 uF 50 V X7R 0805
+charger,C2 C3,2,Murata,GRM31CR71E106KA12L,10 uF 25 V X7R 1206
+charger,C4,1,Murata,GRM21BR71C475KA73L,4.7 uF 16 V X7R 0805
+charger,C5,1,Yageo,CC0603KRX7R7BB473,47 nF 16 V X7R 0603
+charger,C6 C7 C8,3,Murata,GRM31CZ71C226ME15L,22 uF 16 V X7R 1206
+charger,R1,1,Yageo,RC0603FR-07205RL,205 ohm 1% 0603
+charger,R2,1,Yageo,RC0603FR-07562RL,562 ohm 1% 0603
+charger,R3,1,Vishay,TNPW06035K30BEEA,5.30 kohm 0.1% 0603
+charger,R4,1,Vishay,TNPW060331K1BEEA,31.1 kohm 0.1% 0603
+charger,R5 R6,2,Yageo,RC0603FR-0710KL,10 kohm 1% 0603
+usb-pigtail,J1,1,GCT,USB4736-GF-A-KIT,Receptacle with USBTJ-06 gasket
+usb-pigtail,U1,1,STMicroelectronics,STUSB4500LQTR,5 V sink with factory NVM
+usb-pigtail,U2,1,Texas Instruments,TPS259531DSGR,Active-high eFuse with 5.7 V clamp
+usb-pigtail,Q1,1,Diodes Inc.,DMP2022LSS-13,P-channel MOSFET
+usb-pigtail,Q2,1,onsemi,MMBT3906LT1G,PNP transistor
+usb-pigtail,D1,1,STMicroelectronics,ESDA25W,Two-line CC ESD protection
+usb-pigtail,D2,1,STMicroelectronics,ESDA25P35-1U1M,VBUS TVS
+usb-pigtail,C1 C4,2,Murata,GRM21BR71H105KA12L,1 uF 50 V X7R 0805
+usb-pigtail,C2 C3,2,Yageo,CC0603KRX7R7BB105,1 uF 16 V X7R 0603
+usb-pigtail,C5,1,Yageo,CC0603KRX7R7BB103,10 nF 16 V X7R 0603
+usb-pigtail,C6,1,Yageo,CC0805KRX7R8BB105,1 uF 25 V X7R 0805
+usb-pigtail,R1 R2,2,Yageo,RC0603FR-071KL,1 kohm 1% 0603
+usb-pigtail,R3 R6 R7,3,Yageo,RC0603FR-07100KL,100 kohm 1% 0603
+usb-pigtail,R4,1,Yageo,RC0603FR-0720KL,20 kohm 1% 0603
+usb-pigtail,R5,1,Yageo,RC0603FR-0747KL,47 kohm 1% 0603
+usb-pigtail,R8,1,Yageo,RC0603FR-07750RL,750 ohm 1% 0603
+harness,NTC,1,Semitec,103JT-025,Thin-film 10 kohm cell thermistor with 25 mm leads
+harness,cell holder sensor,1,JST,SYP-02T-1,Keyed two-pin RCY socket housing
+harness,cell holder sensor,2,JST,SYF-001T-P0.6,RCY socket terminals for 26 AWG pigtails
+harness,cell sleeve sensor,1,JST,SYR-02T,Keyed two-pin RCY pin housing
+harness,cell sleeve sensor,2,JST,SYM-001T-P0.6,RCY pin terminals for 26 AWG pigtails
+harness,charger to carrier,1,JST,VHR-4N,Four-position keyed charger plug
+harness,charger to carrier,4,JST,SVH-21T-P1.1,VH crimp for 18 to 22 AWG
+harness,USB output,1,Molex,43025-0200,Shrouded live-side receptacle
+harness,USB output,2,Molex,43030-0007,22 AWG female terminal
+harness,charger input,1,Molex,43020-0201,Keyed two-position plug
+harness,charger input,2,Molex,43031-0007,22 AWG male terminal
+harness,external head,1,Hammond,1551WHBK,Gasketed case for machined or jig-cut connector opening
+harness,head and rear cover,2,Heyco,M4448,M12 right-angle gland for a round jacket
