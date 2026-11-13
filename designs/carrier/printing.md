@@ -33,7 +33,8 @@ glow PETG and check the thin wall paths in the preview.
    the guard ribs. Check that the retainer feet seat and its pads bear on the PCB edges
    and mounting holes.
 3. Print the shell, front bezel, two diffusers, stencil and two
-   removable front contact clamps. Check the lens and glow band seal lands
+   removable front contact clamps. Use both revised front clamps. Fit the
+   circular guard on `BatteryContactPFront` facing the cell. Check the lens and glow band seal lands
    before installing optics or wiring.
 
 Use four M3 × 14 mm hatch screws with 0.5 mm washers and five

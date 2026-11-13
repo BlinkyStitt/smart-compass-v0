@@ -27,7 +27,10 @@ from native import (
 
 from prints import normalize_stl_bed, orientation
 from solid_clearance import bounds
-from integrated_parts import BACK_PLATES, contact_cradle, disconnect_guard
+from integrated_parts import (
+    BACK_PLATES, KEYED_NEGATIVE_STOP_MM, KEYED_TIP_GAP_MM,
+    contact_cradle, disconnect_guard, positive_contact_key,
+)
 from seals import LEGACY_HINGE, check_hatch, front_seals, hatch
 from retainer import build as build_retainer
 from usb_bay import power_bay
@@ -189,9 +192,19 @@ def check(output):
         collisions = intersections({"ElectronicsShell": shell}, seal_clearance)
         collisions.extend(intersections({"ElectronicsShell": shell}, products))
         battery = battery_access.definition()
+        battery["contact"]["unloaded_tip_gap_mm"] = KEYED_TIP_GAP_MM
+        battery["contact"]["negative_stop_compression_mm"] = KEYED_NEGATIVE_STOP_MM
+        # Accommodate the new pin spacing while preserving the wire-joint
+        # overlap, bend radius, and fuse datum.
+        battery["contact_leads"]["cup_collar_end_x_from_cell_mm"] += .2
+        battery["contact_leads"]["bend_start_x_from_cell_mm"] += .125
+        battery["contact_leads"]["final_return_straight_mm"] += .125
         rear, battery_shapes = fit_battery(battery, rear)
+        fixed["BatteryContactNFront"] = battery_shapes["BatteryContactNFront"]
         lid, rear, lid_sweep = hatch(battery, rear)
         cradle, cradle_joins, contact_fit = contact_cradle(battery, battery_shapes)
+        positive_clamp, positive_guard, polarity_fit = positive_contact_key(battery, battery_shapes)
+        fixed["BatteryContactPFront"] = positive_clamp
         rear, guard, guard_fit = disconnect_guard(rear)
         rear, power_parts, wall_cable, install_paths = power_bay(rear)
         fixed["CarrierRearPanel"] = rear
@@ -224,6 +237,8 @@ def check(output):
         }))
         collisions.extend(intersections({"CradleRoofJoins": cradle_joins},
                                         {**parts, **products, "ElectronicsShell": shell}))
+        collisions.extend(intersections({"PositiveContactKey": positive_guard},
+                                        {**parts, **products, "Cradle": cradle, "RearCover": rear}))
         for a, b in combinations(parts, 2):
             collisions.extend(intersections({a: parts[a]}, {b: parts[b]}))
         hatch_obstacles = {name: shape for name, shape in {**fixed, **products, **parts}.items()
@@ -278,6 +293,7 @@ def check(output):
                     ),
                     "battery_hatch": hatch_fit,
                     "battery_contacts": contact_fit,
+                    "battery_polarity": polarity_fit,
                     "disconnect_guard": guard_fit,
                     "carrier_retainer": retainer_fit,
                     "integrated_usb_c": {
