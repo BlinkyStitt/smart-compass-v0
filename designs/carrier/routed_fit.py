@@ -30,6 +30,7 @@ from solid_clearance import bounds
 from integrated_parts import BACK_PLATES, contact_cradle, disconnect_guard
 from seals import LEGACY_HINGE, check_hatch, front_seals, hatch
 from retainer import build as build_retainer
+from usb_bay import power_bay
 
 # Pitch, end overhang, cross-row bounds and mated height, in millimeters.
 # These reservations include housing tolerance. The first cable build must
@@ -65,32 +66,13 @@ def component_envelopes(z):
     return parts
 
 
-def pigtail_panel(rear):
-    # Heyco M4450 on the rear face, with the elbow pointing down.
-    centre = (74, -44)
+def close_rear_vents(rear):
     vent_points = harness_plan.parameters()["rear_vents_xy_mm"]
     for xy in vent_points:
         rear = rear.fuse(cylinder(3.3, 0, 2, xy))
-    reinforcement = cylinder(11.3, 0, 2.4, centre)
-    bore = cylinder(6, -0.1, 2.5, centre)
-    rear = rear.fuse(reinforcement).cut(bore).removeSplitter()
-    require_solid("Pigtail rear cover", rear)
-
-    for xy in vent_points:
         if cylinder(3, 0, 2, xy).cut(rear).Volume > 0.001:
             raise ValueError(f"Rear vent is still open at {xy}")
-    seal_land = cylinder(8.5, 0, 2.4, centre).cut(bore)
-    if seal_land.cut(rear).Volume > 0.001:
-        raise ValueError("Cordgrip needs a continuous flat bearing land")
-
-    # The 38.8 mm overall length includes 8.1 mm of mounting thread.
-    # Allow 33 mm behind the cover for the elbow body and its tolerance.
-    x, y = centre
-    envelopes = {
-        "PigtailThreadAndLocknut": cylinder(11.1, 2.4, 8.1, centre),
-        "DownwardPigtailCordgrip": box(([x - 10, y - 12, -33], [x + 10, y + 12, 0])),
-    }
-    return rear, envelopes
+    return rear.removeSplitter()
 
 
 def fit_battery(battery, rear):
@@ -194,7 +176,7 @@ def check(output):
         layout = read_layout()
         products, fixed, _ = model(baseline, layout)
         parts = component_envelopes(layout["board_top_z_mm"])
-        rear, pigtail = pigtail_panel(fixed["CarrierRearPanel"])
+        rear = close_rear_vents(fixed["CarrierRearPanel"])
         stock_shell = fixed["ElectronicsShell"]
         rear, shell = rear_seal(rear, stock_shell)
         rear_seat = shell.cut(stock_shell)
@@ -211,6 +193,7 @@ def check(output):
         lid, rear, lid_sweep = hatch(battery, rear)
         cradle, cradle_joins, contact_fit = contact_cradle(battery, battery_shapes)
         rear, guard, guard_fit = disconnect_guard(rear)
+        rear, power_parts, wall_cable, install_paths = power_bay(rear)
         fixed["CarrierRearPanel"] = rear
         fixed["BatteryCradle"] = cradle
         for name in BACK_PLATES:
@@ -223,7 +206,11 @@ def check(output):
         parts["WallChargerEnvelope"] = box(([-14, -95, 3.5], [10, -67, 9.5]))
         # 28 × 28 mm selector, including PCB, flat leads and insulating mount.
         parts["WallLedPowerEnvelope"] = box(([-58, 33, 3.5], [-30, 61, 9]))
-        parts.update(pigtail)
+        parts.update(power_parts)
+        collisions.extend(intersections(power_parts, {"RearCover": rear}))
+        collisions.extend(intersections({"USBWallCable": wall_cable}, {
+            "RearCover": rear, "InstalledBatteryHatch": lid,
+        }))
         parts["DisconnectBoot"] = control_seals(rear)
         disconnect = obstacles.pop("PowerDisconnect")
         collisions.extend(intersections(parts, obstacles))
@@ -231,7 +218,7 @@ def check(output):
             {name: shape for name, shape in parts.items() if name != "DisconnectBoot"},
             {"PowerDisconnect": disconnect},
         ))
-        collisions.extend(intersections({"PigtailRearCover": rear}, products))
+        collisions.extend(intersections({"RearCover": rear}, products))
         collisions.extend(intersections({"DisconnectGuard": guard}, {
             **parts, "PowerDisconnect": disconnect, **products,
         }))
@@ -249,10 +236,17 @@ def check(output):
         rear, retainer, retainer_fit = build_retainer(
             baseline, layout, products, retainer_obstacles, rear
         )
+        collisions.extend(intersections(install_paths, {"RearCover": rear}))
         if collisions:
             raise ValueError(f"Rev A carrier interference: {collisions}")
         print(f"REV A CLOSED FIT PASS ({len(parts)} installed envelopes)", flush=True)
-        rear.exportStep(str(output.with_name("pigtail-rear-cover.step")))
+        step_path = output.with_name("usb-c-rear-cover.step")
+        rear.exportStep(str(step_path))
+        reopened = Part.read(str(step_path))
+        require_solid("USB-C rear cover STEP", reopened)
+        step_collisions = intersections(install_paths, {"RearCoverSTEP": reopened})
+        if step_collisions:
+            raise ValueError(f"USB-C board installation in STEP: {step_collisions}")
         print_solids = {**fixed, "RearCover": rear, "FrontBezel": bezel,
                         "BatteryHatch": lid, "CarrierRetainer": retainer}
         print_parts = [export_print(output.parent, name, print_solids[name])
@@ -286,6 +280,12 @@ def check(output):
                     "battery_contacts": contact_fit,
                     "disconnect_guard": guard_fit,
                     "carrier_retainer": retainer_fit,
+                    "integrated_usb_c": {
+                        "closed_wall_cable_interference_mm3": 0,
+                        "rear_bay_depth_mm": 21,
+                        "board_installation_paths": list(install_paths),
+                        "port_access_envelope": "24 x 11 mm plug and 4 mm cable",
+                    },
                     "print_parts": print_parts,
                 },
                 indent=2,

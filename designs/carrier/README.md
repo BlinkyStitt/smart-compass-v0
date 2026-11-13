@@ -3,9 +3,10 @@
 Rev A has a [routed carrier PCB](carrier-a.kicad_pcb), a
 [plug and harness assembly guide](assembly.md), and a
 [60 W USB-C wall power and charging](wall-power-pd60.md). The charger is a separate
-assembly that plugs into the carrier. The [sealed pigtail](dust-sealing.md)
-uses a downward cable gland in the lower rear cover. The compact charger,
-pigtail head and complete enclosure seals still need physical verification.
+assembly that plugs into the carrier. The [sealed USB-C inlet](dust-sealing.md) faces down
+from a pocket in the rear cover. The inlet board and 5 V regulator fit inside
+that pocket. The complete enclosure seals and temperatures still need
+physical verification.
 
 The original fit model uses a single 1.2 mm carrier board. The
 housing uses the narrow design's 58.6 mm optical stack and removable protected
@@ -97,7 +98,7 @@ Use the Rev A assembly and power guides for the bench build. Measure current
 and temperature at the contacts, copper, and LED circuits. Check the GPS
 and radio antennas with the carrier installed. Check the retainer pads,
 APEM buttons, seals and lead exits on the
-printed cover. Use the routed charger, 60 W head and LED selector boards. The
+printed cover. Use the routed charger, 60 W inlet and LED selector boards. The
 [60 W guide](wall-power-pd60.md) covers their keyed harnesses.
 
 The report compares the old loom, removed prints, new rear cover, laminate and
