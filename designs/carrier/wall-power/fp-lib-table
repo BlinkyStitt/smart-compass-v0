@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "WallPower")(type "KiCad")(uri "${KIPRJMOD}/WallPower.pretty")(options "")(descr "Smart Compass wall-power footprints"))
+)

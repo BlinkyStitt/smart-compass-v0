@@ -1,139 +1,124 @@
 # Wall USB-C power and in-place charging
 
-The Rev A carrier uses a four-wire plug for a small internal charger board.
-The USB-C socket hangs below the case on a captive pigtail. Use a 5 V
-source that advertises 3 A over USB-C. The [Raspberry Pi 15 W USB-C
-supply](https://www.raspberrypi.com/products/type-c-power-supply/) is a
-5.1 V, 3 A bench candidate. Confirm the actual CC advertisement and loaded
-voltage at the receptacle. This circuit uses Type-C current advertisement and
-keeps VBUS at 5 V.
+Rev A uses a [routed USB-C pigtail and a routed internal charger](wall-power/README.md).
+The external USB-C socket hangs below the case. Plug in a USB-C source
+that advertises **5 V at 3 A**. A higher-wattage USB-C adapter works if it
+offers that 5 V mode. The [Raspberry Pi 15 W USB-C supply](https://www.raspberrypi.com/products/type-c-power-supply/)
+is a bench candidate. Verify its 3 A advertisement and loaded voltage.
 
 ```text
-USB-C 5 V ── STUSB4500L attach switch ── 3 A detect gate ── sealed cable ── BQ25616 VBUS
-                                                            │
-Fused, switched protected 21700 ─────────────────────── BQ25616 BAT
-Holder-mounted NTC ──────────────────────────────────── BQ25616 TS
-                                                            │
+USB-C 5 V ── attach and 3 A gate ── sealed lead ── BQ25616 VBUS
+Fused, switched protected 21700 ───────────────── BQ25616 BAT
+Holder-mounted NTC ───────────────────────────── BQ25616 TS
 BQ25616 SYS ── Pololu 2808 ── PowerBoost 1000 Basic ── S1 ── Sparkle barrel
 ```
 
-| Condition | Intended operation |
+| Condition | Designed operation |
 | --- | --- |
-| USB-C valid, cell installed, S1 RUN | USB supplies SYS. The charger uses the remaining input budget to charge the cell. Press START to run the display. |
-| USB-C valid, no cell, S1 RUN | USB supplies SYS. Press START to run the display. |
-| USB-C absent, cell installed, S1 RUN | The cell feeds SYS through the charger BATFET. Press START to run the display. |
-| USB-C advertises default or 1.5 A | USB load gate stays off. The cell can still supply SYS. |
-| S1 OFF | The cell positive contact and display feed are open. Charging needs S1 in RUN. |
+| USB-C valid, cell fitted, S1 RUN | USB supplies SYS. The charger uses the remaining input budget for the cell. Press START to run the display. |
+| USB-C valid, cell removed, S1 RUN | USB supplies SYS. Press START to run the display. |
+| USB-C absent, cell fitted, S1 RUN | The cell supplies SYS. Press START to run the display. |
+| USB-C advertises default current or 1.5 A | The USB load gate stays off. The cell can still supply SYS. |
+| S1 OFF | S1 opens the positive cell contact and the display feed. Use RUN for charging, and unplug USB before opening the hatch. |
 
-The charger supplies SYS from USB as soon as input is valid and reduces
-charge current before reaching the input limit. If the load exceeds the input
-budget, the charger can draw from the cell. Use the 2% rainbow load for
-initial validation, including batteryless start. The cell protection, 4 A
-fuse and physical switch stay in the battery harness. OTG is disabled. USB
-source, battery and display share a ground. The charger provides the reverse
-blocking between its input and the cell/SYS path.
+## Assemble the two subassemblies
 
-## USB input and charger circuit
+Use preassembled boards and precrimped harnesses. Make the solder joints
+with the boards on the bench. The enclosure assembly uses two keyed plugs.
 
-Place the receptacle, CC and ESD network, attach-controlled switch and
-3 A gate in the pigtail head. Use the GCT USB4736-GF-A charging receptacle
-with its USBTJ-06 gasket and a tethered cap. Take only switched 5 V and
-ground through the rear cover. Keep the CC lines at the receptacle.
-The head is the device's inlet. Plug a standard C-to-C cable into it.
-Use a sealed cable exit at the head and a keyed 3 A service connector at
-the charger. [GCT receptacle and gasket](https://gct.co/connector/usb4736)
-
-Take the protected `VSNK` output and the open-drain `RP_3A` flag from the
-ST reference circuit. Add a second series switch so the charger starts
-only on the 3 A advertisement.
-Copy the layout and attach behavior from the [ST reference
-schematic](https://www.st.com/resource/en/schematic_pack/eval-scs002v1_schematic.pdf)
-and [STUSB4500L data sheet](https://www.st.com/resource/en/datasheet/stusb4500l.pdf).
-
-- Use a TPS22965N with VIN and VBIAS at VSNK, both VOUT pins feeding charger
-  VBUS, and GND and the pad to ground. Use 1 µF input bypass at the switch
-  and 1 nF on CT as the first inrush setting. Verify the total capacitance on
-  the receptacle side and the turn-on waveform with the actual pigtail.
-  The ST attach switch must drop VSNK on disconnect or an invalid voltage.
-- Use a PNP MMBT3906 from VSNK to the active-high ON pin. Connect the emitter
-  to VSNK, collector to ON, and base through 47 kΩ to RP_3A. Pull base to
-  emitter with 100 kΩ. Pull ON to ground with 100 kΩ. A low RP_3A enables
-  the switch. With RP_3A open or VSNK absent, ON stays low. Verify that a
-  source changing its advertisement drops the load within the Type-C
-  timing requirement. [Load switch data sheet](https://www.ti.com/lit/ds/symlink/tps22965.pdf)
-- Use TI BQ25616RTWR with its 0–45 °C hot/cold reference network. Use a
-  103AT-2 thermistor in thermal contact with the cell sleeve. Attach the
-  sensor to the holder with light spring pressure and an insulated face.
-  Keep it clear of the contact travel and cell wrapper. Use 5.30 kΩ from
-  REGN to TS and 31.1 kΩ from TS to ground, in parallel with the NTC.
-  Verify cold, hot, unplugged and shorted sensor conditions.
-- Follow the TI application drawing and switching layout. Connect VAC to
-  VBUS, leave ACDRV open in this 5 V configuration, and leave the two D
-  pins open for the ILIM setting. Ground CE and OTG. Leave VSET open for
-  the 4.2 V setting. Connect 191 Ω 1% at ILIM and 562 Ω 1% at ICHG.
-  The input limit is 2.50 A nominal and about 2.65 A at the upper
-  resistor and IC tolerance combination. The charge setting is about
-  1.20 A. Verify actual regulation and termination with the selected
-  XTAR cell.
-- Use a 1 µH shielded inductor with the saturation and loss characteristics
-  of the TI reference. Keep the SW loop tight and on the top layer. Use
-  the reference 47 nF bootstrap, 4.7 µF REGN bypass, 10 µF PMID bypass,
-  1 µF VBUS bypass, and the BAT and SYS capacitors at the chip. Select
-  capacitors by effective capacitance at bias. Use the reference ground
-  and thermal via layout. Expose VBUS, SYS, BAT, TS, PG and STAT for
-  the first board measurements. [Charger data sheet](https://www.ti.com/lit/ds/symlink/bq25616.pdf)
-
-The carrier regulates the display with the stock 5.2 V PowerBoost. It uses
-the stock LBO header to trigger the Pololu OFF input through a PNP inverter.
-This keeps the module's factory low-battery LED and uses no small resistor
-pad tap. The BlackPill PA4 divider reads the switched boost input and is
-isolated from PA4 by a TS5A3160 switch when the 3.3 V rail is inactive.
-The switch takes power from the boost input through the 100 Ω supply filter.
-The auxiliary 3.3 V rail enables it. [Switch data sheet](https://www.ti.com/lit/ds/symlink/ts5a3160.pdf)
-
-When USB is active, that voltage represents SYS through the latch. It cannot be
-used as a battery state-of-charge reading in wall mode.
-
-## Bench first
-
-Use [ST EVAL-SCS002V1](https://www.st.com/en/evaluation-tools/eval-scs002v1.html)
-for USB-C input and [TI BQ25616EVM](https://www.ti.com/tool/BQ25616EVM) for
-the charger. TP13 and TP6 on the ST board give VSNK and RP_3A. Use a
-bench fixture for the series switch, or use a current-limited bench supply
-at the charger VBUS terminal to test the charger separately. TI provides a
-[TPS22965 evaluation module](https://www.ti.com/tool/TPS22965EVM-023) with an
-external ON input for the gate test. Set the TI charger EVM per its
-[user guide](https://www.ti.com/lit/ug/sluuc73a/sluuc73a.pdf). Remove the
-JP6 and JP9 shunts so the D pins are open. Keep the ILIM, ICHG, REGN and
-charge-enable shunts in place. Keep JP20 installed. Remove JP16 and JP18
-when installing the external thermistor at the TS node in parallel with
-the reference lower resistor. Set and measure the limits with a battery
-simulator and an electronic load before connecting the cell.
-
-| Check | Evidence to collect |
+| Connection | Pins in numbered cavity order |
 | --- | --- |
-| USB-C power | Use both connector orientations. Test default, 1.5 A, 3 A and a source that reduces its advertised current. Measure VBUS, gate state, inrush and steady input. |
-| No battery | Start from USB with the cell absent. Verify SYS before pressing START. Check repeated starts and PWM/radio load steps for resets or input collapse. |
-| Charge and display | Sweep cell voltage with the emulator. Measure USB, SYS and battery current with the 2% rainbow. Confirm input limiting reduces charge as load rises. Verify net charge current, taper and termination with the selected cell. |
-| Source removal and low battery | Remove USB during display. Measure whether the display resets during handoff. Verify the boost LBO threshold and latch OFF. Check reverse voltage and leakage at the unplugged USB socket. |
-| Temperature and service | Open and short the thermistor and test the hot/cold thresholds. Check the assembled wall orientation and worst-case charger, cell, converter, cable and case temperatures. Verify S1 and the fuse isolate the cell during service. |
+| USB head to charger, two-pin Molex Micro-Fit | 1 switched 5 V (red), 2 ground (black) |
+| Charger to carrier J1, JST VHR-4N | 1 BAT to switched cell positive, 2 ground, 3 SYS, 4 TS to holder NTC |
+| Carrier J2 to cell holder, existing JST VHR-3N | 1 fused and switched cell positive, 2 ground, 3 holder NTC |
 
-## Mounting and load limit
+Use 22 AWG on the short board leads and two-conductor jacketed pigtail.
+Use a shrouded female terminal housing on the powered USB-head lead.
+Feed its precrimped ends through the rear gland before inserting the
+contacts into the housing. Verify continuity by molded cavity numbers.
+Leave at least 25 mm of service slack at the charger and carrier plugs
+so you can lift and support the rear cover before unplugging them.
+Secure the harness to the rear cover outside the board reservation.
 
-Use the existing strap on a rated wall hook for the first fit. Provide at
-least 35 mm between the rear face and the wall for the cordgrip and cable.
-Keep the charging cable below the case with enough slack to keep its weight
-and plug forces off the connector. The internal charger has a 28 × 24 × 6 mm
-reservation at X −14 to 10, Y −95 to −67, Z 3.5 to 9.5 mm from the rear datum.
-See the [sealed pigtail and enclosure plan](dust-sealing.md) for the rear
-cover, cable gland and complete enclosure checks.
+The 24 × 26 mm charger PCB fits the 24 × 28 mm CAD reservation at
+X −14 to 10, Y −95 to −67, Z 3.5 to 9.5 mm. Center it along the 28 mm
+axis. Start with a thin insulating adhesive mounting pad and keep the
+underside leads trimmed and insulated. The M2 holes are for fixture use
+or a later mount. Keep wires flat over the pads. Allow 1.6 mm for the PCB,
+2.0 mm for the tallest component, and at most 2.4 mm total for the
+insulating mount, underside solder, and wire dressing. Place both plug
+bodies outside the 6 mm height reservation. Check routing and access
+with the actual rear cover before fixing the harness.
 
-The 2% rainbow mode draws about 5.7 W in the existing model. At 85% boost
-and 90% charger conversion efficiency, that is about 7.5 W at USB before
-charging. A 5 V, 2.50 A input target leaves about 5 W at USB under nominal
-conditions. Expect less charge current at low input voltage, high temperature
-or higher display load. The approximate 74 W full electrical rainbow load
-exceeds this supply, the PowerBoost and the stock LED distribution. A 20 V
-adapter profile would require a higher-current regulated LED supply and a
-requalified distribution and thermal design. The first board keeps the
-bench target at the current display setting.
+Install the 103AT-2 sensor against the insulated side of the cell with
+light spring pressure. Keep it clear of contact travel and cell removal.
+Route its return to holder ground. Preserve the cell protection circuit,
+contact-adjacent 4 A fuse and S1 disconnect.
+
+### External USB-C head
+
+Use the gasketed Hammond 1551WHBK as the first housing. Fit the GCT
+USB4736-GF-A-KIT receptacle and USBTJ-06 gasket. Machine or jig-cut the
+socket opening and gasket recess to the GCT drawing on a flat wall of
+the head. Support the PCB at its two M2 holes with an insulating bracket
+or bonded standoffs. Dry-fit the board and adjust the supports before
+bonding so the panel and receptacle shell take plug forces and compress
+the 0.90 mm gasket by 35–45%. Inspect the fit with a C-to-C plug before
+closing the housing. Fit the head gland on the opposite end and clamp
+the round cable jacket. Fit a tethered cap to the socket.
+[Housing](https://www.hammfg.com/part/1551WHBK),
+[USB-C receptacle and panel drawing](https://gct.co/connector/usb4736)
+
+Use the [sealed rear-cover exit](dust-sealing.md) for the same jacket.
+Hang the compass by its strap on a rated hook and provide at least
+35 mm behind the rear face for the elbow and cable. Leave enough slack
+below the compass that the wall cable does not pull on the socket.
+
+## Electrical settings
+
+- The STUSB4500L uses its factory settings. It monitors VBUS and
+  drives the attach P-channel MOSFET. The active-low RP_3A flag
+  drives a PNP that enables the TPS259531 eFuse. The eFuse adds a
+  5.7 V nominal overvoltage clamp threshold, controlled rise, current limiting,
+  and thermal shutdown. R8 sets its nominal limit to approximately
+  2.8 A. The BQ25616 controls steady input current below that limit.
+  [ST sink reference](https://www.st.com/resource/en/schematic_pack/eval-scs002v1_schematic.pdf),
+  [TI eFuse data sheet](https://www.ti.com/lit/ds/symlink/tps2595.pdf)
+- The BQ25616 supplies SYS from USB even with the battery removed.
+  OTG is off. The charger leaves D+/D− open for the ILIM setting.
+  The 205 Ω resistor sets 2.33 A nominal and 2.46 A upper input
+  limit from the specified resistor and IC tolerances. The 562 Ω
+  resistor sets about 1.2 A charge current. VSET floats for 4.2 V.
+  The 5.30 kΩ/31.1 kΩ TS network and 103AT-2 give the nominal
+  0–45 °C charge window. An open or shorted thermistor suspends
+  charging. A holder sensor can remain connected with the cell out.
+  [TI charger data sheet](https://www.ti.com/lit/ds/symlink/bq25616.pdf),
+  [XTAR cell specifications](https://www.xtar.cc/wp-content/uploads/2024/06/XTAR-Product-Catalog.pdf)
+- The existing 5.2 V PowerBoost supplies the LEDs. During wall
+  operation the carrier's voltage sense measures switched SYS.
+  It does not report cell state of charge in that mode.
+
+The 2% full-rainbow pattern models 5.7 W at the load. With assumed
+85% boost and 90% charger conversion efficiency, it uses about 7.5 W
+at USB before charging. A nominal 5 V source at the 2.33 A input
+limit leaves about 4.2 W of input power before cable and switch losses.
+The charger reduces charge current as the display load rises.
+The stock LED supply cannot deliver the modeled 74 W full electrical
+rainbow. Use the 2% setting for the first display test.
+
+## First assembled pair
+
+Use a current-limited supply and battery simulator for first power.
+The PCBs have labelled lead pads and probe points for the measurements
+below. Keep the real cell out until the first four rows pass.
+
+| Check | Measure |
+| --- | --- |
+| USB source and pigtail | Use both plug orientations and default, 1.5 A and 3 A advertisements. Test a change from 3 A to a lower advertisement. Scope RAW, RP3_N and switched output. Check input current, inrush and connector drop. |
+| No cell and source removal | Verify SYS before START. Run the 2% pattern from USB with an open battery circuit. Exercise PWM and radio load steps. Insert and remove USB with the simulator connected and check for resets and reverse current into the unplugged socket. |
+| Charger and load sharing | Sweep simulated battery voltage. Verify charge regulation, taper, termination and charge-current reduction with load. Check startup and operation near the input voltage limit. |
+| Thermistor and disconnect | Emulate 0 °C and 45 °C, open and short the NTC, and verify that charging stops. Measure S1 isolation with USB present. |
+| Actual cell and enclosure | Confirm the delivered XTAR cell model and charge limits. Measure current and temperatures at the cell, charger, converter and cable in the assembled wall position. Verify the head and rear gland seals, cable support and service slack. |
+
+KiCad DRC and schematic-to-board net checks passed for both designs.
+The wall display, charge and sealing checks require assembled hardware.
