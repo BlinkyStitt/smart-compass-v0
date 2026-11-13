@@ -195,13 +195,26 @@ def schematic(name, output):
                 pin_names = {number: "" for number in pins}
             if set(pin_names) != set(pins):
                 raise ValueError(f"{name}: missing schematic pin names for {ref}")
-            levels = [2.54 * level for level in range(len(pins))]
-            width = 13.97 if ref in names else 7.62
+            levels = [
+                2.54 * (level - (len(pins) - 1) / 2) for level in range(len(pins))
+            ]
+            width = 13.97 if ref in names or ref == "J1" else 7.62
             libraries.append(symbol_lib(ref, ref, value, pin_names, width, levels))
             instances.append(
-                instance(name, ref, ref, value, footprint, pins, levels, width, x, y)
+                instance(
+                    name,
+                    ref,
+                    ref,
+                    value,
+                    footprint,
+                    pins,
+                    levels,
+                    width,
+                    x,
+                    y - min(levels, default=0),
+                )
             )
-            y += max(levels, default=0) + 16.51
+            y += max(0, len(pins) - 1) * 2.54 + 16.51
     title = "Wall charger" if name == "charger" else "USB-C pigtail"
     lines = [
         '(kicad_sch (version 20250114) (generator "eeschema") (generator_version "9.0")',
