@@ -54,7 +54,10 @@ class WallPowerTests(unittest.TestCase):
         self.assertLess(input_limit_high, 3.0)
 
         # Include both conductors and conservative eFuse and connector losses.
-        cable_loop = 2 * 0.25 * 7.15 / 304.8
+        pigtail_limit_m = 0.40
+        selector_to_gland_m = ((74 + 44) ** 2 + (-44 - 47) ** 2) ** 0.5 / 1000
+        self.assertGreater(pigtail_limit_m, selector_to_gland_m + 0.100 + 0.025)
+        cable_loop = 2 * pigtail_limit_m * 7.15 / 304.8
         cable_drop = wall_current * cable_loop
         fuse_drop = wall_current * 0.045
         self.assertGreater(4.8 - cable_drop - fuse_drop - 0.07, 4.4)

@@ -38,8 +38,9 @@ pull on the socket. Unplug USB and set S1 to OFF before cell service.
    at both ends and leave at least 25 mm of slack inside the cover.
 5. Fit a shrouded **two-position Mini-Fit Jr.** receptacle to the
    powered lead after threading the gland. Use cavity 1 for 5 V and
-   cavity 2 for ground. Keep the head-to-selector
-   lead at or below 250 mm. Use 18 AWG contacts on both halves.
+   cavity 2 for ground. Use 18 AWG contacts on both halves. Keep the
+   head-to-selector lead at or below 400 mm. Measure the dressed route
+   around the carrier before cutting. Include the 25 mm service fold.
 
 [Receptacle](https://gct.co/connector/usb4736),
 [Housing drawing](https://www.hammfg.com/files/parts/pdf/1551WYGY.pdf?v=1697661936),
