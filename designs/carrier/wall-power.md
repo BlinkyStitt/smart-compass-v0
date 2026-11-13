@@ -9,7 +9,7 @@ is a bench candidate. Verify its 3 A advertisement and loaded voltage.
 ```text
 USB-C 5 V ── attach and 3 A gate ── sealed lead ── BQ25616 VBUS
 Fused, switched protected 21700 ───────────────── BQ25616 BAT
-Holder-mounted NTC ───────────────────────────── BQ25616 TS
+Cell-mounted NTC in removable sleeve ─────────── BQ25616 TS
 BQ25616 SYS ── Pololu 2808 ── PowerBoost 1000 Basic ── S1 ── Sparkle barrel
 ```
 
@@ -24,13 +24,15 @@ BQ25616 SYS ── Pololu 2808 ── PowerBoost 1000 Basic ── S1 ── Spa
 ## Assemble the two subassemblies
 
 Use preassembled boards and precrimped harnesses. Make the solder joints
-with the boards on the bench. The enclosure assembly uses two keyed plugs.
+with the boards on the bench. The boards connect to the enclosure with two keyed plugs. The cell
+sleeve has a separate two-pin sensor plug inside the hatch.
 
 | Connection | Pins in numbered cavity order |
 | --- | --- |
 | USB head to charger, two-pin Molex Micro-Fit | 1 switched 5 V (red), 2 ground (black) |
-| Charger to carrier J1, JST VHR-4N | 1 BAT to switched cell positive, 2 ground, 3 SYS, 4 TS to holder NTC |
-| Carrier J2 to cell holder, existing JST VHR-3N | 1 fused and switched cell positive, 2 ground, 3 holder NTC |
+| Charger to carrier J1, JST VHR-4N | 1 BAT to switched cell positive, 2 ground, 3 SYS, 4 TS to sleeve NTC |
+| Carrier J2 to cell holder, existing JST VHR-3N | 1 fused and switched cell positive, 2 ground, 3 removable sleeve NTC |
+| Removable sensor sleeve, keyed JST RCY | 1 NTC sense, 2 ground |
 
 Use 22 AWG on the short board leads and two-conductor jacketed pigtail.
 Use a shrouded female terminal housing on the powered USB-head lead.
@@ -50,10 +52,29 @@ insulating mount, underside solder, and wire dressing. Place both plug
 bodies outside the 6 mm height reservation. Check routing and access
 with the actual rear cover before fixing the harness.
 
-Install the 103AT-2 sensor against the insulated side of the cell with
-light spring pressure. Keep it clear of contact travel and cell removal.
-Route its return to holder ground. Preserve the cell protection circuit,
-contact-adjacent 4 A fuse and S1 disconnect.
+Fit the thin 103JT-025 thermistor to a removable insulating cell sleeve.
+Hold the sensing tip against the intact cell wrapper, away from the
+centre pull ribbon. Use a 10 mm wide band centered at X −24 mm in the
+CAD frame, toward the negative end. Use thin insulating tape and limit
+the finished sensor buildup to 0.7 mm above the wrapper. Keep the
+sleeve open at both ends and keep the positive button, end insulator,
+and contact path clear of adhesive and wire joints.
+Use a keyed two-pin JST RCY connector in the holder to connect the
+sleeve's thermistor to TS and ground. Park the mated plug under the
+hatch with its long axis parallel to the cell, near X −38, Y −40 mm.
+Keep it outside the seating and pull-ribbon paths.
+Allow 25 mm of slack and use 26 AWG leads with the specified RCY
+crimp insulation diameter. Unplug the sensor as part of cell removal and
+remove it with the sleeve. This opens TS in batteryless use. The
+charger then suspends charging while SYS stays available from USB.
+[Semitec thin-film thermistor](https://www.semitec-global.com/products/thermistor_jt/),
+[TI note on batteryless SYS ripple](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/196/BQ2561x_5F00_-FAQ.pdf)
+
+Preserve the protection circuit, contact-adjacent 4 A fuse and S1
+disconnect. Use a dummy cell at the maximum 23.5 mm sleeved diameter
+for the first fit. FreeCAD clears the sleeve and the parked plug.
+Gauge spring travel, sleeve and plug clearance,
+sensor contact, and cell removal before connecting wall power.
 
 ### External USB-C head
 
@@ -89,9 +110,10 @@ below the compass that the wall cable does not pull on the socket.
   The 205 Ω resistor sets 2.33 A nominal and 2.46 A upper input
   limit from the specified resistor and IC tolerances. The 562 Ω
   resistor sets about 1.2 A charge current. VSET floats for 4.2 V.
-  The 5.30 kΩ/31.1 kΩ TS network and 103AT-2 give the nominal
+  The 5.30 kΩ/31.1 kΩ TS network and 103JT-025 give the nominal
   0–45 °C charge window. An open or shorted thermistor suspends
-  charging. A holder sensor can remain connected with the cell out.
+  charging. For batteryless operation, remove the cell and its sensor
+  together so TS opens.
   [TI charger data sheet](https://www.ti.com/lit/ds/symlink/bq25616.pdf),
   [XTAR cell specifications](https://www.xtar.cc/wp-content/uploads/2024/06/XTAR-Product-Catalog.pdf)
 - The existing 5.2 V PowerBoost supplies the LEDs. During wall
@@ -115,7 +137,7 @@ below. Keep the real cell out until the first four rows pass.
 | Check | Measure |
 | --- | --- |
 | USB source and pigtail | Use both plug orientations and default, 1.5 A and 3 A advertisements. Test a change from 3 A to a lower advertisement. Scope RAW, RP3_N and switched output. Check input current, inrush and connector drop. |
-| No cell and source removal | Verify SYS before START. Run the 2% pattern from USB with an open battery circuit. Exercise PWM and radio load steps. Insert and remove USB with the simulator connected and check for resets and reverse current into the unplugged socket. |
+| No cell and source removal | Verify SYS before START. Run the 2% pattern from USB with BAT and the sleeve thermistor disconnected. Scope SYS ripple. Exercise PWM and radio load steps. Insert and remove USB with the simulator connected and check for resets and reverse current into the unplugged socket. |
 | Charger and load sharing | Sweep simulated battery voltage. Verify charge regulation, taper, termination and charge-current reduction with load. Check startup and operation near the input voltage limit. |
 | Thermistor and disconnect | Emulate 0 °C and 45 °C, open and short the NTC, and verify that charging stops. Measure S1 isolation with USB present. |
 | Actual cell and enclosure | Confirm the delivered XTAR cell model and charge limits. Measure current and temperatures at the cell, charger, converter and cable in the assembled wall position. Verify the head and rear gland seals, cable support and service slack. |
