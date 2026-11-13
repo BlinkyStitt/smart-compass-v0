@@ -19,7 +19,7 @@ usb-pigtail,Q2,1,onsemi,MMBT3906LT1G,PNP transistor
 usb-pigtail,D1,1,STMicroelectronics,ESDA25W,Two-line CC ESD protection
 usb-pigtail,D2,1,STMicroelectronics,ESDA25P35-1U1M,VBUS TVS
 usb-pigtail,C1 C4,2,Murata,GRM21BR71H105KA12L,1 uF 50 V X7R 0805
-usb-pigtail,C2 C3,2,Murata,GRM188R71C105KA12D,1 uF 16 V X7R 0603
+usb-pigtail,C2 C3,2,Yageo,CC0603KRX7R7BB105,1 uF 16 V X7R 0603
 usb-pigtail,C5,1,Yageo,CC0603KRX7R7BB103,10 nF 16 V X7R 0603
 usb-pigtail,C6,1,Yageo,CC0805KRX7R8BB105,1 uF 25 V X7R 0805
 usb-pigtail,R1 R2,2,Yageo,RC0603FR-071KL,1 kohm 1% 0603

@@ -36,7 +36,7 @@ kicad-cli sch export netlist --format kicadxml \
 python verify_netlist.py "$board.kicad_pcb" "$output/$board.xml"
 kicad-cli pcb export gerbers --layers F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts \
   -o "$output/$board/" "$board.kicad_pcb"
-kicad-cli pcb export drill -o "$output/$board/" "$board.kicad_pcb"
+kicad-cli pcb export drill --excellon-separate-th -o "$output/$board/" "$board.kicad_pcb"
 kicad-cli pcb export pos --format csv --units mm --smd-only \
   -o "$output/$board/placement.csv" "$board.kicad_pcb"
 ```
