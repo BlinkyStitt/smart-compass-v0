@@ -221,9 +221,10 @@ def schematic(name, output):
     title = {"charger": "Wall charger", "usb-pigtail": "USB-C pigtail",
              "usb-pd60": "60 W USB-C power", "led-power": "LED power selector"}[name]
     paper = "A2" if name in PD_LAYOUT else "A3"
+    revision = "B" if name == "led-power" else "A"
     lines = [
         '(kicad_sch (version 20250114) (generator "eeschema") (generator_version "9.0")',
-        f'(uuid {uid(name)}) (paper "{paper}") (title_block (title "Smart Compass - {title}") (rev "A"))',
+        f'(uuid {uid(name)}) (paper "{paper}") (title_block (title "Smart Compass - {title}") (rev "{revision}"))',
         "(lib_symbols",
         *libraries,
         ")",

@@ -44,7 +44,7 @@ class PowerPolicyTests(unittest.TestCase):
             peak_battery = max(peak_battery, battery_current)
         self.assertNotEqual(previous, rainbow_frame(self.phases, 0.5, True))
         self.assertEqual(previous, rainbow_frame(self.phases, 8, True))
-        self.assertGreater(peak_wall, 3 * peak_battery)
+        self.assertGreater(peak_wall, 2.5 * peak_battery)
 
     def test_all_pixels_at_peak_channel_sum(self):
         yellow = [[1 / 6] * count for count in PIXEL_COUNTS]

@@ -4,7 +4,7 @@ Use a USB-C PD adapter and C-to-C cable that support 20 V at 3 A on the port
 in use. A USB-C PD power bank works if its port offers that mode. Plug the
 cable into the downward-facing USB-C socket on the rear cover. The inlet
 board, 5 V converter, charger and LED power selector are inside the case.
-Use the existing cell holder and thermistor.
+Use the keyed positive clamp in the cell holder and the existing thermistor.
 
 | Condition | Operation |
 | --- | --- |
@@ -91,7 +91,12 @@ original 40 mm at the four LED plugs. Keep the original 2 A and 1 A
 fuses and the Fibonacci 1000 µF capacitor. The selector supplies LED
 current through J7.1 and J7.2. The existing barrel and switch supply
 logic on the wall. The selector isolates the battery and wall feeds
-and uses the wall feed when available.
+and uses the wall feed when available. A shared eFuse cuts J7 off from both
+sources. Its hardware latch stays off across a source change while the
+switched logic supply stays up. A sustained drop on the LED rail or a
+selector temperature near 70 °C trips the latch. That temperature is local
+to the selector PCB. After clearing the fault, move S1 to OFF and then to
+RUN, and press START. The latch also resets after a total loss of power.
 
 ## Load the display firmware
 
@@ -113,10 +118,10 @@ This image runs the moving, full-saturation rainbow on the four outputs.
 Set the channel order to match the installed LEDs if a ring uses a
 different order. GPIO18 reads the selector's active-low status. A loose
 or unplugged sense lead leaves the display in battery mode. The firmware
-applies the 2% battery cap at startup. Wall operation allows about 13%
+applies the 2% battery cap at startup. Wall operation allows about 10.6%
 electrical drive and also checks the encoded current for each frame.
-The 1,024-frame model peaks at 2.34 A on the wall and 0.75 A on
-battery. The limits leave headroom for the existing J7 connector and
+The firmware caps calculated LED current at 2.00 A on the wall and
+0.795 A on battery. The limits leave headroom for the existing J7 connector and
 branch fuses.
 This firmware is for the standalone display. The navigation and radio
 firmware described in the design spec is a separate implementation.
@@ -124,10 +129,14 @@ firmware described in the design spec is a separate implementation.
 ## Verify the power design
 
 The 60 W rating is the negotiated adapter capability. The wall display
-limits the four LED feeds to 2.4 A combined. The charger still limits its
-input to 2.46 A at the upper tolerance and sets a nominal 1.2 A cell
+limits the four LED feeds to 2.00 A combined. The shared breaker has a
+2.56 A nominal trip and a 2.85 A upper limit including eFuse and resistor
+tolerances, below the 3 A J7 rating. The wall channel's independent current
+limit has a 2.92 A upper limit. These are sustained thresholds. Brief
+short-circuit transients and energy stored in the LED capacitor are separate.
+The charger limits its input to 2.46 A at the upper tolerance and sets a nominal 1.2 A cell
 charge rate. With a 5.2 V upper 5 V rail and an 80% conversion allowance,
-the simultaneous input budget is under 32 W. The charger can reduce
+the simultaneous input budget is under 30 W. The charger can reduce
 charge current when its own input sags or it reaches its thermal limit.
 
 Check the board files with the KiCad commands in the
@@ -139,7 +148,11 @@ python3 -m unittest discover -s designs/carrier/wall-power/firmware
 ```
 
 Board checks cover connection, design-rule and schematic parity.
-The current limits are estimates for the encoded rainbow. The assembled
+The firmware limits come from a current model for the encoded rainbow.
+The bench bring-up needs a fused dummy load at J7. Verify clean USB
+removal with a cell fitted. Verify that a sustained short and a thermal
+trip each leave the LED output off across a source change, and check that
+cycling S1 after the fault clears restores the output. The assembled
 unit establishes sustained temperature, cable drop and source-change
 behavior. Check the regulator, rear pocket, wearer contact surface, charger
 and cell during sustained display plus charging in the closed case.

@@ -6,10 +6,10 @@ All current values are in units of 1/255 mA. A full RGB channel costs
 
 PIXEL_COUNTS = (256, 70, 70, 70)
 BATTERY_DRIVE = 5  # 2% electrical duty
-WALL_DRIVE = 34  # 13.3% electrical duty
+WALL_DRIVE = 27  # 10.6% electrical duty
 BATTERY_BUDGET = 795  # mA for the whole LED rail
-WALL_BUDGET = 2400
-WALL_BRANCH_BUDGETS = (1320, 410, 410, 410)
+WALL_BUDGET = 2000
+WALL_BRANCH_BUDGETS = (1120, 335, 335, 335)
 
 
 def rainbow_frame(phases, elapsed, wall):

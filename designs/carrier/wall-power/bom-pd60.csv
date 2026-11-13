@@ -23,19 +23,33 @@ usb-pd60,R12,549R 1%,0603
 usb-pd60,R13 R14,4.7k,0603
 usb-pd60,R15,100k,0603
 led-power,U1 U2,TPS259470ARPWR,Reverse-blocking power switches
-led-power,Q1,MMBT3904LT1G,Open-collector status for GPIO18
-led-power,C1 C4,1uF 16V X7R,0805
-led-power,C2 C5,10nF 16V X7R,0603
+led-power,U3,TPS259474LRPWR,Shared latch-off LED circuit breaker
+led-power,U4,SN74LVC1G74DCTR,Logic-powered LED fault latch
+led-power,U5,TPS3808G33DBVR,Power-on reset
+led-power,U6,TPS3808G01DBVR,LED output undervoltage sensor
+led-power,U7,SN74LVC2G14DCKR,Schmitt filter for sustained faults
+led-power,U8,TMP390A2DRLR,Selector temperature switch
+led-power,D1,BAS416,Fast fault timer discharge
+led-power,Q1 Q2,MMBT3904LT1G,Open-collector status for GPIO18
+led-power,C1 C4 C6,1uF 16V X7R,0805
+led-power,C2 C5 C7,10nF 16V X7R,0603
 led-power,C3,10uF 16V X7R,0805
-led-power,R1,15k 1%,0603
-led-power,R2 R4 R10,10k 1%,0603
+led-power,C8 C9 C10 C13,100nF 16V X7R,0603
+led-power,C11,470pF C0G,0603
+led-power,C12,4.7uF 25V X7R,0805 with 3.3 to 5.7uF effective over voltage and temperature
+led-power,R1 R12,15k 1%,0603
+led-power,R2 R4 R10 R13 R17,10k 1%,0603
 led-power,R3,35.7k 1%,0603
-led-power,R5,1.18k 1%,0603
-led-power,R6,10k,0603
+led-power,R5,1.27k 1%,0603
+led-power,R6 R15 R18,10k,0603
 led-power,R7,56k,0603
-led-power,R8,47k,0603
+led-power,R8 R21,47k,0603
 led-power,R9,27.4k 1%,0603
 led-power,R11,3.32k 1%,0603
+led-power,R14,1.30k 1%,0603
+led-power,R16,82.5k 1%,0603
+led-power,R19,100k 1%,0603
+led-power,R20,18.7k 1%,0603
 inlet,converter,D24V90F5,Pololu 2866
 inlet,mounts,M2 screws and insulating washers,Two inlet mounts and four regulator mounts
 inlet,cap,USB-C dust cap,Tethered cap for charging inlet
