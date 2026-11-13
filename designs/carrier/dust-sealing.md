@@ -17,8 +17,7 @@ instructions for assembly and check the supplied parts against the cover.
 The manufacturer rates the cordgrip IP68 when installed as specified.
 [Heyco cordgrip data](https://www.heyco.com/products/liquid-tight-cordgrips/nylon-cordgrips/heyco-tite-liquid-tight-cordgrips-right-angle-metric-hubs/), [locknut dimensions](https://www.heyco.com/products/liquid-tight-cordgrips/nylon-cordgrips/heyco-nylon-locknuts-metric-thread-2/)
 
-Aim for 100 mm of lead below the elbow. Use 22 AWG power and return
-conductors with a round jacket. Feed the precrimped ends through the gland
+Aim for 100 mm of lead below the elbow. For the 60 W head, use the [18 AWG cable and same-size M4450 gland](wall-power-pd60.md). The earlier 5 V head uses 22 AWG. Use a round jacket for both. Feed the precrimped ends through the gland
 and fit the keyed housing on the inside. Leave 25 mm of internal handling
 slack to unplug the charger with the rear cover supported. Clamp the intact
 jacket. Keep the stripped conductors and connections inside. Seal the head

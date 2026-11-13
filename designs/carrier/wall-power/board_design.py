@@ -7,6 +7,8 @@ from uuid import NAMESPACE_URL, uuid5
 
 import pcbnew
 
+from pd60_design import BOARDS as PD_BOARDS
+
 HERE = Path(__file__).resolve().parent
 QFN = "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm"
 RTW = "Package_DFN_QFN:Texas_RTW_WQFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm"
@@ -206,6 +208,7 @@ PIGTAIL = {
 BOARDS = {
     "charger": (CHARGER, 24, 26, 1.6),
     "usb-pigtail": (PIGTAIL, 28, 31, 1.2),
+    **PD_BOARDS,
 }
 
 
@@ -414,7 +417,7 @@ def seed_copper(board, name):
         for x in (11.25, 12.0, 12.75):
             for y in (11.25, 12.0, 12.75):
                 add_via(board, G, (x, y), 0.50, 0.25)
-    else:
+    elif name == "usb-pigtail":
         add_track(
             board, "RAW", 0.70, [(21.095, 22.425), (22.365, 22.425), (23.635, 22.425)]
         )
@@ -475,6 +478,62 @@ def seed_copper(board, name):
         )
 
 
+    elif name == "usb-pd60":
+        for x in (12.48, 15.52):
+            add_via(board, "RAW", (x, 25.08), 0.55, 0.25)
+        add_track(board, "RAW", 1.4, [(12.48, 25.08), (15.52, 25.08),
+                                         (16.9, 25.08), (19.1, 22.88)],
+                  pcbnew.In2_Cu)
+        add_track(board, "RAW", 0.27, [(19.75, 21.02), (19.75, 21.58),
+                                          (19.1, 22.23), (19.1, 22.88)])
+        add_via(board, "RAW", (19.1, 22.88), 0.7, 0.32)
+        add_track(board, "PD_20V", 0.27, [(20.25, 18.98), (20.25, 18.4),
+                                             (20.95, 17.70), (21.05, 17.15),
+                                             (22.05, 16.15)])
+        add_track(board, "BUCK_5V", 0.27, [(19.75, 11.02), (19.75, 11.58),
+                                               (19.15, 12.18), (18.4, 12.18)])
+        power_link(board, "BUCK_5V", 2.3, [(19.15, 12.18), (18.4, 12.18)],
+                   [(19.15, 12.18), (18.4, 12.18), (14.55, 8.0), (12.25, 8.0),
+                    (10.25, 6.0)])
+        add_track(board, "WALL_5V", 0.27, [(20.25, 8.98), (20.25, 8.66),
+                                              (20.80, 8.11), (21.60, 8.11)])
+        power_link(board, "WALL_5V", 2.3, [(20.8, 8.11), (21.6, 8.11)],
+                   [(21.6, 8.11), (21.6, 3.5), (20.8, 2.7), (20.8, 2.1)])
+        add_track(board, "PD_ILIM", 0.18, [(20.9, 19.775), (23.075, 19.775)])
+        add_track(board, "PD_20V", 0.19, [(13.525, 16), (13.8, 16), (14.25, 15.55)])
+        add_via(board, "PD_20V", (14.25, 15.55), 0.55, 0.25)
+        add_track(board, "PD_20V", 0.19, [(14.25, 15.55), (21.45, 15.55), (22.05, 16.15)],
+                  pcbnew.B_Cu)
+        add_track(board, "PDO2_N", 0.15, [(6.4375, 16.95), (5.91, 16.95), (5.45, 16.49)])
+        add_via(board, "PDO2_N", (5.45, 16.49), 0.50, 0.25)
+        add_via(board, "PDO2_N", (14.35, 16.82), 0.55, 0.25)
+        add_track(board, "PDO2_N", 0.16, [(5.45, 16.49), (6.01, 15.93), (13.46, 15.93),
+                                            (14.35, 16.82)], pcbnew.In2_Cu)
+        add_track(board, "PDO2_N", 0.16, [(14.35, 16.82), (15.17, 16), (15.175, 16)])
+        add_track(board, "BUCK_5V", 0.2, [(20.825, 13.7), (21.3, 13.7), (21.95, 13.05)])
+        add_via(board, "BUCK_5V", (21.95, 13.05), 0.55, 0.25)
+        add_track(board, "BUCK_5V", 0.20, [(21.95, 13.05), (21.08, 12.18), (19.15, 12.18)],
+                  pcbnew.In2_Cu)
+
+        add_track(board, "V2V7", 0.17, [(6.4375, 18.45), (4.275, 18.45)])
+        add_track(board, "V1V2", 0.17, [(6.4375, 17.45), (5.7, 17.45), (5.40, 17.15),
+                                           (4.275, 16.025), (4.275, 15.45)])
+        add_track(board, "CC1", 0.18, [(13.5, 24.55), (13.5, 23.8),
+                                          (12.55, 22.85), (10.2, 22.85),
+                                          (7.65, 20.3), (7.65, 19.6625)])
+    elif name == "led-power":
+        add_track(board, "WALL_5V", 0.27, [(9.35, 12.48), (9.35, 12.11),
+                                              (8.75, 11.51), (8.0, 11.51)])
+        power_link(board, "WALL_5V", 2.3, [(8.75, 11.51), (8.0, 11.51)],
+                   [(8.75, 11.51), (8.21, 11.51), (3.7, 7)])
+        add_track(board, "WALL_5V", 1.5, [(3.7, 7), (7.1, 7), (7.6, 6.5)], pcbnew.In2_Cu)
+        add_track(board, "LED_5V", 0.27, [(9.85, 14.52), (9.85, 14.89),
+                                             (10.5, 15.54), (11.25, 15.54)])
+        power_link(board, "LED_5V", 1.6, [(10.5, 15.54), (11.25, 15.54)],
+                   [(10.5, 15.54), (11.25, 15.54), (15.2, 11.59), (15.2, 4.5)])
+        add_track(board, "LIMIT_WALL", 0.18, [(10.5, 13.275), (12.375, 13.275)])
+
+
 def label(board, value, point, size=0.85):
     text = pcbnew.PCB_TEXT(board)
     text.SetText(value)
@@ -492,10 +551,14 @@ def mark_board(board, name):
         label(board, "GND", (8.2, 24.6))
         for text, y in [("BAT", 7.8), ("GND", 10.6), ("SYS", 13.4), ("NTC", 16.2)]:
             label(board, text, (22, y + 1.45))
-    else:
+    elif name == "usb-pigtail":
         label(board, "SC USB-C A", (8, 2))
         label(board, "5V", (20.8, 3.85))
         label(board, "GND", (24, 3.85))
+    elif name == "usb-pd60":
+        label(board, "SC PD60", (10, 2))
+    else:
+        label(board, "SC LED POWER", (15, 26))
 
 
 def fill_ground(board, name):
@@ -516,6 +579,18 @@ def fill_ground(board, name):
     board.BuildConnectivity()
     if not pcbnew.ZONE_FILLER(board).Fill(board.Zones()):
         raise RuntimeError("KiCad failed to fill the ground planes")
+
+
+def stitch_ground(board, name):
+    points = {
+        "usb-pd60": [(8.4, 17.7), (7.7, 17.7), (9.1, 17.7), (8.4, 17.0),
+                      (8.4, 18.4), (4.6, 10.7), (27, 21), (1.8, 14),
+                      (16.6, 5.6), (10.5, 29.2), (17.5, 29.2)],
+        "led-power": [(14, 22.4), (3, 15.8), (13, 6), (25.9, 12.9),
+                       (26, 24.6), (5.2, 11.8)],
+    }
+    for point in points[name]:
+        add_via(board, G, point, 0.55, 0.25)
 
 
 def finish(name, source, session, netlist, output):
@@ -583,11 +658,14 @@ def prepare(name, output, libraries):
                 pad.SetNet(board.FindNet(mapping[number]))
     verify_pins(board, name)
     seed_copper(board, name)
+    if name in PD_BOARDS:
+        stitch_ground(board, name)
     mark_board(board, name)
     pcbnew.SaveBoard(str(output), board)
     dsn = output.with_suffix(".dsn")
     pcbnew.ExportSpecctraDSN(board, str(dsn))
-    dsn.write_text(dsn.read_text().replace("(width 200)", "(width 175)"))
+    rules = dsn.read_text().replace("(width 200)", "(width 175)")
+    dsn.write_text(rules)
 
 
 def verify_pins(board, name):
