@@ -15,12 +15,12 @@ import prints
 
 
 def slice_projects(directory, inventory, spec):
-    # The retainer has three contact toes and a stepped stem. Give these
-    # localized overhangs organic supports without filling any seal grooves.
+    # Organic supports carry the inverted cover and the retainer toes.
+    # Keep the inherited cradle and optical profiles separate.
     reports = []
     for supported in (False, True):
         rows = [row for row in inventory["print_parts"]
-                if (row["source_part"] == "CarrierRetainer") == supported]
+                if (row["source_part"] in {"CarrierRetainer", "RearCover"}) == supported]
         subset = {**inventory, "print_parts": rows, "stl_files": [row["file"] for row in rows]}
         profile = spec
         if supported:
@@ -42,7 +42,11 @@ def build(fit, destination):
         raise ValueError("Rev A fit must supply every revised print solid")
     if (report["closed_collisions"] or report["battery_motion"]["closed_interference_mm3"]
             or report["battery_hatch"]["closed_and_withdrawal_interference_mm3"]
-            or report["carrier_retainer"]["collision_mm3"]):
+            or report["carrier_retainer"]["collision_mm3"]
+            or set(report["battery_contacts"]["integrated_seats"]) != {
+                "BatteryContactNBack", "BatteryContactPBack",
+            }
+            or report["disconnect_guard"]["former_bores_open"]):
         raise ValueError("Complete the Rev A fit check before packaging")
 
     baseline = json.loads((BASELINE / "parts.json").read_text())

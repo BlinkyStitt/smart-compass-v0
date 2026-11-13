@@ -27,6 +27,7 @@ from native import (
 
 from prints import normalize_stl_bed, orientation
 from solid_clearance import bounds
+from integrated_parts import BACK_PLATES, contact_cradle, disconnect_guard
 from seals import LEGACY_HINGE, check_hatch, front_seals, hatch
 from retainer import build as build_retainer
 
@@ -164,8 +165,8 @@ def control_seals(rear):
 def export_print(directory, name, shape):
     require_solid(name, shape)
     solid = shape.copy()
-    # Put the bezel seal groove and retainer contact toes above the bed.
-    axis, angle = ([1, 0, 0], 180) if name in {"CarrierRetainer", "FrontBezel"} else orientation(name)
+    # Put the bezel groove, retainer toes and rear guard above the bed.
+    axis, angle = ([1, 0, 0], 180) if name in {"CarrierRetainer", "FrontBezel", "RearCover"} else orientation(name)
     if angle:
         solid.rotate(App.Vector(), App.Vector(*axis), angle)
     bb = bounds(solid)
@@ -208,7 +209,13 @@ def check(output):
         battery = battery_access.definition()
         rear, battery_shapes = fit_battery(battery, rear)
         lid, rear, lid_sweep = hatch(battery, rear)
+        cradle, cradle_joins, contact_fit = contact_cradle(battery, battery_shapes)
+        rear, guard, guard_fit = disconnect_guard(rear)
         fixed["CarrierRearPanel"] = rear
+        fixed["BatteryCradle"] = cradle
+        for name in BACK_PLATES:
+            del fixed[name]
+        del fixed["SwitchGuard"]
         for name in ("BatteryDoor", "BatteryKeeper"):
             fixed[name] = battery_shapes[name]
         obstacles = {**fixed, **products}
@@ -223,6 +230,11 @@ def check(output):
             {"PowerDisconnect": disconnect},
         ))
         collisions.extend(intersections({"PigtailRearCover": rear}, products))
+        collisions.extend(intersections({"DisconnectGuard": guard}, {
+            **parts, "PowerDisconnect": disconnect, **products,
+        }))
+        collisions.extend(intersections({"CradleRoofJoins": cradle_joins},
+                                        {**parts, **products, "ElectronicsShell": shell}))
         for a, b in combinations(parts, 2):
             collisions.extend(intersections({a: parts[a]}, {b: parts[b]}))
         hatch_obstacles = {name: shape for name, shape in {**fixed, **products, **parts}.items()
@@ -251,6 +263,7 @@ def check(output):
                 ("RearCover", rear),
                 ("RearSealShellSeat", rear_seat),
                 ("CarrierRetainer", retainer),
+                ("CradleRoofJoins", cradle_joins),
                 *products.items(),
                 *parts.items(),
             ],
@@ -268,6 +281,8 @@ def check(output):
                         "obstacle. The installed hatch has its own withdrawal check."
                     ),
                     "battery_hatch": hatch_fit,
+                    "battery_contacts": contact_fit,
+                    "disconnect_guard": guard_fit,
                     "carrier_retainer": retainer_fit,
                     "print_parts": print_parts,
                 },
