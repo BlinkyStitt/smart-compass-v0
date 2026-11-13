@@ -8,7 +8,8 @@ usb-pd60,D2,ESDA25P35-1U1M,VBUS protection
 usb-pd60,C1,4.7uF 50V X7R,1206
 usb-pd60,C2 C3,1uF 16V X7R,0603
 usb-pd60,C4 C6,1uF 50V X7R,0805
-usb-pd60,C5 C8,10nF 16V X7R,0603
+usb-pd60,C5,10nF 50V X7R,0603
+usb-pd60,C8,10nF 16V X7R,0603
 usb-pd60,C7,10uF 16V X7R,0805
 usb-pd60,R1 R2,1k,0603
 usb-pd60,R3,100k 1%,0603
@@ -31,7 +32,7 @@ led-power,R2 R4 R10,10k 1%,0603
 led-power,R3,35.7k 1%,0603
 led-power,R5,1.18k 1%,0603
 led-power,R6,10k,0603
-led-power,R7,100k,0603
+led-power,R7,56k,0603
 led-power,R8,47k,0603
 led-power,R9,27.4k 1%,0603
 led-power,R11,3.32k 1%,0603

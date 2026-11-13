@@ -6144,7 +6144,7 @@
 				)
 			)
 		)
-		(property "Value" "10nF 16V X7R"
+		(property "Value" "10nF 50V X7R"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(hide yes)
