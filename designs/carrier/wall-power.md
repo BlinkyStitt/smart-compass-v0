@@ -1,4 +1,7 @@
-# Wall USB-C power and in-place charging
+# Rev A charger and 5 V USB-C head
+
+For the upgraded inlet and wall display, use the [60 W guide](wall-power-pd60.md).
+The charger, sensor sleeve and cell wiring below also apply to the upgrade.
 
 Rev A uses a [routed USB-C pigtail and a routed internal charger](wall-power/README.md).
 The external USB-C socket hangs below the case. Plug in a USB-C source

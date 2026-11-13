@@ -66,7 +66,7 @@ def component_envelopes(z):
 
 
 def pigtail_panel(rear):
-    # Heyco M4448 on the rear face, with the elbow pointing down.
+    # Heyco M4450 on the rear face, with the elbow pointing down.
     centre = (74, -44)
     vent_points = harness_plan.parameters()["rear_vents_xy_mm"]
     for xy in vent_points:
@@ -221,6 +221,8 @@ def check(output):
         obstacles = {**fixed, **products}
         obstacles.pop("Carrier")  # The parts sit on the carrier's top face.
         parts["WallChargerEnvelope"] = box(([-14, -95, 3.5], [10, -67, 9.5]))
+        # 28 × 28 mm selector, including PCB, flat leads and insulating mount.
+        parts["WallLedPowerEnvelope"] = box(([-58, 33, 3.5], [-30, 61, 9]))
         parts.update(pigtail)
         parts["DisconnectBoot"] = control_seals(rear)
         disconnect = obstacles.pop("PowerDisconnect")

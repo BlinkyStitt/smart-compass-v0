@@ -6,8 +6,10 @@ import re
 from pathlib import Path
 
 from board_design import BOARDS, design_uuid, pin_map
+from pd60_design import LAYOUT as PD_LAYOUT, PIN_NAMES as PD_PIN_NAMES
 
 PIN_NAMES = {
+    **PD_PIN_NAMES,
     "charger": {
         "U1": [
             "VAC",
@@ -76,6 +78,7 @@ PIN_NAMES = {
 # The left two columns group the active power blocks. The right columns
 # carry the labelled passives, test points and harness ends.
 LAYOUT = {
+    **PD_LAYOUT,
     "charger": [
         ("U1",),
         ("L1", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"),
@@ -215,10 +218,12 @@ def schematic(name, output):
                 )
             )
             y += max(0, len(pins) - 1) * 2.54 + 16.51
-    title = "Wall charger" if name == "charger" else "USB-C pigtail"
+    title = {"charger": "Wall charger", "usb-pigtail": "USB-C pigtail",
+             "usb-pd60": "60 W USB-C power", "led-power": "LED power selector"}[name]
+    paper = "A2" if name in PD_LAYOUT else "A3"
     lines = [
         '(kicad_sch (version 20250114) (generator "eeschema") (generator_version "9.0")',
-        f'(uuid {uid(name)}) (paper "A3") (title_block (title "Smart Compass - {title}") (rev "A"))',
+        f'(uuid {uid(name)}) (paper "{paper}") (title_block (title "Smart Compass - {title}") (rev "A"))',
         "(lib_symbols",
         *libraries,
         ")",
