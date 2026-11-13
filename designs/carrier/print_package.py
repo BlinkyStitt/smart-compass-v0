@@ -46,6 +46,7 @@ def build(fit, destination):
             or set(report["battery_contacts"]["integrated_seats"]) != {
                 "BatteryContactNBack", "BatteryContactPBack",
             }
+            or report["battery_polarity"]["reverse_tip_clearance_min_mm"] <= 0
             or report["disconnect_guard"]["former_bores_open"]):
         raise ValueError("Complete the Rev A fit check before packaging")
 

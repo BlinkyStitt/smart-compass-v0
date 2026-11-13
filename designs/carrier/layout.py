@@ -28,7 +28,8 @@ PRINT_PARTS = (RETAINED_PRINTS - {
     "BatteryDoor", "BatteryContactNBack", "BatteryContactPBack", "SwitchGuard",
 }) | {"BatteryHatch", "CarrierRetainer"}
 REVISED_PRINTS = frozenset({
-    "RearCover", "ElectronicsShell", "FrontBezel", "BatteryHatch", "BatteryKeeper", "BatteryCradle", "CarrierRetainer",
+    "RearCover", "ElectronicsShell", "FrontBezel", "BatteryHatch", "BatteryKeeper",
+    "BatteryCradle", "BatteryContactNFront", "BatteryContactPFront", "CarrierRetainer",
 })
 
 

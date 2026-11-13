@@ -60,11 +60,10 @@ Fit the front clamp over the plunger. Keep the original M2 fasteners
 and the 0.25 mm insulating washers at the compression bosses. Fit the negative clamp with its insulating stop at the
 negative end. Support the leads during tightening.
 
-Measure the unloaded tip gap of 73.9 ± 0.1 mm and negative-stop
-compression of 1.82 ± 0.05 mm. Stop the build if the gauges are out of
-range. Check that each contact is captive, its plunger moves freely,
-and the positive contact stays insulated from the mounting hardware. Do the first removal check with a dummy cell.
-[Contact and clamp specifications](../../hardware/enclosure/battery-access.md)
+Check that each contact is captive, its plunger moves freely, and the
+positive contact stays insulated from the mounting hardware.
+Use the keyed contact dimensions below to set the Rev A clamps.
+[Spring-contact reference drawing](../../hardware/enclosure/battery-access.md)
 
 ## Plugs
 
@@ -125,6 +124,26 @@ first assembly. Check module retention and antenna behavior with the PCB in
 place. Weigh the assembled prototype to capture the cost of the extra plugs
 and charger.
 
+## Check the keyed positive contact
+
+Use both revised front clamps from the Rev A print package. The circular
+guard on `BatteryContactPFront` faces the cell. Clear its opening of print
+material and keep the insulating bearing face flat.
+With both power sources disconnected, check that the unloaded positive pin is
+0.42–0.56 mm behind that face. Set the unloaded tip gap to 74.12–74.20 mm and the
+negative stop compression to 1.82–1.90 mm.
+
+The keyed holder accepts a protected 21700 cell 74.3–75.3 mm long and
+21.5–22.1 mm in diameter. Check the actual XTAR cell. Its positive button
+must be 5–9 mm in diameter, 1.0–1.6 mm high and within 1 mm of the opening axis
+when seated. The negative end must have no more than 0.27 mm of central
+protrusion toward the pin when its bearing surface is against the clamp.
+Use electrically isolated dummy gauges to check contact in the correct
+orientation and no contact during reversed insertion or with the keeper closed.
+Confirm that pushing against the negative stop releases the button
+before withdrawing the dummy. A cell outside these limits needs a fit
+review. [XTAR product sheet](https://www.xtar.cc/download/21700-6000mah-data-sheet?wpdmdl=10996)
+
 ## Verify the carrier
 
 Open the board in KiCad 10. Run the DRC with the ground plane refilled.
@@ -144,7 +163,7 @@ For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
 directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
 the internal USB-C hardware, charger envelope, hatch and retainer fit and cell service in
-`routed-fit.json`. It exports `usb-c-rear-cover.step` and the seven revised
+`routed-fit.json`. It exports `usb-c-rear-cover.step` and the nine revised
 print solids as STLs. Make the complete print package with the
 [Rev A build instructions](README.md#make-the-rev-a-print-package).
 

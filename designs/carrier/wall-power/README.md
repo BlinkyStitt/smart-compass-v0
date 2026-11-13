@@ -20,7 +20,8 @@ Specify 0.13 mm minimum track, 0.20 mm minimum copper clearance and
 and nonplated locator and mounting holes. Fill and copper-cap the vias
 under the soldered exposed pads, and the other vias placed in SMD pads,
 to prevent solder loss. The fabrication drill files do not specify
-via fill. Tell the assembler which vias are in pads.
+via fill. Tell the assembler which vias are in pads. The selector uses
+0.25 mm finished via drills and a 0.50 mm minimum via diameter.
 
 Use the [charger and 5 V pigtail BOM](bom.csv) for those assemblies.
 Reflow the boards and solder the wires at the bench. Fit the USB shell

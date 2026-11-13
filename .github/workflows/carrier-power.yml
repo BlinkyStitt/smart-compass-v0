@@ -1,0 +1,27 @@
+name: Carrier power checks
+
+on:
+  pull_request:
+    paths:
+      - 'designs/carrier/**'
+      - 'designs/stacked/exports/scene.json'
+      - '.github/workflows/carrier-power.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'designs/carrier/**'
+      - 'designs/stacked/exports/scene.json'
+      - '.github/workflows/carrier-power.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  power-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - run: python3 -m unittest discover -s designs/carrier/wall-power/firmware
+      - run: python3 -m unittest discover -s designs/carrier
