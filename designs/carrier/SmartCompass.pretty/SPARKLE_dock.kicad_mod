@@ -1,0 +1,101 @@
+(footprint "SPARKLE_dock"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "SPARKLE"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "6eb9b19c-26f1-4168-ad30-a56e72963375")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SPARKLE dock"
+		(at 0 2 0)
+		(layer "Dwgs.User")
+		(uuid "dee1be9d-6b3c-404c-b7cb-d4d64bd4a985")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "20879a4e-dccd-4139-8466-f64e81afefc8")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3e09602e-3b87-49d2-ad9f-d892dbae7927")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(pad "JP3.1" thru_hole circle
+		(at -13.97 -15.24)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "812ad648-351a-42bf-88a2-207f15762575")
+	)
+	(pad "JP3.2" thru_hole circle
+		(at -13.97 -12.7)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "68d76a45-6407-4a03-983c-799f7a8e90a7")
+	)
+	(pad "JP3.3" thru_hole circle
+		(at -16.51 -15.24)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ed65e94c-e855-4e84-9bb6-f73b098a59ec")
+	)
+	(pad "JP3.4" thru_hole circle
+		(at -16.51 -12.7)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "bad4b7fd-93d9-4954-a012-a29143c71fb2")
+	)
+	(pad "JP3.5" thru_hole circle
+		(at -19.05 -15.24)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "253fc05c-b951-4d7e-b8d9-a11f1dd63791")
+	)
+	(pad "JP3.6" thru_hole circle
+		(at -19.05 -12.7)
+		(size 1.8 1.8)
+		(drill 0.92)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ae6aca40-84b4-4c13-a388-6beafc4030e7")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,63 @@
+{
+  "connectors": {
+    "J1": ["CHARGER", "VH", [11, -8, 0], ["CELL_SW", "GND", "SYS", "THERM"]],
+    "J2": ["CELL", "VH", [11, 3, 0], ["CELL_SW", "GND", "THERM"]],
+    "J3": ["LATCH", "VH", [11, 13, 0], ["SYS", "BOOST_IN", "GND", "START", "LATCH_OFF"]],
+    "J4": ["BOOST", "VH", [-17, 23.5, 0], ["BOOST_IN", "GND", "BOOST_OUT", "GND", "LBO", null]],
+    "J5": ["OUTPUT SWITCH", "XH", [-15, 7, 0], ["BOOST_OUT", "LOAD_5V"]],
+    "J6": ["SPARKLE BARREL", "VH", [29.4, 24.3, 0], ["LOAD_5V", "GND"]],
+    "J7": ["SPARKLE JP1", "XH", [-45, 9, 90], ["LED_DISTRIBUTION", "GND", "LED_DATA1", "LED_DATA2", "LED_DATA3"]],
+    "J8": ["FIBONACCI", "XH", [11, 24, 0], ["FIB_5V", "GND", "LED_DATA1"]],
+    "J9": ["INNER", "XH", [-28, 59.5, 0], ["RING1_5V", "GND", "LED_DATA2"]],
+    "J10": ["SIDE A", "XH", [-15, 0, 0], ["RING2_5V", "GND", "LED_DATA3"]],
+    "J11": ["SIDE B", "XH", [-15, -9, 0], ["RING3_5V", "GND", "LED_DATA4"]],
+    "J12": ["BUTTONS", "PH", [-17.7, 15.95, 0], ["START", "GND", "MODE", "GND", "ACTION", "GND"]]
+  },
+  "parts": {
+    "F1": ["0251002.NRT1L", "SmartCompass:Axial_Fuse_251_P10.16mm", [-5, 29.65, 0], ["LED_DISTRIBUTION", "FIB_5V"]],
+    "F2": ["0251001.NRT1L", "SmartCompass:Axial_Fuse_251_P10.16mm", [-5, 33.65, 0], ["LED_DISTRIBUTION", "RING1_5V"]],
+    "F3": ["0251001.NRT1L", "SmartCompass:Axial_Fuse_251_P10.16mm", [-5, 37.65, 0], ["LED_DISTRIBUTION", "RING2_5V"]],
+    "F4": ["0251001.NRT1L", "SmartCompass:Axial_Fuse_251_P10.16mm", [-5, 41.65, 0], ["LED_DISTRIBUTION", "RING3_5V"]],
+    "F5": ["0251.500NRT1L", "SmartCompass:Axial_Fuse_251_P10.16mm", [1, 64, 0], ["AUX_SOURCE", "AUX_3V3"]],
+    "Q1": ["MMBT3906", "Package_TO_SOT_SMD:SOT-23", [-51, -7, 0], ["LBO_BASE", "BOOST_IN", "LATCH_OFF"]],
+    "R1": ["47k", "Resistor_SMD:R_0805_2012Metric", [-51, -10, 0], ["LBO", "LBO_BASE"]],
+    "R2": ["100k", "Resistor_SMD:R_0805_2012Metric", [-51, -4, 0], ["LATCH_OFF", "GND"]],
+    "R3": ["100k 1%", "Resistor_SMD:R_0805_2012Metric", [-45, -4, 0], ["BOOST_IN", "SENSE_DIV"]],
+    "R4": ["100k 1%", "Resistor_SMD:R_0805_2012Metric", [-45, -7, 0], ["SENSE_DIV", "GND"]],
+    "R5": ["1k", "Resistor_SMD:R_0805_2012Metric", [-12, 45.5, 0], ["BOOST_OUT", "GND"]],
+    "R6": ["1k", "Resistor_SMD:R_0805_2012Metric", [-7.6, 45.5, 0], ["LOAD_5V", "GND"]],
+    "R7": ["1k", "Resistor_SMD:R_0805_2012Metric", [-46, 23, 0], ["BOOST_IN", "GND"]],
+    "R8": ["1k", "Resistor_SMD:R_0805_2012Metric", [22, 24, 0], ["FIB_5V", "GND"]],
+    "R9": ["100R", "Resistor_SMD:R_0805_2012Metric", [-45, -10, 0], ["BOOST_IN", "SENSE_VDD"]],
+    "U1": ["TS5A3160DBVR", "Package_TO_SOT_SMD:SOT-23-6", [-45, 0, 0], ["SENSE_DIV", "GND", null, "SENSE", "SENSE_VDD", "AUX_3V3"]],
+    "C1": ["100nF", "Capacitor_SMD:C_0805_2012Metric", [-41.5, 0, 90], ["SENSE", "GND"]],
+    "C2": ["100nF", "Capacitor_SMD:C_0805_2012Metric", [-41.5, 3.5, 90], ["SENSE_VDD", "GND"]]
+  },
+    "wide_nets_mm": {
+      "CELL_SW": 1.3,
+      "SYS": 1.3,
+      "BOOST_IN": 1.3,
+      "BOOST_OUT": 1.0,
+      "LOAD_5V": 1.0,
+      "LED_DISTRIBUTION": 1.0,
+      "FIB_5V": 0.8,
+      "RING1_5V": 0.7,
+      "RING2_5V": 0.7,
+      "RING3_5V": 0.7,
+      "AUX_SOURCE": 0.5,
+      "AUX_3V3": 0.5,
+      "GND": 0.6
+    },
+  "ground_vias_kicad_mm": {
+    "R2": [51.1, 104],
+    "C1": [59.7, 99.05],
+    "R7": [56.1, 77],
+    "C2": [59.7, 95.55],
+    "R9": ["100R", "Resistor_SMD:R_0805_2012Metric", [-45, -10, 0], ["BOOST_IN", "SENSE_VDD"]],
+    "U1": [52.6, 100],
+    "R4": [57.1, 107],
+    "R6": [94.5, 54.5],
+    "R5": [90.1, 54.5],
+    "R8": [124.1, 76]
+  }
+}

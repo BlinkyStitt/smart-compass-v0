@@ -1,13 +1,20 @@
 # Plug-in carrier for the narrow compass
 
-This is a mechanical fit prototype for a single 1.2 mm carrier board. The
+Rev A has a [routed carrier PCB](carrier-a.kicad_pcb), a
+[plug and harness assembly guide](assembly.md), and a
+[USB-C power and charging design](wall-power.md). The charger is a separate
+assembly that plugs into the carrier. The [sealed pigtail](dust-sealing.md)
+uses a downward cable gland in the lower rear cover. The compact charger,
+pigtail head and complete enclosure seals still need physical verification.
+
+The original fit model uses a single 1.2 mm carrier board. The
 housing uses the narrow design's 58.6 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
 three panel-mount buttons. The layout budgets 36 off-board conductors,
-compared with 92 in the current fixed loom. It retains 14 prints
-for the case, optics, cell bay and disconnect guard. Final restraints can add
-parts.
+compared with 92 in the current fixed loom. The print set has 15 parts.
+One removable retainer holds all seven boards on the rear cover. The
+gasketed battery hatch uses four screws and keeps the independent cell keeper.
 
 Three Keystone 3153 insulating washers take the place of the printed
 Fibonacci clips. The fit check includes movement around the screw shaft and
@@ -56,38 +63,44 @@ larger bend radius if the selected cable or connector requires one. Check the
 actual lead exits and the opened and closed assembly with the first set of
 cables. [Wire support and bend-radius reference](https://standards.nasa.gov/sites/default/files/standards/NASA/A/4/nasa-std-87394a_w_change_4_0.pdf)
 
-## Build a fit sample
+## Make the Rev A print package
 
-From the repository root, set the destination to a new output folder on the
-external drive and run FreeCAD. Confirm `fit-check.json` is present and the log
-reports `CARRIER MECHANICAL FIT PASS`.
+From the repository root, choose a new fit folder and a new package folder on
+the external drive. Set `CARRIER_FIT` and `CARRIER_PRINTS` to their absolute
+paths. Fetch the native assets with Git LFS. Run the routed fit macro in
+FreeCAD, then run the package builder with
+PrusaSlicer installed. Wait for `REV A BATTERY MOTION PASS` in the FreeCAD
+console and check for `routed-fit.json` before packaging.
 
 ```sh
-mkdir "$CARRIER_OUTPUT"
+mkdir "$CARRIER_FIT"
 COMPASS_CARRIER_SOURCE="$PWD/designs/carrier" \
-COMPASS_CARRIER_OUTPUT="$CARRIER_OUTPUT" \
-/Applications/FreeCAD.app/Contents/Resources/bin/freecad "$PWD/designs/carrier/Run.FCMacro"
+COMPASS_CARRIER_OUTPUT="$CARRIER_FIT" \
+/Applications/FreeCAD.app/Contents/Resources/bin/freecad "$PWD/designs/carrier/RunRoutedFit.FCMacro"
+
+python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS"
 ```
 
-The macro generates an installed FreeCAD assembly, a STEP file, a printable
-board outline and hole gauge, the rear panel, the terminal schedule, and a fit
-report. It also writes an unrouted KiCad board with the checked outline and
-socket positions. Print the gauge flat to check connector fit and access.
-Use the terminal schedule to assign the remaining connectors before routing.
+The builder checks and slices the 15 installed parts. It uses the revised
+rear cover, shell, front bezel, hatch, keeper and retainer from the routed fit.
+It uses the matching narrow exports for the other parts. Read the [printing and first-fit guide](printing.md)
+before printing.
 
-## Complete the carrier
+Use `Run.FCMacro` for the socket drill gauge and legacy fit reference. It
+writes the gauge, assembly, terminal schedule and unrouted placement board.
 
-Route and verify the board before sending it to a PCB assembler. Select keyed
-harnesses and verify the current ratings of the contacts, copper, and external
-LED circuits. Check the positions of the GPS and radio antennas with the
-carrier installed. Add independent board retention so the sockets are not the
-only restraints. Select the exact panel buttons and verify their mount and lead
-exits. The charger and external-power circuit still need a routed design and
-bench verification with and without the protected cell.
+## Qualify the prototype
+
+Use the Rev A assembly and power guides for the bench build. Measure current
+and temperature at the contacts, copper, and LED circuits. Check the GPS
+and radio antennas with the carrier installed. Check the retainer pads,
+APEM buttons, seals and lead exits on the
+printed cover. Route and test the charger and external-power boards with
+and without the protected cell.
 
 The report compares the old loom, removed prints, new rear cover, laminate and
 copper budget. The remaining allowance must cover sockets, replacement leads,
 new retention and panel hardware, and any changes to the power circuit. The
 finished assembly must be weighed. The current fit model retains the seven-print
 battery bay. To reach the original 9–12 print target, the battery contact mounts
-and final retention still need to be simplified and verified.
+still need to be simplified and verified.

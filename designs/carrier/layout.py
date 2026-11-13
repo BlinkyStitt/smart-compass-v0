@@ -12,11 +12,22 @@ ROOT = HERE.parents[1]
 HARDWARE = ROOT / "hardware/enclosure"
 BASELINE = ROOT / "designs/stacked/exports"
 sys.path.insert(0, str(HARDWARE))
+import battery_access
 import blackpill_mount
 import electrical_blackpill
 import electrical_boost
 import electrical_imu
 import electrical_peripherals
+
+
+RETAINED_PRINTS = frozenset({
+    "RearCover", "ElectronicsShell", "FrontBezel", "InnerDiffuser", "SideDiffuser",
+    "EGLStencil", "SwitchGuard",
+}) | battery_access.printed_parts("narrow")
+PRINT_PARTS = (RETAINED_PRINTS - {"BatteryDoor"}) | {"BatteryHatch", "CarrierRetainer"}
+REVISED_PRINTS = frozenset({
+    "RearCover", "ElectronicsShell", "FrontBezel", "BatteryHatch", "BatteryKeeper", "CarrierRetainer",
+})
 
 
 def transform(xy, origin, pose):

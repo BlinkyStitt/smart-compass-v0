@@ -1,0 +1,9 @@
+import os
+from pathlib import Path
+import sys
+
+sys.path.insert(0, os.environ["COMPASS_CARRIER_SOURCE"])
+
+from routed_fit import check
+
+check(Path(os.environ["COMPASS_CARRIER_OUTPUT"]) / "routed-fit.json")
