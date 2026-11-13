@@ -12,9 +12,11 @@ housing uses the narrow design's 58.6 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
 three panel-mount buttons. The layout budgets 36 off-board conductors,
-compared with 92 in the current fixed loom. The print set has 15 parts.
+compared with 92 in the current fixed loom. The print set has 12 parts.
 One removable retainer holds all seven boards on the rear cover. The
 gasketed battery hatch uses four screws and keeps the independent cell keeper.
+The cradle includes both fixed contact seats. Each cell end has one removable
+insulating clamp. The rear cover includes the disconnect guard.
 
 Three Keystone 3153 insulating washers take the place of the printed
 Fibonacci clips. The fit check includes movement around the screw shaft and
@@ -81,8 +83,8 @@ COMPASS_CARRIER_OUTPUT="$CARRIER_FIT" \
 python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS"
 ```
 
-The builder checks and slices the 15 installed parts. It uses the revised
-rear cover, shell, front bezel, hatch, keeper and retainer from the routed fit.
+The builder checks and slices the 12 installed parts. It uses the revised
+rear cover, shell, front bezel, cradle, hatch, keeper and retainer from the routed fit.
 It uses the matching narrow exports for the other parts. Read the [printing and first-fit guide](printing.md)
 before printing.
 
@@ -101,6 +103,4 @@ and without the protected cell.
 The report compares the old loom, removed prints, new rear cover, laminate and
 copper budget. The remaining allowance must cover sockets, replacement leads,
 new retention and panel hardware, and any changes to the power circuit. The
-finished assembly must be weighed. The current fit model retains the seven-print
-battery bay. To reach the original 9–12 print target, the battery contact mounts
-still need to be simplified and verified.
+finished assembly must be weighed.

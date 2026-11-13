@@ -50,7 +50,8 @@ continuous bearing face below its strap slots. The cover and shell meet
 at the rim and set the nominal seal compression to 20 percent.
 Check for full contact with the print seated. Tighten the six M3 screws
 evenly in a cross pattern and seal under their washers. Use removable
-fastener seals on the two guard mounts and the four cell cradle mounts.
+fastener seals on the four cell cradle mounts. The disconnect guard is
+part of the rear cover.
 The seven carrier PCB screws use blind pilots.
 [Silicone cord source](https://cormanufacturing.com/o-ring-cord-and-custom-extrusions/),
 [Parker face seal guidance](https://www.parker.com/content/dam/Parker-com/Literature/O-Ring-Division-Literature/ORD-5700.pdf)

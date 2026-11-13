@@ -1,7 +1,7 @@
 # Smart Compass Rev A print package
 
 This package is for the 200 mm narrow prototype with the plug-in carrier and
-rear USB-C pigtail. Use one copy of each of the 15 named STL parts. Use either
+rear USB-C pigtail. Use one copy of each of the 12 named STL parts. Use either
 the glow or the silver 3MF for each diffuser.
 
 ## Set up the printer
@@ -15,7 +15,8 @@ Check that brims clear clips and excluded areas on the actual plate.
 
 Print the structural parts in opaque PETG. Use the support settings in each
 project. Remove support and brim material before the fit check. Clear the
-retainer toes and screw recesses before fitting the silicone pads. Keep both
+retainer toes and screw recesses before fitting the silicone pads. Clear
+all support from the rear seal groove, control openings, and guard. Keep both
 diffusers upright and support-free. Use an abrasion-resistant nozzle for
 glow PETG and check the thin wall paths in the preview.
 
@@ -27,10 +28,11 @@ glow PETG and check the thin wall paths in the preview.
    out until this fit check passes.
 2. Print `RearCover` and `CarrierRetainer`. Check that the hatch lies flat
    and its screws seat. Dry fit the rear seal, buttons, disconnect boot,
-   gland and carrier. Check that the retainer feet seat and its pads bear
-   on the PCB edges and mounting holes.
-3. Print the shell, front bezel, two diffusers, stencil, disconnect guard and
-   four battery contact carriers. Check the lens and glow band seal lands
+   gland and carrier. Check both switch positions between the guard ribs.
+   Check that the retainer feet seat and its pads bear on the PCB edges
+   and mounting holes.
+3. Print the shell, front bezel, two diffusers, stencil and two
+   removable front contact clamps. Check the lens and glow band seal lands
    before installing optics or wiring.
 
 Use four M3 × 14 mm hatch screws with 0.5 mm washers and five
@@ -38,8 +40,8 @@ M2.5 × 25 mm button-head retainer screws. The rear cover has blind
 tap pilots. The hatch, rear cover and lens seats use 1 mm silicone cord.
 The assembly guide gives the seal sizes and fastener steps.
 
-The rear cover has the pigtail opening, flat control seals and door-hinge
-relief and blind pilots. Each STL and project must agree with `parts.json`.
+The rear cover includes the switch guard, pigtail opening, seal lands and
+blind pilots. Each STL and project must agree with `parts.json`.
 The enclosed FreeCAD and slicer reports give the digital checks. Confirm
 print fit, screw and keeper strength, and gasket compression on the first
-build. See the [Rev A design and assembly guide](https://github.com/BlinkyStitt/smart-compass-v0/pull/43).
+build. See the [Rev A design and assembly guide](https://github.com/BlinkyStitt/smart-compass-v0/tree/master/designs/carrier).

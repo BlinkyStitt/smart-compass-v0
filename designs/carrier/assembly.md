@@ -45,9 +45,26 @@ to seat the seal against the printed land.
 Use the factory 20 AWG leads to make a bench harness. Join them to the
 26 AWG PH leads using insulated splices rated for the two wire sizes.
 Leave 20 mm of service slack. Fit the C&K 759D02000 sealing boot on the
-7201SYZQE disconnect in place of its external nut. Fit the guard and
-check that the boot moves freely in both positions. Check both switch
-poles with a continuity meter. [C&K switch and boot drawing](https://www.ckswitches.com/media/1394/7000toggle.pdf)
+7201SYZQE disconnect in place of its external nut. Check that the boot moves freely
+in both positions. Check both switch poles with a continuity meter. [C&K switch and boot drawing](https://www.ckswitches.com/media/1394/7000toggle.pdf)
+
+## Fit the battery contacts
+
+Print the cradle and the two `BatteryContact*Front` clamps. Clear the
+support material from the wire passages, contact seats, and screw holes.
+Finish the fixed seats and clamp bores to 2.75 ± 0.05 mm. Feed the bare
+wire through its conduit before soldering the contact outside the print.
+Let it cool. Pull the wire through until the contact flange seats against
+the integral back face.
+Fit the front clamp over the plunger. Keep the original M2 fasteners
+and the 0.25 mm insulating washers at the compression bosses. Fit the negative clamp with its insulating stop at the
+negative end. Support the leads during tightening.
+
+Measure the unloaded tip gap of 73.9 ± 0.1 mm and negative-stop
+compression of 1.82 ± 0.05 mm. Stop the build if the gauges are out of
+range. Check that each contact is captive, its plunger moves freely,
+and the positive contact stays insulated from the mounting hardware. Do the first removal check with a dummy cell.
+[Contact and clamp specifications](../../hardware/enclosure/battery-access.md)
 
 ## Plugs
 
@@ -127,7 +144,7 @@ For the mechanical check, set `COMPASS_CARRIER_SOURCE` to the absolute
 path to `designs/carrier` and set `COMPASS_CARRIER_OUTPUT` to a writable
 directory. Run `RunRoutedFit.FCMacro` in FreeCAD. It records the mated plugs,
 the pigtail hardware, charger envelope, hatch and retainer fit and cell service in
-`routed-fit.json`. It exports `pigtail-rear-cover.step` and the six revised
+`routed-fit.json`. It exports `pigtail-rear-cover.step` and the seven revised
 print solids as STLs. Make the complete print package with the
 [Rev A build instructions](README.md#make-the-rev-a-print-package).
 
