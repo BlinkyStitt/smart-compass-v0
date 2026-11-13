@@ -36,7 +36,7 @@ led-power,R8,47k,0603
 led-power,R9,27.4k 1%,0603
 led-power,R11,3.32k 1%,0603
 head,converter,D24V90F5,Pololu 2866
-head,case,1551WKBK,Hammond gasketed enclosure
+head,case,1551WYBK,Hammond gasketed enclosure
 head,cable exit,M4332,Heyco M12 straight gland
 harness,rear exit,M4450,Heyco M12 right-angle gland
 harness,pigtail,Q4560-1,Quabbin jacketed 18 AWG pair

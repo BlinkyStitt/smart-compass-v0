@@ -21,7 +21,7 @@ pull on the socket. Unplug USB and set S1 to OFF before cell service.
 
 1. Have the assembler reflow the [USB-C PCB](wall-power/README.md).
    Program the STUSB4500 as described below. Fit the GCT USB4736-GF-A-KIT
-   and its USBTJ-06 gasket on the short wall of a Hammond 1551WKBK.
+   and its USBTJ-06 gasket on the short wall of a Hammond 1551WYBK.
 2. Mount the USB PCB on insulating supports. Align the connector to the
    GCT panel drawing and compress the 0.90 mm gasket by 35–45%. Leave
    room to fully seat the USB plug. Fit the tethered cap.
@@ -30,6 +30,8 @@ pull on the socket. Unplug USB and set S1 to OFF before cell service.
    ground with 22 AWG. Connect VOUT and output ground to W3 and W4 with
    18 AWG. Keep the paired leads short. Use an insulating mount that
    clears the solder joints and holds both boards clear of each other.
+   Allow 8 mm between the boards and about 10 mm at the gland end for
+   flat leads and the locknut. The head measures 100 × 50 × 24 mm.
 4. Fit a Heyco M4332 straight M12 gland on the opposite end. Solder the
    red and black leads of Q4560-1 round 18 AWG cable to W5 and W6. Fit a
    Heyco M4450 elbow in the existing rear-cover hole. Clamp the jacket
@@ -40,7 +42,7 @@ pull on the socket. Unplug USB and set S1 to OFF before cell service.
    lead at or below 250 mm. Use 18 AWG contacts on both halves.
 
 [Receptacle](https://gct.co/connector/usb4736),
-[Housing drawing](https://www.hammfg.com/files/parts/pdf/1551WKBK.pdf),
+[Housing drawing](https://www.hammfg.com/files/parts/pdf/1551WYGY.pdf?v=1697661936),
 [Regulator](https://www.pololu.com/product/2866),
 [Cable specification](https://cdn.automationdirect.com/static/specs/18awgushctrlandsigcbl.pdf)
 
@@ -92,14 +94,18 @@ and uses the wall feed when available.
 
 ## Load the display firmware
 
-Install CircuitPython for the full Sparkle Motion. Copy the
-NeoPixel library into CIRCUITPY/lib. Copy `code.py` and
-`power_policy.py` from [firmware](wall-power/firmware/) to CIRCUITPY.
-From the repository root, export the LED positions to the same drive.
+Install CircuitPython 10.3.1 for the full Sparkle Motion. Use an A-to-C
+data cable through a hub on macOS. Open the CircuitPython editor's USB
+workflow and upload the matching NeoPixel library to the board's
+`/lib` directory. Upload `power_policy.py` and then `code.py` from
+[firmware](wall-power/firmware/) to the root of the board. Export the LED
+map locally with the command below. Upload the map to the same root
+before resetting the board. [Adafruit installation guide](https://learn.adafruit.com/adafruit-sparkle-motion/install-circuitpython),
+[USB file upload](https://learn.adafruit.com/adafruit-sparkle-motion/usage)
 
 ```sh
 python3 designs/carrier/wall-power/firmware/export_layout.py \
-  designs/stacked/exports/scene.json /Volumes/CIRCUITPY/led-layout.json
+  designs/stacked/exports/scene.json led-layout.json
 ```
 
 This image runs the moving, full-saturation rainbow on the four outputs.
@@ -108,7 +114,9 @@ different order. GPIO18 reads the selector's active-low status. A loose
 or unplugged sense lead leaves the display in battery mode. The firmware
 applies the 2% battery cap at startup. Wall operation allows about 13%
 electrical drive and also checks the encoded current for each frame.
-The limits leave headroom for the existing J7 connector and branch fuses.
+The 1,024-frame model peaks at 2.34 A on the wall and 0.75 A on
+battery. The limits leave headroom for the existing J7 connector and
+branch fuses.
 This firmware is for the standalone display. The navigation and radio
 firmware described in the design spec is a separate implementation.
 
