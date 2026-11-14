@@ -67,23 +67,22 @@ jobs:
       - name: Install pinned FreeCAD and PrusaSlicer
         run: |
           install_app() {
-            local url="$1" digest="$2" name="$3"
+            local url="$1" digest="$2" name="$3" bundle="$4"
             local image="$RUNNER_TEMP/$name.dmg" volume="$RUNNER_TEMP/$name-mount"
             curl --fail --location --retry 3 --output "$image" "$url"
             echo "$digest  $image" | shasum -a 256 --check
             hdiutil attach -nobrowse -readonly -mountpoint "$volume" "$image"
-            # The PrusaSlicer DMG uses a versioned bundle name. Run the single
-            # application in each mounted, checksum-verified image.
-            local bundles=("$volume"/*.app)
-            [[ "${#bundles[@]}" == 1 && -d "${bundles[0]}" ]]
-            ln -s "${bundles[0]}" "$RUNNER_TEMP/$name.app"
+            test -d "$volume/$bundle"
+            ln -s "$volume/$bundle" "$RUNNER_TEMP/$name.app"
           }
           install_app https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-macOS-arm64-py311.dmg \
-            071343b4abb70492b75c973f41eaf1d2528f9b9c7ea018d22a4f46ae14d27ac0 FreeCAD
+            071343b4abb70492b75c973f41eaf1d2528f9b9c7ea018d22a4f46ae14d27ac0 FreeCAD FreeCAD.app
           install_app https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.9.6/PrusaSlicer-2.9.6.dmg \
-            94fd7b8a9f87c9631e1c71739b15b184fc5f4c0ceabd69072f1c78f229a4fe40 PrusaSlicer
+            94fd7b8a9f87c9631e1c71739b15b184fc5f4c0ceabd69072f1c78f229a4fe40 PrusaSlicer "Original Prusa Drivers/PrusaSlicer.app"
           mkdir -p "$RUNNER_TEMP/slicer-bin"
           ln -s "$RUNNER_TEMP/PrusaSlicer.app/Contents/MacOS/PrusaSlicer" "$RUNNER_TEMP/slicer-bin/prusa-slicer"
+          "$RUNNER_TEMP/slicer-bin/prusa-slicer" --help > "$RUNNER_TEMP/prusaslicer-help.txt"
+          grep -F 'PrusaSlicer-2.9.6 ' "$RUNNER_TEMP/prusaslicer-help.txt"
           echo "$RUNNER_TEMP/slicer-bin" >> "$GITHUB_PATH"
       - name: Verify fit and slice the complete print kit
         shell: bash
