@@ -2,7 +2,8 @@
 
 This package is for the 200 mm narrow prototype with the plug-in carrier and
 integrated USB-C inlet. Use one copy of each of the 12 named STL parts. Use either
-the glow or the silver 3MF for each diffuser.
+the glow or the silver 3MF for each diffuser. The optics use a 2 mm clear
+front mirror and a 1.5 mm coated black acrylic rear mirror with a 14 mm gap.
 
 ## Set up the printer
 

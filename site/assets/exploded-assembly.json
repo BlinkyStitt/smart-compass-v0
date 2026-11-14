@@ -1,11 +1,11 @@
 {
-  "movie_sha256": "a8ab6009529b8da4c5424be78a327878e65c7cdb823d0a1c87dbaa4e934e3684",
+  "movie_sha256": "f2fc327eab931af1bbc1317b6cfe6e948bbfca8f020981bec799c3d04f995b00",
   "inputs": {
     "site/explosion.py": "7b905dfcf7036bd0b1921ee010f352572de1545af876324251a5746b908ce158",
     "site/render_assembly.py": "473149be2acd0ecf8354f38a817fff4fe437487fa0cdf995f0fcda89c9faa687",
     "site/render_assembly.gd": "cfadf7cac1ec1e0d1816f735b54bc2903f9a9b5f5ae78f06c8fb5b8d14be6fce",
-    "designs/stacked/exports/scene.json": "f33d985e53b7cbd86f7085bb788e51e9ee7f180877ffe62d52d36c40c19c2c31",
-    "designs/stacked/exports/amulet.glb": "1c0bd61519ed01ed05ef72adf00127d859ea9a151fc5251e06e25b5f9eb907e6"
+    "designs/stacked/exports/scene.json": "27e7a4061fc1d79b26bffceecc0fdf71519469648f1bedfe0506b0e1553910f0",
+    "designs/stacked/exports/amulet.glb": "89a5fcea2839158a89fced204ec27961a9a0f22c6f43a4dbbb8a8938643ac6b4"
   },
   "fitted_cad_parts": 585,
   "separate_units": 568,

@@ -27,12 +27,15 @@ def front_seals(baseline, shell):
     bezel = baseline.getObject("FrontBezel").Shape
     lens = baseline.getObject("FrontMirror").Shape
     diffuser = baseline.getObject("SideDiffuser").Shape
-    # Seal against the acrylic outside the 89.5 mm viewing aperture.
-    lens_groove = annulus(90.8, 92.2, 57.19, 58)
-    require_material("front mirror bearing land", annulus(90.8, 92.2, 57.15, 57.2), lens)
-    require_material("front bezel groove stock", annulus(90.8, 92.2, 57.2, 58), bezel)
+    # Keep the 0.8 mm seal seat on the acrylic face as the optical stack moves.
+    # The seal is outside the 89.5 mm viewing aperture.
+    lens_face = lens.BoundBox.ZMax
+    groove_floor = lens_face + .8
+    lens_groove = annulus(90.8, 92.2, lens_face - .01, groove_floor)
+    require_material("front mirror bearing land", annulus(90.8, 92.2, lens_face - .05, lens_face), lens)
+    require_material("front bezel groove stock", annulus(90.8, 92.2, lens_face, groove_floor), bezel)
     bezel = bezel.cut(lens_groove).removeSplitter()
-    require_material("front bezel groove floor", annulus(90.8, 92.2, 58, 58.1), bezel)
+    require_material("front bezel groove floor", annulus(90.8, 92.2, groove_floor, groove_floor + .1), bezel)
 
     # The sealant is confined to the two end faces, outside the lit window.
     for z, side in ((14, -1), (34, 1)):

@@ -23,7 +23,7 @@
     ],
     "front_wall_z_mm": [
       34.0,
-      57.2
+      56.7
     ],
     "missing_outer_skin_mm3": [
       0.0,
@@ -32,7 +32,7 @@
     "side_band_added_opaque_mm3": 0.0,
     "front_nut_loading_passages": 6
   },
-  "front_nut_land_bottom_mm": 52.7,
+  "front_nut_land_bottom_mm": 52.2,
   "front_nut_floor_mm": 1.5,
   "front_nut_lands_preserved": 6,
   "rear_skin_mm": 0.8,
@@ -578,6 +578,6 @@
     0.0,
     0.0
   ],
-  "case_saved_mm3": 44661.62859090771,
+  "case_saved_mm3": 44850.17929507204,
   "rear_saved_mm3": 19900.690608864606
 }

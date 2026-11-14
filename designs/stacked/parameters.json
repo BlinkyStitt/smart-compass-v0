@@ -10,7 +10,7 @@
   "map_mirror_y": false,
   "baffle_thickness": 2.0,
   "led_baffle_gap": 0.6,
-  "rear_black_acrylic_thickness": 2.0,
+  "rear_black_acrylic_thickness": 1.5,
   "stencil_mirror_gap": 1.0,
   "mirror_gap": 14.0,
   "front_mirror_thickness": 2.0,

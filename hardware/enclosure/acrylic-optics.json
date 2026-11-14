@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "scope": "Visible-light scalar approximations. Supplier nominal values are not independent RGB or angle-resolved measurements. Finished-sheet values already include the substrate; do not apply an extra acrylic transmission factor. The active narrow design targets2mm sheets. The70/30 supplier reference describes other stock thicknesses; retain it only as a simulation target for the2mm front sheet. The2mm coated black sheet and all its finished optical values are custom fabrication assumptions. Thin-sheet flatness, coating and supplied fit remain unmeasured.",
+  "scope": "Visible-light scalar approximations. Supplier nominal values are not independent RGB or angle-resolved measurements. Finished-sheet values already include the substrate; do not apply an extra acrylic transmission factor. The active narrow design uses a 2 mm front sheet and a 1.5 mm rear sheet. The supplier 70/30 reference describes other stock thicknesses and supplies the simulation target for the front sheet. The 1.5 mm coated black rear sheet and all its finished optical values are custom fabrication assumptions. Thin-sheet flatness, coating and supplied fit remain unmeasured.",
   "materials": {
     "two_way_mirror": {
       "reflectance": 0.7,
