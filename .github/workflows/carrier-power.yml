@@ -86,15 +86,20 @@ jobs:
           ln -s "$RUNNER_TEMP/PrusaSlicer.app/Contents/MacOS/PrusaSlicer" "$RUNNER_TEMP/slicer-bin/prusa-slicer"
           echo "$RUNNER_TEMP/slicer-bin" >> "$GITHUB_PATH"
       - name: Verify fit and slice the complete print kit
-        env:
-          COMPASS_CARRIER_SOURCE: ${{ github.workspace }}/designs/carrier
-          COMPASS_CARRIER_OUTPUT: ${{ runner.temp }}/carrier-fit
-          COMPASS_CARRIER_CLOSE_AFTER_CHECK: '1'
+        shell: bash
         run: |
-          mkdir "$COMPASS_CARRIER_OUTPUT"
-          "$RUNNER_TEMP/FreeCAD.app/Contents/Resources/bin/freecad" \
-            designs/carrier/RunRoutedFit.FCMacro 2>&1 | tee "$RUNNER_TEMP/carrier-fit.log"
-          python3 designs/carrier/print_package.py "$COMPASS_CARRIER_OUTPUT" "$RUNNER_TEMP/carrier-prints"
+          fit_dir="$RUNNER_TEMP/carrier-fit"
+          freecad="$RUNNER_TEMP/FreeCAD.app/Contents/Resources"
+          mkdir "$fit_dir"
+          PYTHONPATH="$freecad/lib:$GITHUB_WORKSPACE/designs/carrier" \
+            "$freecad/bin/python" -u - "$fit_dir/routed-fit.json" <<'PYTHON' 2>&1 | tee "$RUNNER_TEMP/carrier-fit.log"
+          from pathlib import Path
+          import sys
+          from routed_fit import check
+
+          check(Path(sys.argv[1]))
+          PYTHON
+          python3 designs/carrier/print_package.py "$fit_dir" "$RUNNER_TEMP/carrier-prints"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:

@@ -104,8 +104,7 @@ bash designs/carrier/check_boards.sh "$CARRIER_REPORTS"
 ```
 
 Set `KICAD_CLI` and `KICAD_PYTHON` if those commands are installed outside
-your normal search path. Set `COMPASS_CARRIER_CLOSE_AFTER_CHECK=1` to close
-FreeCAD when the routed fit macro ends.
+your normal search path.
 
 ## Qualify the prototype
 
