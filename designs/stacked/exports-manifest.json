@@ -2,7 +2,7 @@
   "format_version": 1,
   "inputs": {
     ".githooks/pre-commit": "699083e3ea154a3e93ff328576c42b33eb634adcf8bed814202e43122476426c",
-    ".github/workflows/pages.yml": "da3554735cded6f962e2a94684f5f7ee1667d38a82956e2e71e92237ae04259e",
+    ".github/workflows/pages.yml": "084a3dd7d173a5bf04480fc993930269cacd0def0f9ebfa1eb15af2763b2450f",
     "demo/assets/playa-night.png": "d97e75745cdf66657fadea1218deb33def14f0927fbe9a8616a88b4b64e6611f",
     "demo/capture_view.gd": "4f39fbbe9421e501af9abf7f30410030e7473c5da2ab8cf3df6b2b1f07e8d2bb",
     "demo/centre_diffusion.gdshaderinc": "129a6c88bc81d5b9040aa77469bfef1cb7fa6ea0a5edd2199ab803ff987fabb4",

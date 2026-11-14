@@ -42,12 +42,12 @@ jobs:
           mv "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
           echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
           npm ci --prefix site --ignore-scripts --no-fund
-          node site/node_modules/playwright/cli.js install --with-deps chromium
+          node site/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Build and verify site media
         run: |
           python3 -m unittest discover -s site -p 'test_*.py' -v
           python3 site/build.py --output "$RUNNER_TEMP/compass-pages"
-          python3 site/verify.py local --directory "$RUNNER_TEMP/compass-pages"
+          python3 site/verify.py local --directory "$RUNNER_TEMP/compass-pages" --webkit
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ${{ runner.temp }}/compass-pages

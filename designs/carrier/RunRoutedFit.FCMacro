@@ -6,4 +6,10 @@ sys.path.insert(0, os.environ["COMPASS_CARRIER_SOURCE"])
 
 from routed_fit import check
 
-check(Path(os.environ["COMPASS_CARRIER_OUTPUT"]) / "routed-fit.json")
+try:
+    check(Path(os.environ["COMPASS_CARRIER_OUTPUT"]) / "routed-fit.json")
+finally:
+    if os.environ.get("COMPASS_CARRIER_CLOSE_AFTER_CHECK") == "1":
+        import FreeCADGui
+
+        FreeCADGui.getMainWindow().close()
