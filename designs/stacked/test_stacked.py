@@ -62,6 +62,9 @@ class FitTests(unittest.TestCase):
         d = validate(p)
         self.assertAlmostEqual(p["case_diameter"], 200)
         self.assertGreater(d["wall_radius"] - 83, 6)
+        self.assertEqual(p["front_mirror_thickness"], 2.0)
+        self.assertEqual(p["rear_black_acrylic_thickness"], 1.5)
+        self.assertEqual(p["mirror_gap"], 14.0)
         self.assertEqual(p["inner_count"], 70)
         self.assertEqual(p["side_count"], 70)
         self.assertAlmostEqual(d["front_z"] - d["rear_z"], p["mirror_gap"])
@@ -69,7 +72,7 @@ class FitTests(unittest.TestCase):
         self.assertAlmostEqual(d["side_height"], 20)
         self.assertEqual(d["side_row_z"], [19, 29])
         self.assertLess(p["side_bottom_z"] + d["side_height"], d["rear_bottom"] - 0.8)
-        self.assertAlmostEqual(d["depth"], p["circle_back_z"] + p["mirror_gap"] + 13.6)
+        self.assertAlmostEqual(d["depth"], p["circle_back_z"] + p["mirror_gap"] + 13.1)
 
     def test_wider_optics_keep_seats_posts_and_board_support_connected(self):
         p = parameters()
@@ -108,7 +111,7 @@ class FitTests(unittest.TestCase):
         p = parameters()
         for gap in (12, 14, 16, 20):
             d = validate(dict(p, mirror_gap=gap))
-            self.assertAlmostEqual(d["depth"], 44.6 + gap)
+            self.assertAlmostEqual(d["depth"], 44.1 + gap)
             self.assertAlmostEqual(d["front_z"] - d["rear_z"], gap)
             self.assertGreaterEqual(
                 p["circle_back_z"]

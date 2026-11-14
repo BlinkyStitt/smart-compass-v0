@@ -11,7 +11,7 @@
     "map_mirror_y": false,
     "baffle_thickness": 2.0,
     "led_baffle_gap": 0.6,
-    "rear_black_acrylic_thickness": 2.0,
+    "rear_black_acrylic_thickness": 1.5,
     "stencil_mirror_gap": 1.0,
     "mirror_gap": 14.0,
     "front_mirror_thickness": 2.0,
@@ -771,9 +771,9 @@
       "print_bounds_mm": [
         200.0000003,
         200.00000036213203,
-        55.20000036213204
+        54.70000036213204
       ],
-      "source_volume_cm3": 87.52879134846096,
+      "source_volume_cm3": 86.53377382981274,
       "rotation": {
         "axis": [
           0,
@@ -782,7 +782,7 @@
         ],
         "angle_deg": 0
       },
-      "sha256": "feb2f657503e7d63a768132452fa36992403fe3f9937f91f2f6e3d824d5d9caf",
+      "sha256": "02f8aa77a3a6f9d4d89a78bb2bd906093e9eb58175bcf1b15d389519d10abb2f",
       "mesh_bed_translation_z_mm": -2.1213203638126288e-07,
       "physical_acceptance": "unmeasured"
     },
@@ -794,7 +794,7 @@
         200.0000002,
         1.4000002000000027
       ],
-      "source_volume_cm3": 8.69807103132629,
+      "source_volume_cm3": 8.698071031326293,
       "rotation": {
         "axis": [
           0,
@@ -4233,10 +4233,10 @@
       "id": "ElectronicsShell",
       "label": "ElectronicsShell",
       "installed_quantity": 1,
-      "mass_g_per_unit": 111.16156501254541,
+      "mass_g_per_unit": 109.89789276386219,
       "mass_range_g_per_unit": [
-        77.81309550878179,
-        120.05449021354904
+        76.92852493470353,
+        118.68972418497117
       ],
       "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
       "group": "pendant",
@@ -4244,9 +4244,9 @@
         "ElectronicsShell"
       ],
       "mass_centre_mm": [
-        -0.0794939190690063,
-        6.397691979339889,
-        30.636596418337433
+        -0.08040798832600858,
+        6.451041948740841,
+        30.381085900218036
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4506,10 +4506,10 @@
       "id": "FrontBezel",
       "label": "FrontBezel",
       "installed_quantity": 1,
-      "mass_g_per_unit": 11.046550209784389,
+      "mass_g_per_unit": 11.046550209784392,
       "mass_range_g_per_unit": [
-        7.732585146849072,
-        11.93027422656714
+        7.7325851468490745,
+        11.930274226567144
       ],
       "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
       "group": "pendant",
@@ -4517,9 +4517,9 @@
         "FrontBezel"
       ],
       "mass_centre_mm": [
-        -2.523557937621722e-14,
-        5.847348089309946e-15,
-        57.898977509876616
+        -3.1372108972039547e-14,
+        1.145452848677061e-14,
+        57.398977509876474
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4527,10 +4527,10 @@
       "id": "FrontNut0",
       "label": "FrontNut0",
       "installed_quantity": 1,
-      "mass_g_per_unit": 0.12709620298030128,
+      "mass_g_per_unit": 0.12709620298030122,
       "mass_range_g_per_unit": [
-        0.08261253193719584,
-        0.19064430447045191
+        0.0826125319371958,
+        0.19064430447045183
       ],
       "mass_basis": "Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured",
       "group": "pendant",
@@ -4538,9 +4538,9 @@
         "FrontNut0"
       ],
       "mass_centre_mm": [
-        96.74999999999997,
-        3.293499234084148e-16,
-        55.299999999999976
+        96.75000000000003,
+        2.7414284915208564e-16,
+        54.80000000000002
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4561,7 +4561,7 @@
       "mass_centre_mm": [
         96.75,
         3.785419682512823e-17,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4582,7 +4582,7 @@
       "mass_centre_mm": [
         48.375000000000036,
         83.78795781614446,
-        55.30000000000001
+        54.800000000000004
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4603,7 +4603,7 @@
       "mass_centre_mm": [
         48.37500000000003,
         83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4624,7 +4624,7 @@
       "mass_centre_mm": [
         -48.374999999999986,
         83.78795781614444,
-        55.29999999999999
+        54.79999999999998
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4645,7 +4645,7 @@
       "mass_centre_mm": [
         -48.374999999999986,
         83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4664,9 +4664,9 @@
         "FrontNut3"
       ],
       "mass_centre_mm": [
-        -96.74999999999997,
+        -96.74999999999999,
         1.2353527683200951e-14,
-        55.299999999999976
+        54.79999999999999
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4687,7 +4687,7 @@
       "mass_centre_mm": [
         -96.74999999999999,
         1.1879405013270455e-14,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4708,7 +4708,7 @@
       "mass_centre_mm": [
         -48.37500000000006,
         -83.78795781614443,
-        55.30000000000001
+        54.800000000000004
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4729,7 +4729,7 @@
       "mass_centre_mm": [
         -48.37500000000004,
         -83.78795781614441,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4750,7 +4750,7 @@
       "mass_centre_mm": [
         48.375000000000014,
         -83.78795781614443,
-        55.3
+        54.8
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4771,7 +4771,7 @@
       "mass_centre_mm": [
         48.37500000000003,
         -83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4813,7 +4813,7 @@
       "mass_centre_mm": [
         3.2383496093594136e-14,
         1.0861404348348737e-13,
-        47.24046869256326
+        46.740468692563155
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4842,10 +4842,10 @@
       "id": "RearCouplingMirror",
       "label": "RearCouplingMirror",
       "installed_quantity": 1,
-      "mass_g_per_unit": 65.36572033451198,
+      "mass_g_per_unit": 49.024290250883986,
       "mass_range_g_per_unit": [
-        58.82914830106078,
-        71.90229236796318
+        44.12186122579559,
+        53.92671927597239
       ],
       "mass_basis": "CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured",
       "group": "pendant",
@@ -4853,9 +4853,9 @@
         "RearCouplingMirror"
       ],
       "mass_centre_mm": [
-        5.298428299462521e-15,
-        7.728477328472035e-15,
-        40.2
+        1.2009770812115046e-14,
+        5.790836695852193e-15,
+        39.949999999999996
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -4876,7 +4876,7 @@
       "mass_centre_mm": [
         4.7685854695162686e-15,
         7.728477328472035e-15,
-        56.199999999999996
+        55.699999999999996
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -8837,9 +8837,9 @@
         "InnerLEDs"
       ],
       "mass_centre_mm": [
-        -6.471271827250172e-13,
-        -0.47589747463438214,
-        48.200000000000124
+        -6.471271827250182e-13,
+        -0.4758974746343822,
+        47.700000000000635
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -9521,10 +9521,10 @@
       "id": "W031",
       "label": "M22759/16-22-2",
       "installed_quantity": 1,
-      "mass_g_per_unit": 1.4170649855883606,
+      "mass_g_per_unit": 1.4144449855883605,
       "mass_range_g_per_unit": [
-        0.9919454899118524,
-        2.1255974783825407
+        0.9901114899118523,
+        2.1216674783825407
       ],
       "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
       "group": "pendant",
@@ -9532,9 +9532,9 @@
         "W031"
       ],
       "mass_centre_mm": [
-        0.6474753116958424,
-        65.44772893559096,
-        22.12384821879057
+        0.6502388386258655,
+        65.39159397616636,
+        22.073777121803648
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -9731,10 +9731,10 @@
       "id": "W041",
       "label": "M22759/18-26-9",
       "installed_quantity": 1,
-      "mass_g_per_unit": 0.39923769856548047,
+      "mass_g_per_unit": 0.3981076985654805,
       "mass_range_g_per_unit": [
-        0.2794663889958363,
-        0.5988565478482207
+        0.2786753889958363,
+        0.5971615478482207
       ],
       "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
       "group": "pendant",
@@ -9742,9 +9742,9 @@
         "W041"
       ],
       "mass_centre_mm": [
-        27.862716806646855,
-        76.92356122315081,
-        9.4054194467253
+        27.946008076818636,
+        76.86623623384055,
+        9.292587877636045
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -9879,10 +9879,10 @@
       "id": "W048",
       "label": "M22759/16-22-0",
       "installed_quantity": 1,
-      "mass_g_per_unit": 1.5741565424858233,
+      "mass_g_per_unit": 1.5715365424858232,
       "mass_range_g_per_unit": [
-        1.1019095797400762,
-        2.3612348137287347
+        1.100075579740076,
+        2.3573048137287347
       ],
       "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
       "group": "pendant",
@@ -9890,9 +9890,9 @@
         "W048"
       ],
       "mass_centre_mm": [
-        -12.268329371796614,
-        65.36243988266638,
-        21.85853507302494
+        -12.2908401375755,
+        65.31164627773748,
+        21.817036476776558
       ],
       "physical_acceptance": "unmeasured"
     },
@@ -12008,10 +12008,10 @@
   },
   "mass_estimate": {
     "complete_pendant": {
-      "nominal_g": 815.1009783884631,
+      "nominal_g": 797.4895060561519,
       "range_g": [
-        599.1359318115799,
-        1038.8328606245527
+        583.5396151622364,
+        1019.4829665039841
       ]
     },
     "necklace": {
@@ -12022,15 +12022,15 @@
       ]
     },
     "total_worn": {
-      "nominal_g": 819.0795616065569,
+      "nominal_g": 801.4680892742457,
       "range_g": [
-        601.7914023184696,
-        1043.925311469369
+        586.1950856691262,
+        1024.5754173488003
       ]
     },
-    "upper_worn_g": 1043.925311469369,
+    "upper_worn_g": 1024.5754173488003,
     "limit_g": 1133.980925,
-    "margin_g": 90.05561353063104,
+    "margin_g": 109.40550765119974,
     "ceiling_pass": true,
     "margin_target_g": 50,
     "margin_target_pass": true,
@@ -12038,24 +12038,24 @@
   },
   "physical_acceptance": "unmeasured",
   "balance": {
-    "pendant_mass_g": 815.1009783884631,
+    "pendant_mass_g": 797.4895060561519,
     "centre_mm": [
-      0.18822850382805303,
-      -6.342383648256768,
-      25.658282592620747
+      0.19238609344614271,
+      -6.485999258832642,
+      25.235442459117905
     ],
     "centre_mass_allowance_range_mm": [
       [
-        -4.332978737880506,
-        4.6149599672274295
+        -4.434081806672138,
+        4.722155849392816
       ],
       [
-        -12.451149531619539,
-        -1.5134163517820265
+        -12.737602719185972,
+        -1.5500339601339075
       ],
       [
-        22.30451976076199,
-        29.22856403129056
+        21.873036335019492,
+        28.821148939661136
       ]
     ],
     "suspension_midpoint_mm": [
@@ -12063,18 +12063,18 @@
       76.99325112124319,
       8.1
     ],
-    "centre_below_suspension_mm": 83.33563476949996,
-    "minimum_model_drop_mm": 78.50666747302522,
-    "lateral_moment_g_mm": 153.4252376308426,
-    "fore_aft_moment_g_mm": 14311.773320066291,
-    "nominal_tilt_deg": 11.897834114894952,
+    "centre_below_suspension_mm": 83.47925038007583,
+    "minimum_model_drop_mm": 78.54328508137709,
+    "lateral_moment_g_mm": 153.42589063443702,
+    "fore_aft_moment_g_mm": 13665.335542775552,
+    "nominal_tilt_deg": 11.599745320595801,
     "tilt_mass_allowance_range_deg": [
-      9.023693604066066,
-      15.063148562798263
+      8.726381349432986,
+      14.778940060899812
     ],
     "left_right_load_fraction": [
-      0.4983775814374113,
-      0.5016224185625887
+      0.4983417454697717,
+      0.5016582545302283
     ],
     "positive_two_point_support_for_mass_range": true,
     "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."
@@ -13688,16 +13688,16 @@
     {
       "name": "ElectronicsShell",
       "group": "Manufactured",
-      "volume_cm3": 87.52879134846096,
+      "volume_cm3": 86.53377382981274,
       "centre_mm": [
-        -0.0794939190690063,
-        6.397691979339889,
-        30.636596418337433
+        -0.08040798832600858,
+        6.451041948740841,
+        30.381085900218036
       ],
       "bounds_mm": [
         200.0000003,
         200.00000036213203,
-        55.20000036213204
+        54.70000036213204
       ]
     },
     {
@@ -13883,11 +13883,11 @@
     {
       "name": "FrontBezel",
       "group": "Manufactured",
-      "volume_cm3": 8.69807103132629,
+      "volume_cm3": 8.698071031326293,
       "centre_mm": [
-        -2.523557937621722e-14,
-        5.847348089309946e-15,
-        57.898977509876616
+        -3.1372108972039547e-14,
+        1.145452848677061e-14,
+        57.398977509876474
       ],
       "bounds_mm": [
         200.0000002,
@@ -13898,11 +13898,11 @@
     {
       "name": "FrontNut0",
       "group": "Hardware",
-      "volume_cm3": 0.016088126959531806,
+      "volume_cm3": 0.0160881269595318,
       "centre_mm": [
-        96.74999999999997,
-        3.293499234084148e-16,
-        55.299999999999976
+        96.75000000000003,
+        2.7414284915208564e-16,
+        54.80000000000002
       ],
       "bounds_mm": [
         4.000000199999988,
@@ -13917,7 +13917,7 @@
       "centre_mm": [
         96.75000000000001,
         3.785419682512823e-17,
-        56.0056890684815
+        55.505689068481495
       ],
       "bounds_mm": [
         3.800000200000028,
@@ -13932,12 +13932,12 @@
       "centre_mm": [
         48.375000000000036,
         83.78795781614446,
-        55.30000000000001
+        54.800000000000004
       ],
       "bounds_mm": [
         4.000000200000002,
         4.6188023535169975,
-        1.6000002000000038
+        1.6000002000000109
       ]
     },
     {
@@ -13947,7 +13947,7 @@
       "centre_mm": [
         48.37500000000002,
         83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "bounds_mm": [
         3.8000001999999995,
@@ -13962,7 +13962,7 @@
       "centre_mm": [
         -48.374999999999986,
         83.78795781614444,
-        55.29999999999999
+        54.79999999999998
       ],
       "bounds_mm": [
         4.000000200000002,
@@ -13977,7 +13977,7 @@
       "centre_mm": [
         -48.374999999999986,
         83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "bounds_mm": [
         3.8000001999999995,
@@ -13990,9 +13990,9 @@
       "group": "Hardware",
       "volume_cm3": 0.016088126959531806,
       "centre_mm": [
-        -96.74999999999997,
+        -96.74999999999999,
         1.2353527683200951e-14,
-        55.299999999999976
+        54.79999999999999
       ],
       "bounds_mm": [
         4.000000199999988,
@@ -14007,7 +14007,7 @@
       "centre_mm": [
         -96.74999999999999,
         1.1879405013270455e-14,
-        56.0056890684815
+        55.505689068481495
       ],
       "bounds_mm": [
         3.800000200000028,
@@ -14022,7 +14022,7 @@
       "centre_mm": [
         -48.37500000000006,
         -83.78795781614443,
-        55.30000000000001
+        54.800000000000004
       ],
       "bounds_mm": [
         4.000000200000002,
@@ -14037,7 +14037,7 @@
       "centre_mm": [
         -48.37500000000004,
         -83.78795781614441,
-        56.0056890684815
+        55.5056890684815
       ],
       "bounds_mm": [
         3.8000001999999995,
@@ -14052,12 +14052,12 @@
       "centre_mm": [
         48.375000000000014,
         -83.78795781614443,
-        55.3
+        54.8
       ],
       "bounds_mm": [
         4.000000200000002,
         4.6188023535169975,
-        1.6000002000000038
+        1.6000002000000109
       ]
     },
     {
@@ -14067,7 +14067,7 @@
       "centre_mm": [
         48.37500000000002,
         -83.78795781614444,
-        56.0056890684815
+        55.5056890684815
       ],
       "bounds_mm": [
         3.8000001999999995,
@@ -14097,7 +14097,7 @@
       "centre_mm": [
         3.2383496093594136e-14,
         1.0861404348348737e-13,
-        47.24046869256326
+        46.740468692563155
       ],
       "bounds_mm": [
         186.8000002,
@@ -14153,16 +14153,16 @@
     {
       "name": "RearCouplingMirror",
       "group": "Manufactured",
-      "volume_cm3": 54.92917675169074,
+      "volume_cm3": 41.19688256376806,
       "centre_mm": [
-        5.298428299462521e-15,
-        7.728477328472035e-15,
-        40.2
+        1.2009770812115047e-14,
+        5.790836695852193e-15,
+        39.949999999999996
       ],
       "bounds_mm": [
         187.0000002,
         187.0000002,
-        2.0000002000000023
+        1.5000002000000023
       ]
     },
     {
@@ -14172,7 +14172,7 @@
       "centre_mm": [
         4.768585469516269e-15,
         7.728477328472035e-15,
-        56.199999999999996
+        55.7
       ],
       "bounds_mm": [
         187.0000002,
@@ -14187,7 +14187,7 @@
       "centre_mm": [
         -1.9291686175702576e-12,
         -0.4799204689820704,
-        48.2000000000004
+        47.700000000001914
       ],
       "bounds_mm": [
         186.93569689909597,
@@ -14198,11 +14198,11 @@
     {
       "name": "InnerLEDs",
       "group": "Optics",
-      "volume_cm3": 3.5000000000000027,
+      "volume_cm3": 3.499999999999995,
       "centre_mm": [
         -6.106607283332519e-15,
         -0.4738859779060686,
-        48.199999999999996
+        47.699999999999996
       ],
       "bounds_mm": [
         186.26986677049382,
@@ -17843,46 +17843,46 @@
     {
       "name": "HarnessJointRING1_5V",
       "group": "Electronics",
-      "volume_cm3": 0.005124195141024034,
+      "volume_cm3": 0.005124195195548963,
       "centre_mm": [
-        0.2921325856398742,
-        94.68110461276775,
-        49.12017366855765
+        0.2921325754786562,
+        94.68110462894523,
+        48.62017367346009
       ],
       "bounds_mm": [
         3.805000250000005,
         2.2364850416917648,
-        2.355010100000001
+        2.3550101000000083
       ]
     },
     {
       "name": "HarnessJointRING1_DIN",
       "group": "Electronics",
-      "volume_cm3": 0.0049308086613648145,
+      "volume_cm3": 0.0049308087779790935,
       "centre_mm": [
-        0.9965984840179961,
-        95.43098238680074,
-        48.00199660342641
+        0.9965985011088091,
+        95.43098239469823,
+        47.501996608494245
       ],
       "bounds_mm": [
-        2.755010127154983,
-        3.2364949688467277,
-        2.355010100000001
+        2.7550101271549914,
+        3.236494968846742,
+        2.3550101000000083
       ]
     },
     {
       "name": "HarnessJointRING1_GND",
       "group": "Electronics",
-      "volume_cm3": 0.003576464536357803,
+      "volume_cm3": 0.003576464544022944,
       "centre_mm": [
-        1.148046463385336,
-        94.60795779318732,
-        46.59907577064286
+        1.1480464628818996,
+        94.60795779369901,
+        46.09907577160567
       ],
       "bounds_mm": [
         2.2050101271549583,
         2.2364949688467135,
-        2.3550101000000154
+        2.3550101000000083
       ]
     },
     {
@@ -19793,16 +19793,16 @@
     {
       "name": "W031",
       "group": "Electronics",
-      "volume_cm3": 0.38769541885188263,
+      "volume_cm3": 0.38695663934735836,
       "centre_mm": [
-        0.6474753116958425,
-        65.44772893559096,
-        22.12384821879057
+        0.6502388386258655,
+        65.39159397616636,
+        22.07377712180365
       ],
       "bounds_mm": [
         65.3716002,
         91.22160019999998,
-        46.23580020000001
+        45.73580020000001
       ]
     },
     {
@@ -19943,16 +19943,16 @@
     {
       "name": "W041",
       "group": "Electronics",
-      "volume_cm3": 0.09826649103212265,
+      "volume_cm3": 0.0979736141092043,
       "centre_mm": [
-        27.862716806646855,
-        76.92356122315081,
-        9.4054194467253
+        27.946008076818636,
+        76.86623623384055,
+        9.292587877636045
       ],
       "bounds_mm": [
-        54.86360020000001,
+        54.863600200000015,
         60.46360019999999,
-        45.28180020000001
+        44.78180020000001
       ]
     },
     {
@@ -20048,16 +20048,16 @@
     {
       "name": "W048",
       "group": "Electronics",
-      "volume_cm3": 0.42962751625787626,
+      "volume_cm3": 0.42888873675335193,
       "centre_mm": [
-        -12.268329371796614,
-        65.36243988266638,
-        21.85853507302494
+        -12.2908401375755,
+        65.31164627773748,
+        21.817036476776554
       ],
       "bounds_mm": [
         93.3716002,
         82.2216002,
-        43.6858002
+        43.1858002
       ]
     },
     {
@@ -23308,10 +23308,10 @@
           "id": "ElectronicsShell",
           "label": "ElectronicsShell",
           "installed_quantity": 1,
-          "mass_g_per_unit": 111.16156501254541,
+          "mass_g_per_unit": 109.89789276386219,
           "mass_range_g_per_unit": [
-            77.81309550878179,
-            120.05449021354904
+            76.92852493470353,
+            118.68972418497117
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -23319,9 +23319,9 @@
             "ElectronicsShell"
           ],
           "mass_centre_mm": [
-            -0.0794939190690063,
-            6.397691979339889,
-            30.636596418337433
+            -0.08040798832600858,
+            6.451041948740841,
+            30.381085900218036
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23581,10 +23581,10 @@
           "id": "FrontBezel",
           "label": "FrontBezel",
           "installed_quantity": 1,
-          "mass_g_per_unit": 11.046550209784389,
+          "mass_g_per_unit": 11.046550209784392,
           "mass_range_g_per_unit": [
-            7.732585146849072,
-            11.93027422656714
+            7.7325851468490745,
+            11.930274226567144
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -23592,9 +23592,9 @@
             "FrontBezel"
           ],
           "mass_centre_mm": [
-            -2.523557937621722e-14,
-            5.847348089309946e-15,
-            57.898977509876616
+            -3.1372108972039547e-14,
+            1.145452848677061e-14,
+            57.398977509876474
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23602,10 +23602,10 @@
           "id": "FrontNut0",
           "label": "FrontNut0",
           "installed_quantity": 1,
-          "mass_g_per_unit": 0.12709620298030128,
+          "mass_g_per_unit": 0.12709620298030122,
           "mass_range_g_per_unit": [
-            0.08261253193719584,
-            0.19064430447045191
+            0.0826125319371958,
+            0.19064430447045183
           ],
           "mass_basis": "Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured",
           "group": "pendant",
@@ -23613,9 +23613,9 @@
             "FrontNut0"
           ],
           "mass_centre_mm": [
-            96.74999999999997,
-            3.293499234084148e-16,
-            55.299999999999976
+            96.75000000000003,
+            2.7414284915208564e-16,
+            54.80000000000002
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23636,7 +23636,7 @@
           "mass_centre_mm": [
             96.75,
             3.785419682512823e-17,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23657,7 +23657,7 @@
           "mass_centre_mm": [
             48.375000000000036,
             83.78795781614446,
-            55.30000000000001
+            54.800000000000004
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23678,7 +23678,7 @@
           "mass_centre_mm": [
             48.37500000000003,
             83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23699,7 +23699,7 @@
           "mass_centre_mm": [
             -48.374999999999986,
             83.78795781614444,
-            55.29999999999999
+            54.79999999999998
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23720,7 +23720,7 @@
           "mass_centre_mm": [
             -48.374999999999986,
             83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23739,9 +23739,9 @@
             "FrontNut3"
           ],
           "mass_centre_mm": [
-            -96.74999999999997,
+            -96.74999999999999,
             1.2353527683200951e-14,
-            55.299999999999976
+            54.79999999999999
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23762,7 +23762,7 @@
           "mass_centre_mm": [
             -96.74999999999999,
             1.1879405013270455e-14,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23783,7 +23783,7 @@
           "mass_centre_mm": [
             -48.37500000000006,
             -83.78795781614443,
-            55.30000000000001
+            54.800000000000004
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23804,7 +23804,7 @@
           "mass_centre_mm": [
             -48.37500000000004,
             -83.78795781614441,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23825,7 +23825,7 @@
           "mass_centre_mm": [
             48.375000000000014,
             -83.78795781614443,
-            55.3
+            54.8
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23846,7 +23846,7 @@
           "mass_centre_mm": [
             48.37500000000003,
             -83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23888,7 +23888,7 @@
           "mass_centre_mm": [
             3.2383496093594136e-14,
             1.0861404348348737e-13,
-            47.24046869256326
+            46.740468692563155
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23917,10 +23917,10 @@
           "id": "RearCouplingMirror",
           "label": "RearCouplingMirror",
           "installed_quantity": 1,
-          "mass_g_per_unit": 65.36572033451198,
+          "mass_g_per_unit": 49.024290250883986,
           "mass_range_g_per_unit": [
-            58.82914830106078,
-            71.90229236796318
+            44.12186122579559,
+            53.92671927597239
           ],
           "mass_basis": "CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -23928,9 +23928,9 @@
             "RearCouplingMirror"
           ],
           "mass_centre_mm": [
-            5.298428299462521e-15,
-            7.728477328472035e-15,
-            40.2
+            1.2009770812115046e-14,
+            5.790836695852193e-15,
+            39.949999999999996
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -23951,7 +23951,7 @@
           "mass_centre_mm": [
             4.7685854695162686e-15,
             7.728477328472035e-15,
-            56.199999999999996
+            55.699999999999996
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -27912,9 +27912,9 @@
             "InnerLEDs"
           ],
           "mass_centre_mm": [
-            -6.471271827250172e-13,
-            -0.47589747463438214,
-            48.200000000000124
+            -6.471271827250182e-13,
+            -0.4758974746343822,
+            47.700000000000635
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -28596,10 +28596,10 @@
           "id": "W031",
           "label": "M22759/16-22-2",
           "installed_quantity": 1,
-          "mass_g_per_unit": 1.4170649855883606,
+          "mass_g_per_unit": 1.4144449855883605,
           "mass_range_g_per_unit": [
-            0.9919454899118524,
-            2.1255974783825407
+            0.9901114899118523,
+            2.1216674783825407
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -28607,9 +28607,9 @@
             "W031"
           ],
           "mass_centre_mm": [
-            0.6474753116958424,
-            65.44772893559096,
-            22.12384821879057
+            0.6502388386258655,
+            65.39159397616636,
+            22.073777121803648
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -28806,10 +28806,10 @@
           "id": "W041",
           "label": "M22759/18-26-9",
           "installed_quantity": 1,
-          "mass_g_per_unit": 0.39923769856548047,
+          "mass_g_per_unit": 0.3981076985654805,
           "mass_range_g_per_unit": [
-            0.2794663889958363,
-            0.5988565478482207
+            0.2786753889958363,
+            0.5971615478482207
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -28817,9 +28817,9 @@
             "W041"
           ],
           "mass_centre_mm": [
-            27.862716806646855,
-            76.92356122315081,
-            9.4054194467253
+            27.946008076818636,
+            76.86623623384055,
+            9.292587877636045
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -28954,10 +28954,10 @@
           "id": "W048",
           "label": "M22759/16-22-0",
           "installed_quantity": 1,
-          "mass_g_per_unit": 1.5741565424858233,
+          "mass_g_per_unit": 1.5715365424858232,
           "mass_range_g_per_unit": [
-            1.1019095797400762,
-            2.3612348137287347
+            1.100075579740076,
+            2.3573048137287347
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -28965,9 +28965,9 @@
             "W048"
           ],
           "mass_centre_mm": [
-            -12.268329371796614,
-            65.36243988266638,
-            21.85853507302494
+            -12.2908401375755,
+            65.31164627773748,
+            21.817036476776558
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -31083,10 +31083,10 @@
       },
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 815.1009783884631,
+          "nominal_g": 797.4895060561519,
           "range_g": [
-            599.1359318115799,
-            1038.8328606245527
+            583.5396151622364,
+            1019.4829665039841
           ]
         },
         "necklace": {
@@ -31097,15 +31097,15 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 819.0795616065569,
+          "nominal_g": 801.4680892742457,
           "range_g": [
-            601.7914023184696,
-            1043.925311469369
+            586.1950856691262,
+            1024.5754173488003
           ]
         },
-        "upper_worn_g": 1043.925311469369,
+        "upper_worn_g": 1024.5754173488003,
         "limit_g": 1133.980925,
-        "margin_g": 90.05561353063104,
+        "margin_g": 109.40550765119974,
         "ceiling_pass": true,
         "margin_target_g": 50,
         "margin_target_pass": true,
@@ -31113,24 +31113,24 @@
       },
       "physical_acceptance": "unmeasured",
       "balance": {
-        "pendant_mass_g": 815.1009783884631,
+        "pendant_mass_g": 797.4895060561519,
         "centre_mm": [
-          0.18822850382805303,
-          -6.342383648256768,
-          25.658282592620747
+          0.19238609344614271,
+          -6.485999258832642,
+          25.235442459117905
         ],
         "centre_mass_allowance_range_mm": [
           [
-            -4.332978737880506,
-            4.6149599672274295
+            -4.434081806672138,
+            4.722155849392816
           ],
           [
-            -12.451149531619539,
-            -1.5134163517820265
+            -12.737602719185972,
+            -1.5500339601339075
           ],
           [
-            22.30451976076199,
-            29.22856403129056
+            21.873036335019492,
+            28.821148939661136
           ]
         ],
         "suspension_midpoint_mm": [
@@ -31138,18 +31138,18 @@
           76.99325112124319,
           8.1
         ],
-        "centre_below_suspension_mm": 83.33563476949996,
-        "minimum_model_drop_mm": 78.50666747302522,
-        "lateral_moment_g_mm": 153.4252376308426,
-        "fore_aft_moment_g_mm": 14311.773320066291,
-        "nominal_tilt_deg": 11.897834114894952,
+        "centre_below_suspension_mm": 83.47925038007583,
+        "minimum_model_drop_mm": 78.54328508137709,
+        "lateral_moment_g_mm": 153.42589063443702,
+        "fore_aft_moment_g_mm": 13665.335542775552,
+        "nominal_tilt_deg": 11.599745320595801,
         "tilt_mass_allowance_range_deg": [
-          9.023693604066066,
-          15.063148562798263
+          8.726381349432986,
+          14.778940060899812
         ],
         "left_right_load_fraction": [
-          0.4983775814374113,
-          0.5016224185625887
+          0.4983417454697717,
+          0.5016582545302283
         ],
         "positive_two_point_support_for_mass_range": true,
         "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."
@@ -33591,10 +33591,10 @@
           "id": "ElectronicsShell",
           "label": "ElectronicsShell",
           "installed_quantity": 1,
-          "mass_g_per_unit": 111.16156501254541,
+          "mass_g_per_unit": 109.89789276386219,
           "mass_range_g_per_unit": [
-            77.81309550878179,
-            120.05449021354904
+            76.92852493470353,
+            118.68972418497117
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -33602,9 +33602,9 @@
             "ElectronicsShell"
           ],
           "mass_centre_mm": [
-            -0.0794939190690063,
-            6.397691979339889,
-            30.636596418337433
+            -0.08040798832600858,
+            6.451041948740841,
+            30.381085900218036
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33864,10 +33864,10 @@
           "id": "FrontBezel",
           "label": "FrontBezel",
           "installed_quantity": 1,
-          "mass_g_per_unit": 11.046550209784389,
+          "mass_g_per_unit": 11.046550209784392,
           "mass_range_g_per_unit": [
-            7.732585146849072,
-            11.93027422656714
+            7.7325851468490745,
+            11.930274226567144
           ],
           "mass_basis": "CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -33875,9 +33875,9 @@
             "FrontBezel"
           ],
           "mass_centre_mm": [
-            -2.523557937621722e-14,
-            5.847348089309946e-15,
-            57.898977509876616
+            -3.1372108972039547e-14,
+            1.145452848677061e-14,
+            57.398977509876474
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33885,10 +33885,10 @@
           "id": "FrontNut0",
           "label": "FrontNut0",
           "installed_quantity": 1,
-          "mass_g_per_unit": 0.12709620298030128,
+          "mass_g_per_unit": 0.12709620298030122,
           "mass_range_g_per_unit": [
-            0.08261253193719584,
-            0.19064430447045191
+            0.0826125319371958,
+            0.19064430447045183
           ],
           "mass_basis": "Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured",
           "group": "pendant",
@@ -33896,9 +33896,9 @@
             "FrontNut0"
           ],
           "mass_centre_mm": [
-            96.74999999999997,
-            3.293499234084148e-16,
-            55.299999999999976
+            96.75000000000003,
+            2.7414284915208564e-16,
+            54.80000000000002
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33919,7 +33919,7 @@
           "mass_centre_mm": [
             96.75,
             3.785419682512823e-17,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33940,7 +33940,7 @@
           "mass_centre_mm": [
             48.375000000000036,
             83.78795781614446,
-            55.30000000000001
+            54.800000000000004
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33961,7 +33961,7 @@
           "mass_centre_mm": [
             48.37500000000003,
             83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -33982,7 +33982,7 @@
           "mass_centre_mm": [
             -48.374999999999986,
             83.78795781614444,
-            55.29999999999999
+            54.79999999999998
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34003,7 +34003,7 @@
           "mass_centre_mm": [
             -48.374999999999986,
             83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34022,9 +34022,9 @@
             "FrontNut3"
           ],
           "mass_centre_mm": [
-            -96.74999999999997,
+            -96.74999999999999,
             1.2353527683200951e-14,
-            55.299999999999976
+            54.79999999999999
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34045,7 +34045,7 @@
           "mass_centre_mm": [
             -96.74999999999999,
             1.1879405013270455e-14,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34066,7 +34066,7 @@
           "mass_centre_mm": [
             -48.37500000000006,
             -83.78795781614443,
-            55.30000000000001
+            54.800000000000004
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34087,7 +34087,7 @@
           "mass_centre_mm": [
             -48.37500000000004,
             -83.78795781614441,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34108,7 +34108,7 @@
           "mass_centre_mm": [
             48.375000000000014,
             -83.78795781614443,
-            55.3
+            54.8
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34129,7 +34129,7 @@
           "mass_centre_mm": [
             48.37500000000003,
             -83.78795781614444,
-            56.0056890684815
+            55.5056890684815
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34171,7 +34171,7 @@
           "mass_centre_mm": [
             3.2383496093594136e-14,
             1.0861404348348737e-13,
-            47.24046869256326
+            46.740468692563155
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34200,10 +34200,10 @@
           "id": "RearCouplingMirror",
           "label": "RearCouplingMirror",
           "installed_quantity": 1,
-          "mass_g_per_unit": 65.36572033451198,
+          "mass_g_per_unit": 49.024290250883986,
           "mass_range_g_per_unit": [
-            58.82914830106078,
-            71.90229236796318
+            44.12186122579559,
+            53.92671927597239
           ],
           "mass_basis": "CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured",
           "group": "pendant",
@@ -34211,9 +34211,9 @@
             "RearCouplingMirror"
           ],
           "mass_centre_mm": [
-            5.298428299462521e-15,
-            7.728477328472035e-15,
-            40.2
+            1.2009770812115046e-14,
+            5.790836695852193e-15,
+            39.949999999999996
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -34234,7 +34234,7 @@
           "mass_centre_mm": [
             4.7685854695162686e-15,
             7.728477328472035e-15,
-            56.199999999999996
+            55.699999999999996
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -38195,9 +38195,9 @@
             "InnerLEDs"
           ],
           "mass_centre_mm": [
-            -6.471271827250172e-13,
-            -0.47589747463438214,
-            48.200000000000124
+            -6.471271827250182e-13,
+            -0.4758974746343822,
+            47.700000000000635
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -38879,10 +38879,10 @@
           "id": "W031",
           "label": "M22759/16-22-2",
           "installed_quantity": 1,
-          "mass_g_per_unit": 1.4170649855883606,
+          "mass_g_per_unit": 1.4144449855883605,
           "mass_range_g_per_unit": [
-            0.9919454899118524,
-            2.1255974783825407
+            0.9901114899118523,
+            2.1216674783825407
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -38890,9 +38890,9 @@
             "W031"
           ],
           "mass_centre_mm": [
-            0.6474753116958424,
-            65.44772893559096,
-            22.12384821879057
+            0.6502388386258655,
+            65.39159397616636,
+            22.073777121803648
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -39089,10 +39089,10 @@
           "id": "W041",
           "label": "M22759/18-26-9",
           "installed_quantity": 1,
-          "mass_g_per_unit": 0.39923769856548047,
+          "mass_g_per_unit": 0.3981076985654805,
           "mass_range_g_per_unit": [
-            0.2794663889958363,
-            0.5988565478482207
+            0.2786753889958363,
+            0.5971615478482207
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -39100,9 +39100,9 @@
             "W041"
           ],
           "mass_centre_mm": [
-            27.862716806646855,
-            76.92356122315081,
-            9.4054194467253
+            27.946008076818636,
+            76.86623623384055,
+            9.292587877636045
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -39237,10 +39237,10 @@
           "id": "W048",
           "label": "M22759/16-22-0",
           "installed_quantity": 1,
-          "mass_g_per_unit": 1.5741565424858233,
+          "mass_g_per_unit": 1.5715365424858232,
           "mass_range_g_per_unit": [
-            1.1019095797400762,
-            2.3612348137287347
+            1.100075579740076,
+            2.3573048137287347
           ],
           "mass_basis": "Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste",
           "group": "pendant",
@@ -39248,9 +39248,9 @@
             "W048"
           ],
           "mass_centre_mm": [
-            -12.268329371796614,
-            65.36243988266638,
-            21.85853507302494
+            -12.2908401375755,
+            65.31164627773748,
+            21.817036476776558
           ],
           "physical_acceptance": "unmeasured"
         },
@@ -41366,10 +41366,10 @@
       },
       "mass_estimate": {
         "complete_pendant": {
-          "nominal_g": 808.082926779671,
+          "nominal_g": 790.4714544473599,
           "range_g": [
-            594.2232956854255,
-            1031.2533648870574
+            578.6269790360819,
+            1011.9034707664887
           ]
         },
         "necklace": {
@@ -41380,15 +41380,15 @@
           ]
         },
         "total_worn": {
-          "nominal_g": 812.0615099977648,
+          "nominal_g": 794.4500376654537,
           "range_g": [
-            596.8787661923152,
-            1036.3458157318737
+            581.2824495429718,
+            1016.995921611305
           ]
         },
-        "upper_worn_g": 1036.3458157318737,
+        "upper_worn_g": 1016.995921611305,
         "limit_g": 1133.980925,
-        "margin_g": 97.63510926812637,
+        "margin_g": 116.98500338869508,
         "ceiling_pass": true,
         "margin_target_g": 50,
         "margin_target_pass": true,
@@ -41396,24 +41396,24 @@
       },
       "physical_acceptance": "unmeasured",
       "balance": {
-        "pendant_mass_g": 808.082926779671,
+        "pendant_mass_g": 790.4714544473599,
         "centre_mm": [
-          0.18986323376768155,
-          -6.397466083847394,
-          25.621119086338222
+          0.1940941570644061,
+          -6.543583979035977,
+          25.194830959143953
         ],
         "centre_mass_allowance_range_mm": [
           [
-            -4.364318659764585,
-            4.648193674576204
+            -4.466906840567962,
+            4.756957188154894
           ],
           [
-            -12.539094406460269,
-            -1.5261323539689662
+            -12.829634568801893,
+            -1.5633431136086764
           ],
           [
-            22.258173223821743,
-            29.207714392299856
+            21.82382189841696,
+            28.79842517707985
           ]
         ],
         "suspension_midpoint_mm": [
@@ -41421,18 +41421,18 @@
           76.99325112124319,
           8.1
         ],
-        "centre_below_suspension_mm": 83.39071720509058,
-        "minimum_model_drop_mm": 78.51938347521215,
-        "lateral_moment_g_mm": 153.42523763084097,
-        "fore_aft_moment_g_mm": 14158.517191743344,
-        "nominal_tilt_deg": 11.865746553298406,
+        "centre_below_suspension_mm": 83.53683510027916,
+        "minimum_model_drop_mm": 78.55659423485187,
+        "lateral_moment_g_mm": 153.4258906344354,
+        "fore_aft_moment_g_mm": 13512.975891806276,
+        "nominal_tilt_deg": 11.565233456465519,
         "tilt_mass_allowance_range_deg": [
-          8.986042200774301,
-          15.046632222915203
+          8.686903748769073,
+          14.761049056050108
         ],
         "left_right_load_fraction": [
-          0.49836349103056565,
-          0.5016365089694343
+          0.49832702296991654,
+          0.5016729770300835
         ],
         "positive_two_point_support_for_mass_range": true,
         "basis": "Uniform CAD-part and declared stock mass-centre model. Numeric ranges vary mass allowances at fixed specified positions; they do not bound supplied component mass distribution, infill asymmetry, placement error, strap twist, walking or physical wearing angle. Necklace mass enters worn mass, not pendant CG. Physical balance is unmeasured."
@@ -41453,12 +41453,12 @@
   ],
   "dimensions_mm": {
     "diameter": 200.0,
-    "body_depth": 58.6,
+    "body_depth": 58.1,
     "closed_width": 200.0000004,
     "closed_height": 215.2934255228691,
-    "closed_depth": 78.60000025000001,
+    "closed_depth": 78.10000025000001,
     "rear_min_z": -20.00000015,
-    "front_max_z": 58.6000001,
+    "front_max_z": 58.1000001,
     "closed_minimum_mm": [
       -100.0000002,
       -100.0000002,
@@ -41467,7 +41467,7 @@
     "closed_maximum_mm": [
       100.0000002,
       115.29342532286907,
-      58.6000001
+      58.1000001
     ],
     "scope": "Fitted closed CAD products including textile attachment targets; free neck span has no fixed rigid envelope"
   },
@@ -41481,12 +41481,12 @@
     "maximum_mm": [
       100.0000002,
       115.29342532286907,
-      58.6000001
+      58.1000001
     ],
     "width_height_depth_mm": [
       200.0000004,
       215.2934255228691,
-      112.76851314681551
+      112.26851314681551
     ],
     "cell_withdrawal_mm": 40.0,
     "door_open_deg": 120.0,

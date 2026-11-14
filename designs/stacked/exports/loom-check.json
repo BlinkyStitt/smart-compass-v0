@@ -3,7 +3,7 @@
   "contract": {
     "route_count": 92,
     "splice_count": 12,
-    "finished_wire_m": 11.111591139042027,
+    "finished_wire_m": 11.110091139042026,
     "physical_acceptance": "unmeasured"
   },
   "cut_list": [
@@ -623,9 +623,9 @@
         2.8,
         5.243121903127665
       ],
-      "insulated_length_mm": 262.3891272549564,
-      "finished_cut_target_mm": 270.43224915808406,
-      "blank_cut_target_mm": 290.43224915808406
+      "insulated_length_mm": 261.8891272549564,
+      "finished_cut_target_mm": 269.93224915808406,
+      "blank_cut_target_mm": 289.93224915808406
     },
     {
       "id": "W032",
@@ -823,9 +823,9 @@
         3.2,
         5.693121903127665
       ],
-      "insulated_length_mm": 167.7607270196513,
-      "finished_cut_target_mm": 176.653848922779,
-      "blank_cut_target_mm": 196.653848922779
+      "insulated_length_mm": 167.2607270196513,
+      "finished_cut_target_mm": 176.153848922779,
+      "blank_cut_target_mm": 196.153848922779
     },
     {
       "id": "W042",
@@ -966,9 +966,9 @@
         6,
         3.643121903127664
       ],
-      "insulated_length_mm": 290.7684320063806,
-      "finished_cut_target_mm": 300.41155390950826,
-      "blank_cut_target_mm": 320.41155390950826
+      "insulated_length_mm": 290.2684320063806,
+      "finished_cut_target_mm": 299.91155390950826,
+      "blank_cut_target_mm": 319.91155390950826
     },
     {
       "id": "W049",

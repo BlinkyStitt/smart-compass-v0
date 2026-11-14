@@ -9,7 +9,7 @@ that pocket. The complete enclosure seals and temperatures still need
 physical verification.
 
 The original fit model uses a single 1.2 mm carrier board. The
-housing uses the narrow design's 58.6 mm optical stack and removable protected
+housing uses the narrow design's 58.1 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
 three panel-mount buttons. The layout budgets 36 off-board conductors,

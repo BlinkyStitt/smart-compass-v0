@@ -379,7 +379,8 @@ def build(out):
         "Manufactured",
         (0.025, 0.025, 0.025),
         "rear_mirror",
-        "3 mm nominal Black LED acrylic with cavity-facing mirror coating; complete-sheet estimate R70/T9/absorption21; reverse R10/T9; coating unmeasured",
+        f"{p['rear_black_acrylic_thickness']:g} mm nominal Black LED acrylic with cavity-facing mirror coating; "
+        "complete-sheet estimate R70/T9/absorption21; reverse R10/T9; coating unmeasured",
         0.065,
     )
     add(

@@ -28,10 +28,10 @@ viewing is not a completion gate.
 
 This is the selected enclosure. The original250mm design remains an inactive
 archive in `hardware/enclosure`; it is not a build dependency. The narrow body
-is200mm wide and58.6mm deep. Complete closed projections and the continuous
+is200mm wide and58.1mm deep. Complete closed projections and the continuous
 service envelope come from [the generated census](exports/parts.json). It
 uses the original 166 mm Fibonacci256, the original Evil Genius Labs stencil,
-a 2 mm coated black LED acrylic rear mirror, a full-face 14 mm mirror cavity,
+a 1.5 mm coated black LED acrylic rear mirror, a full-face 14 mm mirror cavity,
 a 70-LED inward ring,
 and two 70-LED outside strips behind one continuous 20 mm side diffuser. The GPS footprint rotates 90 degrees; all
 component envelopes keep their original dimensions.
@@ -53,7 +53,7 @@ and supplied fit remain unmeasured. The original board sits atZ31mm; selected
 source module fixtures set the actual component positions.
 The 20 mm side band spans Z=14 to 34 mm. Its two 10 mm strips sit side by side
 across the case depth, with LED rows at Z=19 and 29 mm. The case stays
-200mm wide and58.6mm deep. One side-band switch controls both rows; the
+200mm wide and58.1mm deep. One side-band switch controls both rows; the
 preview blends their emitted light through the full sleeve and blends stored
 afterglow without tripling it. The outside sleeve has its own broad axial scatter
 profile; the inner mirror ring keeps its narrow profile. The outside model
@@ -79,8 +79,8 @@ flanges, hinge and latch. Four shallow roof pockets retain a continuous 1 mm
 insulating skin, full edges and 3 mm cross ribs. The door pockets retain 1.35 mm
 skin and full hinge/latch ends. Printed strength and physical fit remain unmeasured.
 
-Both mirror sheets now use a 2 mm fabrication target. Each retains its continuous
-edge seat. The 14 mm optical cavity, original source board and stencil remain.
+The front mirror uses a 2 mm fabrication target. The rear mirror uses a 1.5 mm
+fabrication target. Each retains its continuous edge seat. The 14 mm optical cavity, original source board and stencil remain.
 The front 2 mm sheet is commercially available, but its finished coating split
 needs confirmation. The coated black rear sheet is a custom fabrication target.
 The retained 70/30 front and 70/9 rear optical values are simulation assumptions
@@ -155,7 +155,7 @@ do not establish brightness, runtime, insulation, strength or wearing safety.
 
 The outer clear acrylic mirror uses nominal 70% reflection and 30% transmission
 from [Two Way Mirrors](https://www.twowaymirrors.com/acrylic/). The inner mirror
-combines the black cover and rear mirror in one 2 mm nominal sheet. Its coating
+combines the black cover and rear mirror in one 1.5 mm nominal sheet. Its coating
 faces the cavity. No separate clear rear mirror or black filter remains.
 
 The coated black sheet uses an **engineering estimate**, requested by Bryan:
@@ -170,7 +170,7 @@ no published measurement establishes the custom coated black sheet.
 The first cell image passes both mirrors: 0.09 × 0.30 = 2.7% before other losses.
 The black-mirror value already includes substrate absorption; applying 29%
 again would count it twice. The inner ring bypasses the black substrate. The
-source brightness stays fixed. The case is 200mm wide and58.6mm deep, with
+source brightness stays fixed. The case is 200mm wide and58.1mm deep, with
 1 mm between the original stencil and coated black sheet. The default mirror gap is 14 mm. The continuous outside band is 20 mm.
 
 A mirror coating does not diffuse the LEDs. Scattering remains a qualitative
@@ -190,7 +190,7 @@ the exact source contours and volume, including the open perimeter cells.
 Set `mirror_gap` in `parameters.json` in millimetres, then rebuild. The front
 mirror, cavity, frame, bezel and total body depth follow that value. The board
 and electronics do not move when you change the gap. With the PCB atZ31,
-12, 14, 16 and 20 mm gaps give 56.6, 58.6, 60.6 and 64.6 mm body depths.
+12, 14, 16 and 20 mm gaps give 56.1, 58.1, 60.1 and 64.1 mm body depths.
 The default 14 mm allows 2 mm clearance at each side of the 10 mm inner strip.
 A 20 mm gap is an appearance choice, not an optical optimum proven by data.
 

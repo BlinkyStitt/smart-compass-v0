@@ -5,13 +5,13 @@ It includes one protected XTAR21700 6000mAh button-top cell and the complete sew
 Masses use published component data, net CAD volumes, full installed wire cuts and stated engineering allowances.
 Physical fit, strength, heat, electrical recovery and worn mass remain unmeasured.
 
-Body: 200mm diameter x 58.6mm depth. Fitted assembly pose: 200 x 215.293 x 78.6mm (width x height x depth). The free neck span has no rigid envelope.
+Body: 200mm diameter x 58.1mm depth. Fitted assembly pose: 200 x 215.293 x 78.1mm (width x height x depth). The free neck span has no rigid envelope.
 [Raw census, accounting owners and bounds](parts.json) · [Service and print package](prototype-service.zip).
 
 | Ring material | Pendant nominal g | Necklace nominal g | Total worn nominal g | Worn low–high g | Margin to2.5lb g | Separate50g target |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| glow | 815.101 | 3.979 | 819.080 | 601.791–1043.925 | 90.056 | met |
-| silver | 808.083 | 3.979 | 812.062 | 596.879–1036.346 | 97.635 | met |
+| glow | 797.490 | 3.979 | 801.468 | 586.195–1024.575 | 109.406 | met |
+| silver | 790.471 | 3.979 | 794.450 | 581.282–1016.996 | 116.985 | met |
 
 The raw limit is1133.980925g. Raw arithmetic determines acceptance; display rounding does not.
 Low/high allowances are added independently. They are not confidence intervals or guaranteed physical assembly bounds.
@@ -134,7 +134,7 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | RearWasher5 | 1 | 0.132271 | 0.0859759–0.198406 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | RearNut5 | 1 | 0.36268 | 0.235742–0.54402 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | RearCover | 1 | 45.7292 | 32.0105–49.3876 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| ElectronicsShell | 1 | 111.162 | 77.8131–120.054 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
+| ElectronicsShell | 1 | 109.898 | 76.9285–118.69 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardEdgeClip0 | 1 | 0.0490708 | 0.0343495–0.0529964 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | BoardClipWasher0 | 1 | 0.04378 | 0.028457–0.06567 | Nominal solid CAD metal envelope x7.9g/cm3, existing65..150% hardware allowance; threads/head sockets and actual alloy unmeasured |
 | SSCF-M2-8-TI5; finished under-head target 8.0mm | 1 | 0.211342 | 0.137373–0.317014 | Actual nominal solid CAD envelopes x nominal material density; retained65..150% engineering hardware allowance. Published typical density and catalogue piece weights are not guaranteed supplied mass bounds. Full worn mass remains unmeasured.; source: designs/stacked/sources/fasteners/accu-m2-8-datasheet.pdf |
@@ -163,7 +163,7 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | SideDiffuser | 1 | 37.3221 | 26.1255–40.3079 | CAD net solid volume x1.5g/cm3; existing material allowances; actual part mass unmeasured |
 | InnerDiffuser | 1 | 12.8068 | 8.96477–13.8314 | CAD net solid volume x1.5g/cm3; existing material allowances; actual part mass unmeasured |
 | EGLStencil | 1 | 8.18447 | 5.72913–8.83923 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
-| RearCouplingMirror | 1 | 65.3657 | 58.8291–71.9023 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
+| RearCouplingMirror | 1 | 49.0243 | 44.1219–53.9267 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
 | FrontMirror | 1 | 65.3657 | 58.8291–71.9023 | CAD net solid volume x1.19g/cm3; existing material allowances; actual part mass unmeasured |
 | LatchCarrier | 1 | 2.97761 | 2.08433–3.21582 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
 | LatchClamp0 | 1 | 0.045471 | 0.0318297–0.0491086 | CAD net solid volume x1.27g/cm3; existing material allowances; actual part mass unmeasured |
@@ -385,7 +385,7 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | M22759/16-22-2 | 1 | 0.30372 | 0.212604–0.45558 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.618773 | 0.433141–0.928159 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.175167 | 0.122617–0.262751 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/16-22-2 | 1 | 1.41706 | 0.991945–2.1256 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/16-22-2 | 1 | 1.41444 | 0.990111–2.12167 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.892413 | 0.624689–1.33862 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.773066 | 0.541146–1.1596 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.363223 | 0.254256–0.544834 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
@@ -395,14 +395,14 @@ Exclude charger, carried spares, retail stock, trim waste, brims and disposable 
 | M22759/16-22-2 | 1 | 0.530248 | 0.371174–0.795372 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-2 | 1 | 0.629891 | 0.440924–0.944836 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.48291 | 0.338037–0.724365 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/18-26-9 | 1 | 0.399238 | 0.279466–0.598857 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/18-26-9 | 1 | 0.398108 | 0.278675–0.597162 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.428552 | 0.299987–0.642829 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-9 | 1 | 0.468977 | 0.328284–0.703465 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-18-0 | 1 | 2.19191 | 1.53433–3.28786 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.736086 | 0.51526–1.10413 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.642602 | 0.449821–0.963902 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.763162 | 0.534214–1.14474 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
-| M22759/16-22-0 | 1 | 1.57416 | 1.10191–2.36123 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
+| M22759/16-22-0 | 1 | 1.57154 | 1.10008–2.3573 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/16-22-0 | 1 | 0.96638 | 0.676466–1.44957 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-0 | 1 | 0.376567 | 0.263597–0.56485 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
 | M22759/18-26-0 | 1 | 0.124166 | 0.086916–0.186249 | Selected stock nominalg/m x full continuous stock cut including the declared internal jacket insertions and stripped ends; engineering70..150% allowance, no trim waste |
