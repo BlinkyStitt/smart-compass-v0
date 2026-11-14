@@ -4,13 +4,18 @@ on:
   pull_request:
     paths:
       - 'designs/carrier/**'
-      - 'designs/stacked/exports/scene.json'
+      - 'designs/stacked/**'
+      - 'hardware/enclosure/**'
+      - 'site/electrical-inputs.json'
       - '.github/workflows/carrier-power.yml'
+  workflow_dispatch:
   push:
     branches: [master]
     paths:
       - 'designs/carrier/**'
-      - 'designs/stacked/exports/scene.json'
+      - 'designs/stacked/**'
+      - 'hardware/enclosure/**'
+      - 'site/electrical-inputs.json'
       - '.github/workflows/carrier-power.yml'
 
 permissions:
@@ -20,8 +25,86 @@ jobs:
   power-policy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           lfs: true
       - run: python3 -m unittest discover -s designs/carrier/wall-power/firmware
       - run: python3 -m unittest discover -s designs/carrier
+
+  pcb:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install KiCad 10
+        run: |
+          sudo add-apt-repository --yes --no-update ppa:kicad/kicad-10.0-releases
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends kicad kicad-footprints kicad-symbols
+          version=$(kicad-cli version)
+          [[ "$version" == 10.* ]]
+          mkdir -p "$HOME/.config/kicad/10.0"
+          cp /usr/share/kicad/template/fp-lib-table "$HOME/.config/kicad/10.0/"
+      - name: Check routed boards and schematic connectivity
+        env:
+          KICAD_PYTHON: /usr/bin/python3
+        run: bash designs/carrier/check_boards.sh "$RUNNER_TEMP/pcb-checks"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: carrier-pcb-checks
+          path: ${{ runner.temp }}/pcb-checks
+          if-no-files-found: ignore
+
+  fit-and-slice:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch native fit and slicing inputs
+        run: |
+          git lfs pull --include="designs/stacked/exports/*.FCStd,designs/stacked/exports/*.stl,hardware/enclosure/**"
+      - name: Install pinned FreeCAD and PrusaSlicer
+        run: |
+          install_app() {
+            local url="$1" digest="$2" name="$3" bundle="$4"
+            local image="$RUNNER_TEMP/$name.dmg" volume="$RUNNER_TEMP/$name-mount"
+            curl --fail --location --retry 3 --output "$image" "$url"
+            echo "$digest  $image" | shasum -a 256 --check
+            hdiutil attach -nobrowse -readonly -mountpoint "$volume" "$image"
+            test -d "$volume/$bundle"
+            ln -s "$volume/$bundle" "$RUNNER_TEMP/$name.app"
+          }
+          install_app https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-macOS-arm64-py311.dmg \
+            071343b4abb70492b75c973f41eaf1d2528f9b9c7ea018d22a4f46ae14d27ac0 FreeCAD FreeCAD.app
+          install_app https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.9.6/PrusaSlicer-2.9.6.dmg \
+            94fd7b8a9f87c9631e1c71739b15b184fc5f4c0ceabd69072f1c78f229a4fe40 PrusaSlicer "Original Prusa Drivers/PrusaSlicer.app"
+          mkdir -p "$RUNNER_TEMP/slicer-bin"
+          ln -s "$RUNNER_TEMP/PrusaSlicer.app/Contents/MacOS/PrusaSlicer" "$RUNNER_TEMP/slicer-bin/prusa-slicer"
+          "$RUNNER_TEMP/slicer-bin/prusa-slicer" --help > "$RUNNER_TEMP/prusaslicer-help.txt"
+          grep -F 'PrusaSlicer-2.9.6 ' "$RUNNER_TEMP/prusaslicer-help.txt"
+          echo "$RUNNER_TEMP/slicer-bin" >> "$GITHUB_PATH"
+      - name: Verify fit and slice the complete print kit
+        shell: bash
+        run: |
+          fit_dir="$RUNNER_TEMP/carrier-fit"
+          freecad="$RUNNER_TEMP/FreeCAD.app/Contents/Resources"
+          mkdir "$fit_dir"
+          PYTHONPATH="$freecad/lib:$GITHUB_WORKSPACE/designs/carrier" \
+            "$freecad/bin/python" -u - "$fit_dir/routed-fit.json" <<'PYTHON' 2>&1 | tee "$RUNNER_TEMP/carrier-fit.log"
+          from pathlib import Path
+          import sys
+          from routed_fit import check
+
+          check(Path(sys.argv[1]))
+          PYTHON
+          python3 designs/carrier/print_package.py "$fit_dir" "$RUNNER_TEMP/carrier-prints"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: carrier-fit-and-print-package
+          path: |
+            ${{ runner.temp }}/carrier-fit.log
+            ${{ runner.temp }}/carrier-fit/routed-fit.json
+            ${{ runner.temp }}/carrier-prints/
+          if-no-files-found: ignore

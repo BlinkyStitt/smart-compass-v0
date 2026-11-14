@@ -92,6 +92,20 @@ before printing.
 Use `Run.FCMacro` for the socket drill gauge and legacy fit reference. It
 writes the gauge, assembly, terminal schedule and unrouted placement board.
 
+## Automated checks
+
+The Carrier power checks workflow runs the firmware tests, KiCad checks,
+and the complete fit and print build. Download the reports and reference
+print projects from the workflow run. To run the board checks locally,
+use KiCad 10, its footprint libraries, and an interpreter with `pcbnew`.
+
+```sh
+bash designs/carrier/check_boards.sh "$CARRIER_REPORTS"
+```
+
+Set `KICAD_CLI` and `KICAD_PYTHON` if those commands are installed outside
+your normal search path.
+
 ## Qualify the prototype
 
 Use the Rev A assembly and power guides for the bench build. Measure current

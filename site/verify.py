@@ -121,15 +121,20 @@ def fixture(directory):
 </main></html>''')
 
 
-def probe(url, directory, *, study=False):
+def probe(url, directory, *, study=False, webkit=False):
     env = dict(os.environ)
     env.setdefault('PLAYWRIGHT_BROWSERS_PATH', str(ROOT / '.build/browser-cache'))
-    scripts = ['browser_verify.mjs'] if study else ['browser_verify.mjs', 'test_layout.cjs']
-    for script in scripts:
+    checks = [('browser_verify.mjs', env, 180)]
+    if not study:
+        checks.append(('test_layout.cjs', env, 180))
+    if webkit:
+        # Linux WebKit uses software video decoding on hosted runners.
+        checks.append(('test_layout.cjs', dict(env, GALLERY_BROWSER='webkit'), 360))
+    for script, environment, timeout in checks:
         command = ['node', str(HERE / script), url, str(directory)]
-        with subprocess.Popen(command, cwd=ROOT, env=env) as process:
+        with subprocess.Popen(command, cwd=ROOT, env=environment) as process:
             try:
-                result = process.wait(timeout=180)
+                result = process.wait(timeout=timeout)
             except BaseException:
                 # Playwright's SIGTERM handler closes its detached browser group.
                 # subprocess.run(timeout=...) sends SIGKILL and bypasses that cleanup.
@@ -170,6 +175,7 @@ def main():
     modes.add_parser('study')
     local = modes.add_parser('local')
     local.add_argument('--directory', type=Path, required=True)
+    local.add_argument('--webkit', action='store_true', help='also run gallery playback in WebKit')
     remote = modes.add_parser('live')
     remote.add_argument('--url', required=True)
     remote.add_argument('--expected', type=Path, required=True)
@@ -186,7 +192,7 @@ def main():
             directory = args.directory.resolve()
             verify(directory)
             with server(directory) as url:
-                probe(url, directory)
+                probe(url, directory, webkit=args.webkit)
             print('LOCAL PAGES PASS: complete artifact, calculator and playback')
         else:
             subprocess.run(['node', str(HERE / 'energy.mjs'), '--check'], cwd=ROOT, check=True)
