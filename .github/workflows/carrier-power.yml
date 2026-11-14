@@ -72,8 +72,11 @@ jobs:
             curl --fail --location --retry 3 --output "$image" "$url"
             echo "$digest  $image" | shasum -a 256 --check
             hdiutil attach -nobrowse -readonly -mountpoint "$volume" "$image"
-            ditto "$volume/$name.app" "$RUNNER_TEMP/$name.app"
-            hdiutil detach "$volume"
+            # The PrusaSlicer DMG uses a versioned bundle name. Run the single
+            # application in each mounted, checksum-verified image.
+            local bundles=("$volume"/*.app)
+            [[ "${#bundles[@]}" == 1 && -d "${bundles[0]}" ]]
+            ln -s "${bundles[0]}" "$RUNNER_TEMP/$name.app"
           }
           install_app https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-macOS-arm64-py311.dmg \
             071343b4abb70492b75c973f41eaf1d2528f9b9c7ea018d22a4f46ae14d27ac0 FreeCAD
