@@ -124,16 +124,17 @@ def fixture(directory):
 def probe(url, directory, *, study=False, webkit=False):
     env = dict(os.environ)
     env.setdefault('PLAYWRIGHT_BROWSERS_PATH', str(ROOT / '.build/browser-cache'))
-    checks = [('browser_verify.mjs', env)]
+    checks = [('browser_verify.mjs', env, 180)]
     if not study:
-        checks.append(('test_layout.cjs', env))
+        checks.append(('test_layout.cjs', env, 180))
     if webkit:
-        checks.append(('test_layout.cjs', dict(env, GALLERY_BROWSER='webkit')))
-    for script, environment in checks:
+        # Linux WebKit uses software video decoding on hosted runners.
+        checks.append(('test_layout.cjs', dict(env, GALLERY_BROWSER='webkit'), 360))
+    for script, environment, timeout in checks:
         command = ['node', str(HERE / script), url, str(directory)]
         with subprocess.Popen(command, cwd=ROOT, env=environment) as process:
             try:
-                result = process.wait(timeout=180)
+                result = process.wait(timeout=timeout)
             except BaseException:
                 # Playwright's SIGTERM handler closes its detached browser group.
                 # subprocess.run(timeout=...) sends SIGKILL and bypasses that cleanup.
