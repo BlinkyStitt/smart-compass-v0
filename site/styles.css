@@ -33,3 +33,15 @@ a:has(>img),a:has(>picture){display:block;cursor:zoom-in}
 .media-viewer p{flex:none;font-size:13px;text-align:center;margin:0;max-width:900px}
 .media-close{position:absolute;top:12px;right:16px;z-index:1}
 body:has(.media-viewer[open]){overflow:hidden}
+
+@media (orientation: landscape) {
+  .media-viewer:has(> img) { padding: 0; }
+  .media-viewer > img { flex: none; }
+  .media-viewer > img + p { display: none; }
+  .media-viewer:has(> img) > [role="status"] {
+    position: absolute;
+    bottom: 16px;
+    max-width: calc(100% - 32px);
+    background: #080b09;
+  }
+}

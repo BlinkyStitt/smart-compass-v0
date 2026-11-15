@@ -74,7 +74,25 @@ async function check() {
         await page.evaluate(() => { HTMLDialogElement.prototype.requestFullscreen = () => Promise.reject(new Error('Fixture: fullscreen unavailable')); });
         await links.first().focus();
         await page.keyboard.press('Enter');
-        await page.getByRole('dialog').waitFor({state: 'visible'});
+        const fallback = page.getByRole('dialog');
+        await fallback.waitFor({state: 'visible'});
+        if (width === 390) {
+          // Keep the image open while a phone rotates into landscape.
+          await page.setViewportSize({width: 844, height: 390});
+          const size = await fallback.locator('img').evaluate(async image => {
+            await image.decode();
+            const box = image.getBoundingClientRect();
+            const fit = Math.min(box.width / image.naturalWidth, box.height / image.naturalHeight);
+            const landscapeFit = Math.min(innerWidth / image.naturalWidth, innerHeight / image.naturalHeight);
+            return {paintedHeight: image.naturalHeight * fit, availableHeight: image.naturalHeight * landscapeFit};
+          });
+          assert.ok(size.paintedHeight >= size.availableHeight - 1,
+            `Rotated image uses the available height (${size.paintedHeight}px of ${size.availableHeight}px)`);
+          const close = await fallback.getByRole('button', {name: 'Close ×'}).boundingBox();
+          assert.ok(close.x >= 0 && close.y >= 0 && close.x + close.width <= 844 && close.y + close.height <= 390,
+            'Close stays within the rotated viewport');
+          await page.setViewportSize({width, height: 900});
+        }
         await page.keyboard.press('Tab');
         assert.ok(await page.getByRole('dialog').evaluate(d => d.contains(document.activeElement)), 'Focus stays inside the viewer');
         await page.keyboard.press('Escape');
