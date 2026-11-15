@@ -27,21 +27,22 @@
 a:has(>img),a:has(>picture){display:block;cursor:zoom-in}
 [data-toggle-assembly]{display:block;margin-block:12px}
 .media-viewer{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:70px 16px 16px;border:0;background:#080b09;color:var(--ink)}
-.media-viewer[open]{display:flex;flex-direction:column;align-items:center;gap:12px}
+.media-viewer[open]{display:flex;flex-direction:column;align-items:center}
 .media-viewer::backdrop{background:#080b09}
 .media-viewer img,.media-viewer video{min-height:0;flex:1;width:100%;height:100%;object-fit:contain;border:0;border-radius:0;background:transparent}
-.media-viewer p{flex:none;font-size:13px;text-align:center;margin:0;max-width:900px}
+.media-viewer > [role="status"] {
+  position: absolute;
+  bottom: 16px;
+  max-width: min(900px, calc(100% - 32px));
+  margin: 0;
+  background: #080b09;
+  font-size: 13px;
+  text-align: center;
+}
 .media-close{position:absolute;top:12px;right:16px;z-index:1}
 body:has(.media-viewer[open]){overflow:hidden}
 
 @media (orientation: landscape) {
   .media-viewer:has(> img) { padding: 0; }
   .media-viewer > img { flex: none; }
-  .media-viewer > img + p { display: none; }
-  .media-viewer:has(> img) > [role="status"] {
-    position: absolute;
-    bottom: 16px;
-    max-width: calc(100% - 32px);
-    background: #080b09;
-  }
 }

@@ -115,10 +115,9 @@ const closeButton = document.createElement('button');
 closeButton.className = 'media-close';
 closeButton.type = 'button';
 closeButton.textContent = 'Close ×';
-const caption = document.createElement('p');
 const message = document.createElement('p');
 message.setAttribute('role', 'status');
-viewer.append(closeButton, caption, message);
+viewer.append(closeButton, message);
 document.body.append(viewer);
 let activeMedia = null;
 let opener = null;
@@ -164,8 +163,8 @@ function openViewer(trigger, original, src) {
   const isVideo = original instanceof HTMLVideoElement;
   const media = document.createElement(isVideo ? 'video' : 'img');
   const label = original.getAttribute('alt') || original.getAttribute('aria-label') || 'Prototype view';
-  caption.textContent = label;
   if (isVideo) {
+    media.setAttribute('aria-label', label);
     media.autoplay = original.autoplay;
     media.controls = true;
     media.tabIndex = 0;
@@ -180,7 +179,7 @@ function openViewer(trigger, original, src) {
   media.addEventListener('error', () => { message.textContent = 'This view could not load. Close it and use the direct file link to retry.'; });
   media.src = src;
   activeMedia = media;
-  viewer.insertBefore(media, caption);
+  viewer.insertBefore(media, message);
   viewer.showModal();
   closeButton.focus();
   if (viewer.requestFullscreen) viewer.requestFullscreen().catch(() => {});

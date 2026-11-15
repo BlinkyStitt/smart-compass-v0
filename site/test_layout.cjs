@@ -29,7 +29,17 @@ async function check() {
         await page.waitForFunction(() => document.querySelector('#narrow-video').readyState >= 1);
         assert.equal(await page.locator('#narrow-video').evaluate(video => video.duration), 16,
           'First preview keeps one complete full-rainbow loop');
-        assert.match(await page.locator('#narrow-video').getAttribute('aria-label'), /Pride rainbow chase, all sections lit/);
+        const previewLabel = await page.locator('#narrow-video').getAttribute('aria-label');
+        assert.match(previewLabel, /Pride rainbow chase, all sections lit/);
+        if (width === 390) {
+          await page.locator('#narrow-video').tap();
+          const viewer = page.getByRole('dialog', {name: 'Full-screen media'});
+          await viewer.waitFor({state: 'visible'});
+          assert.ok(!(await viewer.innerText()).includes(previewLabel), 'The video description is not displayed as a caption');
+          assert.equal(await viewer.locator('video').getAttribute('aria-label'), previewLabel);
+          await viewer.getByRole('button', {name: 'Close ×'}).tap();
+          await viewer.waitFor({state: 'hidden'});
+        }
 
         // Every bounded still preview opens in place.
         const links = page.locator('main a:has(img)');
@@ -44,6 +54,7 @@ async function check() {
           const box = await dialog.boundingBox();
           assert.ok(box.width >= width && box.height >= 900, 'Viewer fills the viewport');
           assert.equal(page.url(), href, 'Image tap keeps the page in place');
+          assert.equal(await dialog.locator('img').getAttribute('alt'), await link.locator('img').getAttribute('alt'));
           assert.ok(await dialog.getByRole('button', {name: 'Close ×'}).evaluate(button => button === document.activeElement));
           if (i % 2) await page.keyboard.press('Escape');
           else await dialog.getByRole('button', {name: 'Close ×'}).click();
