@@ -2,7 +2,6 @@
   "format_version": 1,
   "inputs": {
     ".githooks/pre-commit": "699083e3ea154a3e93ff328576c42b33eb634adcf8bed814202e43122476426c",
-    ".github/workflows/pages.yml": "084a3dd7d173a5bf04480fc993930269cacd0def0f9ebfa1eb15af2763b2450f",
     "demo/assets/playa-night.png": "d97e75745cdf66657fadea1218deb33def14f0927fbe9a8616a88b4b64e6611f",
     "demo/capture_view.gd": "4f39fbbe9421e501af9abf7f30410030e7473c5da2ab8cf3df6b2b1f07e8d2bb",
     "demo/centre_diffusion.gdshaderinc": "129a6c88bc81d5b9040aa77469bfef1cb7fa6ea0a5edd2199ab803ff987fabb4",
@@ -43,7 +42,7 @@
     "designs/stacked/print-layout.json": "99477098893d58ff2f0b827c6a209afa79435630b91c5073c9118255ae2649c5",
     "designs/stacked/prints.py": "f754815432b622931fa0866762b40992ea1626be2d2380f9c016e7966f36661a",
     "designs/stacked/render_silver.gd": "d1dd8feb320c743da19df90b38caff08010f0ad11c65d26771d49ee48a10c70b",
-    "designs/stacked/run.py": "2594efe9f59f7953213231e8409056340bbbd8c674969f3f5b736d6cce61dc44",
+    "designs/stacked/run.py": "844f317c15df8af41bc6f7332004493c41e8f9c945255114f7be773a5aa3bb00",
     "designs/stacked/service.py": "a9148fa59e7758473a7f73ccad3ec15658b2d80e9a976525df1605075ab0d355",
     "designs/stacked/sources/fasteners/README.md": "ceaa6bb4e0a3e87907f51fcbe21c3d54f7e8cb4b0d9849f5ef31000050aa1fd7",
     "designs/stacked/sources/fasteners/index.json": "0b1beb2d79b3c88364b1f9395e6ef56403b266f18d84a8a5eb112d505cdc00dd",
