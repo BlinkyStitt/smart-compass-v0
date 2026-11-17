@@ -114,7 +114,8 @@ viewer.setAttribute('aria-label', 'Full-screen media');
 const closeButton = document.createElement('button');
 closeButton.className = 'media-close';
 closeButton.type = 'button';
-closeButton.textContent = 'Close ×';
+closeButton.textContent = '×';
+closeButton.setAttribute('aria-label', 'Close full-screen media');
 const message = document.createElement('p');
 message.setAttribute('role', 'status');
 viewer.append(closeButton, message);
@@ -128,9 +129,9 @@ function closeViewer() {
   viewer.close();
 }
 closeButton.addEventListener('click', closeViewer);
-viewer.addEventListener('click', event => { if (event.target === viewer) closeViewer(); });
 viewer.addEventListener('keydown', event => {
-  if (event.key !== 'Tab') return;
+  // Native controls need the browser's Tab order when they are visible.
+  if (event.key !== 'Tab' || activeMedia?.controls) return;
   const controls = activeMedia instanceof HTMLVideoElement ? [closeButton, activeMedia] : [closeButton];
   const current = controls.indexOf(document.activeElement);
   const next = (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
@@ -165,9 +166,24 @@ function openViewer(trigger, original, src) {
   const label = original.getAttribute('alt') || original.getAttribute('aria-label') || 'Prototype view';
   if (isVideo) {
     media.setAttribute('aria-label', label);
-    media.autoplay = original.autoplay;
-    media.controls = true;
+    media.setAttribute('aria-description', 'Show playback controls');
+    media.setAttribute('role', 'button');
     media.tabIndex = 0;
+
+    const showControls = event => {
+      event.preventDefault();
+      media.controls = true;
+      media.removeAttribute('role');
+      media.removeAttribute('aria-description');
+      media.removeEventListener('click', showControls);
+    };
+    media.addEventListener('click', showControls);
+    media.addEventListener('keydown', event => {
+      if (media.controls || (event.key !== 'Enter' && event.key !== ' ')) return;
+      showControls(event);
+    });
+
+    media.autoplay = original.autoplay;
     media.loop = true;
     media.defaultMuted = true;
     media.muted = true;
