@@ -114,10 +114,17 @@ viewer.setAttribute('aria-label', 'Full-screen media');
 const closeButton = document.createElement('button');
 closeButton.className = 'media-close';
 closeButton.type = 'button';
-closeButton.textContent = 'Close ×';
+closeButton.textContent = '×';
+closeButton.setAttribute('aria-label', 'Close full-screen media');
+const controlsButton = document.createElement('button');
+controlsButton.className = 'media-controls';
+controlsButton.type = 'button';
+controlsButton.textContent = 'Controls';
+controlsButton.setAttribute('aria-label', 'Playback controls');
+controlsButton.hidden = true;
 const message = document.createElement('p');
 message.setAttribute('role', 'status');
-viewer.append(closeButton, message);
+viewer.append(closeButton, controlsButton, message);
 document.body.append(viewer);
 let activeMedia = null;
 let opener = null;
@@ -128,10 +135,14 @@ function closeViewer() {
   viewer.close();
 }
 closeButton.addEventListener('click', closeViewer);
-viewer.addEventListener('click', event => { if (event.target === viewer) closeViewer(); });
+controlsButton.addEventListener('click', () => {
+  activeMedia.controls = !activeMedia.controls;
+  controlsButton.setAttribute('aria-pressed', String(activeMedia.controls));
+});
 viewer.addEventListener('keydown', event => {
-  if (event.key !== 'Tab') return;
-  const controls = activeMedia instanceof HTMLVideoElement ? [closeButton, activeMedia] : [closeButton];
+  // Native controls need the browser's Tab order when they are visible.
+  if (event.key !== 'Tab' || activeMedia?.controls) return;
+  const controls = controlsButton.hidden ? [closeButton] : [closeButton, controlsButton];
   const current = controls.indexOf(document.activeElement);
   const next = (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
   event.preventDefault();
@@ -161,13 +172,13 @@ function openViewer(trigger, original, src) {
   players.forEach(controller => controller.sync());
   message.textContent = '';
   const isVideo = original instanceof HTMLVideoElement;
+  controlsButton.hidden = !isVideo;
+  controlsButton.setAttribute('aria-pressed', 'false');
   const media = document.createElement(isVideo ? 'video' : 'img');
   const label = original.getAttribute('alt') || original.getAttribute('aria-label') || 'Prototype view';
   if (isVideo) {
     media.setAttribute('aria-label', label);
     media.autoplay = original.autoplay;
-    media.controls = true;
-    media.tabIndex = 0;
     media.loop = true;
     media.defaultMuted = true;
     media.muted = true;

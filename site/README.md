@@ -186,8 +186,10 @@ clip. Offscreen clips and hidden pages pause playback. Scrolling back resumes
 a clip only if the user has not paused it. Closing the full-screen viewer releases
 its video source. Reduced motion starts other previews paused. Direct MP4 links provide recovery.
 The narrow rainbow uses the available width on phones and desktops. Full-screen
-videos have native playback controls. Where native fullscreen is unavailable,
-the same modal viewer fills the browser viewport.
+media uses the available viewport without cropping. The X in the upper-right
+corner closes the viewer. Select Controls to show or hide the browser's playback
+controls. Where native fullscreen is unavailable, the viewer fills the browser
+viewport.
 
 ```sh
 npm ci --prefix site --ignore-scripts --no-fund
