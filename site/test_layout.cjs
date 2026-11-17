@@ -66,18 +66,24 @@ async function check() {
             box.x + box.width <= 844 && box.x + box.width >= 820,
           'Close floats in the top-right corner with a touch target of at least 44px');
 
-          const controls = viewer.getByRole('button', {name: 'Playback controls'});
-          await page.keyboard.press('Tab');
-          assert.ok(await controls.evaluate(button => button === document.activeElement));
-          await page.keyboard.press('Space');
-          assert.equal(await controls.getAttribute('aria-pressed'), 'true');
-          assert.ok(await video.evaluate(v => v.controls));
+          assert.equal(await viewer.locator('button').count(), 1, 'Only the close button overlays the video');
+          await page.waitForFunction(() => !document.querySelector('.media-viewer video').paused);
+          await video.tap();
+          assert.ok(await video.evaluate(v => v.controls && !v.paused), 'Tapping the video reveals controls without pausing');
           await assertViewportFit(video);
-          await controls.tap();
-          assert.equal(await controls.getAttribute('aria-pressed'), 'false');
-          assert.ok(await video.evaluate(v => !v.controls));
           await close.tap();
           await page.setViewportSize({width, height: 900});
+          await viewer.waitFor({state: 'hidden'});
+
+          await page.locator('#narrow-video').tap();
+          await viewer.waitFor({state: 'visible'});
+          assert.ok(await video.evaluate(v => !v.controls), 'Controls start hidden on each open');
+          await page.keyboard.press('Tab');
+          assert.ok(await video.evaluate(v => v === document.activeElement));
+          await page.keyboard.press('Space');
+          assert.ok(await video.evaluate(v => v.controls && !v.hasAttribute('role')),
+            'Keyboard activation reveals native video controls');
+          await close.tap();
           await viewer.waitFor({state: 'hidden'});
         }
 
@@ -114,7 +120,13 @@ async function check() {
         await page.getByRole('dialog').waitFor({state: 'visible'});
         assert.ok(await assembly.locator('video').evaluate(v => v.paused));
         await page.waitForFunction(() => { const v = document.querySelector('.media-viewer video'); return !v.paused && v.currentTime > 0; });
-        const expanded = await page.getByRole('dialog').locator('video').elementHandle();
+        const expandedVideo = page.getByRole('dialog').locator('video');
+        const expanded = await expandedVideo.elementHandle();
+        if (width === 1280) {
+          await expandedVideo.click();
+          assert.ok(await expandedVideo.evaluate(v => v.controls && !v.paused),
+            'Clicking the video reveals controls without pausing');
+        }
         await page.getByRole('button', {name: 'Close full-screen media'}).click();
         await page.waitForFunction(() => !document.querySelector('#assembly-video').paused);
         assert.ok(await expanded.evaluate(v => !v.hasAttribute('src') && v.readyState === 0), 'Closing releases the full-screen decoder');
@@ -131,7 +143,6 @@ async function check() {
           // Keep the image open while a phone rotates into landscape.
           await page.setViewportSize({width: 844, height: 390});
           await assertViewportFit(fallback.locator('img'));
-          assert.equal(await fallback.getByRole('button', {name: 'Playback controls'}).count(), 0);
           const close = await fallback.getByRole('button', {name: 'Close full-screen media'}).boundingBox();
           assert.ok(close.x >= 0 && close.y >= 0 && close.x + close.width <= 844 && close.y + close.height <= 390,
             'Close stays within the rotated viewport');

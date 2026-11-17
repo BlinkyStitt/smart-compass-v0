@@ -59,23 +59,22 @@ a:has(>img),a:has(>picture){display:block;cursor:zoom-in}
   font-size: 13px;
   text-align: center;
 }
-.media-viewer > button {
+.media-viewer > video { -webkit-tap-highlight-color: transparent; }
+.media-viewer > video[role="button"] { cursor: pointer; }
+.media-viewer > video:focus-visible { outline-offset: -3px; }
+.media-close {
   position: absolute;
   top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
   z-index: 1;
   color: var(--ink);
   background: #080b09;
   border-color: #89958c;
-}
-.media-viewer > button:hover,
-.media-viewer > button[aria-pressed="true"] { background: var(--panel); }
-.media-close {
-  right: max(8px, env(safe-area-inset-right));
   width: 44px;
   padding: 0;
   border-radius: 50%;
   font-size: 24px;
   line-height: 1;
 }
-.media-controls { left: max(8px, env(safe-area-inset-left)); }
+.media-close:hover { background: var(--panel); }
 body:has(.media-viewer[open]){overflow:hidden}

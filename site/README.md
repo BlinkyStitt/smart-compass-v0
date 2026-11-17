@@ -187,7 +187,8 @@ a clip only if the user has not paused it. Closing the full-screen viewer releas
 its video source. Reduced motion starts other previews paused. Direct MP4 links provide recovery.
 The narrow rainbow uses the available width on phones and desktops. Full-screen
 media uses the available viewport without cropping. The X in the upper-right
-corner closes the viewer. Select Controls to show or hide the browser's playback
+corner closes the viewer. Tap or click the video to show playback controls.
+Press Space or Enter when the video has keyboard focus to show the same
 controls. Where native fullscreen is unavailable, the viewer fills the browser
 viewport.
 
