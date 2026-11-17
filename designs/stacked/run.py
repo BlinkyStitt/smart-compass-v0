@@ -28,7 +28,7 @@ EXPORTS = HERE / "exports"
 MANIFEST = HERE / "exports-manifest.json"
 SHARED = (
     "justfile", "validation.just", ".githooks/pre-commit", "design-v2.md",
-    "site/electrical-inputs.json", ".github/workflows/pages.yml",
+    "site/electrical-inputs.json",
     "hardware/enclosure/acrylic-optics.json",
     "hardware/enclosure/baffle.py",
     "hardware/enclosure/geometry.py",
