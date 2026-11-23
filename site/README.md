@@ -1,7 +1,7 @@
 # Smart compass on GitHub Pages
 
-The page shows only the narrow removable-cell prototype. Wide files remain a
-pinned source archive. The page includes the rainbow, three dark patterns, silver
+The page shows the fixed-wiring narrow prototype and offers a separate Rev A
+print download. Wide files remain a pinned source archive. The page includes the rainbow, three dark patterns, silver
 PETG, night lighting and player controls. Tap any image or video to open a
 full-screen viewer. Close or Escape returns to the page and restores focus.
 The first preview shows a Pride rainbow chase on the physical LED wiring,
@@ -37,6 +37,15 @@ python3 site/verify.py local --directory .build/compass-pages
 The builder requires electrical and native freshness checks. It then regenerates
 the actual pattern samples, checks convergence and publishes one complete local
 artifact. A local artifact does not establish deployment or physical acceptance.
+
+## Rev A print download
+
+The site publishes the verified archive at `site/assets/rev-a-print.zip`.
+The build checks its source and file hashes. After a change to its inputs,
+run the [Rev A FreeCAD fit and packaging steps](../designs/carrier/README.md#make-the-rev-a-print-package).
+Pass `--archive "$PWD/site/assets/rev-a-print.zip"` to the package builder.
+Commit the updated ZIP with the source. The site gives a separate filament
+estimate for each diffuser option from the delivered slicer report.
 
 ## Mass, dimensions and service
 

@@ -81,10 +81,15 @@ COMPASS_CARRIER_SOURCE="$PWD/designs/carrier" \
 COMPASS_CARRIER_OUTPUT="$CARRIER_FIT" \
 /Applications/FreeCAD.app/Contents/Resources/bin/freecad "$PWD/designs/carrier/RunRoutedFit.FCMacro"
 
-python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS"
+python3 designs/carrier/print_package.py "$CARRIER_FIT" "$CARRIER_PRINTS" \
+  --archive "$PWD/site/assets/rev-a-print.zip"
 ```
 
-The builder checks and slices the 12 installed parts. It uses the revised
+The builder checks and slices the 12 installed parts and three interface test
+pieces. The two diffuser material options produce 17 reference print projects.
+The ZIP includes source and file checksums. Regenerate the complete fit and ZIP
+after changing their recorded inputs. Commit the ZIP with the matching source.
+The site rejects a missing, stale or incomplete archive. It uses the revised
 rear cover, shell, front bezel, cradle, hatch, keeper and retainer from the routed fit.
 It uses the matching narrow exports for the other parts. Read the [printing and first-fit guide](printing.md)
 before printing.

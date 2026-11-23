@@ -22,6 +22,9 @@ from publication import publish, seal
 from spiral_motion import verify_pride_motion
 from explosion import CAPTURE_INPUTS, FRAMES as ASSEMBLY_FRAMES, SECONDS as ASSEMBLY_SECONDS, verify_capture
 
+sys.path.insert(0, str(ROOT / "designs/carrier"))
+from print_inputs import ARCHIVE_NAME, package_inputs
+
 
 @dataclass(frozen=True)
 class Movie:
@@ -171,6 +174,18 @@ def render_diagrams(output, provenance):
     return values, records
 
 
+def verify_archive(data):
+    """Keep the carrier's layout module separate from the stacked layout."""
+    command = """import json, sys
+from print_inputs import verify_archive
+print(json.dumps(verify_archive(sys.stdin.buffer.read())))
+"""
+    checked = subprocess.check_output(
+        [sys.executable, "-c", command], input=data, cwd=ROOT / "designs/carrier"
+    )
+    return json.loads(checked)
+
+
 def render(output, provenance):
     output = output.resolve()
     # Render only into the private staging directory supplied by publish().
@@ -188,6 +203,17 @@ def render(output, provenance):
         values[name + "_leds"] = str(len(metadata["leds"]))
         gap = (metadata["optics"]["front_z"] - metadata["optics"]["rear_z"]) * 1000
         values[name + "_gap"] = f"{gap:.1f}".removesuffix(".0")
+    kit = read_input(SITE / "assets" / ARCHIVE_NAME, provenance)
+    _, kit_slices = verify_archive(kit)
+    (output / ARCHIVE_NAME).write_bytes(kit)
+    projects = [row for row in kit_slices["projects"] if not row["project"].startswith("Fit")]
+    filament = {
+        variant: sum(row["toolpath_mass_g"] for row in projects
+                     if row["material"] in {"opaque-petg", variant})
+        for variant in ("glow", "silver")
+    }
+    values.update({f"rev_a_{variant}_filament_g": str(round(mass))
+                   for variant, mass in filament.items()})
     parts=json.loads(read_input(NARROW/'parts.json',provenance))
     variants=estimate_masses(parts);mass=variants['glow']['mass_estimate'];cell=next(row for row in variants['glow']['components'] if row['id']=='cell')
     study=subprocess.run(['node',str(SITE/'sample_check.mjs'),str(SAMPLES/'manifest.json')],text=True,capture_output=True,check=True)
@@ -210,6 +236,7 @@ def render(output, provenance):
     values['narrow_service_size']=' × '.join(f'{value:.1f}' for value in parts['service_clearance']['width_height_depth_mm'])
     values['narrow_silver_upper_g']=f"{variants['silver']['mass_estimate']['upper_worn_g']:.1f}"
     (output/'estimates.json').write_text(json.dumps({'active_design':'narrow','masses':{'narrow':mass},'material_variants':{key:value['mass_estimate'] for key,value in variants.items()},'runtime_assumptions':json.loads(read_input(SITE/'electrical-inputs.json',provenance)),
+        'rev_a_print': {'source': ARCHIVE_NAME, 'filament_g_including_supports_and_brims': filament},
         'patterns':[row for row in energy['convergence'] if row['design']=='narrow'],'calculated_hours':rainbow['runtime']['hours'],
         'narrow_basis':'Complete narrow native census, explicit source records, fixed loom cuts, one installed protected cell and sewn necklace. Engineering allowances and physical acceptance remain unmeasured.','wide_status':'Inactive archived reference; no SKI-1230 removable-cell or current mass/runtime acceptance.'},indent=2)+'\n')
     for name in ['service-guide.svg','assembly-dimensions.svg','prototype-service.zip','parts.json','inventory.md']:
@@ -337,7 +364,9 @@ def source_snapshot(*, include_samples=True):
         "hardware/enclosure/electrical-review.md", "hardware/enclosure/electrical.py",
         "hardware/enclosure/component-inventory.json", "hardware/enclosure/README.md",
         "designs/stacked/README.md", "demo/README.md", "design-v2.md",
+        "designs/carrier/print_inputs.py", "designs/carrier/print_package.py",
     ))
+    paths.update(ROOT / name for name in package_inputs())
     if include_samples:
         paths.add(SAMPLES / 'manifest.json')
         for record in json.loads(checked_bytes(SAMPLES / 'manifest.json'))['sets']:
