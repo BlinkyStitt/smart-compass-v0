@@ -33,7 +33,8 @@ from integrated_parts import (
 )
 from seals import LEGACY_HINGE, check_hatch, front_seals, hatch
 from retainer import build as build_retainer
-from usb_bay import power_bay
+from usb_bay import PORT_X, PORT_Y, PORT_Z, power_bay
+from print_inputs import FIT_SAMPLES, fit_inputs
 
 # Pitch, end overhang, cross-row bounds and mated height, in millimeters.
 # These reservations include housing tolerance. The first cable build must
@@ -147,11 +148,11 @@ def control_seals(rear):
     )
 
 
-def export_print(directory, name, shape):
+def export_print(directory, name, source_part, shape):
     require_solid(name, shape)
     solid = shape.copy()
     # Put the bezel groove, retainer toes and rear guard above the bed.
-    axis, angle = ([1, 0, 0], 180) if name in {"CarrierRetainer", "FrontBezel", "RearCover"} else orientation(name)
+    axis, angle = ([1, 0, 0], 180) if source_part in {"CarrierRetainer", "FrontBezel", "RearCover"} else orientation(source_part)
     if angle:
         solid.rotate(App.Vector(), App.Vector(*axis), angle)
     bb = bounds(solid)
@@ -166,7 +167,7 @@ def export_print(directory, name, shape):
     normalize_stl_bed(path)
     return {
         "file": path.name,
-        "source_part": name,
+        "source_part": source_part,
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "print_bounds_mm": [bb.XLength, bb.YLength, bb.ZLength],
     }
@@ -174,6 +175,7 @@ def export_print(directory, name, shape):
 
 def check(output):
     output.unlink(missing_ok=True)
+    inputs = fit_inputs()
     baseline = App.openDocument(str(BASELINE / "stacked-fibonacci.FCStd"))
     try:
         layout = read_layout()
@@ -264,8 +266,21 @@ def check(output):
             raise ValueError(f"USB-C board installation in STEP: {step_collisions}")
         print_solids = {**fixed, "RearCover": rear, "FrontBezel": bezel,
                         "BatteryHatch": lid, "CarrierRetainer": retainer}
-        print_parts = [export_print(output.parent, name, print_solids[name])
+        print_parts = [export_print(output.parent, name, name, print_solids[name])
                        for name in sorted(REVISED_PRINTS)]
+        # Use the finished production solids so the bore and gasket land
+        # retain their actual cross sections and print orientation.
+        x, _ = battery["designs"]["narrow"]["cell_centre_xy_mm"]
+        limits = {
+            "FitBatterySeatPositive": ((x + 30, -110, -25), (x + 70, 0, 35)),
+            "FitBatterySeatNegative": ((x - 70, -110, -25), (x - 30, 0, 35)),
+            "FitUSBPort": ((PORT_X - 8, PORT_Y - 1, PORT_Z - 4.5),
+                           (PORT_X + 8, PORT_Y + 6, PORT_Z + 4.5)),
+        }
+        fit_samples = [
+            export_print(output.parent, name, parent, print_solids[parent].common(box(limits[name])))
+            for name, parent in FIT_SAMPLES.items()
+        ]
         motion = battery_access.native_check(
             battery,
             "narrow",
@@ -282,6 +297,8 @@ def check(output):
         if min(motion["door_continuous_clearance_mm"],
                motion["keeper_continuous_clearance_mm"]) < 0.15:
             raise ValueError(f"Rev A battery motion clearance is below 0.15 mm: {motion}")
+        if inputs != fit_inputs():
+            raise ValueError("Rev A fit inputs changed while running FreeCAD")
         output.write_text(
             json.dumps(
                 {
@@ -303,6 +320,8 @@ def check(output):
                         "port_access_envelope": "24 x 11 mm plug and 4 mm cable",
                     },
                     "print_parts": print_parts,
+                    "fit_samples": fit_samples,
+                    "inputs": inputs,
                 },
                 indent=2,
             )

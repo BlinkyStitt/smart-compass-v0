@@ -3,6 +3,7 @@
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -322,6 +323,12 @@ class BuildInputTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.check_hashed_input('hardware/enclosure/' + path)
 
+    def test_rev_a_sources_are_required_hashed_inputs(self):
+        for relative in ("designs/carrier/print_inputs.py", "designs/carrier/native.py",
+                         "designs/carrier/README.md", "designs/carrier/wall-power/usb-pd60.kicad_pcb"):
+            with self.subTest(relative=relative):
+                self.check_hashed_input(relative)
+
     def check_hashed_input(self, relative):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -337,7 +344,8 @@ class BuildInputTests(unittest.TestCase):
                 return b'other input'
 
             with patch.object(build, 'ROOT', root), patch.object(build, 'SITE', root/'site'), \
-                    patch.object(build, 'checked_bytes', side_effect=read):
+                    patch.object(build, 'checked_bytes', side_effect=read), \
+                    patch.object(build, 'package_inputs', return_value={relative: 'recorded'}):
                 first = build.source_snapshot(include_samples=False)
                 self.assertEqual(first[relative], hashlib.sha256(revision.read_bytes()).hexdigest())
                 revision.write_bytes(b'changed control revision')
@@ -392,6 +400,27 @@ class BuildInputTests(unittest.TestCase):
         for output in (build.ROOT, build.SITE, build.SITE/'generated', build.SITE/'../site/generated'):
             with self.subTest(output=output), self.assertRaisesRegex(RuntimeError, 'outside the site source'):
                 build.build(output)
+
+
+
+
+class CarrierArchiveTests(unittest.TestCase):
+    def test_archive_validation_keeps_layout_modules_separate(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            carrier = root / "designs/carrier"
+            carrier.mkdir(parents=True)
+            (carrier / "layout.py").write_text("NAME = 'carrier'\n")
+            (carrier / "print_inputs.py").write_text(
+                "from layout import NAME\n"
+                "def verify_archive(data):\n"
+                "    assert data == b'archive bytes'\n"
+                "    return {'layout': NAME}, {}\n"
+            )
+            stacked = object()
+            with patch.object(build, 'ROOT', root), patch.dict(sys.modules, {'layout': stacked}):
+                self.assertEqual(build.verify_archive(b'archive bytes'), [{'layout': 'carrier'}, {}])
+                self.assertIs(sys.modules['layout'], stacked)
 
 
 if __name__ == '__main__':
