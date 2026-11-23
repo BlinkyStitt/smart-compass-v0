@@ -12,7 +12,9 @@ assert.ok(expectedMovies.length >= 2, 'Expected artifact must include primary an
 const model = JSON.parse(await readFile(resolve(directory, 'electrical-inputs.json'), 'utf8'));
 const manifest = JSON.parse(await readFile(resolve(directory, 'pattern-samples.json'), 'utf8'));
 const pin = JSON.parse(await readFile(new URL('./node_modules/playwright/package.json', import.meta.url), 'utf8'));
-assert.equal(pin.version, '1.64.1');
+const declared = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'));
+assert.match(declared.devDependencies.playwright, /^\d+\.\d+\.\d+$/, 'Playwright must use an exact version pin');
+assert.equal(pin.version, declared.devDependencies.playwright, 'Installed Playwright must match site/package.json');
 
 async function expected(design, pattern, settings) {
   const set = manifest.sets.filter(row => row.design === design && row.pattern === pattern).sort((a, b) => b.steps - a.steps)[0];
