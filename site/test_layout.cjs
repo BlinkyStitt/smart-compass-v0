@@ -281,7 +281,16 @@ async function check() {
       await page.waitForFunction(() => !document.querySelector('#narrow-video').paused);
       await page.emulateMedia({reducedMotion: 'reduce'});
       assert.ok(await page.locator('#narrow-video').evaluate(v => !v.paused), 'Requested primary autoplay overrides Reduce Motion');
-      await page.locator('#play').click();
+      // Settle scrolling and playback startup before requesting a user pause.
+      const pauseButton = page.locator('#play');
+      await pauseButton.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => {
+        const video = document.querySelector('#narrow-video');
+        const button = document.querySelector('#play');
+        return !video.paused && !button.disabled && button.textContent === 'Pause';
+      });
+      await pauseButton.click();
+      assert.ok(await page.locator('#narrow-video').evaluate(v => v.paused), 'Pause stops playback before lifecycle retries');
       await page.evaluate(() => {
         document.querySelector('#narrow-video').dispatchEvent(new Event('canplay'));
         window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
