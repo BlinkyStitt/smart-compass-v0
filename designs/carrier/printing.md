@@ -1,7 +1,7 @@
-# Smart Compass Rev A print package
+# Smart Compass main-build print package
 
-This package is for the 200 mm narrow prototype with the plug-in carrier and
-integrated USB-C inlet. Use one copy of each of the 12 named STL parts. Use either
+This package is for the 200 mm carrier build with a secured harness and
+integrated USB-C inlet. Its hardware revision is Rev A. Use one copy of each of the 12 named STL parts. Use either
 the glow or the silver 3MF for each diffuser. The optics use a 2 mm clear
 front mirror and a 1.5 mm coated black acrylic rear mirror with a 14 mm gap.
 
@@ -41,7 +41,9 @@ glow PETG and check the thin wall paths in the preview.
 Use four M3 × 14 mm hatch screws with 0.5 mm washers and five
 M2.5 × 25 mm button-head retainer screws. The rear cover has blind
 tap pilots. The hatch, rear cover and lens seats use 1 mm silicone cord.
-The assembly guide gives the seal sizes and fastener steps.
+Use the [assembly guide](https://github.com/BlinkyStitt/smart-compass-v0/blob/master/designs/carrier/assembly.md)
+for seal sizes, fastener steps, and the extra length to leave on every wire run.
+Dry fit the complete harness before setting finished cut lengths.
 
 The rear cover includes the switch guard, USB-C pocket and opening, seal
 lands and blind pilots. Each STL and project must agree with `parts.json`.

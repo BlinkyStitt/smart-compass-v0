@@ -1,9 +1,9 @@
-# Plug-in carrier for the narrow compass
+# Smart Compass main build
 
-Rev A has a [routed carrier PCB](carrier-a.kicad_pcb), a
+The 200 mm main build uses the Rev A [routed carrier PCB](carrier-a.kicad_pcb), a
 [plug and harness assembly guide](assembly.md), and a
-[60 W USB-C wall power and charging](wall-power-pd60.md). The charger is a separate
-assembly that plugs into the carrier. The [sealed USB-C inlet](dust-sealing.md) faces down
+[60 W USB-C wall power and charging](wall-power-pd60.md). The secured harness stays installed during use. The charger is a separate
+assembly with a locking plug for service. The [sealed USB-C inlet](dust-sealing.md) faces down
 from a pocket in the rear cover. The inlet board and 5 V regulator fit inside
 that pocket. The complete enclosure seals and temperatures still need
 physical verification.
@@ -12,8 +12,9 @@ The original fit model uses a single 1.2 mm carrier board. The
 housing uses the narrow design's 58.1 mm optical stack and removable protected
 cell. The board follows the cavity and sits beside the battery bay. Its seven
 mounts are part of the ribbed rear cover. The rear cover also has holes for
-three panel-mount buttons. The layout budgets 36 off-board conductors,
-compared with 92 in the current fixed loom. The print set has 12 parts.
+three panel-mount buttons. The docked boards connect through PCB traces. The 13 modeled harness folds
+cover 36 conductors. Use the full assembly guide for the additional charging
+and sensor leads and their service allowances. The print set has 12 parts.
 One removable retainer holds all seven boards on the rear cover. The
 gasketed battery hatch uses four screws and keeps the independent cell keeper.
 The cradle includes both fixed contact seats. Each cell end has one removable

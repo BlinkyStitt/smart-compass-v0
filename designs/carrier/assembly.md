@@ -106,23 +106,44 @@ delivered switch with a continuity meter in both positions. The ground return
 and thermistor stay in the holder harness. The battery positive contact is
 isolated in OFF. Unplug wall USB before opening the case or changing the cell.
 
-## Make the first harness against the actual case
+## Build the fixed harness on the bench
 
-- Leave 25 mm of slack at the cell, charger, switch, and LED clamp harness.
-- Leave 20 mm at the barrel, boost, latch, and button harnesses.
-- Leave 40 mm in each of the four front LED cables so the cover can open
-  about 30 mm and leave 10 mm for access to the plugs.
-- Route the power and return leads together. Form gentle U-bends in the
-  available spaces. Use a removable soft tie to hold each fold. Keep bends out
-  of the battery door path, cover rim, and fastener seats.
+The carrier PCB replaces point-to-point wiring between the docked modules.
+Keep the harness secured in the case during use. Fit the specified locking
+plugs at the service interfaces. Use the stock assembled parts and bench
+connections. Label both ends of each lead before assembly.
 
-Measure the bent route between the actual lead exits and add the slack and
-termination allowance before cutting. The model checks room for the mated
-housings and the existing fold reservations. The charger harness needs its
-own fitted fold and lead-exit check. Test finger access and the completed wires on the
-first assembly. Check module retention and antenna behavior with the PCB in
-place. Weigh the assembled prototype to capture the cost of the extra plugs
-and charger.
+| Run | Minimum extra length to keep after termination |
+| --- | ---: |
+| Charger to J1, cell holder to J2, and both S1 poles including the fuse leads | 25 mm |
+| Battery sleeve sensor and its keyed holder connection | 25 mm |
+| Latch J3, PowerBoost J4 including LBO, Sparkle barrel J6, and three buttons J12 | 20 mm |
+| Sparkle LED clamp J7 and selector connections to J6, J7 and Sparkle JP3 | 25 mm |
+| Four front LED cables J8 through J11 | 40 mm |
+| USB-C inlet to 5 V regulator input and regulator output back to the inlet board | 25 mm |
+| Inlet Mini-Fit Jr. feed to selector and selector Micro-Fit feed to charger | 25 mm |
+
+Use these minimums on each wire in the run. Measure each route on the dry
+assembly along its normal bends. Add the service allowance and the wire
+length used inside both terminations before you mark the finished cut.
+Leave enough additional blank stock to strip and remake an end. Terminate
+on the bench while the parts are accessible. Check that the selected gauge
+fits its terminal. Keep the power and return leads together.
+
+Fit and secure the excess as flat U-bends. Use the CAD reservations for the
+carrier harness. Fit the added USB-C, charger, selector, and sensor leads
+against the actual cover. Use a restraint at the board or housing exit.
+Keep wire and ties out of the hatch path, gasket lands, optics, and screw
+seats. Use the cable maker's minimum bend radius if it exceeds the CAD
+allowance.
+
+Lift and support the rear cover 30 mm off the case. The four front LED
+cables need another 10 mm for access to their plugs. Check that each
+service lead and the sensor sleeve reach their working positions without
+pulling a solder joint or terminal. Close the cover and check for trapped
+wires. Record each finished cut length after this check and before making
+another harness. The digital fit reserves room for the carrier cable folds.
+The full charging harness still needs its first physical fit.
 
 ## Check the keyed positive contact
 
