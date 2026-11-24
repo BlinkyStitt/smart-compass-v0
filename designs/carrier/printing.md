@@ -1,9 +1,9 @@
 # Smart Compass main-build print package
 
 This package is for the 200 mm carrier build with a secured harness and
-integrated USB-C inlet. Its hardware revision is Rev A. Use one copy of each of the 12 named STL parts. Use either
-the glow or the silver 3MF for each diffuser. The optics use a 2 mm clear
-front mirror and a 1.5 mm coated black acrylic rear mirror with a 14 mm gap.
+integrated USB-C inlet. Its hardware revision is Rev A. Use one copy of each
+of the 12 named STL parts. Use either the glow or the silver 3MF for each
+diffuser.
 
 ## Set up the printer
 
@@ -37,6 +37,23 @@ glow PETG and check the thin wall paths in the preview.
    removable front contact clamps. Use both revised front clamps. Fit the
    circular guard on `BatteryContactPFront` facing the cell. Check the lens and glow band seal lands
    before installing optics or wiring.
+
+## Fit the mirrors and strap
+
+Use two 187 mm mirror discs. Use 2 mm clear two-way acrylic at the front
+and 1.5 mm coated black acrylic at the rear. Face both coatings into the
+14 mm cavity. Keep the 1 mm air gap between the rear mirror and the stencil.
+See the [optical stack and acrylic specification](https://github.com/BlinkyStitt/smart-compass-v0/blob/master/designs/stacked/README.md#evidence-boundary)
+and the [lens seal instructions](https://github.com/BlinkyStitt/smart-compass-v0/blob/master/designs/carrier/dust-sealing.md#fit-the-lens-and-glow-band).
+
+Use one 1,100 mm tape. Fold each end lengthwise and thread it through both
+rounded passages around the fixed post in its shell eyelet. Sew each end
+back to itself with a 30 mm overlap. Use the stock and stitch pattern in
+the [strap specification](https://github.com/BlinkyStitt/smart-compass-v0/blob/master/hardware/enclosure/necklace.json).
+Check the edges, seams, and anchor strength with the compass supported off
+the body before wearing it.
+
+## Close the enclosure
 
 Use four M3 × 14 mm hatch screws with 0.5 mm washers and five
 M2.5 × 25 mm button-head retainer screws. The rear cover has blind
