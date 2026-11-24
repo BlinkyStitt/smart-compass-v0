@@ -30,6 +30,10 @@ async function check() {
         await page.goto(url);
         assert.match(await page.locator('script[src*="app-"]').getAttribute('src'), /app-script-[0-9a-f]{12}\.js$/, 'Player script URL changes with its content');
         assert.equal(await page.locator('#films video').count(), 1);
+        const printKit = page.locator('main a[href$=".zip"]');
+        assert.equal(await printKit.count(), 1, 'One build kit is available');
+        assert.equal(await printKit.getAttribute('href'), 'rev-a-print.zip');
+        assert.equal(await page.locator('a[href="parts.json"], a[href="inventory.md"]').count(), 0);
         assert.equal(await page.locator('[id*=wide]').count(), 0);
         assert.ok(!(await page.locator('main').innerText()).match(/wide archive|wide design|compare sizes|play both/i));
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -89,7 +93,7 @@ async function check() {
 
         // Every bounded still preview opens in place.
         const links = page.locator('main a:has(img)');
-        assert.equal(await links.count(), 4);
+        assert.equal(await links.count(), 2);
         for (let i = 0; i < await links.count(); i++) {
           const link = links.nth(i);
           const href = page.url();

@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 import re
 import subprocess
-import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,7 +16,6 @@ WIDE = ROOT / "hardware/enclosure/exports"
 NARROW = ROOT / "designs/stacked/exports"
 sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
-from estimates import estimate_masses
 from publication import publish, seal
 from spiral_motion import verify_pride_motion
 from explosion import CAPTURE_INPUTS, FRAMES as ASSEMBLY_FRAMES, SECONDS as ASSEMBLY_SECONDS, verify_capture
@@ -151,29 +149,6 @@ def render_media(output, provenance):
     return values, records
 
 
-def render_diagrams(output, provenance):
-    """Rasterize captured CAD at build time; phones never decode native SVGs."""
-    values, records = {}, {}
-    for name in ('service-guide', 'assembly-dimensions'):
-        source = NARROW / (name + '.svg')
-        data = read_input(source, provenance)
-        png = subprocess.check_output(['node', str(SITE / 'render_diagram.mjs')], input=data)
-        if len(png) < 24 or png[:16] != b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR':
-            raise RuntimeError('Diagram renderer did not produce a PNG: ' + name)
-        width, height = struct.unpack('>II', png[16:24])
-        if width != 1600 or not 0 < height <= 1600 or len(png) > 2_000_000:
-            raise RuntimeError('Diagram preview exceeds its image budget: ' + name)
-        digest = hashlib.sha256(png).hexdigest()
-        url = 'assets/' + name + '-' + digest[:12] + '.png'
-        (output / url).write_bytes(png)
-        key = name.replace('-', '_')
-        values[key] = url
-        records[key] = {'source': source.relative_to(ROOT).as_posix(),
-                        'source_sha256': hashlib.sha256(data).hexdigest(),
-                        'sha256': digest, 'url': url}
-    return values, records
-
-
 def verify_archive(data):
     """Keep the carrier's layout module separate from the stacked layout."""
     command = """import json, sys
@@ -191,18 +166,13 @@ def render(output, provenance):
     # Render only into the private staging directory supplied by publish().
     output.mkdir(parents=True, exist_ok=True)
     values, records = render_media(output, provenance)
-    diagrams, diagram_records = render_diagrams(output, provenance)
-    values.update(diagrams)
-    records.update(diagram_records)
-    dimensions = {}
-    for name, folder in (("wide", WIDE), ("narrow", NARROW)):
-        metadata = json.loads(read_input(folder / "scene.json", provenance))
-        dimensions[name] = metadata["dimensions_m"]
-        for label, field in (("width", "diameter"), ("depth", "body_depth")):
-            values[name + "_" + label] = f"{metadata['dimensions_m'][field] * 1000:.1f}".removesuffix(".0")
-        values[name + "_leds"] = str(len(metadata["leds"]))
-        gap = (metadata["optics"]["front_z"] - metadata["optics"]["rear_z"]) * 1000
-        values[name + "_gap"] = f"{gap:.1f}".removesuffix(".0")
+    metadata = json.loads(read_input(NARROW / "scene.json", provenance))
+    dimensions = {"narrow": metadata["dimensions_m"]}
+    for label, field in (("width", "diameter"), ("depth", "body_depth")):
+        values[f"narrow_{label}"] = f"{metadata['dimensions_m'][field] * 1000:.1f}".removesuffix(".0")
+    values["narrow_leds"] = str(len(metadata["leds"]))
+    gap = (metadata["optics"]["front_z"] - metadata["optics"]["rear_z"]) * 1000
+    values["narrow_gap"] = f"{gap:.1f}".removesuffix(".0")
     kit = read_input(SITE / "assets" / ARCHIVE_NAME, provenance)
     _, kit_slices = verify_archive(kit)
     (output / ARCHIVE_NAME).write_bytes(kit)
@@ -214,33 +184,21 @@ def render(output, provenance):
     }
     values.update({f"rev_a_{variant}_filament_g": str(round(mass))
                    for variant, mass in filament.items()})
-    parts=json.loads(read_input(NARROW/'parts.json',provenance))
-    variants=estimate_masses(parts);mass=variants['glow']['mass_estimate'];cell=next(row for row in variants['glow']['components'] if row['id']=='cell')
-    study=subprocess.run(['node',str(SITE/'sample_check.mjs'),str(SAMPLES/'manifest.json')],text=True,capture_output=True,check=True)
-    energy=json.loads(study.stdout)
-    if not energy['converged']:raise RuntimeError('Pattern energy estimates have not converged')
-    rainbow=next(row for row in energy['convergence'] if row['design']=='narrow' and row['pattern']=='rainbow')
-    values['narrow_weight']=f"{mass['complete_pendant']['nominal_g']/1000:.2f}"
-    values['narrow_worn_weight']=f"{mass['total_worn']['nominal_g']/1000:.2f}"
-    values['narrow_worn_g']=f"{mass['total_worn']['nominal_g']:.1f}"
-    values['narrow_worn_lb']=f"{mass['total_worn']['nominal_g']/453.59237:.3f}"
-    values['narrow_upper_g']=f"{mass['upper_worn_g']:.1f}"
-    values['narrow_margin_g']=f"{mass['margin_g']:.1f}"
-    values['narrow_margin_target']='met' if mass['margin_target_pass'] else 'not met'
-    values['narrow_weight_range']='–'.join(f"{n:.1f}" for n in mass['total_worn']['range_g'])
-    values['battery_weight']=f"{cell['mass_g_per_unit']:.1f}"
-    values['battery_upper_g']=f"{cell['mass_range_g_per_unit'][1]:.1f}"
-    values['runtime']=f"{rainbow['runtime']['hours']:.2f}"
-    values['narrow_closed_depth']=f"{parts['dimensions_mm']['closed_depth']:.1f}"
-    values['narrow_closed_size']=' × '.join(f"{parts['dimensions_mm'][key]:.1f}" for key in ['closed_width','closed_height','closed_depth'])
-    values['narrow_service_size']=' × '.join(f'{value:.1f}' for value in parts['service_clearance']['width_height_depth_mm'])
-    values['narrow_silver_upper_g']=f"{variants['silver']['mass_estimate']['upper_worn_g']:.1f}"
-    (output/'estimates.json').write_text(json.dumps({'active_design':'narrow','masses':{'narrow':mass},'material_variants':{key:value['mass_estimate'] for key,value in variants.items()},'runtime_assumptions':json.loads(read_input(SITE/'electrical-inputs.json',provenance)),
-        'rev_a_print': {'source': ARCHIVE_NAME, 'filament_g_including_supports_and_brims': filament},
-        'patterns':[row for row in energy['convergence'] if row['design']=='narrow'],'calculated_hours':rainbow['runtime']['hours'],
-        'narrow_basis':'Complete narrow native census, explicit source records, fixed loom cuts, one installed protected cell and sewn necklace. Engineering allowances and physical acceptance remain unmeasured.','wide_status':'Inactive archived reference; no SKI-1230 removable-cell or current mass/runtime acceptance.'},indent=2)+'\n')
-    for name in ['service-guide.svg','assembly-dimensions.svg','prototype-service.zip','parts.json','inventory.md']:
-        (output/name).write_bytes(read_input(NARROW/name,provenance))
+    study = subprocess.run(
+        ["node", str(SITE / "sample_check.mjs"), str(SAMPLES / "manifest.json")],
+        text=True, capture_output=True, check=True,
+    )
+    energy = json.loads(study.stdout)
+    if not energy["converged"]:
+        raise RuntimeError("Pattern energy estimates have not converged")
+    estimates = {
+        "active_design": "carrier-rev-a",
+        "runtime_scope": "Estimates from sampled LED patterns and electrical assumptions. Runtime on the assembled carrier build has not been measured.",
+        "runtime_assumptions": json.loads(read_input(SITE / "electrical-inputs.json", provenance)),
+        "rev_a_print": {"source": ARCHIVE_NAME, "filament_g_including_supports_and_brims": filament},
+        "patterns": [row for row in energy["convergence"] if row["design"] == "narrow"],
+    }
+    (output / "estimates.json").write_text(json.dumps(estimates, indent=2) + "\n")
     template = read_input(SITE / "index.html", provenance).decode()
     rendered = re.sub(r"{{(\w+)}}", lambda match: html.escape(values[match[1]], quote=True), template)
     if "{{" in rendered:

@@ -1,7 +1,8 @@
 # Rev A carrier assembly
 
 Use the [routed KiCad board](carrier-a.kicad_pcb) with the 200 mm narrow
-enclosure. The board is 1.2 mm thick with four 35 µm copper layers. Keep the
+enclosure. See the [print guide](printing.md#fit-the-mirrors-and-strap) for the
+optics and strap. The board is 1.2 mm thick with four 35 µm copper layers. Keep the
 seven rear-cover mounts. Tap their blind 1.6 mm pilots M2 with a depth
 stop. Fit seven M2 × 4 mm screws with insulating washers. Check that the
 screws hold without bottoming out. The five stock boards plug into the
@@ -71,7 +72,8 @@ Pin order is the PCB pad order starting at pin 1. Read pad numbers in KiCad or
 use the square pad for the JST headers. Label both ends of each lead before
 installation. Use the [carrier parts and pad map](routed-components.json) for
 part locations. Use the [stock module source records](../../hardware/enclosure/electrical-design.md)
-for the module pins.
+for the module pins. Follow the [selector lead map](wall-power-pd60.md#fit-the-plug-in-harness)
+for the Rev A power feeds.
 
 | Carrier | Header | Connections in pad order |
 | --- | --- | --- |
@@ -81,12 +83,15 @@ for the module pins.
 | J4 | JST B6P-VH | PowerBoost X2.2, X2.1, X1.2, X1.1, JP1.4 LBO, empty |
 | J5 | JST B2B-XH-A | S1 pole B RUN contact, S1 pole B common |
 | J6 | JST B2P-VH | Sparkle Motion 2.1 mm barrel plug center, sleeve |
-| J7 | JST B5B-XH-A | Sparkle JP1.9, JP1.7, JP1.8, JP1.5, JP1.2 |
+| J7 | JST B5B-XH-A | Selector W6, selector W7 spliced to Sparkle JP1.7, Sparkle JP1.8, JP1.5, JP1.2 |
 | J8 | JST B3B-XH-A | Fibonacci 5V, GND, DIN |
 | J9 | JST B3B-XH-A | Inner ring 5V, GND, DIN |
 | J10 | JST B3B-XH-A | Side ring A 5V, GND, DIN |
 | J11 | JST B3B-XH-A | Side ring B 5V, GND, DIN |
 | J12 | JST B6B-PH-K | Start pair, Mode pair, Action pair |
+
+Connect Sparkle JP1.9 to selector W5. The selector supplies J7.1 from W6
+through the shared eFuse.
 
 J8 through J11 have the same power, ground and data order. Labels identify the
 four outputs. Keep the 1000 µF bulk capacitor at the Fibonacci end of J8. R8
@@ -99,30 +104,53 @@ terminal to each wire gauge. Where the VH contact range ends at 22 AWG, join
 the short 22 AWG pigtail to a thinner control or thermistor lead in the
 subassembly. Use one conductor per clamp on Sparkle Motion.
 
-Keep the contact-adjacent 4 A fuse in the positive cell lead. Connect the fused
-positive lead to S1 terminal 1 and J2.1 to terminal 2. Connect J5.1 to terminal
+Keep the contact-adjacent 4 A fuse in the positive cell lead. Preserve the
+[fixed, insulated lead from the contact to the fuse](../../hardware/enclosure/battery-access.md#main-fuse-joint-restraints).
+Put the service fold after the fuse. Connect the fused positive lead to S1
+terminal 1 and J2.1 to terminal 2. Connect J5.1 to terminal
 4 and J5.2 to terminal 5. Insulate unused S1 terminals 3 and 6. Check the
 delivered switch with a continuity meter in both positions. The ground return
 and thermistor stay in the holder harness. The battery positive contact is
 isolated in OFF. Unplug wall USB before opening the case or changing the cell.
 
-## Make the first harness against the actual case
+## Build the fixed harness on the bench
 
-- Leave 25 mm of slack at the cell, charger, switch, and LED clamp harness.
-- Leave 20 mm at the barrel, boost, latch, and button harnesses.
-- Leave 40 mm in each of the four front LED cables so the cover can open
-  about 30 mm and leave 10 mm for access to the plugs.
-- Route the power and return leads together. Form gentle U-bends in the
-  available spaces. Use a removable soft tie to hold each fold. Keep bends out
-  of the battery door path, cover rim, and fastener seats.
+The carrier PCB replaces point-to-point wiring between the docked modules.
+Keep the harness secured in the case during use. Fit the specified locking
+plugs at the service interfaces. Use the stock assembled parts and bench
+connections. Label both ends of each lead before assembly.
 
-Measure the bent route between the actual lead exits and add the slack and
-termination allowance before cutting. The model checks room for the mated
-housings and the existing fold reservations. The charger harness needs its
-own fitted fold and lead-exit check. Test finger access and the completed wires on the
-first assembly. Check module retention and antenna behavior with the PCB in
-place. Weigh the assembled prototype to capture the cost of the extra plugs
-and charger.
+| Run | Minimum extra length to keep after termination |
+| --- | ---: |
+| Charger to J1, cell holder to J2, fuse output to S1, and remaining S1 leads | 25 mm |
+| Battery sleeve sensor and its keyed holder connection | 25 mm |
+| Latch J3, PowerBoost J4 including LBO, Sparkle barrel J6, and three buttons J12 | 20 mm |
+| Selector W5 to Sparkle JP1.9, W6 and W7 to J7, W8 to the J6 splice, W9 to Sparkle JP3.5, and the Sparkle ground and data leads to J7 | 25 mm |
+| Four front LED cables J8 through J11 | 40 mm |
+| USB-C inlet to 5 V regulator input and regulator output back to the inlet board | 25 mm |
+| Inlet Mini-Fit Jr. feed to selector and selector Micro-Fit feed to charger | 25 mm |
+
+Use these minimums on each wire in the run. Measure each route on the dry
+assembly along its normal bends. Add the service allowance and the wire
+length used inside both terminations before you mark the finished cut.
+Leave enough additional blank stock to strip and remake an end. Terminate
+on the bench while the parts are accessible. Check that the selected gauge
+fits its terminal. Keep the power and return leads together.
+
+Fit and secure the excess as flat U-bends. Use the CAD reservations for the
+carrier harness. Fit the added USB-C, charger, selector, and sensor leads
+against the actual cover. Use a restraint at the board or housing exit.
+Keep wire and ties out of the hatch path, gasket lands, optics, and screw
+seats. Use the cable maker's minimum bend radius if it exceeds the CAD
+allowance.
+
+Lift and support the rear cover 30 mm off the case. The four front LED
+cables need another 10 mm for access to their plugs. Check that each
+service lead and the sensor sleeve reach their working positions without
+pulling a solder joint or terminal. Close the cover and check for trapped
+wires. Record each finished cut length after this check and before making
+another harness. The digital fit reserves room for the carrier cable folds.
+The full charging harness still needs its first physical fit.
 
 ## Check the keyed positive contact
 

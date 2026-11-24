@@ -1,8 +1,8 @@
 # Smart compass on GitHub Pages
 
-The page shows the fixed-wiring narrow prototype and offers a separate Rev A
-print download. Wide files remain a pinned source archive. The page includes the rainbow, three dark patterns, silver
-PETG, night lighting and player controls. Tap any image or video to open a
+The page publishes one build, the Rev A carrier with a fixed harness. The
+previews show the shared optics. The page includes the rainbow, three dark
+patterns, silver PETG, night lighting and player controls. Tap any image or video to open a
 full-screen viewer. Close or Escape returns to the page and restores focus.
 The first preview shows a Pride rainbow chase on the physical LED wiring,
 on the figure-eight camera loop. Its dedicated recording is
@@ -20,7 +20,7 @@ Run the full repository contract from the root:
 just validate
 ```
 
-`just cad` owns the active narrow build. It generates the native model, STEP,
+`just cad` generates the narrow reference geometry and previews. It generates the native model, STEP,
 GLB, print projects, fit samples, installed inventory, service guide, dimension
 views and media as one atomic generation. Its long form is
 `python3 designs/stacked/run.py build`. Do not run both commands to request the
@@ -47,28 +47,13 @@ Pass `--archive "$PWD/site/assets/rev-a-print.zip"` to the package builder.
 Commit the updated ZIP with the source. The site gives a separate filament
 estimate for each diffuser option from the delivered slicer report.
 
-## Mass, dimensions and service
+## Build measurements
 
-`estimates.py` recomputes both glow and silver variants from the narrow native
-census and selected source records. Each installed part has one accounting owner.
-The continuous W044 negative conductor has one complete cut and one mass owner.
-The installed protected XTAR 21700 cell and the full sewn necklace enter worn
-mass once. Samples, trim waste, tools, spare cells and the off-body charger do
-not enter worn mass. Missing, duplicated or unowned CAD parts fail the build.
-
-The page shows raw worn bounds, the 1133.980925 g ceiling, margin, and the separate
-50 g margin target. The bounds are sums of engineering allowances. They are not
-confidence intervals or measured assembly masses. The source body diameter and
-depth differ from the full closed projections. Front and side dimension views
-use one scale and include the fitted textile attachment targets. The free neck
-span has no fixed rigid envelope.
-
-The service package contains the actual wire cut list, fit samples, alternative
-ring-material projects, service poses, continuous-clearance record, complete
-inventory and source-linked instructions. Battery access retains the rear,
-optics, necklace attachments and fixed loom. Rear and board maintenance require
-the documented disconnection of bridging wires. All physical fit, insulation,
-retention, reset timing, heat, runtime, mass and wearing tests remain unmeasured.
+The build page gives the shared optical dimensions and the kit's slicer
+estimates. The [assembly guide](../designs/carrier/assembly.md) lists the
+wire routes and their installed allowances. The battery calculator uses
+sampled light patterns and the electrical model. Measure weight, runtime,
+and the completed harness fit on the first assembled carrier.
 
 ## Electrical model and pattern samples
 
@@ -79,7 +64,7 @@ node site/energy.mjs --reference
 ```
 
 The sampler runs the shared Godot functions for both the archived wide layout
-and the active narrow layout. It retains RGB/time channels as little-endian
+and the narrow optical layout used by the carrier. It retains RGB/time channels as little-endian
 float32 files under `.build/energy-samples`. It repeats runs byte for byte and
 records scene, pattern, sampler and model hashes, pixel identities, intervals,
 tool versions and convergence results. The eight-second cycle starts with 512
@@ -183,11 +168,7 @@ python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-co
 Use a new frame directory for each capture. The site build rejects a still loop
 or a loop that does not return to its closed pose. The build checks decoding,
 spatial colour motion, dark-mask identity and loop joins. Each asset and the gallery player script get a
-content-hashed URL. This prevents cached player code from using newer markup. The dimension and service previews use the current narrow CAD.
-The build renders their native SVGs to PNG with the pinned MPL-2.0 resvg-js
-renderer. Each preview is at most 1600 × 1600 pixels and 2 MB. Native SVGs remain
-in the downloadable package. Neither the page nor its full-screen viewer loads
-the tessellated SVGs. This avoids large vector decodes on phones.
+content-hashed URL. This prevents cached player code from using newer markup.
 
 Each player has Play and Restart controls. Failure restores retry controls and
 announces the error. Closing a pattern disclosure cancels startup and pauses its
