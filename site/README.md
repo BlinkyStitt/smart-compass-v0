@@ -117,18 +117,8 @@ the board and outer ring. Registered CAD samples reject the former gradient
 and a frozen light field. The energy
 calculator retains its stated full-rainbow reference. Calculator settings do
 not change the recording.
-The narrow exploded assembly opens into a fully separated layout, visits eight
-closer views, and closes again in a 48-second loop. Each fitted part has its own
-position. Eleven soldered PCB/LED-strip assemblies remain intact. The display
-keeps CAD size and orientation; it does not describe a physical removal sequence.
-An air-space clearance gauge is excluded because it is not a fitted part.
-`explosion.py` checks complete coverage and disjoint projected component bounds.
-The GPU capture also checks actual mesh visibility, framing, separation and a
-minimum eight-pixel extent during each part's closer view. `exploded-assembly.json`
-binds the recording and part census to the exact source CAD and capture scripts;
-stale geometry, layout or movies block publication.
-It uses the H.264 MP4 inline, with a direct MP4 link. Both the first preview and diagram use native muted inline autoplay and start
-as soon as they can play on screen, including with reduced motion enabled.
+The main preview uses native muted inline autoplay, including with reduced
+motion enabled. It starts as soon as it can play on screen.
 The full-screen versions also start automatically. Pause and Restart remain
 available. Optional pattern previews follow the reduced-motion preference.
 A rejected start keeps playback intent, allowing media-ready, page-return and
@@ -158,15 +148,7 @@ A frozen light field or the former angular/radial hue cycle fails this check.
 The engineering runtime calculator retains its separate canonical full-rainbow
 reference; this preview does not establish a new battery runtime.
 
-Preview all exploded views without replacing the movie with `python3 site/render_assembly.py --preview --frames <new-external-directory>`.
-Rebuild the exploded MP4 and its coverage manifest from the current narrow CAD with:
-
-```sh
-python3 site/render_assembly.py --frames /Volumes/Sabrent4TB/agent-work/smart-compass-v0/assembly-frames
-```
-
-Use a new frame directory for each capture. The site build rejects a still loop
-or a loop that does not return to its closed pose. The build checks decoding,
+The build checks decoding,
 spatial colour motion, dark-mask identity and loop joins. Each asset and the gallery player script get a
 content-hashed URL. This prevents cached player code from using newer markup.
 

@@ -18,7 +18,6 @@ sys.path.insert(0, str(ROOT / "demo"))
 from media import DARK_STYLES, verify_rainbow_motion, verify_masked_motion
 from publication import publish, seal
 from spiral_motion import verify_pride_motion
-from explosion import CAPTURE_INPUTS, FRAMES as ASSEMBLY_FRAMES, SECONDS as ASSEMBLY_SECONDS, verify_capture
 
 sys.path.insert(0, str(ROOT / "designs/carrier"))
 from print_inputs import ARCHIVE_NAME, package_inputs
@@ -39,7 +38,6 @@ MEDIA = {
     "narrow_movie": Movie(SITE / "assets/rainbow-spiral.mp4", 16,
                           rainbow_scene=NARROW / "scene.json", travelling_spiral=True),
     "silver_narrow_movie": Movie(NARROW / "infinity-rainbow-silver.mp4", 16, rainbow_scene=NARROW / "scene.json"),
-    "assembly_movie": Movie(SITE / "assets/exploded-assembly.mp4", ASSEMBLY_SECONDS, poster_time=8),
     "narrow_worn": NARROW / "night-mannequin.png",
     "narrow_side": NARROW / "night-side.png",
     **{
@@ -73,23 +71,6 @@ def verify_movie(movie):
         verify_pride_motion(movie.source, movie.rainbow_scene)
     elif movie.rainbow_scene:
         verify_rainbow_motion(movie.source, movie.rainbow_scene)
-
-
-def verify_assembly_motion(source):
-    """Reject a still, missing opening, or a loop that does not close again."""
-    frames = subprocess.check_output([
-        "ffmpeg", "-v", "error", "-i", str(source),
-        "-vf", rf"select=eq(n\,0)+eq(n\,192)+eq(n\,{ASSEMBLY_FRAMES - 1}),scale=160:90",
-        "-fps_mode", "passthrough", "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
-    ])
-    size = 160 * 90 * 3
-    if len(frames) != size * 3:
-        raise RuntimeError("Assembly must include closed, open and reclosed frames")
-    first, middle, last = [frames[i * size:(i + 1) * size] for i in range(3)]
-    difference = lambda a, b: sum(abs(x - y) for x, y in zip(a, b)) / size
-    opening = difference(first, middle)
-    if opening < 3 or difference(middle, last) < 3 or difference(first, last) > opening * .1:
-        raise RuntimeError("Assembly animation must open and return to the closed pose")
 
 
 def checked_bytes(source):
@@ -137,15 +118,6 @@ def render_media(output, provenance):
                 "-frames:v", "1", "-q:v", "3", str(poster)
             ], check=True)
             values[key.replace("movie", "poster")] = "assets/" + poster.name
-            if key == "assembly_movie":
-                verify_assembly_motion(destination)
-                proof = json.loads(read_input(SITE / 'assets/exploded-assembly.json', provenance))
-                inputs = {name: hashlib.sha256(read_input(ROOT / name, provenance)).hexdigest()
-                          for name in CAPTURE_INPUTS}
-                scene = json.loads(read_input(NARROW / 'scene.json', provenance))
-                verify_capture(proof, scene, digest, inputs)
-                records[key]['fitted_cad_parts'] = proof['fitted_cad_parts']
-                records[key]['separate_units'] = proof['separate_units']
     return values, records
 
 
