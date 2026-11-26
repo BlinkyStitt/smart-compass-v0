@@ -104,7 +104,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.build/browser-cache
         run: |
-          gh run download "$GITHUB_RUN_ID" --name github-pages --dir "$RUNNER_TEMP/pages-artifact"
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name github-pages --dir "$RUNNER_TEMP/pages-artifact"
           mkdir -p "$RUNNER_TEMP/expected-pages"
           tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C "$RUNNER_TEMP/expected-pages"
           npm ci --prefix site --ignore-scripts --no-fund
