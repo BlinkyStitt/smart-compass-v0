@@ -33,7 +33,9 @@ jobs:
         with:
           node-version: '24'
       - name: Fetch all native and site inputs from Git LFS
-        run: git lfs pull
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" lfs pull
       - name: Check enclosure and narrow source contracts
         run: |
           python3 -m unittest discover -s hardware/enclosure -p 'test_*.py' -v
