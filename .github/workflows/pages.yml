@@ -15,15 +15,23 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ski-kvm-smart-compass-v0
+    container:
+      image: ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254
+    defaults:
+      run:
+        shell: bash
     # Allow Ubuntu media and browser packages to finish on a slow mirror.
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Install media tools
+      - name: Install media and checkout tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ffmpeg git-lfs unzip
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates curl ffmpeg git git-lfs python3 unzip
+      - uses: actions/checkout@3d3c42e5aac5ba805da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
       - name: Fetch all native and site inputs from Git LFS
         run: git lfs pull
       - name: Check enclosure and narrow source contracts
@@ -56,7 +64,12 @@ jobs:
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ski-kvm-smart-compass-v0
+    container:
+      image: ubuntu:24.04@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254
+    defaults:
+      run:
+        shell: bash
     # Live verification installs Chromium and its Ubuntu packages.
     timeout-minutes: 30
     outputs:
@@ -70,7 +83,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Install checkout and GitHub CLI tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates curl git python3
+          gh_archive="$RUNNER_TEMP/gh.tar.gz"
+          curl --fail --location --retry 3 --output "$gh_archive" https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_amd64.tar.gz
+          echo "98cb101ad87dbbd3f6b2f2bfcbd43197ccd07643140121d8a9cfaa91eadbc24e  $gh_archive" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/gh"
+          tar --extract --gzip --file "$gh_archive" --directory "$RUNNER_TEMP/gh" --strip-components=2 gh_2.104.0_linux_amd64/bin/gh
+          echo "$RUNNER_TEMP/gh" >> "$GITHUB_PATH"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
       - name: Retrieve the complete reviewed artifact and browser
         env:
           GH_TOKEN: ${{ github.token }}
