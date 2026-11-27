@@ -29,7 +29,8 @@ async function check() {
         await page.route('**/app.js', route => route.fulfill({contentType: 'application/javascript', body: 'throw new Error("stale player script fixture")'}));
         await page.goto(url);
         assert.match(await page.locator('script[src*="app-"]').getAttribute('src'), /app-script-[0-9a-f]{12}\.js$/, 'Player script URL changes with its content');
-        assert.equal(await page.locator('#films video').count(), 1);
+        assert.equal(await page.locator('main [data-autoplay] video').count(), 1, 'Only the current design autoplays');
+        assert.equal(await page.locator('#assembly-video, [src*="assembly-movie"], [href*="assembly-movie"]').count(), 0, 'The earlier prototype is absent');
         const printKit = page.locator('main a[href$=".zip"]');
         assert.equal(await printKit.count(), 1, 'One build kit is available');
         assert.equal(await printKit.getAttribute('href'), 'rev-a-print.zip');
@@ -112,30 +113,31 @@ async function check() {
           assert.ok(await link.evaluate(element => element === document.activeElement), 'Focus returns to the image');
         }
 
-        // The assembly starts without a tap, including with reduced motion enabled.
-        const assembly = page.locator('[data-assembly]');
-        await assembly.scrollIntoViewIfNeeded();
-        await page.waitForFunction(() => { const v = document.querySelector('#assembly-video'); return !v.paused && v.currentTime > 0; });
-        await page.emulateMedia({reducedMotion: 'no-preference'});
-        await page.emulateMedia({reducedMotion: 'reduce'});
-        assert.ok(await assembly.locator('video').evaluate(v => !v.paused), 'The requested assembly autoplay survives motion-preference changes');
-        assert.equal(await assembly.locator('video').evaluate(v => v.duration), 48, 'Complete disassembly includes every fitted-part detail view');
-        await assembly.locator('video').click();
-        await page.getByRole('dialog').waitFor({state: 'visible'});
-        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
-        await page.waitForFunction(() => { const v = document.querySelector('.media-viewer video'); return !v.paused && v.currentTime > 0; });
-        const expandedVideo = page.getByRole('dialog').locator('video');
+        const preview = page.locator('#narrow-video');
+        const pause = page.locator('#play');
+        await preview.scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => {
+          const video = document.querySelector('#narrow-video');
+          const button = document.querySelector('#play');
+          return !video.paused && !button.disabled && button.textContent === 'Pause';
+        });
+        await pause.click();
+        assert.ok(await preview.evaluate(video => video.paused), 'Inline playback is paused');
+        await preview.click();
+        const dialog = page.getByRole('dialog');
+        await dialog.waitFor({state: 'visible'});
+        const expandedVideo = dialog.locator('video');
         const expanded = await expandedVideo.elementHandle();
+        await page.waitForFunction(() => !document.querySelector('.media-viewer video').paused);
         if (width === 1280) {
           await expandedVideo.click();
-          assert.ok(await expandedVideo.evaluate(v => v.controls && !v.paused),
+          assert.ok(await expandedVideo.evaluate(video => video.controls && !video.paused),
             'Clicking the video reveals controls without pausing');
         }
-        await page.getByRole('button', {name: 'Close full-screen media'}).click();
-        await page.waitForFunction(() => !document.querySelector('#assembly-video').paused);
-        assert.ok(await expanded.evaluate(v => !v.hasAttribute('src') && v.readyState === 0), 'Closing releases the full-screen decoder');
-        await assembly.locator('[data-play]').click();
-        assert.ok(await assembly.locator('video').evaluate(v => v.paused));
+        await dialog.getByRole('button', {name: 'Close full-screen media'}).click();
+        await page.locator('.media-viewer video').waitFor({state: 'detached'});
+        assert.ok(await expanded.evaluate(video => !video.hasAttribute('src') && video.readyState === 0), 'Closing releases the full-screen decoder');
+        assert.ok(await preview.evaluate(video => video.paused), 'Closing preserves the inline pause');
 
         // A browser that denies native fullscreen still gets a full viewport dialog.
         await page.evaluate(() => { HTMLDialogElement.prototype.requestFullscreen = () => Promise.reject(new Error('Fixture: fullscreen unavailable')); });
@@ -177,22 +179,22 @@ async function check() {
         console.log(`GALLERY PASS: ${width}px, narrow only, image/video fullscreen, touch/keyboard/focus, reduced motion, pattern playback`);
       } finally { await context.close(); }
     }
-    // Both requested animations start without JavaScript or a priming tap.
+    // The main preview starts without JavaScript or a priming tap.
     const native = await browser.newContext({javaScriptEnabled: false, reducedMotion: 'reduce', viewport: {width: 390, height: 844}});
     try {
       const page = await native.newPage();
       await page.goto(url);
-      for (const id of ['narrow-video', 'assembly-video']) {
-        await page.locator(`#${id}`).scrollIntoViewIfNeeded();
-        // Page-side timer/rAF polling is disabled in this context too.
-        let moving = false;
-        for (let attempt = 0; attempt < 150 && !moving; attempt++) {
-          moving = await page.locator(`#${id}`).evaluate(v => v.autoplay && v.muted && v.playsInline && !v.paused && v.currentTime > 0);
-          if (!moving) await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        assert.ok(moving, `${id} native autoplay advances without a script or tap`);
+      assert.equal(await page.locator('main video[autoplay]').count(), 1, 'One native autoplay preview');
+      const id = 'narrow-video';
+      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+      // Page-side timer/rAF polling is disabled in this context too.
+      let moving = false;
+      for (let attempt = 0; attempt < 150 && !moving; attempt++) {
+        moving = await page.locator(`#${id}`).evaluate(v => v.autoplay && v.muted && v.playsInline && !v.paused && v.currentTime > 0);
+        if (!moving) await new Promise(resolve => setTimeout(resolve, 100));
       }
-      console.log(`NATIVE AUTOPLAY PASS (${engine}): both muted inline videos start without JavaScript or a tap`);
+      assert.ok(moving, `${id} native autoplay advances without a script or tap`);
+      console.log(`NATIVE AUTOPLAY PASS (${engine}): the muted inline preview starts without JavaScript or a tap`);
     } finally { await native.close(); }
     const recovery = await browser.newContext({reducedMotion: 'reduce', viewport: {width: 390, height: 844}, hasTouch: true});
     try {
@@ -212,33 +214,32 @@ async function check() {
       });
       const page = await recovery.newPage();
       await page.goto(url);
-      for (const id of ['narrow-video', 'assembly-video']) {
-        const video = page.locator(`#${id}`);
-        await video.scrollIntoViewIfNeeded();
-        await page.waitForFunction(id => !document.getElementById(id).paused, id);
-        await video.evaluate(v => {
-          v.autoplay = false;
-          v.pause();
-          v.originalPlay = v.play;
-          v.play = () => Promise.reject(new DOMException('Autoplay policy fixture', 'NotAllowedError'));
-          document.dispatchEvent(new Event('visibilitychange'));
-        });
-        const player = video.locator('xpath=ancestor::*[@data-player][1]');
-        await page.waitForFunction(id => document.getElementById(id).closest('[data-player]').querySelector('.play-status').textContent.includes('Tap Play'), id);
-        await video.evaluate(v => { v.play = v.originalPlay; v.dispatchEvent(new Event('canplay')); });
-        await page.waitForFunction(id => { const v = document.getElementById(id); return !v.paused && v.currentTime > 0; }, id);
-        await player.locator('[data-play]').click();
-        assert.ok(await video.evaluate(v => v.paused));
-        // A button retry must call play() before the gesture handler returns.
-        await video.evaluate(v => {
-          v.play = function() { this.playWasInClick = this.inClick; return this.originalPlay(); };
-        });
-        await player.locator('[data-play]').click();
-        await page.waitForFunction(id => !document.getElementById(id).paused, id);
-        assert.ok(await video.evaluate(v => v.playWasInClick), 'Play stays inside the Safari user gesture');
-        await video.evaluate(v => { v.play = v.originalPlay; });
-      }
-      console.log(`AUTOPLAY RECOVERY PASS (${engine}): both videos retry a denied start and retain synchronous Play`);
+      const id = 'narrow-video';
+      const video = page.locator(`#${id}`);
+      await video.scrollIntoViewIfNeeded();
+      await page.waitForFunction(id => !document.getElementById(id).paused, id);
+      await video.evaluate(v => {
+        v.autoplay = false;
+        v.pause();
+        v.originalPlay = v.play;
+        v.play = () => Promise.reject(new DOMException('Autoplay policy fixture', 'NotAllowedError'));
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      const player = video.locator('xpath=ancestor::*[@data-player][1]');
+      await page.waitForFunction(id => document.getElementById(id).closest('[data-player]').querySelector('.play-status').textContent.includes('Tap Play'), id);
+      await video.evaluate(v => { v.play = v.originalPlay; v.dispatchEvent(new Event('canplay')); });
+      await page.waitForFunction(id => { const v = document.getElementById(id); return !v.paused && v.currentTime > 0; }, id);
+      await player.locator('[data-play]').click();
+      assert.ok(await video.evaluate(v => v.paused));
+      // A button retry must call play() before the gesture handler returns.
+      await video.evaluate(v => {
+        v.play = function() { this.playWasInClick = this.inClick; return this.originalPlay(); };
+      });
+      await player.locator('[data-play]').click();
+      await page.waitForFunction(id => !document.getElementById(id).paused, id);
+      assert.ok(await video.evaluate(v => v.playWasInClick), 'Play stays inside the Safari user gesture');
+      await video.evaluate(v => { v.play = v.originalPlay; });
+      console.log(`AUTOPLAY RECOVERY PASS (${engine}): the preview retries a denied start and preserves synchronous Play`);
     } finally { await recovery.close(); }
     const context = await browser.newContext({reducedMotion: 'no-preference'});
     try {
@@ -250,14 +251,11 @@ async function check() {
       page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
       await page.goto(url);
       await page.waitForFunction(() => { const v = document.querySelector('#films video'); return !v.paused && v.currentTime > 0; });
-      const assembly = page.locator('#assembly-video');
-      await assembly.scrollIntoViewIfNeeded();
-      await page.waitForFunction(() => document.querySelector('#narrow-video').paused && !document.querySelector('#assembly-video').paused && document.querySelector('#assembly-video').currentTime > 0);
-      const first = await assembly.screenshot();
-      await page.waitForTimeout(4000);
-      const opened = await assembly.screenshot();
-      assert.ok(!first.equals(opened), 'Exploded video changes its painted CAD pose');
-      await page.locator('[data-assembly] [data-play]').click();
+      const preview = page.locator('#narrow-video');
+      await page.locator('main img').last().scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => document.querySelector('#narrow-video').paused);
+      await preview.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => !document.querySelector('#narrow-video').paused);
       for (let repeat = 0; repeat < 2; repeat++) {
         for (const image of await page.locator('main img').all()) {
           await image.scrollIntoViewIfNeeded();
@@ -265,8 +263,6 @@ async function check() {
           const dimensions = await image.evaluate(i => [i.naturalWidth, i.naturalHeight]);
           assert.ok(dimensions.every(n => n > 0 && n <= 1600), 'Inline images have bounded decoded dimensions');
         }
-        await assembly.scrollIntoViewIfNeeded();
-        assert.ok(await assembly.evaluate(v => v.paused), 'Manual pause survives scrolling away and back');
       }
       assert.ok(!requests.some(url => /\.(svg|apng)(?:[?#]|$)/.test(url) && !url.endsWith('/icon.svg')), 'Scrolling never loads tessellated SVGs or animated PNGs');
       assert.equal(await page.locator('img[src$=".svg"],img[src$=".apng"]').count(), 0);
@@ -300,8 +296,11 @@ async function check() {
         window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
       });
       assert.ok(await page.locator('#narrow-video').evaluate(v => v.paused), 'Manual pause survives media-ready and page-return retries');
+      await page.locator('main img').last().scrollIntoViewIfNeeded();
+      await preview.scrollIntoViewIfNeeded();
+      assert.ok(await preview.evaluate(video => video.paused), 'Manual pause survives scrolling away and back');
       assert.deepEqual(errors, []);
-      console.log(`MOTION/MEMORY PASS (${engine}): painted assembly motion, bounded images, repeated scroll, offscreen pause/resume, manual pause, visibility and reduced motion`);
+      console.log(`MOTION/MEMORY PASS (${engine}): bounded images, repeated scroll, offscreen pause/resume, manual pause, visibility and reduced motion`);
     } finally { await context.close(); }
   } finally { await browser.close(); }
 }

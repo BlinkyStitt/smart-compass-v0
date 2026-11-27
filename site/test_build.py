@@ -1,4 +1,4 @@
-"""Keep assembly and rainbow media validation distinct and strict."""
+"""Validate Pages inputs and rainbow media."""
 
 import hashlib
 import json
@@ -14,29 +14,10 @@ from build import MEDIA, NARROW, WIDE, Movie, verify_movie
 
 
 class MovieTests(unittest.TestCase):
-    def probe(self, frames=1152, seconds=48):
+    def probe(self, frames=384, seconds=16):
         return json.dumps({"streams": [{"width": 1280, "height": 720,
                                        "r_frame_rate": "24/1", "avg_frame_rate": "24/1",
                                        "nb_frames": str(frames), "duration": str(seconds)}]})
-
-    @patch("build.verify_rainbow_motion")
-    @patch("build.subprocess.run")
-    @patch("build.subprocess.check_output")
-    def test_assembly_accepts_48_seconds_and_checks_decoding(self, probe, run, rainbow):
-        probe.return_value = self.probe()
-        verify_movie(Movie(Path("assembly.mp4"), 48, poster_time=8))
-        self.assertIn("-xerror", run.call_args.args[0])
-        rainbow.assert_not_called()
-
-    @patch("build.subprocess.run")
-    @patch("build.subprocess.check_output")
-    def test_shortened_assembly_is_rejected(self, probe, run):
-        for frames, seconds in ((576, 48), (1152, 24)):
-            with self.subTest(frames=frames, seconds=seconds):
-                probe.return_value = self.probe(frames, seconds)
-                with self.assertRaises(RuntimeError):
-                    verify_movie(Movie(Path("assembly.mp4"), 48))
-        run.assert_not_called()
 
     @patch("build.verify_rainbow_motion", side_effect=RuntimeError("Static rainbow"))
     @patch("build.subprocess.run")
@@ -48,7 +29,7 @@ class MovieTests(unittest.TestCase):
 
     def test_native_dark_media_registration(self):
         movies = {key: value for key, value in MEDIA.items() if isinstance(value, Movie)}
-        self.assertEqual(len(movies), 6)
+        self.assertEqual(len(movies), 5)
         for style in ("sectors", "spirals", "diagonals"):
             for design, folder in (("narrow", NARROW),):
                 movie = movies[f"{design}_dark_{style}_movie"]
@@ -167,22 +148,6 @@ class MovieTests(unittest.TestCase):
                 self.assertEqual(records['clip_movie']['sha256'], provenance['site-assets/clip.mp4'])
                 self.assertEqual(output / values['clip_movie'], captured.source)
                 self.assertFalse(list(output.glob('.*-scene.json')))
-
-
-class AssemblyMotionTests(unittest.TestCase):
-    def test_opening_and_closing_are_required(self):
-        closed = bytes([40]) * (160 * 90 * 3)
-        opened = bytes([80]) * len(closed)
-        for frames, valid in ((closed + opened + closed, True),
-                              (closed * 3, False), (closed + opened * 2, False),
-                              (closed + opened, False)):
-            with self.subTest(valid=valid, length=len(frames)), patch(
-                    'build.subprocess.check_output', return_value=frames):
-                if valid:
-                    build.verify_assembly_motion(Path('assembly.mp4'))
-                else:
-                    with self.assertRaises(RuntimeError):
-                        build.verify_assembly_motion(Path('assembly.mp4'))
 
 
 class BuildInputTests(unittest.TestCase):
