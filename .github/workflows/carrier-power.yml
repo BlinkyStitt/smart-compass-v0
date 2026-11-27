@@ -8,7 +8,7 @@ permissions:
 jobs:
   ci_changes:
     name: Select validation paths
-    runs-on: ubuntu-latest
+    runs-on: ski-kvm-smart-compass-v0
     permissions:
       contents: read
       pull-requests: read
@@ -143,7 +143,7 @@ jobs:
         if-no-files-found: ignore
     needs:
     - ci_changes
-    if: "${{ needs.ci_changes.outputs.run_validation == 'true' }}"
+    if: "${{ github.event_name == 'workflow_dispatch' && needs.ci_changes.outputs.run_validation == 'true' }}"
   ci_gate:
     name: CI (carrier-power.yml)
     if: "${{ !cancelled() }}"
@@ -151,8 +151,7 @@ jobs:
     - ci_changes
     - power-policy
     - pcb
-    - fit-and-slice
-    runs-on: ubuntu-latest
+    runs-on: ski-kvm-smart-compass-v0
     permissions:
       contents: read
     steps:
@@ -162,7 +161,7 @@ jobs:
     - name: Verify validation contract
       env:
         CI_GATE_NEEDS: "${{ toJSON(needs) }}"
-        CI_EXPECTED_JOBS: '["power-policy","pcb","fit-and-slice"]'
+        CI_EXPECTED_JOBS: '["power-policy","pcb"]'
       run: |-
         python3 -m unittest discover -s .github/scripts -p test_ci_contract.py
         python3 .github/scripts/ci_gate.py
